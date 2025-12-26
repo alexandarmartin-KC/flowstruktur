@@ -129,8 +129,6 @@ export default function HomePage() {
                     <p className="text-muted-foreground">
                       Ingen overfladiske "matches". Vi forklarer, hvorfor noget kan være relevant – og hvad der kan være udfordrende.
                     </p>
-                      Se dine kompetencer fra nye vinkler og forstå din værdi på jobmarkedet.
-                    </p>
                   </div>
                 </div>
                 <div className="flex gap-3">

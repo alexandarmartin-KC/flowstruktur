@@ -256,8 +256,3 @@ export default function PlanPage() {
   );
 }
 
-        </CardContent>
-      </Card>
-    </div>
-  );
-}

@@ -4,28 +4,27 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
-  FileText,
   User,
-  Target,
-  TrendingUp,
+  Compass,
   Briefcase,
   ClipboardList,
   Settings,
   Sparkles,
+  Lock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { usePlan } from '@/contexts/plan-context';
 
 const navigation = [
-  { name: 'Dashboard', href: '/app', icon: LayoutDashboard },
-  { name: 'Mit CV', href: '/app/cv', icon: FileText },
-  { name: 'Personprofil', href: '/app/personprofil', icon: User },
-  { name: '360° Overblik', href: '/app/360', icon: Target },
-  { name: 'Karrierespor', href: '/app/karrierespor', icon: TrendingUp },
-  { name: 'Jobmatch', href: '/app/jobmatch', icon: Briefcase },
-  { name: 'Action Plan', href: '/app/plan', icon: ClipboardList, proBadge: true },
+  { name: 'Overblik', href: '/app', icon: LayoutDashboard },
+  { name: 'Min profil', href: '/app/profil', icon: User },
+  { name: 'Muligheder', href: '/app/muligheder', icon: Compass },
+  { name: 'Job', href: '/app/job', icon: Briefcase },
+  { name: 'Plan', href: '/app/plan', icon: ClipboardList, proBadge: true },
+];
+
+const bottomNavigation = [
   { name: 'Indstillinger', href: '/app/indstillinger', icon: Settings },
 ];
 
@@ -67,11 +66,38 @@ export function AppSidebar() {
                       >
                         <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
                         {item.name}
-                        {item.proBadge && (
-                          <Badge variant={isProUser ? 'secondary' : 'default'} className="ml-auto">
+                        {item.proBadge && !isProUser && (
+                          <Lock className="h-4 w-4 ml-auto" />
+                        )}
+                        {item.proBadge && isProUser && (
+                          <Badge variant="secondary" className="ml-auto text-xs">
                             PRO
                           </Badge>
                         )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </li>
+            <li className="mt-auto">
+              <ul role="list" className="-mx-2 space-y-1">
+                {bottomNavigation.map((item) => {
+                  const isActive = pathname === item.href;
+
+                  return (
+                    <li key={item.name}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          isActive
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+                          'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium'
+                        )}
+                      >
+                        <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                        {item.name}
                       </Link>
                     </li>
                   );

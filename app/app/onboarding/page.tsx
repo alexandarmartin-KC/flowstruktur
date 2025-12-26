@@ -41,6 +41,12 @@ export default function OnboardingPage() {
   const totalSteps = 5;
   const progress = (step / totalSteps) * 100;
 
+  const getInterpretation = (dimension: string, score: number) => {
+    if (score >= 4) return `Høj tendens i ${dimension}.`;
+    if (score <= 2) return `Lav tendens i ${dimension}.`;
+    return `Balanceret tendens i ${dimension}.`;
+  };
+
   const handleNext = () => {
     if (step === 2 && fileName) {
       updateCVStatus(true);
@@ -49,11 +55,15 @@ export default function OnboardingPage() {
       updateKompetencer(kompetencer);
     }
     if (step === 4 && Object.keys(personlighedsSvar).length > 0) {
-      const resultater: PersonlighedsResultat[] = mockPersonlighedsSpoergsmaal.map(spg => ({
-        dimension: spg.dimension,
-        score: personlighedsSvar[spg.id] || 3,
-        beskrivelse: 'Baseret på dine svar'
-      }));
+      const resultater: PersonlighedsResultat[] = mockPersonlighedsSpoergsmaal.map(spg => {
+        const score = personlighedsSvar[spg.id] || 3;
+        return {
+          dimension: spg.dimension,
+          score,
+          beskrivelse: 'Baseret på dine svar',
+          interpretation: getInterpretation(spg.dimension, score),
+        };
+      });
       updatePersonlighedsResultater(resultater);
     }
     
@@ -80,7 +90,7 @@ export default function OnboardingPage() {
         const detectedSkills = mockKompetencer.slice(0, 8).map(k => ({
           ...k,
           niveau: 'erfaren' as const,
-          interesse: true
+          interesse: 4
         }));
         setKompetencer(detectedSkills);
       }, 500);
@@ -89,7 +99,7 @@ export default function OnboardingPage() {
 
   const toggleKompetenceInteresse = (id: string) => {
     setKompetencer(prev => 
-      prev.map(k => k.id === id ? { ...k, interesse: !k.interesse } : k)
+      prev.map(k => k.id === id ? { ...k, interesse: k.interesse && k.interesse > 0 ? 0 : 4 } : k)
     );
   };
 

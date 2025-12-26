@@ -42,28 +42,27 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center">
           <Badge className="mb-4" variant="secondary">
             <Sparkles className="h-3 w-3 mr-1" />
-            AI-drevet karrierecoaching
+            Digitalt karriere-overblik
           </Badge>
           <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mb-6">
-            Find dit næste <span className="text-primary">karrierespor</span> med AI
+            Forstå din <span className="text-primary">karriereprofil</span> i dybden
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Upload dit CV, besvar få spørgsmål, og få et 360° overblik over dine kompetencer, 
-            personlighedsprofil og karrieremuligheder.
+            Et roligt og reflekterende værktøj, der hjælper dig med at forstå din erfaring, dine præferencer og dine muligheder.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="text-lg">
-              <Link href="/app/onboarding">
-                Kom i gang gratis
+              <Link href="/app">
+                Prøv demo
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="text-lg">
-              <Link href="/pris">Se priser</Link>
+              <Link href="/om">Læs mere</Link>
             </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-4">
-            Gratis at starte. Ingen kreditkort påkrævet.
+            Dette er en frontend-prototype uden rigtig backend
           </p>
         </div>
       </section>
@@ -71,9 +70,9 @@ export default function HomePage() {
       {/* Features */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Hvordan fungerer det?</h2>
+          <h2 className="text-3xl font-bold mb-4">Sådan virker det</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            En guidet proces der giver dig total klarhed over dine styrker og muligheder
+            Tre simple sider giver dig indsigt i din karriereprofil
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -82,9 +81,9 @@ export default function HomePage() {
               <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
                 <Target className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Upload CV & Profil</h3>
+              <h3 className="text-xl font-semibold mb-2">Overblik</h3>
               <p className="text-muted-foreground">
-                Del dit CV og besvar spørgsmål om din arbejdsstil, motivation og præferencer.
+                Se din status og hvilke jobs du har gemt, set eller ansøgt.
               </p>
             </CardContent>
           </Card>
@@ -93,9 +92,9 @@ export default function HomePage() {
               <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
                 <BarChart3 className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">360° Analyse</h3>
+              <h3 className="text-xl font-semibold mb-2">Min profil</h3>
               <p className="text-muted-foreground">
-                Få et komplet overblik over dine kompetencer, styrker og overførbare skills.
+                En dyb fortolkning af dit CV og din personprofil – ikke bare lister.
               </p>
             </CardContent>
           </Card>
@@ -104,9 +103,9 @@ export default function HomePage() {
               <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
                 <TrendingUp className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Match & Plan</h3>
+              <h3 className="text-xl font-semibold mb-2">Muligheder</h3>
               <p className="text-muted-foreground">
-                Modtag personlige karrierespor, jobmatch og en konkret action plan.
+                Udforsk jobeksempler med forklaringer – hvorfor de passer, hvad der kan være svært, og hvad de kan bruges til i din afklaring.
               </p>
             </CardContent>
           </Card>
@@ -118,16 +117,18 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
             <div>
-              <Badge className="mb-4">Fordele</Badge>
+              <Badge className="mb-4">Værdier</Badge>
               <h2 className="text-3xl font-bold mb-6">
-                Få klarhed. Træf bedre karrierevalg.
+                Ro, refleksion og forståelse
               </h2>
               <div className="space-y-4">
                 <div className="flex gap-3">
                   <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold mb-1">Objektivt overblik</h3>
+                    <h3 className="font-semibold mb-1">Coachende tilgang</h3>
                     <p className="text-muted-foreground">
+                      Ingen overfladiske "matches". Vi forklarer, hvorfor noget kan være relevant – og hvad der kan være udfordrende.
+                    </p>
                       Se dine kompetencer fra nye vinkler og forstå din værdi på jobmarkedet.
                     </p>
                   </div>

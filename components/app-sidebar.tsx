@@ -6,22 +6,15 @@ import {
   LayoutDashboard,
   User,
   Compass,
-  Briefcase,
-  ClipboardList,
   Settings,
   Sparkles,
-  Lock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { usePlan } from '@/contexts/plan-context';
 
 const navigation = [
   { name: 'Overblik', href: '/app', icon: LayoutDashboard },
   { name: 'Min profil', href: '/app/profil', icon: User },
   { name: 'Muligheder', href: '/app/muligheder', icon: Compass },
-  { name: 'Job', href: '/app/job', icon: Briefcase },
-  { name: 'Plan', href: '/app/plan', icon: ClipboardList, proBadge: true },
 ];
 
 const bottomNavigation = [
@@ -30,7 +23,6 @@ const bottomNavigation = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { isProUser } = usePlan();
 
   return (
     <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
@@ -47,33 +39,20 @@ export function AppSidebar() {
               <ul role="list" className="-mx-2 space-y-1">
                 {navigation.map((item) => {
                   const isActive = pathname === item.href;
-                  const isLocked = item.proBadge && !isProUser;
 
                   return (
                     <li key={item.name}>
                       <Link
-                        href={isLocked ? '#' : item.href}
+                        href={item.href}
                         className={cn(
                           isActive
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted',
-                          'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium',
-                          isLocked && 'opacity-60 cursor-not-allowed'
+                            ? 'bg-accent text-accent-foreground'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
+                          'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors'
                         )}
-                        onClick={(e) => {
-                          if (isLocked) e.preventDefault();
-                        }}
                       >
                         <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
                         {item.name}
-                        {item.proBadge && !isProUser && (
-                          <Lock className="h-4 w-4 ml-auto" />
-                        )}
-                        {item.proBadge && isProUser && (
-                          <Badge variant="secondary" className="ml-auto text-xs">
-                            PRO
-                          </Badge>
-                        )}
                       </Link>
                     </li>
                   );
@@ -91,9 +70,9 @@ export function AppSidebar() {
                         href={item.href}
                         className={cn(
                           isActive
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted',
-                          'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium'
+                            ? 'bg-accent text-accent-foreground'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
+                          'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors'
                         )}
                       >
                         <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />

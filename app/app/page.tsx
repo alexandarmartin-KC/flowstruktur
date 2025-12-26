@@ -1,188 +1,189 @@
-'use client';
-
 import Link from 'next/link';
-import { ArrowRight, TrendingUp, User, Compass, CheckCircle2 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { mockIndsigter, mockProfilStatus } from '@/lib/mock-data';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle2, Clock, ArrowRight, Eye, Bookmark, Send } from 'lucide-react';
+import {
+  mockUserProgress,
+  mockSavedJobs,
+} from '@/lib/mock-data';
 
 export default function OverblikPage() {
-  const { kompleteret, steps } = mockProfilStatus;
+  const progress = mockUserProgress;
+  const savedJobs = mockSavedJobs;
 
-  const naesteSkridt = [
-    {
-      icon: User,
-      titel: 'Gennemse din profil',
-      beskrivelse: 'Se dine kompetencer, arbejdsstil og motivation i dybden',
-      href: '/app/profil',
-      completed: false,
-    },
-    {
-      icon: Compass,
-      titel: 'Udforsk karrierespor',
-      beskrivelse: 'Se hvilke retninger der passer til din profil',
-      href: '/app/muligheder',
-      completed: false,
-    },
-    {
-      icon: TrendingUp,
-      titel: 'Find relevante jobs',
-      beskrivelse: 'Konkrete jobmuligheder der matcher din profil',
-      href: '/app/job',
-      completed: false,
-    },
+  const statusItems = [
+    { label: 'CV uploadet', completed: progress.cvUploaded },
+    { label: 'Personprofil udfyldt', completed: progress.personProfilCompleted },
+    { label: 'Analyse klar', completed: progress.analyseReady },
+    { label: 'Muligheder udforsket', completed: progress.mulighederExplored },
   ];
+
+  const seenJobs = savedJobs.filter((j) => j.status === 'seen');
+  const savedJobsList = savedJobs.filter((j) => j.status === 'saved');
+  const appliedJobs = savedJobs.filter((j) => j.status === 'applied');
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Velkommen tilbage</h1>
-        <p className="text-muted-foreground mt-2">
-          Her er dit overblik og forslag til næste skridt
+        <h1 className="text-3xl font-bold tracking-tight">Overblik</h1>
+        <p className="mt-2 text-muted-foreground">
+          Denne side giver dig overblik over, hvor du er i processen.
         </p>
       </div>
 
-      {/* Profilstatus */}
+      {/* Status */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Din profilstatus</CardTitle>
-              <CardDescription>
-                {kompleteret === 100 
-                  ? 'Din profil er komplet!' 
-                  : 'Du er godt på vej – endnu et par trin'}
-              </CardDescription>
-            </div>
-            <div className="text-3xl font-bold text-primary">{kompleteret}%</div>
-          </div>
+          <CardTitle>Din status</CardTitle>
+          <CardDescription>
+            Her kan du se, hvilke trin du har gennemført
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Progress value={kompleteret} className="h-3" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-3">
-              <CheckCircle2 
-                className={`h-5 w-5 ${steps.cv ? 'text-green-600' : 'text-muted-foreground'}`} 
-              />
-              <span className={steps.cv ? 'text-foreground' : 'text-muted-foreground'}>
-                CV uploadet
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2 
-                className={`h-5 w-5 ${steps.kompetencer ? 'text-green-600' : 'text-muted-foreground'}`} 
-              />
-              <span className={steps.kompetencer ? 'text-foreground' : 'text-muted-foreground'}>
-                Kompetencer bekræftet
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2 
-                className={`h-5 w-5 ${steps.personprofil ? 'text-green-600' : 'text-muted-foreground'}`} 
-              />
-              <span className={steps.personprofil ? 'text-foreground' : 'text-muted-foreground'}>
-                Personprofil udfyldt
-              </span>
-            </div>
+        <CardContent>
+          <div className="space-y-4">
+            {statusItems.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50"
+              >
+                {item.completed ? (
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                ) : (
+                  <Clock className="h-5 w-5 text-muted-foreground" />
+                )}
+                <span
+                  className={
+                    item.completed
+                      ? 'font-medium text-foreground'
+                      : 'text-muted-foreground'
+                  }
+                >
+                  {item.label}
+                </span>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Indsigter */}
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">Indsigter fra din profil</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {mockIndsigter.map((indsigt) => (
-            <Card key={indsigt.id} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="secondary" className="capitalize">
-                    {indsigt.type}
-                  </Badge>
-                </div>
-                <CardTitle className="text-lg">{indsigt.overskrift}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  {indsigt.beskrivelse}
-                </p>
-                {indsigt.cta && (
-                  <Button asChild variant="ghost" className="w-full group">
-                    <Link href={indsigt.cta.href}>
-                      {indsigt.cta.text}
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      {/* Jobs oversigt */}
+      <div className="grid gap-6 md:grid-cols-3">
+        {/* Sete jobs */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Eye className="h-5 w-5 text-muted-foreground" />
+              <CardTitle className="text-lg">Set</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {seenJobs.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Du har endnu ikke set nogen jobs
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {seenJobs.map((job) => (
+                  <div
+                    key={job.id}
+                    className="rounded-lg border border-border p-3 text-sm"
+                  >
+                    <p className="font-medium">{job.titel}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {job.virksomhed}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Gemte jobs */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Bookmark className="h-5 w-5 text-muted-foreground" />
+              <CardTitle className="text-lg">Gemt</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {savedJobsList.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Du har endnu ikke gemt nogen jobs
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {savedJobsList.map((job) => (
+                  <div
+                    key={job.id}
+                    className="rounded-lg border border-border p-3 text-sm"
+                  >
+                    <p className="font-medium">{job.titel}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {job.virksomhed}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Ansøgt */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Send className="h-5 w-5 text-muted-foreground" />
+              <CardTitle className="text-lg">Ansøgt</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {appliedJobs.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Du har endnu ikke ansøgt nogen jobs
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {appliedJobs.map((job) => (
+                  <div
+                    key={job.id}
+                    className="rounded-lg border border-border p-3 text-sm"
+                  >
+                    <p className="font-medium">{job.titel}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {job.virksomhed}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Næste skridt */}
-      <div>
-        <h2 className="text-2xl font-semibold mb-2">Hvad foreslår vi som næste skridt?</h2>
-        <p className="text-muted-foreground mb-4">
-          Disse trin hjælper dig med at komme videre i din karriererejse
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {naesteSkridt.map((skridt, index) => {
-            const IconComponent = skridt.icon;
-            return (
-              <Card key={index} className="relative">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      <IconComponent className="h-6 w-6 text-primary" />
-                    </div>
-                    <span className="text-sm font-medium text-muted-foreground">
-                      {index + 1}/3
-                    </span>
-                  </div>
-                  <CardTitle className="text-lg mt-4">{skridt.titel}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    {skridt.beskrivelse}
-                  </p>
-                  <Button asChild className="w-full">
-                    <Link href={skridt.href}>
-                      Kom i gang
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Info box */}
-      <Card className="border-primary/20 bg-primary/5">
-        <CardContent className="pt-6">
-          <div className="flex items-start gap-4">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold mb-1">Klar til at tage næste skridt?</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Med en PRO-konto får du adgang til din personlige 30-dages handlingsplan, 
-                ubegrænset jobmatch og AI-assisteret ansøgningshjælp.
-              </p>
-              <Button asChild>
-                <Link href="/pris">
-                  Se PRO fordele
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Næste skridt</CardTitle>
+          <CardDescription>
+            Fortsæt din rejse gennem værktøjet
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Link href="/app/profil">
+            <Button className="w-full justify-between" variant="outline">
+              Se din profil
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+          <Link href="/app/muligheder">
+            <Button className="w-full justify-between" variant="outline">
+              Udforsk muligheder
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
         </CardContent>
       </Card>
     </div>

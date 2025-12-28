@@ -38,29 +38,50 @@ async function callOpenAI(cvText: string): Promise<string> {
     throw new Error('OPENAI_API_KEY er ikke sat i miljøvariabler');
   }
 
-  const prompt = `Du er en ekspert HR-analytiker. Din opgave er at analysere et CV og udtrække nøgleinformation på en struktureret måde.
+  const prompt = `Du er en kritisk og analytisk CV-analytiker.
 
-VIGTIGT: Du må IKKE opfinde information. Alle fakta skal være direkte fra CV'et. Hvis noget er uklart eller ikke nævnt, skal du skrive "Ikke oplyst i CV'et".
+Din opgave er IKKE at skrive et pænt resumé, men at udlede mønstre, styrker og begrænsninger
+udelukkende baseret på det, der kan dokumenteres i CV-teksten.
+
+VIGTIGE REGLER:
+- Du må KUN bruge information, der står eksplicit i CV'et.
+- Du må IKKE antage færdigheder, ansvar eller senioritet, som ikke er dokumenteret.
+- Hvis noget ikke kan udledes, skal du skrive dette eksplicit.
+- Undgå rosende eller vurderende adjektiver (fx "dygtig", "stærk", "imponerende"),
+  medmindre de straks forklares med konkret evidens fra CV'et.
+- Gentag ikke CV'ets formuleringer direkte – udled og fortolk i stedet.
+- Skriv på nøgternt, professionelt dansk.
 
 CV-TEKST:
 ${cvText}
 
-INSTRUKTIONER:
-1. Læs CV'et omhyggeligt
-2. Udtræk nøgleinformation om erfaring, uddannelse og kompetencer
-3. Formater dit svar PRÆCIS som vist nedenfor
+ANALYSEN SKAL STRUKTURERES PRÆCIS SOM FØLGER:
 
-OUTPUT FORMAT (brug PRÆCIS denne struktur):
+OVERORDNET UDLEDNING
+[1–2 afsnit, der beskriver hvilken type profil CV'et samlet set viser. Fokusér på mønstre, progression og overordnet specialisering.]
 
-TEKST:
-[Skriv 1-2 afsnit der sammenfatter personens professionelle baggrund, nøgleerfaring og styrker baseret UDELUKKENDE på CV-teksten]
+HVAD CV'ET DOKUMENTERER
+- [Faktisk, verificerbart forhold 1]
+- [Faktisk, verificerbart forhold 2]
+- [Faktisk, verificerbart forhold 3]
+- [Faktisk, verificerbart forhold 4]
+- [Faktisk, verificerbart forhold 5]
 
-BULLETS:
-- [Nøgleerfaring eller kompetence 1]
-- [Nøgleerfaring eller kompetence 2]
-- [Nøgleerfaring eller kompetence 3]
-- [Nøgleerfaring eller kompetence 4]
-- [Nøgleerfaring eller kompetence 5]`;
+STYRKER DER KAN UDLEDES
+- [Styrke 1 + forklaring baseret på CV-indhold]
+- [Styrke 2 + forklaring baseret på CV-indhold]
+- [Styrke 3 + forklaring baseret på CV-indhold]
+
+BEGRÆNSNINGER / HVAD DER IKKE KAN UDLEDES
+- [Forhold der ikke er dokumenteret 1]
+- [Forhold der ikke er dokumenteret 2]
+- [Forhold der ikke er dokumenteret 3]
+
+SAMLET NEUTRAL KONKLUSION
+[Kort, afbalanceret afslutning. Beskriv hvilke typer roller/problemer profilen virker bedst egnet til – uden at love eller anbefale.]
+
+Hvis information er uklar eller mangler: skriv "Ikke dokumenteret i CV'et".
+Ingen overskrifter må udelades. Ingen sektioner må flettes sammen.`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

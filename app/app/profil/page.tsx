@@ -109,27 +109,38 @@ export default function ProfilPage() {
 
   const displaySummary = revised || extraction?.summary || '';
 
-  // Parse summary til tekst og bullets
+  // Parse summary til forskellige sektioner
   const parseSummary = (summary: string) => {
     const lines = summary.split('\n');
     let text = '';
     const bullets: string[] = [];
-    let inBullets = false;
+    let currentSection = 'text';
 
     for (const line of lines) {
-      if (line.trim() === 'BULLETS:') {
-        inBullets = true;
+      const trimmed = line.trim();
+      
+      // Detekter sektioner med bullets
+      if (trimmed === 'HVAD CV\'ET DOKUMENTERER' || 
+          trimmed === 'STYRKER DER KAN UDLEDES' || 
+          trimmed === 'BEGRÆNSNINGER / HVAD DER IKKE KAN UDLEDES') {
+        currentSection = 'bullets';
         continue;
       }
-      if (line.trim().startsWith('KILDE-NOTER:')) {
-        break; // Stop når vi når kilde-noter (selvom de ikke skulle være der)
+      
+      // Når vi når konklusion, skift tilbage til tekst
+      if (trimmed === 'SAMLET NEUTRAL KONKLUSION') {
+        currentSection = 'conclusion';
+        continue;
       }
-      if (inBullets) {
-        const trimmed = line.trim();
-        if (trimmed.startsWith('- ')) {
-          bullets.push(trimmed.substring(2));
-        }
-      } else if (line.trim() !== 'TEKST:') {
+      
+      // Parse bullets
+      if (currentSection === 'bullets' && trimmed.startsWith('- ')) {
+        bullets.push(trimmed.substring(2));
+      } 
+      // Parse tekst (udledning + konklusion)
+      else if ((currentSection === 'text' || currentSection === 'conclusion') && 
+               trimmed && 
+               trimmed !== 'OVERORDNET UDLEDNING') {
         text += line + '\n';
       }
     }
@@ -217,7 +228,7 @@ export default function ProfilPage() {
             {/* Bullets som badges */}
             {summaryBullets.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground">Nøglekompetencer</h3>
+                <h3 className="text-sm font-semibold text-foreground">Dokumenterede kompetencer & styrker</h3>
                 <div className="flex flex-wrap gap-2">
                   {summaryBullets.map((bullet, index) => (
                     <Badge 

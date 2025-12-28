@@ -12,7 +12,15 @@ async function callOpenAIForRevision(
     throw new Error('OPENAI_API_KEY er ikke sat i miljøvariabler');
   }
 
-  const prompt = `Du er en ekspert HR-analytiker. Du skal revidere en CV-analyse baseret på brugerens feedback.
+  const prompt = `Du er en kritisk og analytisk CV-analytiker. Du skal revidere en CV-analyse baseret på brugerens feedback.
+
+VIGTIGE REGLER:
+- Du må KUN bruge information, der står eksplicit i CV'et.
+- Du må IKKE antage færdigheder, ansvar eller senioritet, som ikke er dokumenteret.
+- Undgå rosende eller vurderende adjektiver uden konkret evidens.
+- Gentag ikke CV'ets formuleringer direkte – udled og fortolk.
+- Hvis brugeren nævner noget der IKKE står i CV'et, markér det som "Bruger oplyser: [information]".
+- Respektér brugerens feedback, men vær ærlig om hvad der kommer fra CV'et vs. brugeren.
 
 ORIGINAL ANALYSE:
 ${originalSummary}
@@ -23,25 +31,32 @@ ${feedback}
 ORIGINAL CV-TEKST:
 ${cvText}
 
-INSTRUKTIONER:
-1. Læs brugerens feedback omhyggeligt
-2. Revidér analysen baseret på feedbacken
-3. Brug STADIG kun information fra CV-teksten
-4. Hvis brugeren nævner noget der IKKE står i CV'et, skal du markere det som "Bruger oplyser: [information]" - du må IKKE præsentere det som om det står i CV'et
-5. Respektér brugerens ønsker, men vær ærlig om hvad der kommer fra CV'et vs. brugeren
-6. Formater dit svar PRÆCIS som vist nedenfor
+REVIDER ANALYSEN OG STRUKTURÉR DEN PRÆCIS SOM FØLGER:
 
-OUTPUT FORMAT (brug PRÆCIS denne struktur):
+OVERORDNET UDLEDNING
+[1–2 afsnit, der beskriver hvilken type profil CV'et samlet set viser. Tag højde for brugerens feedback.]
 
-TEKST:
-[Revideret sammenfatning der tager højde for feedbacken]
+HVAD CV'ET DOKUMENTERER
+- [Faktisk, verificerbart forhold 1]
+- [Faktisk, verificerbart forhold 2]
+- [Faktisk, verificerbart forhold 3]
+- [Faktisk, verificerbart forhold 4]
+- [Faktisk, verificerbart forhold 5]
 
-BULLETS:
-- [Revideret eller ny bullet punkt 1]
-- [Revideret eller ny bullet punkt 2]
-- [Revideret eller ny bullet punkt 3]
-- [Revideret eller ny bullet punkt 4]
-- [Revideret eller ny bullet punkt 5]`;
+STYRKER DER KAN UDLEDES
+- [Styrke 1 + forklaring baseret på CV-indhold]
+- [Styrke 2 + forklaring baseret på CV-indhold]
+- [Styrke 3 + forklaring baseret på CV-indhold]
+
+BEGRÆNSNINGER / HVAD DER IKKE KAN UDLEDES
+- [Forhold der ikke er dokumenteret 1]
+- [Forhold der ikke er dokumenteret 2]
+- [Forhold der ikke er dokumenteret 3]
+
+SAMLET NEUTRAL KONKLUSION
+[Kort, afbalanceret afslutning. Beskriv hvilke typer roller/problemer profilen virker bedst egnet til.]
+
+Ingen overskrifter må udelades. Ingen sektioner må flettes sammen.`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

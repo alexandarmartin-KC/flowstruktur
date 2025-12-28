@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
+import OpenAI from 'openai';
 
 // Force Node.js runtime for file operations
 export const runtime = 'nodejs';
@@ -128,36 +129,25 @@ ${cvText}
 HUSK: Outputt kun resultatet af TRIN 2.`;
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o', // Bedste model - brug gpt-3.5-turbo for billigere alternativ
-        max_tokens: 2000,
-        temperature: 0.7,
-        messages: [
-          {
-            role: 'system',
-            content: 'Du er en ekspert HR-analytiker der analyserer CVer præcist og struktureret.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-      }),
+    const client = new OpenAI({ apiKey });
+    
+    const completion = await client.chat.completions.create({
+      model: 'gpt-4o',
+      temperature: 0.15,
+      max_tokens: 900,
+      messages: [
+        {
+          role: 'system',
+          content: 'Du er en kritisk CV-analytiker der arbejder i to trin: først faktaudtrækning, derefter konsulent-niveau omskrivning.',
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`OpenAI API fejl: ${errorData.error?.message || response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.choices[0].message.content;
+    return completion.choices[0].message.content || '';
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Kunne ikke kalde OpenAI API: ${error.message}`);

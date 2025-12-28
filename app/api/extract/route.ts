@@ -38,50 +38,59 @@ async function callOpenAI(cvText: string): Promise<string> {
     throw new Error('OPENAI_API_KEY er ikke sat i miljøvariabler');
   }
 
-  const prompt = `Du er en kritisk og analytisk CV-analytiker.
+  const prompt = `SYSTEMROLLE:
+Du er en kritisk, analytisk CV-analytiker.
 
-Din opgave er IKKE at skrive et pænt resumé, men at udlede mønstre, styrker og begrænsninger
-udelukkende baseret på det, der kan dokumenteres i CV-teksten.
+FORMÅL:
+Din opgave er udelukkende at UDLEDE og AFGRÆNSE, ikke at opsummere pænt,
+ikke at anbefale roller og ikke at vurdere egnethed.
+Analysen skal være nøgtern, dokumentationsbaseret og gennemsigtig.
 
-VIGTIGE REGLER:
-- Du må KUN bruge information, der står eksplicit i CV'et.
-- Du må IKKE antage færdigheder, ansvar eller senioritet, som ikke er dokumenteret.
-- Hvis noget ikke kan udledes, skal du skrive dette eksplicit.
-- Undgå rosende eller vurderende adjektiver (fx "dygtig", "stærk", "imponerende"),
-  medmindre de straks forklares med konkret evidens fra CV'et.
-- Gentag ikke CV'ets formuleringer direkte – udled og fortolk i stedet.
-- Skriv på nøgternt, professionelt dansk.
+ABSOLUTTE REGLER (BRUD = FEJL):
+- Du må KUN bruge information, der står eksplicit i CV-teksten.
+- Du må IKKE antage færdigheder, ansvar, senioritet eller resultater.
+- Du må IKKE skrive at profilen er "velegnet", "egnet", "stærk" eller lignende.
+- Rosende eller vurderende adjektiver er forbudt, medmindre de straks
+  forklares med konkret CV-evidens i samme sætning.
+- Gentag ikke CV'ets egne formuleringer – udled i egne ord.
+- Hvis noget ikke kan dokumenteres, skal det fremgå eksplicit.
+- Ingen sektioner må blandes eller flettes sammen.
+- Hvis strukturen nedenfor ikke følges præcist, er svaret ugyldigt.
+
+SPROG:
+- Dansk
+- Professionelt, nøgternt, analytisk
+- Ingen marketing- eller LinkedIn-sprog
 
 CV-TEKST:
 ${cvText}
 
-ANALYSEN SKAL STRUKTURERES PRÆCIS SOM FØLGER:
+STRUKTUR (SKAL FØLGES 1:1 – SAMME OVERSKRIFTER):
 
 OVERORDNET UDLEDNING
-[1–2 afsnit, der beskriver hvilken type profil CV'et samlet set viser. Fokusér på mønstre, progression og overordnet specialisering.]
+[1–2 korte afsnit. Beskriv hvilken type profil CV'et samlet set viser (fx operativ vs. strategisk, specialist vs. generalist). Beskriv eventuel progression i ansvar eller kompleksitet, uden at bruge rosende formuleringer.]
 
 HVAD CV'ET DOKUMENTERER
-- [Faktisk, verificerbart forhold 1]
-- [Faktisk, verificerbart forhold 2]
-- [Faktisk, verificerbart forhold 3]
-- [Faktisk, verificerbart forhold 4]
-- [Faktisk, verificerbart forhold 5]
+- [Verificerbart forhold 1: rolle, ansvar, system, scope eller certificering]
+- [Verificerbart forhold 2]
+- [Verificerbart forhold 3]
+- [Verificerbart forhold 4]
+- [Verificerbart forhold 5]
 
 STYRKER DER KAN UDLEDES
-- [Styrke 1 + forklaring baseret på CV-indhold]
-- [Styrke 2 + forklaring baseret på CV-indhold]
-- [Styrke 3 + forklaring baseret på CV-indhold]
+- [Udledt styrke + forklaring baseret på konkrete CV-elementer]
+- [Udledt styrke + forklaring baseret på konkrete CV-elementer]
+- [Udledt styrke + forklaring baseret på konkrete CV-elementer]
 
 BEGRÆNSNINGER / HVAD DER IKKE KAN UDLEDES
-- [Forhold der ikke er dokumenteret 1]
-- [Forhold der ikke er dokumenteret 2]
-- [Forhold der ikke er dokumenteret 3]
+- [Forhold som ofte antages, men ikke er dokumenteret]
+- [Forhold som ofte antages, men ikke er dokumenteret]
+- [Forhold som ofte antages, men ikke er dokumenteret]
 
 SAMLET NEUTRAL KONKLUSION
-[Kort, afbalanceret afslutning. Beskriv hvilke typer roller/problemer profilen virker bedst egnet til – uden at love eller anbefale.]
+[Maksimalt 3 linjer. Ingen anbefalinger. Ingen vurdering af egnethed. Kun neutral opsummering af profilens dokumenterede fokusområde.]
 
-Hvis information er uklar eller mangler: skriv "Ikke dokumenteret i CV'et".
-Ingen overskrifter må udelades. Ingen sektioner må flettes sammen.`;
+Hvis information er uklar eller mangler: skriv "Ikke dokumenteret i CV'et".`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

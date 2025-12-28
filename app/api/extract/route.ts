@@ -38,59 +38,94 @@ async function callOpenAI(cvText: string): Promise<string> {
     throw new Error('OPENAI_API_KEY er ikke sat i miljøvariabler');
   }
 
-  const prompt = `SYSTEMROLLE:
-Du er en kritisk, analytisk CV-analytiker.
+  const prompt = `DU ER CLAUDE. DU SKAL LØSE OPGAVEN I TO TVUNGNE TRIN.
+DU MÅ IKKE SPRINGE TRIN OVER.
+DET ENDELIGE SVAR SKAL VÆRE RESULTATET AF TRIN 2.
+
+════════════════════════════════
+TRIN 1 — RÅ, FAKTABASERET ANALYSE
+════════════════════════════════
+
+ROLLE:
+Du er en streng, faktabaseret CV-analytiker.
 
 FORMÅL:
-Din opgave er udelukkende at UDLEDE og AFGRÆNSE, ikke at opsummere pænt,
-ikke at anbefale roller og ikke at vurdere egnethed.
-Analysen skal være nøgtern, dokumentationsbaseret og gennemsigtig.
+At udtrække og strukturere udelukkende det, der med sikkerhed kan dokumenteres
+i CV-teksten. Dette trin er bevidst nøgternt og må gerne føles "kedeligt".
 
-ABSOLUTTE REGLER (BRUD = FEJL):
-- Du må KUN bruge information, der står eksplicit i CV-teksten.
-- Du må IKKE antage færdigheder, ansvar, senioritet eller resultater.
-- Du må IKKE skrive at profilen er "velegnet", "egnet", "stærk" eller lignende.
-- Rosende eller vurderende adjektiver er forbudt, medmindre de straks
-  forklares med konkret CV-evidens i samme sætning.
-- Gentag ikke CV'ets egne formuleringer – udled i egne ord.
-- Hvis noget ikke kan dokumenteres, skal det fremgå eksplicit.
-- Ingen sektioner må blandes eller flettes sammen.
-- Hvis strukturen nedenfor ikke følges præcist, er svaret ugyldigt.
+REGLER:
+- Brug KUN information, der står eksplicit i CV-teksten.
+- Ingen vurderinger, ingen ros, ingen anbefalinger.
+- Ingen antagelser om senioritet, strategi, ledelse eller resultater.
+- Undgå alle adjektiver som "stærk", "betydelig", "dygtig", "solid".
+- Gentag ikke CV'ets formuleringer.
+- Hvis noget ikke kan dokumenteres, skal det skrives eksplicit.
 
-SPROG:
-- Dansk
-- Professionelt, nøgternt, analytisk
-- Ingen marketing- eller LinkedIn-sprog
+OUTPUTSTRUKTUR (SKAL FØLGES):
 
-CV-TEKST:
-${cvText}
+FAKTISK PROFIL
+- Kort, neutral beskrivelse af de typer roller og opgaver, der fremgår af CV'et.
 
-STRUKTUR (SKAL FØLGES 1:1 – SAMME OVERSKRIFTER):
+DOKUMENTERET ERFARING
+- Punktliste med verificerbare forhold (roller, systemer, ansvar).
+
+DOKUMENTERET PROGRESSION
+- Beskriv faktuelt, hvis der ses progression.
+- Hvis ikke: skriv "Ikke tydeligt dokumenteret".
+
+MANGLER / UAFKLAREDE OMRÅDER
+- Punktliste med forhold, der ofte antages, men som ikke er dokumenteret i CV'et.
+
+════════════════════════════════
+TRIN 2 — KRITISK OMSKRIVNING (DETTE ER DET ENDELIGE OUTPUT)
+════════════════════════════════
+
+ROLLE:
+Du er nu en erfaren konsulent og analytisk redaktør.
+
+OPGAVE:
+Omskriv indholdet fra TRIN 1 til en skarp, professionel analyse
+på niveau med intern konsulent- eller lederrapportering.
+
+VIGTIGE PRINCIPPER:
+- Brug KUN information fra TRIN 1.
+- Tilføj ingen nye fakta.
+- Formulér tydelige udledninger, prioriteringer og afgrænsninger.
+- Brug aktiv kontrast (fx "ikke X, men Y").
+- Placér profilen tydeligt (operativ vs. strategisk, specialist vs. generalist).
+- Skriv nøgternt, præcist og menneskeligt.
+- Undgå CV-sprog og LinkedIn-sprog fuldstændigt.
+- Ingen anbefalinger og ingen "egnethedsvurderinger".
+
+DET ENDELIGE OUTPUT SKAL HAVE FØLGENDE STRUKTUR (SKAL FØLGES 1:1):
 
 OVERORDNET UDLEDNING
-[1–2 korte afsnit. Beskriv hvilken type profil CV'et samlet set viser (fx operativ vs. strategisk, specialist vs. generalist). Beskriv eventuel progression i ansvar eller kompleksitet, uden at bruge rosende formuleringer.]
+[1–2 afsnit. Placér profilen klart gennem kontrast og afgrænsning. Beskriv hvad profilen tydeligt er – og dermed også hvad den ikke er.]
 
-HVAD CV'ET DOKUMENTERER
-- [Verificerbart forhold 1: rolle, ansvar, system, scope eller certificering]
-- [Verificerbart forhold 2]
-- [Verificerbart forhold 3]
-- [Verificerbart forhold 4]
-- [Verificerbart forhold 5]
+HVAD PROFILEN TYDELIGT VISER
+- [Punkt 1: forklaring af både *hvad* og *hvorfor*]
+- [Punkt 2: forklaring af både *hvad* og *hvorfor*]
+- [Punkt 3: forklaring af både *hvad* og *hvorfor*]
 
-STYRKER DER KAN UDLEDES
-- [Udledt styrke + forklaring baseret på konkrete CV-elementer]
-- [Udledt styrke + forklaring baseret på konkrete CV-elementer]
-- [Udledt styrke + forklaring baseret på konkrete CV-elementer]
-
-BEGRÆNSNINGER / HVAD DER IKKE KAN UDLEDES
-- [Forhold som ofte antages, men ikke er dokumenteret]
-- [Forhold som ofte antages, men ikke er dokumenteret]
-- [Forhold som ofte antages, men ikke er dokumenteret]
+HVAD PROFILEN TYDELIGT IKKE VISER
+- [Brug formuleringer som: "Der er ikke dokumentation for...", "CV'et indikerer ikke...", "Kan ikke udledes..."]
+- [Punkt 2]
+- [Punkt 3]
 
 SAMLET NEUTRAL KONKLUSION
-[Maksimalt 3 linjer. Ingen anbefalinger. Ingen vurdering af egnethed. Kun neutral opsummering af profilens dokumenterede fokusområde.]
+[2–3 linjer. Skriv som til en beslutningstager. Ingen ros. Ingen anbefalinger.]
 
-Hvis information er uklar eller mangler: skriv "Ikke dokumenteret i CV'et".`;
+════════════════════════════════
+INPUT
+════════════════════════════════
+
+Her er CV-teksten:
+
+"""
+${cvText}
+"""
+
+HUSK: Outputt kun resultatet af TRIN 2.`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

@@ -120,9 +120,8 @@ export default function ProfilPage() {
       const trimmed = line.trim();
       
       // Detekter sektioner med bullets
-      if (trimmed === 'HVAD CV\'ET DOKUMENTERER' || 
-          trimmed === 'STYRKER DER KAN UDLEDES' || 
-          trimmed === 'BEGRÆNSNINGER / HVAD DER IKKE KAN UDLEDES') {
+      if (trimmed === 'HVAD PROFILEN TYDELIGT VISER' || 
+          trimmed === 'HVAD PROFILEN TYDELIGT IKKE VISER') {
         currentSection = 'bullets';
         continue;
       }
@@ -228,7 +227,7 @@ export default function ProfilPage() {
             {/* Bullets som badges */}
             {summaryBullets.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground">Dokumenterede kompetencer & styrker</h3>
+                <h3 className="text-sm font-semibold text-foreground">Hvad profilen viser & ikke viser</h3>
                 <div className="flex flex-wrap gap-2">
                   {summaryBullets.map((bullet, index) => (
                     <Badge 

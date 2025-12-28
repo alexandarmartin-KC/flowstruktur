@@ -34,29 +34,29 @@ export default function OverblikPage() {
 
       {/* Status */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3">
           <CardTitle>Din status</CardTitle>
           <CardDescription>
             Her kan du se, hvilke trin du har gennemført
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="flex flex-wrap gap-2">
             {statusItems.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-accent/50"
+                className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 transition-colors hover:bg-accent/50"
               >
                 {item.completed ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
                 ) : (
-                  <Clock className="h-5 w-5 text-muted-foreground" />
+                  <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
                 )}
                 <span
                   className={
                     item.completed
-                      ? 'font-medium text-foreground'
-                      : 'text-muted-foreground'
+                      ? 'font-medium text-foreground text-sm whitespace-nowrap'
+                      : 'text-muted-foreground text-sm whitespace-nowrap'
                   }
                 >
                   {item.label}

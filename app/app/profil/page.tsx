@@ -29,6 +29,26 @@ export default function ProfilPage() {
     samarbejde: { agreement: null, comment: '', saved: false },
   });
   
+  // Feedback state for combined analysis observations
+  const [analyseFeedback, setAnalyseFeedback] = useState<{
+    [key: string]: { agreement: 'agree' | 'disagree' | null; comment: string; saved: boolean }
+  }>({});
+  
+  // Initialize feedback state for observations
+  const initObservationFeedback = (index: number) => {
+    if (!analyseFeedback[`obs_${index}`]) {
+      setAnalyseFeedback(prev => ({
+        ...prev,
+        [`obs_${index}`]: { agreement: null, comment: '', saved: false }
+      }));
+    }
+  };
+  
+  // Feedback state for spændinger
+  const [spaendingerFeedback, setSpaendingerFeedback] = useState<{
+    agreement: 'agree' | 'disagree' | null; comment: string; saved: boolean
+  }>({ agreement: null, comment: '', saved: false });
+  
   const cvData = mockCVInterpretation;
   const questions = mockPersonProfilQuestions;
   const personAnalyse = mockPersonProfilAnalyse;
@@ -513,16 +533,89 @@ export default function ProfilPage() {
           </div>
 
           <div className="space-y-6">
-            {samletAnalyse.observationer.map((obs, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <CardTitle className="text-lg">{obs.titel}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="leading-relaxed text-muted-foreground">{obs.beskrivelse}</p>
-                </CardContent>
-              </Card>
-            ))}
+            {samletAnalyse.observationer.map((obs, index) => {
+              const feedbackKey = `obs_${index}`;
+              const feedback = analyseFeedback[feedbackKey] || { agreement: null, comment: '', saved: false };
+              
+              return (
+                <Card key={index}>
+                  <CardHeader>
+                    <CardTitle className="text-lg">{obs.titel}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="leading-relaxed text-muted-foreground">{obs.beskrivelse}</p>
+                    
+                    <div className="space-y-3 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/30 p-4">
+                      <Label className="text-sm font-semibold">Er denne observation træffende?</Label>
+                      <div className="flex gap-3">
+                        <Button
+                          variant={feedback.agreement === 'agree' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => {
+                            initObservationFeedback(index);
+                            setAnalyseFeedback(prev => ({
+                              ...prev,
+                              [feedbackKey]: { ...prev[feedbackKey], agreement: 'agree', saved: false }
+                            }));
+                          }}
+                          className="flex items-center gap-2"
+                        >
+                          <ThumbsUp className="h-4 w-4" />
+                          Enig
+                        </Button>
+                        <Button
+                          variant={feedback.agreement === 'disagree' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => {
+                            initObservationFeedback(index);
+                            setAnalyseFeedback(prev => ({
+                              ...prev,
+                              [feedbackKey]: { ...prev[feedbackKey], agreement: 'disagree', saved: false }
+                            }));
+                          }}
+                          className="flex items-center gap-2"
+                        >
+                          <ThumbsDown className="h-4 w-4" />
+                          Uenig
+                        </Button>
+                      </div>
+                      
+                      {feedback.agreement === 'disagree' && (
+                        <div className="space-y-2 pt-2">
+                          <Label className="text-sm">Hvad passer ikke?</Label>
+                          <Textarea
+                            placeholder="Fortæl os, hvad der ikke stemmer overens med din oplevelse..."
+                            value={feedback.comment}
+                            onChange={(e) => setAnalyseFeedback(prev => ({
+                              ...prev,
+                              [feedbackKey]: { ...prev[feedbackKey], comment: e.target.value, saved: false }
+                            }))}
+                            className="min-h-[100px]"
+                          />
+                        </div>
+                      )}
+                      
+                      {feedback.agreement && (
+                        <Button
+                          onClick={() => {
+                            setAnalyseFeedback(prev => ({
+                              ...prev,
+                              [feedbackKey]: { ...prev[feedbackKey], saved: true }
+                            }));
+                            // Her ville man gemme feedback til backend
+                          }}
+                          disabled={feedback.saved || 
+                            (feedback.agreement === 'disagree' && !feedback.comment.trim())}
+                          size="sm"
+                        >
+                          {feedback.saved ? 'Gemt ✓' : 'Gem feedback'}
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           {samletAnalyse.spoendinger && (
@@ -530,10 +623,72 @@ export default function ProfilPage() {
               <CardHeader>
                 <CardTitle className="text-lg">Spændingsfelter</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <p className="leading-relaxed text-muted-foreground">
                   {samletAnalyse.spoendinger}
                 </p>
+                
+                <div className="space-y-3 rounded-lg border-2 border-dashed border-amber-600/30 bg-amber-100/50 dark:bg-amber-950/50 p-4">
+                  <Label className="text-sm font-semibold">Er denne analyse træffende?</Label>
+                  <div className="flex gap-3">
+                    <Button
+                      variant={spaendingerFeedback.agreement === 'agree' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setSpaendingerFeedback(prev => ({
+                        ...prev,
+                        agreement: 'agree',
+                        saved: false
+                      }))}
+                      className="flex items-center gap-2"
+                    >
+                      <ThumbsUp className="h-4 w-4" />
+                      Enig
+                    </Button>
+                    <Button
+                      variant={spaendingerFeedback.agreement === 'disagree' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setSpaendingerFeedback(prev => ({
+                        ...prev,
+                        agreement: 'disagree',
+                        saved: false
+                      }))}
+                      className="flex items-center gap-2"
+                    >
+                      <ThumbsDown className="h-4 w-4" />
+                      Uenig
+                    </Button>
+                  </div>
+                  
+                  {spaendingerFeedback.agreement === 'disagree' && (
+                    <div className="space-y-2 pt-2">
+                      <Label className="text-sm">Hvad passer ikke?</Label>
+                      <Textarea
+                        placeholder="Fortæl os, hvad der ikke stemmer overens med din oplevelse..."
+                        value={spaendingerFeedback.comment}
+                        onChange={(e) => setSpaendingerFeedback(prev => ({
+                          ...prev,
+                          comment: e.target.value,
+                          saved: false
+                        }))}
+                        className="min-h-[100px]"
+                      />
+                    </div>
+                  )}
+                  
+                  {spaendingerFeedback.agreement && (
+                    <Button
+                      onClick={() => {
+                        setSpaendingerFeedback(prev => ({ ...prev, saved: true }));
+                        // Her ville man gemme feedback til backend
+                      }}
+                      disabled={spaendingerFeedback.saved || 
+                        (spaendingerFeedback.agreement === 'disagree' && !spaendingerFeedback.comment.trim())}
+                      size="sm"
+                    >
+                      {spaendingerFeedback.saved ? 'Gemt ✓' : 'Gem feedback'}
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
           )}

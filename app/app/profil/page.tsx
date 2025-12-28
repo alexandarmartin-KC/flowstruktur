@@ -109,17 +109,13 @@ export default function ProfilPage() {
 
   const displaySummary = revised || extraction?.summary || '';
 
-  // Parse summary til forskellige sektioner
+  // Parse summary til forskellige sektioner med farver
   const parseSummary = (summary: string) => {
     const lines = summary.split('\n');
     let text = '';
-    const bullets: string[] = [];
+    const positiveBullets: string[] = [];
+    const negativeBullets: string[] = [];
     let currentSection = 'text';
-    const bulletSections = [
-      'STYRKER, DER KAN UDLEDES',
-      'BEGRÆNSNINGER / HVAD CV\'ET IKKE DOKUMENTERER',
-      'Konkrete ansvarsområder'
-    ];
 
     for (const line of lines) {
       const trimmed = line.trim();
@@ -134,27 +130,41 @@ export default function ProfilPage() {
         continue;
       }
       
-      // Detekter sektioner med bullets
-      if (bulletSections.some(section => trimmed.includes(section) || trimmed === section)) {
-        currentSection = 'bullets';
+      // Detekter positive sektioner
+      if (trimmed.includes('STYRKER') || trimmed === 'Konkrete ansvarsområder') {
+        currentSection = 'positive';
         continue;
       }
       
-      // Parse bullets
-      if (currentSection === 'bullets' && (trimmed.startsWith('- ') || trimmed.startsWith('→'))) {
+      // Detekter negative sektioner
+      if (trimmed.includes('BEGRÆNSNINGER') || trimmed.includes('IKKE DOKUMENTERER')) {
+        currentSection = 'negative';
+        continue;
+      }
+      
+      // Parse positive bullets
+      if (currentSection === 'positive' && (trimmed.startsWith('- ') || trimmed.startsWith('→'))) {
         const bulletText = trimmed.startsWith('- ') ? trimmed.substring(2) : trimmed.substring(1).trim();
-        bullets.push(bulletText);
+        positiveBullets.push(bulletText);
       } 
+      // Parse negative bullets
+      else if (currentSection === 'negative' && (trimmed.startsWith('- ') || trimmed.startsWith('→'))) {
+        const bulletText = trimmed.startsWith('- ') ? trimmed.substring(2) : trimmed.substring(1).trim();
+        negativeBullets.push(bulletText);
+      }
       // Parse tekst (inkluder alt andet indhold)
-      else if (currentSection === 'text' && trimmed && !bulletSections.some(s => trimmed.includes(s))) {
+      else if (currentSection === 'text' && trimmed && 
+               !trimmed.includes('STYRKER') && 
+               !trimmed.includes('BEGRÆNSNINGER') && 
+               trimmed !== 'Konkrete ansvarsområder') {
         text += line + '\n';
       }
     }
 
-    return { text: text.trim(), bullets };
+    return { text: text.trim(), positiveBullets, negativeBullets };
   };
 
-  const { text: summaryText, bullets: summaryBullets } = displaySummary ? parseSummary(displaySummary) : { text: '', bullets: [] };
+  const { text: summaryText, positiveBullets, negativeBullets } = displaySummary ? parseSummary(displaySummary) : { text: '', positiveBullets: [], negativeBullets: [] };
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 py-8">
@@ -167,11 +177,11 @@ export default function ProfilPage() {
       </div>
 
       {/* Upload sektion */}
-      <Card>
-        <CardHeader>
+      <Card className="border-2">
+        <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-950/20 dark:to-gray-950/20">
           <CardTitle>Upload CV</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pt-6">
           <div className="flex items-center gap-4">
             <input
               ref={fileInputRef}
@@ -184,13 +194,14 @@ export default function ProfilPage() {
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
               disabled={loading}
+              className="h-10"
             >
               <Upload className="mr-2 h-4 w-4" />
               Vælg fil
             </Button>
             
             {file && (
-              <div className="flex-1">
+              <div className="flex-1 rounded-lg bg-accent/50 px-4 py-2">
                 <p className="text-sm font-medium">{file.name}</p>
                 <p className="text-xs text-muted-foreground">
                   {(file.size / 1024).toFixed(1)} KB
@@ -200,15 +211,15 @@ export default function ProfilPage() {
           </div>
 
           {file && !extraction && (
-            <Button onClick={handleUpload} disabled={loading} className="w-full">
+            <Button onClick={handleUpload} disabled={loading} className="w-full h-11">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? 'Analyserer CV...' : 'Analysér CV'}
             </Button>
           )}
 
           {error && (
-            <div className="flex items-start gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-              <AlertCircle className="h-4 w-4 mt-0.5" />
+            <div className="flex items-start gap-2 rounded-lg bg-destructive/10 p-4 text-sm text-destructive border border-destructive/20">
+              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <p>{error}</p>
             </div>
           )}
@@ -217,50 +228,83 @@ export default function ProfilPage() {
 
       {/* Udtræk visning */}
       {extraction && (
-        <Card>
-          <CardHeader>
-            <CardTitle>AI Analyse af dit CV</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Tekst sektion */}
-            {summaryText && (
-              <div className="prose prose-sm max-w-none">
-                <div className="whitespace-pre-wrap rounded-lg bg-accent/30 p-4">
-                  {summaryText}
+        <div className="space-y-6">
+          {/* Analyse resultat card */}
+          <Card className="border-2">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
+              <CardTitle className="text-2xl">AI Analyse af dit CV</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-8 pt-6">
+              {/* Tekst sektion - Overordnet udledning og konklusion */}
+              {summaryText && (
+                <div className="space-y-4">
+                  <div className="prose prose-sm max-w-none dark:prose-invert">
+                    <div className="whitespace-pre-wrap leading-relaxed text-base">
+                      {summaryText}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Bullets som badges */}
-            {summaryBullets.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground">Centrale observationer & afgrænsninger</h3>
-                <div className="flex flex-wrap gap-2">
-                  {summaryBullets.map((bullet, index) => (
-                    <Badge 
-                      key={index} 
-                      variant="secondary"
-                      className="px-3 py-1.5 text-sm font-medium"
-                    >
-                      {bullet}
-                    </Badge>
-                  ))}
+              {/* Positive bullets - Styrker */}
+              {positiveBullets.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-1 w-1 rounded-full bg-green-500"></div>
+                    <h3 className="text-base font-semibold text-foreground">Styrker & Dokumenterede Kompetencer</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {positiveBullets.map((bullet, index) => (
+                      <Badge 
+                        key={index}
+                        className="px-4 py-2 text-sm font-medium bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-800"
+                      >
+                        {bullet}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {revised && (
-              <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3">
-                <p className="text-sm font-medium text-green-700 dark:text-green-400">
-                  ✓ Analysen er blevet revideret baseret på din feedback
-                </p>
-              </div>
-            )}
+              {/* Negative bullets - Begrænsninger */}
+              {negativeBullets.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-1 w-1 rounded-full bg-amber-500"></div>
+                    <h3 className="text-base font-semibold text-foreground">Begrænsninger & Ikke Dokumenteret</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {negativeBullets.map((bullet, index) => (
+                      <Badge 
+                        key={index}
+                        className="px-4 py-2 text-sm font-medium bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800"
+                      >
+                        {bullet}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-            {/* Feedback sektion */}
-            {!revised && (
-              <div className="space-y-4 pt-4 border-t">
-                <Label>Er du enig i denne analyse?</Label>
+              {revised && (
+                <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4">
+                  <p className="text-sm font-medium text-green-700 dark:text-green-400 flex items-center gap-2">
+                    <span className="text-lg">✓</span>
+                    Analysen er blevet revideret baseret på din feedback
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Feedback sektion som separat card */}
+          {!revised && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Din Feedback</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Label className="text-base">Er du enig i denne analyse?</Label>
                 <div className="flex gap-3">
                   <Button
                     variant={agreement === 'agree' ? 'default' : 'outline'}
@@ -281,8 +325,9 @@ export default function ProfilPage() {
                 </div>
 
                 {agreement === 'agree' && (
-                  <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3">
-                    <p className="text-sm text-green-700 dark:text-green-400">
+                  <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4">
+                    <p className="text-sm text-green-700 dark:text-green-400 flex items-center gap-2">
+                      <span className="text-lg">✓</span>
                       Tak for din bekræftelse! Analysen er gemt.
                     </p>
                   </div>
@@ -291,7 +336,7 @@ export default function ProfilPage() {
                 {agreement === 'disagree' && (
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="feedback">
+                      <Label htmlFor="feedback" className="text-base">
                         Hvad skal ændres i analysen? (obligatorisk)
                       </Label>
                       <Textarea
@@ -313,10 +358,10 @@ export default function ProfilPage() {
                     </Button>
                   </div>
                 )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
     </div>
   );

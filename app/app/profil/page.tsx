@@ -120,14 +120,14 @@ export default function ProfilPage() {
       const trimmed = line.trim();
       
       // Detekter sektioner med bullets
-      if (trimmed === 'HVAD PROFILEN TYDELIGT VISER' || 
-          trimmed === 'HVAD PROFILEN TYDELIGT IKKE VISER') {
+      if (trimmed === 'CENTRALE OBSERVATIONER' || 
+          trimmed === 'AFGRÆNSNINGER') {
         currentSection = 'bullets';
         continue;
       }
       
-      // Når vi når konklusion, skift tilbage til tekst
-      if (trimmed === 'SAMLET NEUTRAL KONKLUSION') {
+      // Når vi når vurdering, skift tilbage til tekst
+      if (trimmed === 'SAMLET FAGLIG VURDERING') {
         currentSection = 'conclusion';
         continue;
       }
@@ -136,10 +136,10 @@ export default function ProfilPage() {
       if (currentSection === 'bullets' && trimmed.startsWith('- ')) {
         bullets.push(trimmed.substring(2));
       } 
-      // Parse tekst (udledning + konklusion)
+      // Parse tekst (karakteristik + vurdering)
       else if ((currentSection === 'text' || currentSection === 'conclusion') && 
                trimmed && 
-               trimmed !== 'OVERORDNET UDLEDNING') {
+               trimmed !== 'PROFILKARAKTERISTIK') {
         text += line + '\n';
       }
     }
@@ -227,7 +227,7 @@ export default function ProfilPage() {
             {/* Bullets som badges */}
             {summaryBullets.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground">Hvad profilen viser & ikke viser</h3>
+                <h3 className="text-sm font-semibold text-foreground">Centrale observationer & afgrænsninger</h3>
                 <div className="flex flex-wrap gap-2">
                   {summaryBullets.map((bullet, index) => (
                     <Badge 

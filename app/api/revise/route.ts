@@ -13,7 +13,7 @@ async function callOpenAIForRevision(
     throw new Error('OPENAI_API_KEY er ikke sat i miljøvariabler');
   }
 
-  const prompt = `DU ER CLAUDE. DU SKAL LØSE OPGAVEN I TO TVUNGNE TRIN.
+  const systemPrompt = `DU ER CLAUDE. DU SKAL LØSE OPGAVEN I TO TVUNGNE TRIN.
 DU MÅ IKKE SPRINGE TRIN OVER.
 DET ENDELIGE SVAR SKAL VÆRE RESULTATET AF TRIN 2.
 
@@ -46,43 +46,46 @@ ORIGINAL CV-TEKST:
 ${cvText}
 
 ════════════════════════════════
-TRIN 2 — KRITISK OMSKRIVNING (DETTE ER DET ENDELIGE OUTPUT)
+TRIN 2 — SENIOR KONSULENT & REDAKTØR
 ════════════════════════════════
 
 ROLLE:
-Du er nu en erfaren konsulent og analytisk redaktør.
+Du er nu senior konsulent og redaktør.
 
 OPGAVE:
-Omskriv den reviderede analyse til en skarp, professionel analyse
-på niveau med intern konsulent- eller lederrapportering.
+Du får en analytisk CV-vurdering fra TRIN 1.
+Din opgave er at forfine den til et niveau,
+der kan afleveres direkte til en leder eller beslutningstager.
 
-VIGTIGE PRINCIPPER:
-- Brug KUN information fra TRIN 1.
-- Tilføj ingen nye fakta.
-- Formulér tydelige udledninger, prioriteringer og afgrænsninger.
-- Brug aktiv kontrast (fx "ikke X, men Y").
-- Placér profilen tydeligt (operativ vs. strategisk, specialist vs. generalist).
-- Skriv nøgternt, præcist og menneskeligt.
-- Undgå CV-sprog og LinkedIn-sprog fuldstændigt.
-- Ingen anbefalinger og ingen "egnethedsvurderinger".
+REGLER:
+- Du må IKKE tilføje nye fakta.
+- Du må IKKE gentage pointer.
+- Du skal reducere teksten, ikke udvide den.
+- Identificér 1–2 centrale karakteristika ved profilen.
+- Alt andet skal underordnes disse eller udelades.
+- Skriv med professionel dømmekraft.
 
-DET ENDELIGE OUTPUT SKAL HAVE FØLGENDE STRUKTUR (SKAL FØLGES 1:1):
+OPGAVE:
+1. Identificér profilens primære kendetegn.
+2. Fjern gentagelser og sekundære observationer.
+3. Skær sproget, så hver sætning tilfører ny indsigt.
 
-OVERORDNET UDLEDNING
-[1–2 afsnit. Placér profilen klart gennem kontrast og afgrænsning. Beskriv hvad profilen tydeligt er – og dermed også hvad den ikke er.]
+OUTPUTFORMAT (SKAL FØLGES 1:1):
 
-HVAD PROFILEN TYDELIGT VISER
-- [Punkt 1: forklaring af både *hvad* og *hvorfor*]
-- [Punkt 2: forklaring af både *hvad* og *hvorfor*]
-- [Punkt 3: forklaring af både *hvad* og *hvorfor*]
+PROFILKARAKTERISTIK
+[1 kort afsnit (maks 5 linjer)]
 
-HVAD PROFILEN TYDELIGT IKKE VISER
-- [Brug formuleringer som: "Der er ikke dokumentation for...", "CV'et indikerer ikke...", "Kan ikke udledes..."]
+CENTRALE OBSERVATIONER
+- [Punkt 1]
 - [Punkt 2]
 - [Punkt 3]
 
-SAMLET NEUTRAL KONKLUSION
-[2–3 linjer. Skriv som til en beslutningstager. Ingen ros. Ingen anbefalinger.]
+AFGRÆNSNINGER
+- [Punkt 1]
+- [Punkt 2]
+
+SAMLET FAGLIG VURDERING
+[2 linjer. Skriv som til en leder.]
 
 HUSK: Outputt kun resultatet af TRIN 2.`;
 
@@ -91,16 +94,16 @@ HUSK: Outputt kun resultatet af TRIN 2.`;
     
     const completion = await client.chat.completions.create({
       model: 'gpt-4o',
-      temperature: 0.15,
-      max_tokens: 900,
+      temperature: 0.25,
+      max_tokens: 500,
       messages: [
         {
           role: 'system',
-          content: 'Du er en kritisk CV-analytiker der arbejder i to trin: først faktaudtrækning med brugerfeedback, derefter konsulent-niveau omskrivning.',
+          content: 'Du er en senior konsulent der destillerer CV-analyser til essentielle indsigter for ledere.',
         },
         {
           role: 'user',
-          content: prompt,
+          content: systemPrompt,
         },
       ],
     });

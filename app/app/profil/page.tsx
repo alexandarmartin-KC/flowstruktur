@@ -115,31 +115,38 @@ export default function ProfilPage() {
     let text = '';
     const bullets: string[] = [];
     let currentSection = 'text';
+    const bulletSections = [
+      'STYRKER, DER KAN UDLEDES',
+      'BEGRÆNSNINGER / HVAD CV\'ET IKKE DOKUMENTERER',
+      'Konkrete ansvarsområder'
+    ];
 
     for (const line of lines) {
       const trimmed = line.trim();
       
+      // Detekter overskrifter (skal ikke inkluderes i output)
+      if (trimmed === 'OVERORDNET UDLEDNING' ||
+          trimmed === 'HVAD CV\'ET TYDELIGT DOKUMENTERER (HARD FACTS)' ||
+          trimmed === 'Rolle og erfaring' ||
+          trimmed === 'Teknisk og systemmæssig tyngde' ||
+          trimmed === 'SAMLET, NEUTRAL KONKLUSION') {
+        currentSection = 'text';
+        continue;
+      }
+      
       // Detekter sektioner med bullets
-      if (trimmed === 'CENTRALE OBSERVATIONER' || 
-          trimmed === 'AFGRÆNSNINGER') {
+      if (bulletSections.some(section => trimmed.includes(section) || trimmed === section)) {
         currentSection = 'bullets';
         continue;
       }
       
-      // Når vi når vurdering, skift tilbage til tekst
-      if (trimmed === 'SAMLET FAGLIG VURDERING') {
-        currentSection = 'conclusion';
-        continue;
-      }
-      
       // Parse bullets
-      if (currentSection === 'bullets' && trimmed.startsWith('- ')) {
-        bullets.push(trimmed.substring(2));
+      if (currentSection === 'bullets' && (trimmed.startsWith('- ') || trimmed.startsWith('→'))) {
+        const bulletText = trimmed.startsWith('- ') ? trimmed.substring(2) : trimmed.substring(1).trim();
+        bullets.push(bulletText);
       } 
-      // Parse tekst (karakteristik + vurdering)
-      else if ((currentSection === 'text' || currentSection === 'conclusion') && 
-               trimmed && 
-               trimmed !== 'PROFILKARAKTERISTIK') {
+      // Parse tekst (inkluder alt andet indhold)
+      else if (currentSection === 'text' && trimmed && !bulletSections.some(s => trimmed.includes(s))) {
         text += line + '\n';
       }
     }

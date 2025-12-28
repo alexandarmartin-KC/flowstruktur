@@ -54,38 +54,46 @@ Du er nu senior konsulent og redaktør.
 
 OPGAVE:
 Du får en analytisk CV-vurdering fra TRIN 1.
-Din opgave er at forfine den til et niveau,
+Din opgave er at forfine den til et dybdegående, struktureret dokument
 der kan afleveres direkte til en leder eller beslutningstager.
 
 REGLER:
 - Du må IKKE tilføje nye fakta.
-- Du må IKKE gentage pointer.
-- Du skal reducere teksten, ikke udvide den.
-- Identificér 1–2 centrale karakteristika ved profilen.
-- Alt andet skal underordnes disse eller udelades.
-- Skriv med professionel dømmekraft.
+- Uddyb og strukturer de eksisterende fakta tydeligt.
+- Skriv med professionel dømmekraft og detalje.
+- Organiser informationen i logiske kategorier.
+- Hver sektion skal være grundig og informativ.
 
 OPGAVE:
 1. Identificér profilens primære kendetegn.
-2. Fjern gentagelser og sekundære observationer.
-3. Skær sproget, så hver sætning tilfører ny indsigt.
+2. Strukturer erfaringer, ansvarsområder og kompetencer.
+3. Uddyb styrker og begrænsninger med konkrete eksempler.
+4. Skriv en samlet konklusion der opsummerer profilens karakter.
 
 OUTPUTFORMAT (SKAL FØLGES 1:1):
 
-PROFILKARAKTERISTIK
-[1 kort afsnit (maks 5 linjer)]
+OVERORDNET UDLEDNING
+[2-3 afsnit der beskriver personens specialisering, erfaring og progression. Vær beskrivende og nuanceret.]
 
-CENTRALE OBSERVATIONER
-- [Punkt 1]
-- [Punkt 2]
-- [Punkt 3]
+HVAD CV'ET TYDELIGT DOKUMENTERER (HARD FACTS)
 
-AFGRÆNSNINGER
-- [Punkt 1]
-- [Punkt 2]
+Rolle og erfaring
+[Afsnit med konkret beskrivelse af års erfaring, organisationer og roller]
 
-SAMLET FAGLIG VURDERING
-[2 linjer. Skriv som til en leder.]
+Konkrete ansvarsområder
+[Afsnit med punktliste af specifikke ansvarsområder og opgaver]
+
+Teknisk og systemmæssig tyngde
+[Afsnit med beskrivelse af tekniske systemer og praksis]
+
+STYRKER, DER KAN UDLEDES
+[Punktliste med 3-5 styrker baseret på CV'ets facts]
+
+BEGRÆNSNINGER / HVAD CV'ET IKKE DOKUMENTERER
+[Punktliste med 3-5 områder der ikke er dokumenteret, men som kunne være relevante]
+
+SAMLET, NEUTRAL KONKLUSION
+[1-2 afsnit der opsummerer hvad denne profil egner sig til]
 
 HUSK: Outputt kun resultatet af TRIN 2.`;
 
@@ -95,11 +103,11 @@ HUSK: Outputt kun resultatet af TRIN 2.`;
     const completion = await client.chat.completions.create({
       model: 'gpt-4o',
       temperature: 0.25,
-      max_tokens: 500,
+      max_tokens: 1800,
       messages: [
         {
           role: 'system',
-          content: 'Du er en senior konsulent der destillerer CV-analyser til essentielle indsigter for ledere.',
+          content: 'Du er en senior konsulent der producerer dybdegående, strukturerede CV-analyser for ledere og beslutningstagere.',
         },
         {
           role: 'user',

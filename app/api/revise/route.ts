@@ -54,7 +54,7 @@ KILDE-NOTER:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o', // Kan ændres til gpt-4-turbo, gpt-4, eller gpt-3.5-turbo
+        model: 'gpt-3.5-turbo', // Billigste model - kan ændres til gpt-4o for bedre kvalitet
         max_tokens: 2000,
         temperature: 0.7,
         messages: [

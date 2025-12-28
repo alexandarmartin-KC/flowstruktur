@@ -41,10 +41,7 @@ BULLETS:
 - [Revideret eller ny bullet punkt 2]
 - [Revideret eller ny bullet punkt 3]
 - [Revideret eller ny bullet punkt 4]
-- [Revideret eller ny bullet punkt 5]
-
-KILDE-NOTER:
-[Opdaterede noter om kilder + eventuel note om bruger-tilføjet information]`;
+- [Revideret eller ny bullet punkt 5]`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

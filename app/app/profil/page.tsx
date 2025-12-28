@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Upload, Loader2, ThumbsUp, ThumbsDown, AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface CVExtraction {
   summary: string;
@@ -108,6 +109,36 @@ export default function ProfilPage() {
 
   const displaySummary = revised || extraction?.summary || '';
 
+  // Parse summary til tekst og bullets
+  const parseSummary = (summary: string) => {
+    const lines = summary.split('\n');
+    let text = '';
+    const bullets: string[] = [];
+    let inBullets = false;
+
+    for (const line of lines) {
+      if (line.trim() === 'BULLETS:') {
+        inBullets = true;
+        continue;
+      }
+      if (line.trim().startsWith('KILDE-NOTER:')) {
+        break; // Stop når vi når kilde-noter (selvom de ikke skulle være der)
+      }
+      if (inBullets) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('- ')) {
+          bullets.push(trimmed.substring(2));
+        }
+      } else if (line.trim() !== 'TEKST:') {
+        text += line + '\n';
+      }
+    }
+
+    return { text: text.trim(), bullets };
+  };
+
+  const { text: summaryText, bullets: summaryBullets } = displaySummary ? parseSummary(displaySummary) : { text: '', bullets: [] };
+
   return (
     <div className="mx-auto max-w-4xl space-y-8 py-8">
       {/* Header */}
@@ -174,11 +205,32 @@ export default function ProfilPage() {
             <CardTitle>AI Analyse af dit CV</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="prose prose-sm max-w-none">
-              <div className="whitespace-pre-wrap rounded-lg bg-accent/30 p-4">
-                {displaySummary}
+            {/* Tekst sektion */}
+            {summaryText && (
+              <div className="prose prose-sm max-w-none">
+                <div className="whitespace-pre-wrap rounded-lg bg-accent/30 p-4">
+                  {summaryText}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Bullets som badges */}
+            {summaryBullets.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground">Nøglekompetencer</h3>
+                <div className="flex flex-wrap gap-2">
+                  {summaryBullets.map((bullet, index) => (
+                    <Badge 
+                      key={index} 
+                      variant="secondary"
+                      className="px-3 py-1.5 text-sm font-medium"
+                    >
+                      {bullet}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {revised && (
               <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3">

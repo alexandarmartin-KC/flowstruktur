@@ -60,10 +60,7 @@ BULLETS:
 - [Nøgleerfaring eller kompetence 2]
 - [Nøgleerfaring eller kompetence 3]
 - [Nøgleerfaring eller kompetence 4]
-- [Nøgleerfaring eller kompetence 5]
-
-KILDE-NOTER:
-[1-3 korte noter om hvilke dele af CV'et du har fokuseret på, fx "Erfaring fra [område]", "Uddannelse i [felt]", "Kompetencer inden for [teknologi/metode]"]`;
+- [Nøgleerfaring eller kompetence 5]`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

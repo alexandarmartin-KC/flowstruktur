@@ -30,12 +30,12 @@ async function extractTextFromDOCX(buffer: Buffer): Promise<string> {
   }
 }
 
-// Helper til at kalde Claude API
-async function callClaudeAPI(cvText: string): Promise<string> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+// Helper til at kalde OpenAI API
+async function callOpenAI(cvText: string): Promise<string> {
+  const apiKey = process.env.OPENAI_API_KEY;
   
   if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY er ikke sat i miljøvariabler');
+    throw new Error('OPENAI_API_KEY er ikke sat i miljøvariabler');
   }
 
   const prompt = `Du er en ekspert HR-analytiker. Din opgave er at analysere et CV og udtrække nøgleinformation på en struktureret måde.
@@ -66,17 +66,21 @@ KILDE-NOTER:
 [1-3 korte noter om hvilke dele af CV'et du har fokuseret på, fx "Erfaring fra [område]", "Uddannelse i [felt]", "Kompetencer inden for [teknologi/metode]"]`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022', // Kan ændres efter din Anthropic-konto
+        model: 'gpt-4o', // Kan ændres til gpt-4-turbo, gpt-4, eller gpt-3.5-turbo
         max_tokens: 2000,
+        temperature: 0.7,
         messages: [
+          {
+            role: 'system',
+            content: 'Du er en ekspert HR-analytiker der analyserer CVer præcist og struktureret.',
+          },
           {
             role: 'user',
             content: prompt,
@@ -87,16 +91,16 @@ KILDE-NOTER:
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`Claude API fejl: ${errorData.error?.message || response.statusText}`);
+      throw new Error(`OpenAI API fejl: ${errorData.error?.message || response.statusText}`);
     }
 
     const data = await response.json();
-    return data.content[0].text;
+    return data.choices[0].message.content;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Kunne ikke kalde Claude API: ${error.message}`);
+      throw new Error(`Kunne ikke kalde OpenAI API: ${error.message}`);
     }
-    throw new Error('Ukendt fejl ved kald til Claude API');
+    throw new Error('Ukendt fejl ved kald til OpenAI API');
   }
 }
 
@@ -151,8 +155,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Kald Claude API
-    const summary = await callClaudeAPI(cvText);
+    // Kald OpenAI API
+    const summary = await callOpenAI(cvText);
 
     return NextResponse.json({
       summary,

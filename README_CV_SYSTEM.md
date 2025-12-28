@@ -16,7 +16,7 @@ Dette system giver brugere mulighed for at uploade et CV (PDF/DOCX/TXT), få en 
 - **Frontend**: Next.js 14+ (App Router), TypeScript, React
 - **UI**: Shadcn/ui komponenter (Card, Button, Textarea, etc.)
 - **Backend**: Next.js API Routes med Node.js runtime
-- **AI**: Anthropic Claude API (model: claude-3-5-sonnet-20241022)
+- **AI**: OpenAI API (model: gpt-4o)
 - **CV Parsing**: 
   - PDF: `pdf-parse`
   - DOCX: `mammoth`
@@ -51,10 +51,10 @@ npm install -D @types/pdf-parse
 Opret eller rediger `.env.local` i projektets rod:
 
 ```env
-ANTHROPIC_API_KEY=din-anthropic-api-key
+OPENAI_API_KEY=din-openai-api-key
 ```
 
-Få din API key fra: https://console.anthropic.com/settings/keys
+Få din API key fra: https://platform.openai.com/api-keys
 
 ### 3. Kør Udvikler Server
 
@@ -147,23 +147,23 @@ KILDE-NOTER:
 
 ## Model Configuration
 
-Default model: `claude-3-5-sonnet-20241022`
+Default model: `gpt-4o`
 
 For at ændre model, rediger denne linje i både `extract/route.ts` og `revise/route.ts`:
 
 ```typescript
-model: 'claude-3-5-sonnet-20241022', // Skift til anden Claude model
+model: 'gpt-4o', // Skift til anden OpenAI model
 ```
 
-Tilgængelige modeller (afhænger af din Anthropic-konto):
-- `claude-3-5-sonnet-20241022` (anbefalet)
-- `claude-3-opus-20240229`
-- `claude-3-sonnet-20240229`
-- `claude-3-haiku-20240307`
+Tilgængelige modeller:
+- `gpt-4o` (anbefalet - nyeste, hurtigste GPT-4 niveau)
+- `gpt-4-turbo` (kraftfuld, god balance)
+- `gpt-4` (klassisk GPT-4)
+- `gpt-3.5-turbo` (billigere, stadig god)
 
 ## Fejlfinding
 
-### "ANTHROPIC_API_KEY er ikke sat"
+### "OPENAI_API_KEY er ikke sat"
 - Sørg for at `.env.local` eksisterer i projektets rod
 - Genstart udvikler serveren efter ændringer i `.env.local`
 
@@ -171,9 +171,9 @@ Tilgængelige modeller (afhænger af din Anthropic-konto):
 - Tjek at filen ikke er korrupt
 - Prøv at eksportere filen igen fra dit tekstbehandlingsprogram
 
-### "Claude API fejl"
+### "OpenAI API fejl"
 - Verificer at din API key er gyldig
-- Tjek din Anthropic-konto for rate limits eller budget
+- Tjek din OpenAI-konto for rate limits eller budget
 - Se console for detaljerede fejlmeddelelser
 
 ### Import fejl med pdf-parse eller mammoth
@@ -193,5 +193,5 @@ Tilgængelige modeller (afhænger af din Anthropic-konto):
 ## Support
 
 For spørgsmål eller problemer, se:
-- [Anthropic API Dokumentation](https://docs.anthropic.com/)
+- [OpenAI API Dokumentation](https://platform.openai.com/docs)
 - [Next.js Dokumentation](https://nextjs.org/docs)

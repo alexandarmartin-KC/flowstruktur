@@ -186,7 +186,26 @@ export default function ProfilPage() {
     return { text: text.trim(), positiveBullets, negativeBullets };
   };
 
-  const { text: summaryText, positiveBullets, negativeBullets } = displaySummary ? parseSummary(displaySummary) : { text: '', positiveBullets: [], negativeBullets: [] };
+  // Clean text function to remove any remaining decorative lines
+  const cleanText = (text: string): string => {
+    return text
+      .split('\n')
+      .filter(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return false;
+        // Remove lines that are only decorative characters
+        if (/^[─━═_\-–—=\s]+$/.test(trimmed)) return false;
+        // Remove lines where more than 50% are decorative
+        const decorativeCount = (trimmed.match(/[─━═_\-–—=]/g) || []).length;
+        if (trimmed.length > 3 && decorativeCount / trimmed.length > 0.5) return false;
+        return true;
+      })
+      .join('\n')
+      .trim();
+  };
+
+  const { text: rawSummaryText, positiveBullets, negativeBullets } = displaySummary ? parseSummary(displaySummary) : { text: '', positiveBullets: [], negativeBullets: [] };
+  const summaryText = cleanText(rawSummaryText);
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">

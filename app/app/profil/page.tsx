@@ -120,12 +120,18 @@ export default function ProfilPage() {
     for (const line of lines) {
       const trimmed = line.trim();
       
+      // Skip decorative lines (underscores, dashes, etc)
+      if (/^[-_\s]+$/.test(trimmed)) {
+        continue;
+      }
+      
       // Detekter overskrifter (skal ikke inkluderes i output)
       if (trimmed === 'OVERORDNET UDLEDNING' ||
           trimmed === 'HVAD CV\'ET TYDELIGT DOKUMENTERER (HARD FACTS)' ||
           trimmed === 'Rolle og erfaring' ||
           trimmed === 'Teknisk og systemmæssig tyngde' ||
-          trimmed === 'SAMLET, NEUTRAL KONKLUSION') {
+          trimmed === 'SAMLET, NEUTRAL KONKLUSION' ||
+          trimmed === 'TRIN 2 — SENIOR KONSULENT & REDAKTØR') {
         currentSection = 'text';
         continue;
       }

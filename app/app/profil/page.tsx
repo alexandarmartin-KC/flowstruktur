@@ -120,8 +120,13 @@ export default function ProfilPage() {
     for (const line of lines) {
       const trimmed = line.trim();
       
-      // Skip decorative lines (underscores, dashes, etc)
-      if (/^[-_\s]+$/.test(trimmed)) {
+      // Skip decorative lines (underscores, dashes, equals, etc) - must be at least 3 characters
+      if (trimmed.length >= 3 && /^[-_=\s]+$/.test(trimmed)) {
+        continue;
+      }
+      
+      // Skip empty lines
+      if (!trimmed) {
         continue;
       }
       
@@ -131,7 +136,8 @@ export default function ProfilPage() {
           trimmed === 'Rolle og erfaring' ||
           trimmed === 'Teknisk og systemmæssig tyngde' ||
           trimmed === 'SAMLET, NEUTRAL KONKLUSION' ||
-          trimmed === 'TRIN 2 — SENIOR KONSULENT & REDAKTØR') {
+          trimmed === 'TRIN 2 — SENIOR KONSULENT & REDAKTØR' ||
+          trimmed.startsWith('TRIN')) {
         currentSection = 'text';
         continue;
       }

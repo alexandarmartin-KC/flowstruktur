@@ -120,13 +120,19 @@ export default function ProfilPage() {
     for (const line of lines) {
       const trimmed = line.trim();
       
-      // Skip decorative lines (underscores, dashes, equals, etc) - must be at least 3 characters
-      if (trimmed.length >= 3 && /^[-_=\s]+$/.test(trimmed)) {
+      // Skip empty lines
+      if (!trimmed) {
         continue;
       }
       
-      // Skip empty lines
-      if (!trimmed) {
+      // Skip decorative lines - lines with only dashes, underscores, equals signs, or spaces
+      if (/^[-_=\s]+$/.test(trimmed)) {
+        continue;
+      }
+      
+      // Skip lines that are mostly decorative characters (80% or more)
+      const decorativeChars = (trimmed.match(/[-_=]/g) || []).length;
+      if (decorativeChars / trimmed.length >= 0.8) {
         continue;
       }
       

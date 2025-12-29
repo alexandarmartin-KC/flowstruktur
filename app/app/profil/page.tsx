@@ -175,7 +175,11 @@ export default function ProfilPage() {
                !trimmed.includes('STYRKER') && 
                !trimmed.includes('BEGRÆNSNINGER') && 
                trimmed !== 'Konkrete ansvarsområder') {
-        text += line + '\n';
+        // Extra check: don't add lines that are mostly decorative
+        const decorativeChars = (trimmed.match(/[-_=]/g) || []).length;
+        if (decorativeChars / trimmed.length < 0.5) {
+          text += line + '\n';
+        }
       }
     }
 

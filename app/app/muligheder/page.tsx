@@ -9,14 +9,16 @@ import {
   mockJobsForCurrentTrack,
   mockJobsForNewDirection,
 } from '@/lib/mock-data';
+import { useSavedJobs } from '@/contexts/saved-jobs-context';
 
 type Direction = 'current' | 'new' | null;
 
 export default function MulighederPage() {
   const [selectedDirection, setSelectedDirection] = useState<Direction>(null);
-  const [savedJobs, setSavedJobs] = useState<Set<string>>(new Set());
   const [appliedJobs, setAppliedJobs] = useState<Set<string>>(new Set());
   const [dismissedJobs, setDismissedJobs] = useState<Set<string>>(new Set());
+  
+  const { saveJob, unsaveJob, isJobSaved } = useSavedJobs();
 
   const jobs =
     selectedDirection === 'current'
@@ -27,14 +29,21 @@ export default function MulighederPage() {
 
   const visibleJobs = jobs.filter((job) => !dismissedJobs.has(job.id));
 
-  const toggleSaved = (jobId: string) => {
-    const newSaved = new Set(savedJobs);
-    if (newSaved.has(jobId)) {
-      newSaved.delete(jobId);
+  const handleSaveJob = (job: any) => {
+    if (isJobSaved(job.id)) {
+      unsaveJob(job.id);
     } else {
-      newSaved.add(jobId);
+      saveJob({
+        id: job.id,
+        title: job.titel,
+        company: job.virksomhed,
+        description: job.beskrivelse,
+        location: job.lokation,
+        type: job.type,
+        source: 'muligheder',
+        fullData: job,
+      });
     }
-    setSavedJobs(newSaved);
   };
 
   const toggleApplied = (jobId: string) => {
@@ -198,12 +207,13 @@ export default function MulighederPage() {
                   {/* Actions */}
                   <div className="flex flex-wrap gap-2 border-t border-border pt-4">
                     <Button
-                      variant={savedJobs.has(job.id) ? 'default' : 'outline'}
+                      variant={isJobSaved(job.id) ? 'default' : 'outline'}
                       size="sm"
-                      onClick={() => toggleSaved(job.id)}
+                      onClick={() => handleSaveJob(job)}
+                      disabled={isJobSaved(job.id)}
                     >
                       <Bookmark className="mr-2 h-4 w-4" />
-                      {savedJobs.has(job.id) ? 'Gemt' : 'Gem job'}
+                      {isJobSaved(job.id) ? 'Gemt' : 'Gem job'}
                     </Button>
 
                     <Button

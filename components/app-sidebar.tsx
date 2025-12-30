@@ -8,6 +8,7 @@ import {
   Compass,
   Settings,
   Sparkles,
+  Bookmark,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +16,7 @@ const navigation = [
   { name: 'Overblik', href: '/app', icon: LayoutDashboard },
   { name: 'Min profil', href: '/app/profil', icon: User },
   { name: 'Muligheder', href: '/app/muligheder', icon: Compass },
+  { name: 'Gemte jobs', href: '/app/gemte-jobs', icon: Bookmark },
 ];
 
 const bottomNavigation = [

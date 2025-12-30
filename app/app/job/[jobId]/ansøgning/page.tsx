@@ -30,7 +30,10 @@ export default function AnsøgningPage() {
     setError('');
 
     try {
-      // Get data from localStorage or use mock data
+      // Get the tailored CV from CV step
+      const tailoredCv = localStorage.getItem('flowstruktur_tailored_cv');
+      
+      // Get other data from localStorage or use mock data
       let cvAnalysisData = localStorage.getItem('flowstruktur_cv_analysis');
       let personalityData = localStorage.getItem('flowstruktur_personality_data');
       let combinedAnalysis = localStorage.getItem('flowstruktur_combined_analysis');
@@ -55,6 +58,7 @@ export default function AnsøgningPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jobDescription: job.description || job.fullData?.description || job.title,
+          tailoredCv: tailoredCv || cvAnalysisData,
           cvAnalysis: cvAnalysisData,
           personalityData: JSON.parse(personalityData),
           combinedAnalysis,

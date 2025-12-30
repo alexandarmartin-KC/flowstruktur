@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Loader2, Info, Check, Pencil, X, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
+import { ArrowRight, Loader2, Info, Check, Pencil, X, ChevronDown, ChevronUp, AlertCircle, Plus } from 'lucide-react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 
 interface CVSection {
@@ -18,6 +18,7 @@ interface CVSection {
   matchNote: string;
   status: 'pending' | 'approved' | 'editing' | 'rejected';
   editedText?: string;
+  isUserAdded?: boolean;
 }
 
 export default function CVTilpasningPage() {
@@ -33,6 +34,23 @@ export default function CVTilpasningPage() {
   const [sections, setSections] = useState<CVSection[]>([]);
   const [uncoveredRequirements, setUncoveredRequirements] = useState<string[]>([]);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [showAddSection, setShowAddSection] = useState(false);
+
+  // Available extra sections that can be added
+  const extraSectionOptions = [
+    { id: 'projekter', name: 'Projekter' },
+    { id: 'noeglepraestationer', name: 'Nøglepræstationer' },
+    { id: 'frivilligt-arbejde', name: 'Frivilligt arbejde' },
+    { id: 'publikationer', name: 'Publikationer / oplæg' },
+    { id: 'sprog', name: 'Sprog' },
+    { id: 'bestyrelsesarbejde', name: 'Bestyrelsesarbejde' },
+    { id: 'teknologier', name: 'Teknologier / værktøjer' },
+  ];
+
+  // Filter out sections that have already been added
+  const availableSections = extraSectionOptions.filter(
+    opt => !sections.some(s => s.id === opt.id)
+  );
 
   useEffect(() => {
     if (job && sections.length === 0 && !isAnalyzing) {
@@ -231,6 +249,26 @@ KOMPETENCER
     ));
   };
 
+  const handleAddSection = (sectionId: string, sectionName: string) => {
+    const newSection: CVSection = {
+      id: sectionId,
+      name: sectionName,
+      originalText: 'Der er ikke dokumenteret indhold til denne sektion i CV\'et.',
+      suggestedText: '',
+      matchNote: 'Tilføj indhold til denne sektion, hvis du har relevant erfaring.',
+      status: 'editing',
+      editedText: '',
+      isUserAdded: true,
+    };
+    setSections(prev => [...prev, newSection]);
+    setExpandedSection(sectionId);
+    setShowAddSection(false);
+  };
+
+  const handleRemoveSection = (sectionId: string) => {
+    setSections(prev => prev.filter(s => s.id !== sectionId));
+  };
+
   const allSectionsHandled = sections.length > 0 && sections.every(s => s.status === 'approved' || s.status === 'rejected');
   const approvedSectionsCount = sections.filter(s => s.status === 'approved').length;
 
@@ -373,6 +411,7 @@ KOMPETENCER
                             value={section.editedText || section.suggestedText}
                             onChange={(e) => handleUpdateEditText(section.id, e.target.value)}
                             className="min-h-[150px] font-mono text-sm"
+                            placeholder={section.isUserAdded ? "Tilføj indhold til denne sektion..." : undefined}
                           />
                         </div>
                         <div className="flex gap-2">
@@ -380,15 +419,27 @@ KOMPETENCER
                             <Check className="h-4 w-4 mr-1" />
                             Gem ændringer
                           </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => setSections(prev => prev.map(s => 
-                              s.id === section.id ? { ...s, status: 'pending' as const } : s
-                            ))}
-                          >
-                            Annuller
-                          </Button>
+                          {section.isUserAdded ? (
+                            <Button 
+                              size="sm" 
+                              variant="ghost"
+                              className="text-destructive"
+                              onClick={() => handleRemoveSection(section.id)}
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              Fjern sektion
+                            </Button>
+                          ) : (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => setSections(prev => prev.map(s => 
+                                s.id === section.id ? { ...s, status: 'pending' as const } : s
+                              ))}
+                            >
+                              Annuller
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ) : (
@@ -442,6 +493,17 @@ KOMPETENCER
                             >
                               Gennemgå igen
                             </Button>
+                            {section.isUserAdded && (
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="text-destructive"
+                                onClick={() => handleRemoveSection(section.id)}
+                              >
+                                <X className="h-4 w-4 mr-1" />
+                                Fjern sektion
+                              </Button>
+                            )}
                           </div>
                         )}
                       </>
@@ -451,6 +513,39 @@ KOMPETENCER
               </Card>
             ))}
           </div>
+
+          {/* Add section button */}
+          {availableSections.length > 0 && (
+            <div className="relative">
+              <Button 
+                variant="outline" 
+                className="w-full border-dashed"
+                onClick={() => setShowAddSection(!showAddSection)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Tilføj sektion
+              </Button>
+              
+              {showAddSection && (
+                <Card className="absolute z-10 mt-2 w-full shadow-lg">
+                  <CardContent className="p-2">
+                    <div className="space-y-1">
+                      {availableSections.map((option) => (
+                        <Button
+                          key={option.id}
+                          variant="ghost"
+                          className="w-full justify-start"
+                          onClick={() => handleAddSection(option.id, option.name)}
+                        >
+                          {option.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
 
           {/* Uncovered requirements */}
           {uncoveredRequirements.length > 0 && (

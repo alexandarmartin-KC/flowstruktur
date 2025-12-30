@@ -14,80 +14,78 @@ interface CVExtraction {
   cvText: string;
 }
 
-interface DimensionScores {
-  struktur: number;
-  beslutning: number;
-  forandring: number;
-  selvstaendighed: number;
-  sociale: number;
-  ledelse: number;
-  tempo: number;
-  konflikt: number;
+interface QuestionScores {
+  [key: string]: number; // Q1-Q40
 }
 
 interface PersonalityProfile {
   profile: string;
-  scores: DimensionScores;
+  scores: QuestionScores;
+  dimensionScores?: {
+    [dimension: string]: {
+      average: number;
+      level: string;
+    }
+  };
 }
 
-// Spørgsmål til personlighedsprofil
+// Spørgsmål til personlighedsprofil (40 spørgsmål - 8 dimensioner × 5)
 const questions = [
-  {
-    id: 'struktur',
-    dimension: 'Struktur & Rammer',
-    question: 'Jeg foretrækker klare retningslinjer og forudsigelige opgaver',
-    lowLabel: 'Foretrækker fleksibilitet',
-    highLabel: 'Foretrækker klare rammer',
-  },
-  {
-    id: 'beslutning',
-    dimension: 'Beslutningsstil',
-    question: 'Jeg analyserer grundigt alle muligheder før jeg træffer beslutninger',
-    lowLabel: 'Handler hurtigt',
-    highLabel: 'Analyserer grundigt',
-  },
-  {
-    id: 'forandring',
-    dimension: 'Forandring & Stabilitet',
-    question: 'Jeg foretrækker stabilitet og kontinuitet i mit arbejde',
-    lowLabel: 'Elsker forandring',
-    highLabel: 'Foretrækker stabilitet',
-  },
-  {
-    id: 'selvstaendighed',
-    dimension: 'Selvstændighed & Sparring',
-    question: 'Jeg arbejder bedst når jeg kan løse opgaver selvstændigt',
-    lowLabel: 'Foretrækker samarbejde',
-    highLabel: 'Foretrækker selvstændighed',
-  },
-  {
-    id: 'sociale',
-    dimension: 'Sociale præferencer',
-    question: 'Jeg får energi af at arbejde sammen med andre mennesker',
-    lowLabel: 'Foretrækker alene-tid',
-    highLabel: 'Foretrækker social kontakt',
-  },
-  {
-    id: 'ledelse',
-    dimension: 'Ledelse & Autoritet',
-    question: 'Jeg tager naturligt styringen i gruppesammenhænge',
-    lowLabel: 'Følger andre',
-    highLabel: 'Tager ledelse',
-  },
-  {
-    id: 'tempo',
-    dimension: 'Tempo & Belastning',
-    question: 'Jeg trives med højt tempo og mange samtidige opgaver',
-    lowLabel: 'Foretrækker roligt tempo',
-    highLabel: 'Trives med højt tempo',
-  },
-  {
-    id: 'konflikt',
-    dimension: 'Konflikt & Feedback',
-    question: 'Jeg er komfortabel med at give og modtage direkte feedback',
-    lowLabel: 'Undgår konfrontation',
-    highLabel: 'Håndterer direkte feedback',
-  },
+  // Struktur & Rammer (Q1-Q5)
+  { id: 'Q1', dimension: 'Struktur & Rammer', question: 'Jeg foretrækker arbejdsopgaver med klare deadlines og faste rammer.' },
+  { id: 'Q2', dimension: 'Struktur & Rammer', question: 'Jeg trives bedst når min arbejdsdag er planlagt i forvejen.' },
+  { id: 'Q3', dimension: 'Struktur & Rammer', question: 'Jeg kan lide at følge etablerede procedurer og standarder i mit arbejde.' },
+  { id: 'Q4', dimension: 'Struktur & Rammer', question: 'Jeg har brug for tydelige retningslinjer for at levere mit bedste arbejde.' },
+  { id: 'Q5', dimension: 'Struktur & Rammer', question: 'Jeg foretrækker at vide præcis hvad der forventes af mig i en arbejdsopgave.' },
+  
+  // Beslutningsstil (Q6-Q10)
+  { id: 'Q6', dimension: 'Beslutningsstil', question: 'Jeg træffer beslutninger hurtigt når der er brug for det.' },
+  { id: 'Q7', dimension: 'Beslutningsstil', question: 'Jeg foretrækker at have alle relevante informationer før jeg beslutter noget.' },
+  { id: 'Q8', dimension: 'Beslutningsstil', question: 'Jeg er tryg ved at tage beslutninger uden at konsultere andre først.' },
+  { id: 'Q9', dimension: 'Beslutningsstil', question: 'Jeg stoler på min mavefornemmelse når jeg skal træffe valg i arbejdet.' },
+  { id: 'Q10', dimension: 'Beslutningsstil', question: 'Jeg kan lide at have tid til at overveje forskellige løsninger før jeg beslutter.' },
+  
+  // Forandring & Stabilitet (Q11-Q15)
+  { id: 'Q11', dimension: 'Forandring & Stabilitet', question: 'Jeg bliver motiveret af nye arbejdsmetoder og processer.' },
+  { id: 'Q12', dimension: 'Forandring & Stabilitet', question: 'Jeg foretrækker at have faste rutiner i mit arbejde.' },
+  { id: 'Q13', dimension: 'Forandring & Stabilitet', question: 'Jeg tilpasser mig let når arbejdsopgaver eller prioriteter ændrer sig.' },
+  { id: 'Q14', dimension: 'Forandring & Stabilitet', question: 'Jeg trives i miljøer hvor tingene holder sig nogenlunde ens fra dag til dag.' },
+  { id: 'Q15', dimension: 'Forandring & Stabilitet', question: 'Jeg kan lide at afprøve nye måder at løse opgaver på.' },
+  
+  // Selvstændighed & Sparring (Q16-Q20)
+  { id: 'Q16', dimension: 'Selvstændighed & Sparring', question: 'Jeg foretrækker at arbejde selvstændigt med mine opgaver.' },
+  { id: 'Q17', dimension: 'Selvstændighed & Sparring', question: 'Jeg får de bedste ideer når jeg tænker sammen med andre.' },
+  { id: 'Q18', dimension: 'Selvstændighed & Sparring', question: 'Jeg har brug for få instruktioner for at komme i gang med nye opgaver.' },
+  { id: 'Q19', dimension: 'Selvstændighed & Sparring', question: 'Jeg foretrækker at få løbende input fra kolleger eller ledere mens jeg arbejder.' },
+  { id: 'Q20', dimension: 'Selvstændighed & Sparring', question: 'Jeg klarer mig bedst når jeg selv kan styre hvordan jeg løser mine opgaver.' },
+  
+  // Sociale præferencer i arbejdet (Q21-Q25)
+  { id: 'Q21', dimension: 'Sociale præferencer i arbejdet', question: 'Jeg foretrækker at arbejde tæt sammen med andre i dagligdagen.' },
+  { id: 'Q22', dimension: 'Sociale præferencer i arbejdet', question: 'Jeg får energi af at være sammen med kolleger i løbet af arbejdsdagen.' },
+  { id: 'Q23', dimension: 'Sociale præferencer i arbejdet', question: 'Jeg foretrækker arbejdsopgaver hvor jeg kan koncentrere mig alene.' },
+  { id: 'Q24', dimension: 'Sociale præferencer i arbejdet', question: 'Jeg synes det er vigtigt at have god social kontakt med mine kolleger.' },
+  { id: 'Q25', dimension: 'Sociale præferencer i arbejdet', question: 'Jeg trives i arbejdsmiljøer hvor der er meget samarbejde og dialog.' },
+  
+  // Ledelse & Autoritet (Q26-Q30)
+  { id: 'Q26', dimension: 'Ledelse & Autoritet', question: 'Jeg foretrækker at få klare instrukser fra min leder.' },
+  { id: 'Q27', dimension: 'Ledelse & Autoritet', question: 'Jeg trives i roller hvor jeg har ansvar for at lede eller koordinere andre.' },
+  { id: 'Q28', dimension: 'Ledelse & Autoritet', question: 'Jeg foretrækker at arbejde i teams uden tydelig hierarkisk struktur.' },
+  { id: 'Q29', dimension: 'Ledelse & Autoritet', question: 'Jeg kan lide at have en leder der er tæt involveret i mit arbejde.' },
+  { id: 'Q30', dimension: 'Ledelse & Autoritet', question: 'Jeg tager naturligt ansvar for at guide eller vejlede andre.' },
+  
+  // Tempo & Belastning (Q31-Q35)
+  { id: 'Q31', dimension: 'Tempo & Belastning', question: 'Jeg præsterer bedst under tidspres.' },
+  { id: 'Q32', dimension: 'Tempo & Belastning', question: 'Jeg foretrækker et roligt og jævnt arbejdstempo.' },
+  { id: 'Q33', dimension: 'Tempo & Belastning', question: 'Jeg trives i perioder med høj aktivitet og mange opgaver på én gang.' },
+  { id: 'Q34', dimension: 'Tempo & Belastning', question: 'Jeg har brug for tid til at arbejde grundigt med mine opgaver.' },
+  { id: 'Q35', dimension: 'Tempo & Belastning', question: 'Jeg kan håndtere travle perioder med skiftende krav og deadlines.' },
+  
+  // Konflikt & Feedback (Q36-Q40)
+  { id: 'Q36', dimension: 'Konflikt & Feedback', question: 'Jeg tager feedback konstruktivt og bruger det til at udvikle mig.' },
+  { id: 'Q37', dimension: 'Konflikt & Feedback', question: 'Jeg tager hellere en vanskelig samtale end at lade problemer stå uløste.' },
+  { id: 'Q38', dimension: 'Konflikt & Feedback', question: 'Jeg foretrækker at undgå konflikter på arbejdspladsen.' },
+  { id: 'Q39', dimension: 'Konflikt & Feedback', question: 'Jeg er tryg ved at give andre feedback på deres arbejde.' },
+  { id: 'Q40', dimension: 'Konflikt & Feedback', question: 'Jeg synes det er vigtigt at få regelmæssig feedback på mit arbejde.' },
 ];
 
 export default function ProfilPage() {
@@ -105,16 +103,7 @@ export default function ProfilPage() {
   // Personality profile state
   const [currentStep, setCurrentStep] = useState<'cv' | 'questionnaire' | 'results'>('cv');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [scores, setScores] = useState<DimensionScores>({
-    struktur: 0,
-    beslutning: 0,
-    forandring: 0,
-    selvstaendighed: 0,
-    sociale: 0,
-    ledelse: 0,
-    tempo: 0,
-    konflikt: 0,
-  });
+  const [scores, setScores] = useState<QuestionScores>({});
   const [personalityProfile, setPersonalityProfile] = useState<PersonalityProfile | null>(null);
   const [analyzingPersonality, setAnalyzingPersonality] = useState(false);
   
@@ -221,7 +210,7 @@ export default function ProfilPage() {
     }
   };
 
-  const allQuestionsAnswered = Object.values(scores).every(score => score > 0);
+  const allQuestionsAnswered = questions.every(q => scores[q.id] && scores[q.id] > 0);
 
   const handleSubmitPersonality = async () => {
     if (!allQuestionsAnswered) return;
@@ -750,11 +739,11 @@ export default function ProfilPage() {
                 </p>
               </div>
               <Badge variant="outline" className="text-sm">
-                {Object.values(scores).filter(s => s > 0).length}/{questions.length} besvaret
+                {Object.keys(scores).filter(k => scores[k] > 0).length}/{questions.length} besvaret
               </Badge>
             </div>
             <Progress 
-              value={(Object.values(scores).filter(s => s > 0).length / questions.length) * 100} 
+              value={(Object.keys(scores).filter(k => scores[k] > 0).length / questions.length) * 100} 
               className="mt-4 h-2"
             />
           </CardHeader>
@@ -770,17 +759,13 @@ export default function ProfilPage() {
 
               {/* Score selection */}
               <div className="space-y-4">
-                <div className="flex justify-between text-sm text-muted-foreground px-2">
-                  <span>{questions[currentQuestionIndex].lowLabel}</span>
-                  <span>{questions[currentQuestionIndex].highLabel}</span>
-                </div>
                 <div className="flex justify-center gap-3">
                   {[1, 2, 3, 4, 5].map((score) => (
                     <button
                       key={score}
                       onClick={() => handleScoreSelect(questions[currentQuestionIndex].id, score)}
                       className={`w-14 h-14 rounded-xl text-lg font-semibold transition-all ${
-                        scores[questions[currentQuestionIndex].id as keyof DimensionScores] === score
+                        scores[questions[currentQuestionIndex].id] === score
                           ? 'bg-blue-600 text-white scale-110 shadow-lg'
                           : 'bg-slate-100 dark:bg-slate-800 text-foreground hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:scale-105'
                       }`}
@@ -790,9 +775,11 @@ export default function ProfilPage() {
                   ))}
                 </div>
                 <div className="flex justify-center gap-1 text-xs text-muted-foreground">
-                  <span>1 = Slet ikke enig</span>
+                  <span>1 = Meget uenig</span>
                   <span>•</span>
-                  <span>5 = Helt enig</span>
+                  <span>3 = Delvist enig</span>
+                  <span>•</span>
+                  <span>5 = Meget enig</span>
                 </div>
               </div>
             </div>
@@ -810,7 +797,7 @@ export default function ProfilPage() {
               {currentQuestionIndex < questions.length - 1 ? (
                 <Button
                   onClick={handleNextQuestion}
-                  disabled={scores[questions[currentQuestionIndex].id as keyof DimensionScores] === 0}
+                  disabled={!scores[questions[currentQuestionIndex].id] || scores[questions[currentQuestionIndex].id] === 0}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   Næste
@@ -829,18 +816,19 @@ export default function ProfilPage() {
             </div>
 
             {/* Quick navigation dots */}
-            <div className="flex justify-center gap-2 pt-2">
-              {questions.map((_, index) => (
+            <div className="flex justify-center gap-2 pt-2 flex-wrap">
+              {questions.map((q, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentQuestionIndex(index)}
                   className={`w-3 h-3 rounded-full transition-all ${
                     index === currentQuestionIndex
                       ? 'bg-blue-600 scale-125'
-                      : scores[questions[index].id as keyof DimensionScores] > 0
+                      : scores[q.id] && scores[q.id] > 0
                       ? 'bg-green-500'
                       : 'bg-slate-300 dark:bg-slate-600'
                   }`}
+                  title={`Spørgsmål ${index + 1}`}
                 />
               ))}
             </div>

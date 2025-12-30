@@ -41,11 +41,22 @@ STANDARD CV-SEKTIONER
 ════════════════════════════════
 
 Behandl disse sektioner i rækkefølge:
-1) Profil / Resumé
-2) Erfaring
-3) Kompetencer
-4) Uddannelse
-5) Certificeringer / Øvrigt
+
+1) Profil / Resumé (én sektion)
+
+2) Erfaring – OPDELT PR. ARBEJDSGIVER
+   Hver stilling/arbejdsgiver skal være sin egen sektion.
+   Navngiv dem: "Erfaring: [Virksomhedsnavn]"
+   Eksempel:
+   - "Erfaring: Novo Nordisk"
+   - "Erfaring: Danske Bank"
+   - "Erfaring: Ørsted"
+
+3) Kompetencer (én sektion)
+
+4) Uddannelse (én sektion)
+
+5) Certificeringer / Øvrigt (én sektion, hvis relevant)
 
 ════════════════════════════════
 OUTPUT FORMAT (JSON)
@@ -59,6 +70,14 @@ OUTPUT FORMAT (JSON)
       "originalText": "Original tekst fra CV",
       "suggestedText": "Foreslået tilpasset tekst baseret KUN på dokumenteret erfaring",
       "matchNote": "Kort, faktuel beskrivelse af hvordan sektionen relaterer til jobkrav",
+      "status": "pending"
+    },
+    {
+      "id": "erfaring-novo-nordisk",
+      "name": "Erfaring: Novo Nordisk",
+      "originalText": "Original tekst for denne stilling",
+      "suggestedText": "Foreslået tilpasset tekst",
+      "matchNote": "Kort, faktuel beskrivelse",
       "status": "pending"
     }
   ],

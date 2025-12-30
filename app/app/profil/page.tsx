@@ -5,10 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Upload, Loader2, ThumbsUp, ThumbsDown, AlertCircle, CheckCircle2, ArrowRight, User, Brain } from 'lucide-react';
+import { Upload, Loader2, ThumbsUp, ThumbsDown, AlertCircle, CheckCircle2, ArrowRight, User, Brain, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { calculateAllDimensionScores } from '@/lib/scoring';
+import { getExplanation, getLevel, type DimensionKey } from '@/lib/dimensionExplanations';
 
 interface CVExtraction {
   summary: string;
@@ -107,6 +108,9 @@ export default function ProfilPage() {
   const [scores, setScores] = useState<QuestionScores>({});
   const [personalityProfile, setPersonalityProfile] = useState<PersonalityProfile | null>(null);
   const [analyzingPersonality, setAnalyzingPersonality] = useState(false);
+  
+  // Track which dimension explanations are expanded
+  const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set());
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -241,6 +245,19 @@ export default function ProfilPage() {
     } finally {
       setAnalyzingPersonality(false);
     }
+  };
+
+  // Toggle dimension explanation visibility
+  const toggleDimensionExplanation = (dimensionName: string) => {
+    setExpandedDimensions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(dimensionName)) {
+        newSet.delete(dimensionName);
+      } else {
+        newSet.add(dimensionName);
+      }
+      return newSet;
+    });
   };
 
   // Parse personality profile sections
@@ -876,15 +893,29 @@ export default function ProfilPage() {
               {/* Score visualization */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg text-foreground">Dine Dimensionsscorer</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   {dimensionScores.map((dim) => (
-                    <div key={dim.dimension} className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">{dim.dimension}</span>
+                    <div key={dim.dimension} className="space-y-2 p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 flex-1">
+                          <span className="font-medium text-sm">{dim.dimension}</span>
+                          <button
+                            onClick={() => toggleDimensionExplanation(dim.dimension)}
+                            className="text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-0.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700"
+                            aria-label={`Vis forklaring for ${dim.dimension}`}
+                          >
+                            <Info className="h-4 w-4" />
+                          </button>
+                        </div>
                         {dim.missingAnswers ? (
-                          <span className="text-red-500">Manglende svar</span>
+                          <span className="text-red-500 text-sm">Manglende svar</span>
                         ) : (
-                          <span className="text-muted-foreground">{dim.score.toFixed(1)}/5.0</span>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs">
+                              {getLevel(dim.score)}
+                            </Badge>
+                            <span className="text-muted-foreground text-sm font-mono">{dim.score.toFixed(1)}/5.0</span>
+                          </div>
                         )}
                       </div>
                       <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
@@ -893,6 +924,15 @@ export default function ProfilPage() {
                           style={{ width: `${(dim.score / 5) * 100}%` }}
                         />
                       </div>
+                      
+                      {/* Explanation (toggleable) */}
+                      {expandedDimensions.has(dim.dimension) && (
+                        <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                            {getExplanation(dim.dimension as DimensionKey, dim.score)}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

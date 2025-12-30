@@ -7,35 +7,34 @@ const openai = new OpenAI();
 export async function POST(request: NextRequest) {
   try {
     const { 
-      originalCv, 
-      jobPosting,
-      feedback 
-    }: { 
-      originalCv: string;
-      jobPosting: string;
-      feedback?: string;
+      jobDescription,
+      cvAnalysis,
+      personalityData,
+      combinedAnalysis,
     } = await request.json();
 
-    if (!originalCv || !jobPosting) {
+    if (!jobDescription || !cvAnalysis || !personalityData || !combinedAnalysis) {
       return NextResponse.json(
-        { error: 'Originalt CV og stillingsopslag er påkrævet' },
+        { error: 'Manglende påkrævet data' },
         { status: 400 }
       );
     }
 
-    let userMessage = `Tilpas CV'et til stillingsopslaget:
+    const userMessage = `Analysér hvordan brugerens CV matcher dette job:
 
-ORIGINALT_CV:
-${originalCv}
+A) STILLINGSOPSLAG_TEXT:
+${jobDescription}
 
-STILLINGSOPSLAG_TEXT:
-${jobPosting}
+B) GODKENDT_CV_ANALYSE:
+${cvAnalysis}
 
-Generér et tilpasset CV der følger outputstrukturen præcist. Brug KUN erfaring fra det originale CV.`;
+C) PERSONPROFIL_DATA:
+${JSON.stringify(personalityData, null, 2)}
 
-    if (feedback) {
-      userMessage += `\n\nBRUGERFEEDBACK:\n${feedback}`;
-    }
+D) SAMLET_ANALYSE_TEXT:
+${combinedAnalysis}
+
+Producer nu en fuldstændig CV-match analyse efter den angivne outputstruktur.`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
@@ -49,7 +48,7 @@ Generér et tilpasset CV der følger outputstrukturen præcist. Brug KUN erfarin
           content: userMessage,
         },
       ],
-      max_tokens: 4000,
+      max_tokens: 2000,
       temperature: 0.7,
     });
 
@@ -59,12 +58,12 @@ Generér et tilpasset CV der følger outputstrukturen præcist. Brug KUN erfarin
     }
 
     return NextResponse.json({
-      tailoredCv: textContent,
+      analysis: textContent,
     });
   } catch (err) {
     console.error('Error in cv-tailor:', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Kunne ikke tilpasse CV' },
+      { error: err instanceof Error ? err.message : 'Kunne ikke analysere CV' },
       { status: 500 }
     );
   }

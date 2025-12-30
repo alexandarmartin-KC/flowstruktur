@@ -7,35 +7,34 @@ const openai = new OpenAI();
 export async function POST(request: NextRequest) {
   try {
     const { 
-      tailoredCv, 
-      jobPosting,
-      feedback 
-    }: { 
-      tailoredCv: string;
-      jobPosting: string;
-      feedback?: string;
+      jobDescription,
+      cvAnalysis,
+      personalityData,
+      combinedAnalysis,
     } = await request.json();
 
-    if (!tailoredCv || !jobPosting) {
+    if (!jobDescription || !cvAnalysis || !personalityData || !combinedAnalysis) {
       return NextResponse.json(
-        { error: 'Tilpasset CV og stillingsopslag er påkrævet' },
+        { error: 'Manglende påkrævet data' },
         { status: 400 }
       );
     }
 
-    let userMessage = `Skriv en ansøgning baseret på CV og stillingsopslag:
+    const userMessage = `Skriv en professionel ansøgning til dette job:
 
-TILPASSET_CV:
-${tailoredCv}
+A) STILLINGSOPSLAG_TEXT:
+${jobDescription}
 
-STILLINGSOPSLAG_TEXT:
-${jobPosting}
+B) CV_ANALYSE:
+${cvAnalysis}
 
-Generér en professionel ansøgning der følger outputstrukturen præcist.`;
+C) PERSONPROFIL_DATA:
+${JSON.stringify(personalityData, null, 2)}
 
-    if (feedback) {
-      userMessage += `\n\nBRUGERFEEDBACK:\n${feedback}`;
-    }
+D) SAMLET_ANALYSE_TEXT:
+${combinedAnalysis}
+
+Skriv en fuld ansøgning baseret på brugerens profil og jobopslaget. Følg outputstrukturen præcist.`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
@@ -49,7 +48,7 @@ Generér en professionel ansøgning der følger outputstrukturen præcist.`;
           content: userMessage,
         },
       ],
-      max_tokens: 3000,
+      max_tokens: 2500,
       temperature: 0.7,
     });
 

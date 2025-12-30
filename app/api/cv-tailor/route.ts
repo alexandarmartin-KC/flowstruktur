@@ -156,13 +156,3 @@ Producer nu en fuldstændig CV-match analyse.`;
     );
   }
 }
-      analysis: textContent,
-    });
-  } catch (err) {
-    console.error('Error in cv-tailor:', err);
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Kunne ikke analysere CV' },
-      { status: 500 }
-    );
-  }
-}

@@ -458,7 +458,7 @@ KOMPETENCER
                   ))}
                 </ul>
                 <p className="text-sm text-muted-foreground mt-4 pt-4 border-t italic">
-                  Eventuelle mangler kan adresseres i ansøgningen.
+                  Disse mangler er ikke forsøgt skjult og kan, hvis relevant, italesættes i ansøgningen.
                 </p>
               </CardContent>
             </Card>
@@ -476,7 +476,8 @@ KOMPETENCER
                         CV-tilpasning færdig
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        Dit CV er baseret på din dokumenterede erfaring og tilpasset dette job.
+                        Dette CV er baseret på din dokumenterede erfaring.<br />
+                        Eventuelle mangler er ikke forsøgt skjult og kan, hvis relevant, italesættes i ansøgningen.
                       </p>
                     </>
                   ) : (

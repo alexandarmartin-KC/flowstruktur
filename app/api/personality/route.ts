@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { GLOBAL_RULES } from '@/lib/system-prompts';
 
 const openai = new OpenAI();
 
@@ -7,14 +8,10 @@ interface QuestionScores {
   [key: string]: number; // Q1-Q40
 }
 
-const SYSTEM_PROMPT = `DU ER CLAUDE. DU SKAL ANALYSERE BRUGERENS BESVARELSER FRA ET 40-SPØRGSMÅLS ARBEJDSPRÆFERENCE SPØRGESKEMA.
+const SYSTEM_PROMPT = `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
+DU SKAL ANALYSERE BRUGERENS BESVARELSER FRA ET 40-SPØRGSMÅLS ARBEJDSPRÆFERENCE SPØRGESKEMA.
 
-REGLER:
-- Brug kun tallene (Q1–Q40). Ingen antagelser ud over svarene.
-- Ingen labels/typer/diagnoser.
-- Resultater er indikatorer, ikke sandheder.
-- Undgå rosende/fluffy sprog.
-- Forklar både styrker og potentielle friktioner.
+${GLOBAL_RULES}
 
 BEREGNING:
 - Beregn gennemsnit for hver dimension (5 spørgsmål pr. dimension).

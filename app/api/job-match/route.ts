@@ -10,14 +10,21 @@ interface DimensionScores {
 
 export async function POST(request: NextRequest) {
   try {
-    const { cvAnalysis, dimensionScores }: { 
+    const { 
+      cvAnalysis, 
+      dimensionScores, 
+      jobPosting,
+      feedback 
+    }: { 
       cvAnalysis: string; 
       dimensionScores: DimensionScores;
+      jobPosting: string;
+      feedback?: string;
     } = await request.json();
 
-    if (!cvAnalysis || !dimensionScores) {
+    if (!cvAnalysis || !dimensionScores || !jobPosting) {
       return NextResponse.json(
-        { error: 'CV-analyse og dimensionsscorer er påkrævet' },
+        { error: 'CV-analyse, dimensionsscorer og stillingsopslag er påkrævet' },
         { status: 400 }
       );
     }
@@ -35,28 +42,35 @@ export async function POST(request: NextRequest) {
       dimensionsText += `- ${dimension}: ${score.toFixed(1)} (${level})\n`;
     }
 
-    const userMessage = `Analysér sammenhængen mellem CV og personprofil:
+    let userMessage = `Analysér stillingsopslaget i forhold til profilen:
 
 CV_ANALYSE:
 ${cvAnalysis}
 
 ${dimensionsText}
 
-Generér en samlet analyse der følger outputstrukturen præcist.`;
+STILLINGSOPSLAG_TEXT:
+${jobPosting}
+
+Generér en analyse der følger outputstrukturen præcist.`;
+
+    if (feedback) {
+      userMessage += `\n\nBRUGERFEEDBACK:\n${feedback}`;
+    }
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {
           role: 'system',
-          content: STEP_PROMPTS.SAMLET_ANALYSE,
+          content: STEP_PROMPTS.MULIGHEDER_STILLINGSOPSLAG,
         },
         {
           role: 'user',
           content: userMessage,
         },
       ],
-      max_tokens: 2000,
+      max_tokens: 2500,
       temperature: 0.7,
     });
 
@@ -69,9 +83,9 @@ Generér en samlet analyse der følger outputstrukturen præcist.`;
       analysis: textContent,
     });
   } catch (err) {
-    console.error('Error in combined-analysis:', err);
+    console.error('Error in job-match:', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Kunne ikke generere samlet analyse' },
+      { error: err instanceof Error ? err.message : 'Kunne ikke analysere stillingsopslag' },
       { status: 500 }
     );
   }

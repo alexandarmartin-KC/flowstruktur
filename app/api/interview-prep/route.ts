@@ -10,14 +10,23 @@ interface DimensionScores {
 
 export async function POST(request: NextRequest) {
   try {
-    const { cvAnalysis, dimensionScores }: { 
-      cvAnalysis: string; 
+    const { 
+      jobPosting,
+      tailoredCv,
+      application,
+      dimensionScores,
+      feedback 
+    }: { 
+      jobPosting: string;
+      tailoredCv: string;
+      application: string;
       dimensionScores: DimensionScores;
+      feedback?: string;
     } = await request.json();
 
-    if (!cvAnalysis || !dimensionScores) {
+    if (!jobPosting || !tailoredCv || !application || !dimensionScores) {
       return NextResponse.json(
-        { error: 'CV-analyse og dimensionsscorer er påkrævet' },
+        { error: 'Stillingsopslag, tilpasset CV, ansøgning og dimensionsscorer er påkrævet' },
         { status: 400 }
       );
     }
@@ -35,28 +44,38 @@ export async function POST(request: NextRequest) {
       dimensionsText += `- ${dimension}: ${score.toFixed(1)} (${level})\n`;
     }
 
-    const userMessage = `Analysér sammenhængen mellem CV og personprofil:
+    let userMessage = `Forbered brugeren til jobsamtale:
 
-CV_ANALYSE:
-${cvAnalysis}
+STILLINGSOPSLAG_TEXT:
+${jobPosting}
+
+TILPASSET_CV:
+${tailoredCv}
+
+ANSØGNING:
+${application}
 
 ${dimensionsText}
 
-Generér en samlet analyse der følger outputstrukturen præcist.`;
+Generér samtaleforberedelse der følger outputstrukturen præcist.`;
+
+    if (feedback) {
+      userMessage += `\n\nBRUGERFEEDBACK:\n${feedback}`;
+    }
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {
           role: 'system',
-          content: STEP_PROMPTS.SAMLET_ANALYSE,
+          content: STEP_PROMPTS.JOBSAMTALE,
         },
         {
           role: 'user',
           content: userMessage,
         },
       ],
-      max_tokens: 2000,
+      max_tokens: 4000,
       temperature: 0.7,
     });
 
@@ -66,12 +85,12 @@ Generér en samlet analyse der følger outputstrukturen præcist.`;
     }
 
     return NextResponse.json({
-      analysis: textContent,
+      preparation: textContent,
     });
   } catch (err) {
-    console.error('Error in combined-analysis:', err);
+    console.error('Error in interview-prep:', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Kunne ikke generere samlet analyse' },
+      { error: err instanceof Error ? err.message : 'Kunne ikke generere samtaleforberedelse' },
       { status: 500 }
     );
   }

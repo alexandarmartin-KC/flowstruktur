@@ -10,9 +10,10 @@ interface DimensionScores {
 
 export async function POST(request: NextRequest) {
   try {
-    const { cvAnalysis, dimensionScores }: { 
+    const { cvAnalysis, dimensionScores, feedback }: { 
       cvAnalysis: string; 
       dimensionScores: DimensionScores;
+      feedback?: string;
     } = await request.json();
 
     if (!cvAnalysis || !dimensionScores) {
@@ -35,28 +36,32 @@ export async function POST(request: NextRequest) {
       dimensionsText += `- ${dimension}: ${score.toFixed(1)} (${level})\n`;
     }
 
-    const userMessage = `Analysér sammenhængen mellem CV og personprofil:
+    let userMessage = `Foreslå relevante jobretninger baseret på profilen:
 
 CV_ANALYSE:
 ${cvAnalysis}
 
 ${dimensionsText}
 
-Generér en samlet analyse der følger outputstrukturen præcist.`;
+Generér 5-7 mulige jobretninger der følger outputstrukturen præcist.`;
+
+    if (feedback) {
+      userMessage += `\n\nBRUGERFEEDBACK:\n${feedback}`;
+    }
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {
           role: 'system',
-          content: STEP_PROMPTS.SAMLET_ANALYSE,
+          content: STEP_PROMPTS.MULIGHEDER_OVERSIGT,
         },
         {
           role: 'user',
           content: userMessage,
         },
       ],
-      max_tokens: 2000,
+      max_tokens: 3000,
       temperature: 0.7,
     });
 
@@ -66,12 +71,12 @@ Generér en samlet analyse der følger outputstrukturen præcist.`;
     }
 
     return NextResponse.json({
-      analysis: textContent,
+      directions: textContent,
     });
   } catch (err) {
-    console.error('Error in combined-analysis:', err);
+    console.error('Error in job-directions:', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Kunne ikke generere samlet analyse' },
+      { error: err instanceof Error ? err.message : 'Kunne ikke generere jobretninger' },
       { status: 500 }
     );
   }

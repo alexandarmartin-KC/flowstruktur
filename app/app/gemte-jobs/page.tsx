@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapPin, Briefcase, Bookmark, ArrowRight, PackageOpen, Loader2, ArrowLeft } from 'lucide-react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
 
 interface SavedJob {
   id: string;
@@ -159,10 +160,20 @@ export default function GemteJobsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="prose prose-sm max-w-none">
-                {analysis.split('\n').map((line, i) => (
-                  <p key={i}>{line}</p>
-                ))}
+              <div className="prose prose-sm max-w-none dark:prose-invert">
+                <ReactMarkdown
+                  components={{
+                    h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-6 mb-3 text-foreground" {...props} />,
+                    h3: ({ node, ...props }) => <h3 className="text-lg font-semibold mt-4 mb-2 text-foreground" {...props} />,
+                    p: ({ node, ...props }) => <p className="mb-4 text-muted-foreground leading-relaxed" {...props} />,
+                    ul: ({ node, ...props }) => <ul className="space-y-2 mb-4" {...props} />,
+                    li: ({ node, ...props }) => <li className="text-muted-foreground" {...props} />,
+                    hr: ({ node, ...props }) => <hr className="my-6 border-border" {...props} />,
+                    em: ({ node, ...props }) => <em className="text-sm text-muted-foreground not-italic" {...props} />,
+                  }}
+                >
+                  {analysis}
+                </ReactMarkdown>
               </div>
 
               {/* Next steps */}

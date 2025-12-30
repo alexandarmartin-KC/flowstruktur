@@ -108,33 +108,27 @@ B) GODKENDT_CV_ANALYSE
 C) PERSONPROFIL_DATA
 D) SAMLET_ANALYSE_TEXT
 
-OUTPUTSTRUKTUR (SKAL FØLGES PRÆCIST):
+OUTPUTSTRUKTUR (SKAL FØLGES PRÆCIST - BRUG MARKDOWN):
 
-JOBMATCH – OVERBLIK
+## JOBMATCH – OVERBLIK
 [1 kort afsnit om hvordan profilen overordnet matcher jobbet]
 
-STYRKER I FORHOLD TIL DETTE JOB
+## STYRKER I FORHOLD TIL DETTE JOB
 - [Punkt 1: kobling mellem jobkrav og dokumenteret erfaring eller arbejdsstil]
 - [Punkt 2: kobling mellem jobkrav og dokumenteret erfaring eller arbejdsstil]
 - [Punkt 3: kobling mellem jobkrav og dokumenteret erfaring eller arbejdsstil]
 
-POTENTIELLE SVAGHEDER / OPMÆRKSOMHEDSPUNKTER
+## POTENTIELLE SVAGHEDER / OPMÆRKSOMHEDSPUNKTER
 - [Punkt 1: beskrivelse af hvad jobbet kræver, som ikke er tydeligt understøttet i profilen]
 - [Punkt 2: beskrivelse af hvad jobbet kræver, som ikke er tydeligt understøttet i profilen]
 - [Punkt 3: beskrivelse af hvad jobbet kræver, som ikke er tydeligt understøttet i profilen]
 
-ARBEJDSSTIL VS. JOBKONTEKST
+## ARBEJDSSTIL VS. JOBKONTEKST
 [1 kort afsnit om hvordan arbejdspræferencer kan spille sammen med jobmiljøet]
 
-NÆSTE SKRIDT
-Du kan nu vælge at:
-- arbejde videre med CV-tilpasning
-- skrive ansøgning
-- eller parkere jobbet igen
+---
 
-AFSLUTTENDE NOTE
-Analysen er vejledende og bygger på tilgængelige oplysninger.
-Den faktiske rolle kan variere fra det beskrevne.`,
+*Analysen er vejledende og bygger på tilgængelige oplysninger. Den faktiske rolle kan variere fra det beskrevne.*`,
 
   MULIGHEDER_STILLINGSOPSLAG: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

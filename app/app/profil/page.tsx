@@ -1282,19 +1282,6 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
               </CardContent>
             </Card>
           ) : null}
-
-          {/* CV Summary Card (collapsed) */}
-          <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-muted-foreground">CV Analyse</CardTitle>
-                <Badge variant="outline" className="text-green-600">✓ Bekræftet</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground line-clamp-3">{summaryText}</p>
-            </CardContent>
-          </Card>
         </div>
       )}
     </div>

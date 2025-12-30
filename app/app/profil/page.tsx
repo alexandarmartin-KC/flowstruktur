@@ -114,6 +114,75 @@ export default function ProfilPage() {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // ============ TEST MODE - REMOVE BEFORE PRODUCTION ============
+  const loadTestData = () => {
+    // Mock CV extraction
+    setExtraction({
+      summary: 'Test CV Summary: 10 års erfaring med React, TypeScript, og Next.js udvikling. Specialiseret i brugervenlige interfaces og skalerbare webapplikationer. Arbejdet i både startups og større virksomheder med fokus på agile metoder og teamsamarbejde.',
+      cvText: 'Mock CV text content...'
+    });
+    setAgreement('agree');
+    
+    // Mock questionnaire answers (varied scores for testing)
+    const testScores: QuestionScores = {
+      Q1: 4, Q2: 5, Q3: 4, Q4: 4, Q5: 5, // Struktur & Rammer: Høj (4.4)
+      Q6: 3, Q7: 4, Q8: 3, Q9: 2, Q10: 3, // Beslutningsstil: Moderat (3.0)
+      Q11: 4, Q12: 2, Q13: 4, Q14: 2, Q15: 5, // Forandring & Stabilitet: Moderat (3.4)
+      Q16: 5, Q17: 2, Q18: 4, Q19: 2, Q20: 5, // Selvstændighed & Sparring: Moderat (3.6)
+      Q21: 3, Q22: 4, Q23: 3, Q24: 4, Q25: 3, // Sociale præferencer: Moderat (3.4)
+      Q26: 2, Q27: 4, Q28: 3, Q29: 2, Q30: 4, // Ledelse & Autoritet: Moderat (3.0)
+      Q31: 2, Q32: 4, Q33: 2, Q34: 4, Q35: 2, // Tempo & Belastning: Moderat (2.8)
+      Q36: 5, Q37: 4, Q38: 2, Q39: 4, Q40: 5, // Konflikt & Feedback: Høj (4.0)
+    };
+    setScores(testScores);
+    
+    // Mock personality profile result
+    setPersonalityProfile({
+      profile: `DIMENSIONSCORES
+- Struktur & Rammer: 4.4 (Høj)
+- Beslutningsstil: 3.0 (Moderat)
+- Forandring & Stabilitet: 3.4 (Moderat)
+- Selvstændighed & Sparring: 3.6 (Moderat)
+- Sociale præferencer i arbejdet: 3.4 (Moderat)
+- Ledelse & Autoritet: 3.0 (Moderat)
+- Tempo & Belastning: 2.8 (Moderat)
+- Konflikt & Feedback: 4.0 (Høj)
+
+OVERORDNET ARBEJDSPROFIL
+Profilen viser en person der trives med klare strukturer og åben feedback-kultur, samtidig med at der er fleksibilitet i forhold til arbejdsmetoder og samarbejdsformer. Der er præference for forudsigelighed kombineret med en vis grad af selvstændighed.
+
+ARBEJDSMØNSTRE
+- Foretrækker klare rammer og definerede arbejdsgange
+- Kan både arbejde selvstændigt og i samarbejde, afhængigt af opgaven
+- Trives bedst med regelmæssig feedback og åben dialog
+- Værdsætter balance mellem stabilitet og mulighed for udvikling
+
+POTENTIELLE STYRKER I ARBEJDSKONTEKST
+- Struktureret tilgang til opgaveløsning sikrer overblik og kvalitet
+- Åbenhed over for feedback fremmer løbende læring og udvikling
+- Evne til at navigere i både strukturerede og mere fleksible miljøer
+- Balanceret mellem selvstændighed og samarbejde giver god tilpasningsevne
+
+POTENTIELLE FRIKTIONSPUNKTER
+- Miljøer uden klare arbejdsgange kan opleves som frustrerende
+- Meget højt tempo over længere tid kan påvirke kvalitet og trivsel
+- Manglende feedback kan skabe usikkerhed om forventninger
+- Hyppige, uforudsigelige ændringer kan være energikrævende
+
+FORVENTNINGS-CHECK (JOBMATCH)
+Matcher typisk godt med: Roller med definerede processer men også plads til udvikling. Organisationer der værdsætter struktur og samtidig har en åben feedback-kultur. Teams hvor der er både selvstændigt arbejde og samarbejde.
+
+Kan opleve udfordringer i: Meget kaotiske miljøer uden klare rammer. Kulturer hvor feedback er sjælden eller ukonstruktiv. Højtempomiljøer med konstant brand-slukningspræg. Organisationer i vedvarende omstillingsproces uden stabil retning.
+
+AFSLUTTENDE NOTE
+Denne profil er baseret på selvrapporterede præferencer og skal ses som et supplement til CV, erfaring og kontekst. Profilen er vejledende og skal altid fortolkes i sammenhæng med den konkrete rolle og organisation.`,
+      scores: testScores
+    });
+    
+    setCurrentStep('results');
+  };
+  // ============ END TEST MODE ============
+
   // CV confirmed - move to questionnaire
   const cvConfirmed = agreement === 'agree' || revised !== null;
 
@@ -443,6 +512,20 @@ export default function ProfilPage() {
           {activeStep === 'results' && 'Se din komplette karriereprofil'}
         </p>
       </div>
+
+      {/* ============ TEST MODE BUTTON - REMOVE BEFORE PRODUCTION ============ */}
+      {!personalityProfile && (
+        <div className="mb-6">
+          <Button
+            onClick={loadTestData}
+            variant="outline"
+            className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950"
+          >
+            ⚠️ Load Test Data (Dev Mode)
+          </Button>
+        </div>
+      )}
+      {/* ============ END TEST MODE ============ */}
 
       {/* Step Indicator */}
       <div className="flex items-center gap-2 mb-8">

@@ -874,12 +874,12 @@ export default function ProfilPage() {
                     <div key={q.id} className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="font-medium">{q.dimension}</span>
-                        <span className="text-muted-foreground">{scores[q.id as keyof DimensionScores]}/5</span>
+                        <span className="text-muted-foreground">{scores[q.id]}/5</span>
                       </div>
                       <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all"
-                          style={{ width: `${(scores[q.id as keyof DimensionScores] / 5) * 100}%` }}
+                          style={{ width: `${(scores[q.id] / 5) * 100}%` }}
                         />
                       </div>
                     </div>

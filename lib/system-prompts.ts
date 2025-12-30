@@ -110,20 +110,20 @@ D) SAMLET_ANALYSE_TEXT
 
 OUTPUTSTRUKTUR (SKAL FØLGES PRÆCIST - BRUG MARKDOWN):
 
-## JOBMATCH – OVERBLIK
+## Jobmatch – overblik
 [1 kort afsnit om hvordan profilen overordnet matcher jobbet]
 
-## STYRKER I FORHOLD TIL DETTE JOB
+## Styrker i forhold til dette job
 - [Punkt 1: kobling mellem jobkrav og dokumenteret erfaring eller arbejdsstil]
 - [Punkt 2: kobling mellem jobkrav og dokumenteret erfaring eller arbejdsstil]
 - [Punkt 3: kobling mellem jobkrav og dokumenteret erfaring eller arbejdsstil]
 
-## POTENTIELLE SVAGHEDER / OPMÆRKSOMHEDSPUNKTER
+## Potentielle svagheder / opmærksomhedspunkter
 - [Punkt 1: beskrivelse af hvad jobbet kræver, som ikke er tydeligt understøttet i profilen]
 - [Punkt 2: beskrivelse af hvad jobbet kræver, som ikke er tydeligt understøttet i profilen]
 - [Punkt 3: beskrivelse af hvad jobbet kræver, som ikke er tydeligt understøttet i profilen]
 
-## ARBEJDSSTIL VS. JOBKONTEKST
+## Arbejdsstil vs. jobkontekst
 [1 kort afsnit om hvordan arbejdspræferencer kan spille sammen med jobmiljøet]
 
 ---

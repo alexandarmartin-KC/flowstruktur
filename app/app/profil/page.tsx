@@ -31,6 +31,10 @@ interface PersonalityProfile {
   };
 }
 
+interface CombinedAnalysis {
+  analysis: string;
+}
+
 // Spørgsmål til personlighedsprofil (40 spørgsmål - 8 dimensioner × 5)
 const questions = [
   // Struktur & Rammer (Q1-Q5)
@@ -109,6 +113,10 @@ export default function ProfilPage() {
   const [personalityProfile, setPersonalityProfile] = useState<PersonalityProfile | null>(null);
   const [analyzingPersonality, setAnalyzingPersonality] = useState(false);
   
+  // Combined analysis state
+  const [combinedAnalysis, setCombinedAnalysis] = useState<CombinedAnalysis | null>(null);
+  const [analyzingCombined, setAnalyzingCombined] = useState(false);
+  
   // Track which dimension explanations are expanded
   const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set());
   
@@ -177,6 +185,31 @@ Kan opleve udfordringer i: Meget kaotiske miljøer uden klare rammer. Kulturer h
 AFSLUTTENDE NOTE
 Denne profil er baseret på selvrapporterede præferencer og skal ses som et supplement til CV, erfaring og kontekst. Profilen er vejledende og skal altid fortolkes i sammenhæng med den konkrete rolle og organisation.`,
       scores: testScores
+    });
+    
+    // Mock combined analysis
+    setCombinedAnalysis({
+      analysis: `SAMLET PROFILFORSTÅELSE
+Profilen viser en teknisk erfaren udvikler med stærke kompetencer inden for moderne webudvikling, kombineret med præference for strukturerede arbejdsgange og direkte kommunikation. Erfaringen med både startups og etablerede virksomheder indikerer evne til at navigere i forskellige organisatoriske kontekster.
+
+HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN
+- Erfaring med strukturerede frameworks (React, TypeScript) matcher præferencen for klare rammer og definerede processer
+- Fokus på agile metoder understøtter både behovet for struktur og fleksibiliteten i forhold til forandring
+- Erfaring med teamsamarbejde passer til balancen mellem selvstændighed og dialog i arbejdsstil
+
+POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL
+- Startup-erfaring kan have indebåret arbejde under højt tempo og skiftende prioriteter, hvilket kan have været belastende set i lyset af moderat tolerance for tempo
+- Arbejde med brugervenlige interfaces kræver ofte hurtig iteration og konstant feedback fra mange stakeholders, hvilket kan udfordre præferencen for rolige arbejdsgange
+
+ARBEJDSKONTEKSTER DER TYPISK VIL UNDERSTØTTE PROFILEN
+Profilen indikerer at arbejdssituationer med etablerede udviklingsprocesser, klare roller og regelmæssige feedback-loops typisk vil understøtte arbejdsstilen. Miljøer hvor der er balance mellem selvstændigt kodningsarbejde og struktureret teamsamarbejde, samt organisationer der har stabile rammer men plads til teknisk udvikling.
+
+KONTEKSTER DER KAN KRÆVE BEVIDST TILPASNING
+Situationer med meget korte deadlines, hyppige prioritetsskift eller konstant brand-slukningspræg kan kræve særlig opmærksomhed. Ligeledes miljøer med uklare ansvarsområder eller begrænset struktur i udviklingsprocessen. Roller hvor feedback primært er negativ eller sporadisk kan også kræve aktiv håndtering.
+
+AFSLUTTENDE NOTE
+Den samlede analyse er vejledende og bygger på mønstre i erfaring og arbejdspræferencer.
+Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
     });
     
     setCurrentStep('results');
@@ -309,10 +342,53 @@ Denne profil er baseret på selvrapporterede præferencer og skal ses som et sup
       const data = await res.json();
       setPersonalityProfile(data);
       setCurrentStep('results');
+      
+      // Automatically generate combined analysis when both CV and personality are ready
+      if (extraction) {
+        generateCombinedAnalysis(extraction.summary, data.scores);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Der opstod en fejl');
     } finally {
       setAnalyzingPersonality(false);
+    }
+  };
+
+  // Generate combined analysis
+  const generateCombinedAnalysis = async (cvSummary: string, questionScores: QuestionScores) => {
+    setAnalyzingCombined(true);
+    setError(null);
+
+    try {
+      // Calculate dimension scores from question scores
+      const dimensionScores = calculateAllDimensionScores(questionScores);
+      const dimensionScoresMap: { [key: string]: number } = {};
+      dimensionScores.forEach(dim => {
+        dimensionScoresMap[dim.dimension] = dim.score;
+      });
+
+      const res = await fetch('/api/combined-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cvAnalysis: cvSummary,
+          dimensionScores: dimensionScoresMap,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Kunne ikke generere samlet analyse');
+      }
+
+      const data = await res.json();
+      setCombinedAnalysis(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Der opstod en fejl ved generering af samlet analyse');
+    } finally {
+      setAnalyzingCombined(false);
     }
   };
 
@@ -327,6 +403,62 @@ Denne profil er baseret på selvrapporterede præferencer og skal ses som et sup
       }
       return newSet;
     });
+  };
+
+  // Parse combined analysis sections
+  const parseCombinedAnalysis = (analysis: string) => {
+    const sections: { title: string; content: string; bullets: string[] }[] = [];
+    const lines = analysis.split('\n');
+    let currentSection: { title: string; content: string; bullets: string[] } | null = null;
+
+    const sectionTitles = [
+      'SAMLET PROFILFORSTÅELSE',
+      'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN',
+      'POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL',
+      'ARBEJDSKONTEKSTER DER TYPISK VIL UNDERSTØTTE PROFILEN',
+      'KONTEKSTER DER KAN KRÆVE BEVIDST TILPASNING',
+      'AFSLUTTENDE NOTE',
+    ];
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+
+      // Skip decorative lines
+      if (/^[─━═_\-–—=\s]+$/.test(trimmed)) continue;
+
+      // Check if this is a section title
+      const matchedTitle = sectionTitles.find(title => 
+        trimmed.toUpperCase().includes(title) || trimmed.toUpperCase() === title
+      );
+
+      if (matchedTitle) {
+        if (currentSection) {
+          sections.push(currentSection);
+        }
+        currentSection = { title: matchedTitle, content: '', bullets: [] };
+        continue;
+      }
+
+      if (currentSection) {
+        // Parse bullet points
+        if (trimmed.startsWith('- ') || trimmed.startsWith('→')) {
+          const bulletText = trimmed.startsWith('- ') ? trimmed.substring(2) : trimmed.substring(1).trim();
+          currentSection.bullets.push(bulletText);
+        } else {
+          currentSection.content += line + '\n';
+        }
+      }
+    }
+
+    if (currentSection) {
+      sections.push(currentSection);
+    }
+
+    return sections.map(section => ({
+      ...section,
+      content: section.content.trim()
+    }));
   };
 
   // Parse personality profile sections
@@ -1071,6 +1203,85 @@ Denne profil er baseret på selvrapporterede præferencer og skal ses som et sup
               ))}
             </CardContent>
           </Card>
+
+          {/* Combined Analysis Card */}
+          {combinedAnalysis ? (
+            <Card className="border-2 border-indigo-200 dark:border-indigo-800 shadow-lg bg-gradient-to-br from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/20 dark:to-purple-950/20">
+              <CardHeader className="pb-6 border-b border-indigo-200 dark:border-indigo-800">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-2xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                      Samlet Profilforståelse
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground mt-2">Sammenhæng mellem CV og arbejdspræferencer</p>
+                  </div>
+                  <Badge className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                    🔗 Integreret
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-8 space-y-8">
+                {parseCombinedAnalysis(combinedAnalysis.analysis).map((section, index) => (
+                  <div key={index} className="space-y-3">
+                    <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
+                      {section.title === 'SAMLET PROFILFORSTÅELSE' && '🔍'}
+                      {section.title === 'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN' && '✓'}
+                      {section.title === 'POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL' && '⚡'}
+                      {section.title === 'ARBEJDSKONTEKSTER DER TYPISK VIL UNDERSTØTTE PROFILEN' && '🎯'}
+                      {section.title === 'KONTEKSTER DER KAN KRÆVE BEVIDST TILPASNING' && '⚙️'}
+                      {section.title === 'AFSLUTTENDE NOTE' && 'ℹ️'}
+                      {section.title.charAt(0) + section.title.slice(1).toLowerCase()}
+                    </h3>
+                    
+                    {section.content && (
+                      <div className={`rounded-lg p-5 ${
+                        section.title === 'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN'
+                          ? 'bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800'
+                          : section.title === 'POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL'
+                          ? 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800'
+                          : section.title === 'AFSLUTTENDE NOTE'
+                          ? 'bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700'
+                          : 'bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700'
+                      }`}>
+                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                          {section.content}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {section.bullets.length > 0 && (
+                      <div className="space-y-2">
+                        {section.bullets.map((bullet, bIndex) => (
+                          <div
+                            key={bIndex}
+                            className={`flex items-start gap-3 rounded-lg p-4 ${
+                              section.title === 'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN'
+                                ? 'bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800'
+                                : 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800'
+                            }`}
+                          >
+                            <span className="text-lg mt-0.5">
+                              {section.title === 'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN' ? '✓' : '⚡'}
+                            </span>
+                            <p className="text-sm font-medium flex-1">{bullet}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          ) : analyzingCombined ? (
+            <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">
+              <CardContent className="pt-8 pb-8">
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                  <p className="text-sm text-muted-foreground">Genererer samlet analyse...</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : null}
 
           {/* CV Summary Card (collapsed) */}
           <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">

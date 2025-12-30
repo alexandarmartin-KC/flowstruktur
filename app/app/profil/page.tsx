@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Upload, Loader2, ThumbsUp, ThumbsDown, AlertCircle, CheckCircle2, ArrowRight, User, Brain } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { calculateAllDimensionScores } from '@/lib/scoring';
 
 interface CVExtraction {
   summary: string;
@@ -396,6 +397,12 @@ export default function ProfilPage() {
 
   // Determine which step we're on
   const activeStep = personalityProfile ? 'results' : (cvConfirmed && currentStep === 'questionnaire') ? 'questionnaire' : 'cv';
+
+  // Beregn dimensionsscorer når vi har scores
+  const dimensionScores = useMemo(() => {
+    if (Object.keys(scores).length === 0) return [];
+    return calculateAllDimensionScores(scores);
+  }, [scores]);
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
@@ -870,16 +877,20 @@ export default function ProfilPage() {
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg text-foreground">Dine Dimensionsscorer</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {questions.map((q) => (
-                    <div key={q.id} className="space-y-2">
+                  {dimensionScores.map((dim) => (
+                    <div key={dim.dimension} className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="font-medium">{q.dimension}</span>
-                        <span className="text-muted-foreground">{scores[q.id]}/5</span>
+                        <span className="font-medium">{dim.dimension}</span>
+                        {dim.missingAnswers ? (
+                          <span className="text-red-500">Manglende svar</span>
+                        ) : (
+                          <span className="text-muted-foreground">{dim.score.toFixed(1)}/5.0</span>
+                        )}
                       </div>
                       <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all"
-                          style={{ width: `${(scores[q.id] / 5) * 100}%` }}
+                          style={{ width: `${(dim.score / 5) * 100}%` }}
                         />
                       </div>
                     </div>

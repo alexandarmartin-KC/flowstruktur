@@ -50,7 +50,27 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        setSavedJobs(parsed);
+        
+        // Migrate old data format to new format
+        const migrated = parsed.map((job: any) => {
+          const now = new Date().toISOString();
+          
+          return {
+            ...job,
+            // Migrate savedAt to createdAt if needed
+            createdAt: job.createdAt || job.savedAt || now,
+            updatedAt: job.updatedAt || job.savedAt || now,
+            // Ensure status fields exist
+            jobStatus: job.jobStatus || job.status || 'SAVED',
+            cvStatus: job.cvStatus || 'NOT_STARTED',
+            applicationStatus: job.applicationStatus || 'NOT_STARTED',
+            // Remove old fields
+            savedAt: undefined,
+            status: undefined,
+          };
+        });
+        
+        setSavedJobs(migrated);
       }
     } catch (error) {
       console.error('Error loading saved jobs:', error);

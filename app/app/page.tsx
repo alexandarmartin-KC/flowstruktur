@@ -1,15 +1,17 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2, Clock, ArrowRight, Eye, Bookmark, Send } from 'lucide-react';
+import { CheckCircle2, Clock, ArrowRight, Bookmark, Send, FileText } from 'lucide-react';
+import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import {
   mockUserProgress,
-  mockSavedJobs,
 } from '@/lib/mock-data';
 
 export default function OverblikPage() {
   const progress = mockUserProgress;
-  const savedJobs = mockSavedJobs;
+  const { savedJobs } = useSavedJobs();
 
   const statusItems = [
     { label: 'CV uploadet', completed: progress.cvUploaded },
@@ -18,9 +20,9 @@ export default function OverblikPage() {
     { label: 'Muligheder udforsket', completed: progress.mulighederExplored },
   ];
 
-  const seenJobs = savedJobs.filter((j) => j.status === 'seen');
-  const savedJobsList = savedJobs.filter((j) => j.status === 'saved');
-  const appliedJobs = savedJobs.filter((j) => j.status === 'applied');
+  const savedJobsList = savedJobs.filter((j) => j.jobStatus === 'SAVED');
+  const inProgressJobs = savedJobs.filter((j) => j.jobStatus === 'IN_PROGRESS');
+  const appliedJobs = savedJobs.filter((j) => j.jobStatus === 'APPLIED');
 
   return (
     <div className="space-y-8">
@@ -69,37 +71,6 @@ export default function OverblikPage() {
 
       {/* Jobs oversigt */}
       <div className="grid gap-6 md:grid-cols-3">
-        {/* Sete jobs */}
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
-              <Eye className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-lg">Set</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {seenJobs.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Du har endnu ikke set nogen jobs
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {seenJobs.map((job) => (
-                  <div
-                    key={job.id}
-                    className="rounded-lg border border-border p-3 text-sm"
-                  >
-                    <p className="font-medium">{job.titel}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {job.virksomhed}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
         {/* Gemte jobs */}
         <Card>
           <CardHeader className="pb-3">
@@ -115,17 +86,44 @@ export default function OverblikPage() {
               </p>
             ) : (
               <div className="space-y-3">
-                {savedJobsList.map((job) => (
-                  <div
-                    key={job.id}
-                    className="rounded-lg border border-border p-3 text-sm"
-                  >
-                    <p className="font-medium">{job.titel}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {job.virksomhed}
-                    </p>
-                  </div>
-                ))}
+                <p className="text-2xl font-bold">{savedJobsList.length}</p>
+                <p className="text-xs text-muted-foreground">
+                  {savedJobsList.length === 1 ? 'gemt job' : 'gemte jobs'}
+                </p>
+                <Link href="/app/gemte-jobs">
+                  <Button variant="outline" size="sm" className="w-full mt-2">
+                    Se alle
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Under arbejde */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-muted-foreground" />
+              <CardTitle className="text-lg">Under arbejde</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {inProgressJobs.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Ingen jobs under arbejde endnu
+              </p>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-2xl font-bold">{inProgressJobs.length}</p>
+                <p className="text-xs text-muted-foreground">
+                  {inProgressJobs.length === 1 ? 'job under arbejde' : 'jobs under arbejde'}
+                </p>
+                <Link href="/app/gemte-jobs">
+                  <Button variant="outline" size="sm" className="w-full mt-2">
+                    Se alle
+                  </Button>
+                </Link>
               </div>
             )}
           </CardContent>
@@ -146,17 +144,15 @@ export default function OverblikPage() {
               </p>
             ) : (
               <div className="space-y-3">
-                {appliedJobs.map((job) => (
-                  <div
-                    key={job.id}
-                    className="rounded-lg border border-border p-3 text-sm"
-                  >
-                    <p className="font-medium">{job.titel}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {job.virksomhed}
-                    </p>
-                  </div>
-                ))}
+                <p className="text-2xl font-bold">{appliedJobs.length}</p>
+                <p className="text-xs text-muted-foreground">
+                  {appliedJobs.length === 1 ? 'ansøgt job' : 'ansøgte jobs'}
+                </p>
+                <Link href="/app/gemte-jobs">
+                  <Button variant="outline" size="sm" className="w-full mt-2">
+                    Se alle
+                  </Button>
+                </Link>
               </div>
             )}
           </CardContent>

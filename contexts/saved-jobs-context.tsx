@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 export type JobStatus = 'SAVED' | 'IN_PROGRESS' | 'APPLIED';
+export type SubStatus = 'NOT_STARTED' | 'DRAFT' | 'FINAL';
 
 export interface SavedJob {
   id: string;
@@ -12,7 +13,10 @@ export interface SavedJob {
   location?: string;
   type?: string;
   source?: string;
-  status: JobStatus;
+  jobStatus: JobStatus;
+  cvStatus: SubStatus;
+  applicationStatus: SubStatus;
+  previousStatus?: 'SAVED' | 'IN_PROGRESS';
   savedAt: string;
   // Full job data for later use
   fullData?: any;
@@ -20,11 +24,13 @@ export interface SavedJob {
 
 interface SavedJobsContextType {
   savedJobs: SavedJob[];
-  saveJob: (job: Omit<SavedJob, 'status' | 'savedAt'>) => void;
+  saveJob: (job: Omit<SavedJob, 'jobStatus' | 'cvStatus' | 'applicationStatus' | 'savedAt'>) => void;
   unsaveJob: (jobId: string) => void;
   isJobSaved: (jobId: string) => boolean;
   getJobById: (jobId: string) => SavedJob | undefined;
-  updateJobStatus: (jobId: string, status: JobStatus) => void;
+  updateJobStatus: (jobId: string, jobStatus: JobStatus) => void;
+  toggleApplied: (jobId: string) => void;
+  updateSubStatus: (jobId: string, type: 'cv' | 'application', status: SubStatus) => void;
 }
 
 const SavedJobsContext = createContext<SavedJobsContextType | undefined>(undefined);
@@ -61,7 +67,7 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
     }
   }, [savedJobs, isLoaded]);
 
-  const saveJob = (job: Omit<SavedJob, 'status' | 'savedAt'>) => {
+  const saveJob = (job: Omit<SavedJob, 'jobStatus' | 'cvStatus' | 'applicationStatus' | 'savedAt'>) => {
     setSavedJobs((prev) => {
       // Check if already saved
       if (prev.some((j) => j.id === job.id)) {
@@ -71,7 +77,9 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
         ...prev,
         {
           ...job,
-          status: 'SAVED',
+          jobStatus: 'SAVED',
+          cvStatus: 'NOT_STARTED',
+          applicationStatus: 'NOT_STARTED',
           savedAt: new Date().toISOString(),
         },
       ];
@@ -90,9 +98,60 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
     return savedJobs.find((job) => job.id === jobId);
   };
 
-  const updateJobStatus = (jobId: string, status: JobStatus) => {
+  const updateJobStatus = (jobId: string, jobStatus: JobStatus) => {
     setSavedJobs((prev) =>
-      prev.map((job) => (job.id === jobId ? { ...job, status } : job))
+      prev.map((job) => (job.id === jobId ? { ...job, jobStatus } : job))
+    );
+  };
+
+  const updateSubStatus = (jobId: string, type: 'cv' | 'application', status: SubStatus) => {
+    setSavedJobs((prev) =>
+      prev.map((job) => {
+        if (job.id !== jobId) return job;
+        
+        const updated = { ...job };
+        if (type === 'cv') {
+          updated.cvStatus = status;
+        } else {
+          updated.applicationStatus = status;
+        }
+        
+        // Auto-update jobStatus to IN_PROGRESS if working on CV or application
+        if (updated.jobStatus === 'SAVED' && status !== 'NOT_STARTED') {
+          updated.jobStatus = 'IN_PROGRESS';
+        }
+        
+        return updated;
+      })
+    );
+  };
+
+  const toggleApplied = (jobId: string) => {
+    setSavedJobs((prev) =>
+      prev.map((job) => {
+        if (job.id !== jobId) return job;
+
+        // If currently APPLIED, revert to previous status
+        if (job.jobStatus === 'APPLIED') {
+          const newStatus = job.previousStatus || 
+            (job.cvStatus !== 'NOT_STARTED' || job.applicationStatus !== 'NOT_STARTED'
+              ? 'IN_PROGRESS'
+              : 'SAVED');
+          
+          return {
+            ...job,
+            jobStatus: newStatus,
+            previousStatus: undefined,
+          };
+        }
+
+        // If not APPLIED, mark as APPLIED and save current status
+        return {
+          ...job,
+          previousStatus: job.jobStatus as 'SAVED' | 'IN_PROGRESS',
+          jobStatus: 'APPLIED',
+        };
+      })
     );
   };
 
@@ -105,6 +164,8 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
         isJobSaved,
         getJobById,
         updateJobStatus,
+        toggleApplied,
+        updateSubStatus,
       }}
     >
       {children}

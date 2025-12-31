@@ -182,13 +182,23 @@ export function CVPreview({ sections, profile, jobTitle }: CVPreviewProps) {
                 {isExperience && (
                   <div className="space-y-5">
                     {(() => {
-                      const experiences = parseExperienceText(section.suggestedText);
-                      
-                      if (experiences.length === 0) {
+                      // Check if there's any text first
+                      if (!section.suggestedText || section.suggestedText.trim() === '') {
                         return (
                           <p className="text-sm text-gray-500 italic">
                             Ingen erfaringer tilføjet endnu
                           </p>
+                        );
+                      }
+                      
+                      const experiences = parseExperienceText(section.suggestedText);
+                      
+                      if (experiences.length === 0) {
+                        // If text exists but parser found nothing, show the raw text
+                        return (
+                          <div className="text-sm text-gray-800 whitespace-pre-wrap">
+                            {section.suggestedText}
+                          </div>
                         );
                       }
                       

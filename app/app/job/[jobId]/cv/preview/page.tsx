@@ -145,20 +145,45 @@ export default function CVPreviewPage() {
             background: white !important;
           }
           
+          @page {
+            size: A4;
+            margin: 2cm;
+          }
+          
           .cv-preview {
             max-width: 100% !important;
             margin: 0 !important;
-            padding: 1.5cm 2cm !important;
+            padding: 0 !important;
             box-shadow: none !important;
+            border: none !important;
           }
           
           .cv-section {
             page-break-inside: avoid;
           }
           
-          h2 {
+          .experience-item {
+            page-break-inside: avoid;
+          }
+          
+          h1, h2, h3 {
             page-break-after: avoid;
           }
+          
+          /* Hide all interactive elements in print */
+          button, .print\\:hidden {
+            display: none !important;
+          }
+        }
+        
+        /* Ensure no contentEditable or inputs in preview */
+        .cv-preview * {
+          -webkit-user-modify: read-only !important;
+          user-select: text;
+        }
+        
+        .cv-preview [contenteditable] {
+          contenteditable: false !important;
         }
       `}</style>
     </div>

@@ -1,53 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Download, Check } from 'lucide-react';
+import { ArrowLeft, Download, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import { CVPreview } from '@/components/CVPreview/CVPreview';
-
-interface CVSection {
-  id: string;
-  name: string;
-  suggestedText: string;
-  status: 'approved' | 'pending' | 'editing' | 'rejected';
-}
+import { useResolvedCv } from '@/hooks/use-resolved-cv';
 
 export default function CVPreviewPage() {
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { savedJobs, setCvStatus } = useSavedJobs();
   const jobId = params.jobId as string;
   
+  // Use centralized CV resolution hook
+  const { cv, isLoading, error } = useResolvedCv(jobId);
+  
+  // Get the job to check cvStatus
   const job = savedJobs.find((j) => j.id === jobId);
-  const [sections, setSections] = useState<CVSection[]>([]);
-  const [profile, setProfile] = useState<any>(null);
-
-  useEffect(() => {
-    // Load sections from localStorage (same as CV page)
-    const storedSections = localStorage.getItem(`cv_sections_${jobId}`);
-    if (storedSections) {
-      setSections(JSON.parse(storedSections));
-    }
-
-    // Load profile data
-    const storedProfile = localStorage.getItem('flowstruktur_user_profile');
-    if (storedProfile) {
-      setProfile(JSON.parse(storedProfile));
-    }
-  }, [jobId]);
-
-  const handleEditSection = (sectionId: string) => {
-    // Navigate back to CV page with section query param
-    router.push(`/app/job/${jobId}/cv?section=${sectionId}`);
-  };
 
   const handleMarkAsFinal = () => {
-    if (job) {
-      setCvStatus(job.id, 'FINAL');
+    if (cv) {
+      setCvStatus(jobId, 'FINAL');
     }
   };
 
@@ -59,7 +34,49 @@ export default function CVPreviewPage() {
     router.push(`/app/job/${jobId}/ansøgning`);
   };
 
-  if (!job) return null;
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
+          <p className="text-gray-600">Indlæser CV...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !cv) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold mb-2">CV ikke fundet</h2>
+              <p className="text-gray-600 mb-6">
+                {error || 'CV\'et for dette job kunne ikke findes. Gå til CV-siden for at oprette det.'}
+              </p>
+              <div className="flex gap-2 justify-center">
+                <Button
+                  variant="outline"
+                  onClick={() => router.push('/app/gemte-jobs')}
+                >
+                  Gå til Gemte jobs
+                </Button>
+                <Button
+                  onClick={() => router.push(`/app/job/${jobId}/cv`)}
+                >
+                  Opret CV
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -91,10 +108,9 @@ export default function CVPreviewPage() {
       {/* Preview */}
       <div className="py-8 px-4">
         <CVPreview
-          sections={sections}
-          profile={profile}
-          jobTitle={job.title}
-          onEditSection={handleEditSection}
+          sections={cv.sections}
+          profile={cv.profile}
+          jobTitle={cv.jobTitle}
         />
       </div>
 
@@ -113,10 +129,10 @@ export default function CVPreviewPage() {
 
                 <div className="flex gap-2">
                   <Button
-                    variant={job.cvStatus === 'FINAL' ? 'outline' : 'default'}
+                    variant={job?.cvStatus === 'FINAL' ? 'outline' : 'default'}
                     onClick={handleMarkAsFinal}
                   >
-                    {job.cvStatus === 'FINAL' ? (
+                    {job?.cvStatus === 'FINAL' ? (
                       <>
                         <Check className="mr-2 h-4 w-4" />
                         CV markeret som klar

@@ -25,6 +25,7 @@ export interface SavedJob {
 
 interface SavedJobsContextType {
   savedJobs: SavedJob[];
+  isLoaded: boolean;
   saveJob: (job: Omit<SavedJob, 'jobStatus' | 'cvStatus' | 'applicationStatus' | 'createdAt' | 'updatedAt'>) => void;
   unsaveJob: (jobId: string) => void;
   isJobSaved: (jobId: string) => boolean;
@@ -222,6 +223,7 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
     <SavedJobsContext.Provider
       value={{
         savedJobs,
+        isLoaded,
         saveJob,
         unsaveJob,
         isJobSaved,

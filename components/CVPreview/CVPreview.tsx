@@ -24,7 +24,6 @@ interface CVPreviewProps {
   sections: CVSection[];
   profile?: UserProfile;
   jobTitle?: string;
-  onEditSection?: (sectionId: string) => void;
 }
 
 interface ParsedExperience {
@@ -34,7 +33,7 @@ interface ParsedExperience {
   bullets: string[];
 }
 
-export function CVPreview({ sections, profile, jobTitle, onEditSection }: CVPreviewProps) {
+export function CVPreview({ sections, profile, jobTitle }: CVPreviewProps) {
   const approvedSections = sections.filter(s => s.status === 'approved');
 
   // Improved experience parser - handles multiple formats
@@ -161,20 +160,11 @@ export function CVPreview({ sections, profile, jobTitle, onEditSection }: CVPrev
 
           return (
             <section key={section.id} className="cv-section">
-              {/* Section header with discrete edit link */}
-              <div className="flex items-start justify-between mb-4">
-                <h2 className="text-base font-bold uppercase tracking-wider text-gray-900 pb-1 border-b-2 border-gray-900 flex-1 max-w-fit">
+              {/* Section header */}
+              <div className="mb-4">
+                <h2 className="text-base font-bold uppercase tracking-wider text-gray-900 pb-1 border-b border-gray-300">
                   {section.name}
                 </h2>
-                {onEditSection && (
-                  <button
-                    onClick={() => onEditSection(section.id)}
-                    className="text-xs text-gray-500 hover:text-blue-600 ml-4 print:hidden transition-colors"
-                    aria-label={`Redigér ${section.name}`}
-                  >
-                    Redigér
-                  </button>
-                )}
               </div>
 
               {/* Content rendering - READ ONLY, NO INPUTS */}

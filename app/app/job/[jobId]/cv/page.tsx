@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Loader2, Info, Check, Pencil, X, ChevronDown, ChevronUp, AlertCircle, Plus } from 'lucide-react';
+import { ArrowRight, Loader2, Info, Check, Pencil, X, ChevronDown, ChevronUp, AlertCircle, Plus, Eye } from 'lucide-react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 
 interface CVSection {
@@ -54,9 +54,22 @@ export default function CVTilpasningPage() {
 
   useEffect(() => {
     if (job && sections.length === 0 && !isAnalyzing) {
-      handleAnalyzeCv();
+      // Try to load sections from localStorage first
+      const storedSections = localStorage.getItem(`cv_sections_${jobId}`);
+      if (storedSections) {
+        setSections(JSON.parse(storedSections));
+      } else {
+        handleAnalyzeCv();
+      }
     }
   }, [job]);
+
+  // Save sections to localStorage whenever they change
+  useEffect(() => {
+    if (sections.length > 0) {
+      localStorage.setItem(`cv_sections_${jobId}`, JSON.stringify(sections));
+    }
+  }, [sections, jobId]);
 
   const handleAnalyzeCv = async () => {
     if (!job) return;
@@ -631,6 +644,15 @@ KOMPETENCER
                     disabled={sections.length === 0}
                   >
                     Gem kladde
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    onClick={() => router.push(`/app/job/${jobId}/cv/preview`)}
+                    disabled={approvedSectionsCount === 0}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    Se samlet CV
                   </Button>
                   
                   <Button 

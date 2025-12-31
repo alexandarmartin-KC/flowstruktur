@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Loader2, Sparkles, Copy, Check } from 'lucide-react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import ReactMarkdown from 'react-markdown';
@@ -13,7 +14,7 @@ import ReactMarkdown from 'react-markdown';
 export default function AnsøgningPage() {
   const params = useParams();
   const router = useRouter();
-  const { savedJobs, updateJobStatus } = useSavedJobs();
+  const { savedJobs, setApplicationStatus } = useSavedJobs();
   const jobId = params.jobId as string;
   
   const job = savedJobs.find((j) => j.id === jobId);
@@ -71,13 +72,22 @@ export default function AnsøgningPage() {
 
       const data = await response.json();
       setApplication(data.application);
-      
-      // Update job status to APPLIED
-      updateJobStatus(job.id, 'APPLIED');
     } catch (err: any) {
       setError(err.message || 'Der opstod en fejl ved generering af ansøgning');
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleSaveDraft = () => {
+    if (job) {
+      setApplicationStatus(job.id, 'DRAFT');
+    }
+  };
+
+  const handleMarkAsFinal = () => {
+    if (job && application) {
+      setApplicationStatus(job.id, 'FINAL');
     }
   };
 
@@ -95,6 +105,22 @@ export default function AnsøgningPage() {
 
   return (
     <div className="space-y-8">
+      {/* Guard: Warn if CV is not final */}
+      {job && job.cvStatus !== 'FINAL' && (
+        <Alert>
+          <AlertDescription className="flex items-start gap-2">
+            <Sparkles className="h-4 w-4 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium mb-1">Anbefaling: Færdiggør dit CV først</p>
+              <p className="text-sm">
+                Før du skriver ansøgningen, anbefales det at gøre CV'et klar først.
+                Det sikrer, at ansøgningen bygger på det bedste grundlag.
+              </p>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Explanatory text - only show if no application yet */}
       {!application && !isGenerating && (
         <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
@@ -200,19 +226,63 @@ export default function AnsøgningPage() {
           {/* Actions */}
           <Card className="border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20">
             <CardContent className="pt-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex flex-col gap-4">
                 <div>
                   <h3 className="font-semibold mb-1">Klar til at ansøge?</h3>
                   <p className="text-sm text-muted-foreground">
                     Kopier teksten og send din ansøgning direkte til virksomheden.
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => router.push('/app/gemte-jobs')}>
-                    Tilbage til gemte jobs
+
+                {/* Application Status indicator */}
+                {job && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-muted-foreground">Ansøgning-status:</span>
+                    <Badge variant={job.applicationStatus === 'FINAL' ? 'default' : 'outline'}>
+                      {job.applicationStatus === 'NOT_STARTED' && 'Ikke startet'}
+                      {job.applicationStatus === 'DRAFT' && 'Kladde'}
+                      {job.applicationStatus === 'FINAL' && 'Klar'}
+                    </Badge>
+                  </div>
+                )}
+
+                {/* Action buttons */}
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline"
+                    onClick={handleSaveDraft}
+                  >
+                    Gem kladde
                   </Button>
-                  <Button variant="outline" onClick={handleGenerateApplication}>
+                  
+                  <Button 
+                    variant={application && job?.applicationStatus !== 'FINAL' ? 'default' : 'outline'}
+                    onClick={handleMarkAsFinal}
+                    disabled={!application}
+                  >
+                    {job?.applicationStatus === 'FINAL' ? (
+                      <>
+                        <Check className="mr-2 h-4 w-4" />
+                        Ansøgning markeret som klar
+                      </>
+                    ) : (
+                      'Markér ansøgning som klar'
+                    )}
+                  </Button>
+
+                  <Button 
+                    variant="outline" 
+                    onClick={handleGenerateApplication}
+                  >
                     Generer igen
+                  </Button>
+
+                  <Button 
+                    variant="outline" 
+                    onClick={() => router.push('/app/gemte-jobs')}
+                    className="ml-auto"
+                  >
+                    Tilbage til gemte jobs
                   </Button>
                 </div>
               </div>

@@ -24,7 +24,7 @@ interface CVSection {
 export default function CVTilpasningPage() {
   const params = useParams();
   const router = useRouter();
-  const { savedJobs, updateJobStatus } = useSavedJobs();
+  const { savedJobs, setCvStatus } = useSavedJobs();
   const jobId = params.jobId as string;
   
   const job = savedJobs.find((j) => j.id === jobId);
@@ -202,9 +202,7 @@ KOMPETENCER
           'Direkte ledelseserfaring med personaleansvar er ikke dokumenteret',
         ]);
       }
-      
-      // Update job status
-      updateJobStatus(job.id, 'IN_PROGRESS');
+
     } catch (err: any) {
       setError(err.message || 'Der opstod en fejl ved CV-analysen');
     } finally {
@@ -284,6 +282,18 @@ KOMPETENCER
     const finalCV = getFinalCV();
     localStorage.setItem('flowstruktur_tailored_cv', finalCV);
     router.push(`/app/job/${jobId}/ansøgning`);
+  };
+
+  const handleSaveDraft = () => {
+    if (job) {
+      setCvStatus(job.id, 'DRAFT');
+    }
+  };
+
+  const handleMarkAsFinal = () => {
+    if (job && allSectionsHandled) {
+      setCvStatus(job.id, 'FINAL');
+    }
   };
 
   if (!job) return null;
@@ -578,7 +588,7 @@ KOMPETENCER
           {/* Final note and CTA */}
           <Card className={`${allSectionsHandled ? 'border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20' : 'border-primary/20 bg-primary/5'}`}>
             <CardContent className="pt-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex flex-col gap-4">
                 <div>
                   {allSectionsHandled ? (
                     <>
@@ -600,13 +610,53 @@ KOMPETENCER
                     </>
                   )}
                 </div>
-                <Button 
-                  onClick={handleContinueToApplication}
-                  disabled={!allSectionsHandled}
-                >
-                  Fortsæt til ansøgning
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+
+                {/* CV Status indicator */}
+                {job && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-muted-foreground">CV-status:</span>
+                    <Badge variant={job.cvStatus === 'FINAL' ? 'default' : 'outline'}>
+                      {job.cvStatus === 'NOT_STARTED' && 'Ikke startet'}
+                      {job.cvStatus === 'DRAFT' && 'Kladde'}
+                      {job.cvStatus === 'FINAL' && 'Klar'}
+                    </Badge>
+                  </div>
+                )}
+
+                {/* Action buttons */}
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline"
+                    onClick={handleSaveDraft}
+                    disabled={sections.length === 0}
+                  >
+                    Gem kladde
+                  </Button>
+                  
+                  <Button 
+                    variant={allSectionsHandled && job?.cvStatus !== 'FINAL' ? 'default' : 'outline'}
+                    onClick={handleMarkAsFinal}
+                    disabled={!allSectionsHandled}
+                  >
+                    {job?.cvStatus === 'FINAL' ? (
+                      <>
+                        <Check className="mr-2 h-4 w-4" />
+                        CV markeret som klar
+                      </>
+                    ) : (
+                      'Markér CV som klar'
+                    )}
+                  </Button>
+
+                  <Button 
+                    onClick={handleContinueToApplication}
+                    disabled={!allSectionsHandled}
+                    className="ml-auto"
+                  >
+                    Fortsæt til ansøgning
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

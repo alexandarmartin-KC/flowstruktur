@@ -24,6 +24,11 @@ export default function OverblikPage() {
   const inProgressJobs = savedJobs.filter((j) => j.jobStatus === 'IN_PROGRESS');
   const appliedJobs = savedJobs.filter((j) => j.jobStatus === 'APPLIED');
 
+  // Sort by most recently updated
+  const recentJobs = [...savedJobs]
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .slice(0, 5);
+
   return (
     <div className="space-y-8">
       {/* Header */}

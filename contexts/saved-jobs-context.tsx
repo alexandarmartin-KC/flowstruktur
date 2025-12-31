@@ -17,20 +17,23 @@ export interface SavedJob {
   cvStatus: SubStatus;
   applicationStatus: SubStatus;
   previousStatus?: 'SAVED' | 'IN_PROGRESS';
-  savedAt: string;
+  createdAt: string;
+  updatedAt: string;
   // Full job data for later use
   fullData?: any;
 }
 
 interface SavedJobsContextType {
   savedJobs: SavedJob[];
-  saveJob: (job: Omit<SavedJob, 'jobStatus' | 'cvStatus' | 'applicationStatus' | 'savedAt'>) => void;
+  saveJob: (job: Omit<SavedJob, 'jobStatus' | 'cvStatus' | 'applicationStatus' | 'createdAt' | 'updatedAt'>) => void;
   unsaveJob: (jobId: string) => void;
   isJobSaved: (jobId: string) => boolean;
   getJobById: (jobId: string) => SavedJob | undefined;
   updateJobStatus: (jobId: string, jobStatus: JobStatus) => void;
   toggleApplied: (jobId: string) => void;
-  updateSubStatus: (jobId: string, type: 'cv' | 'application', status: SubStatus) => void;
+  markInProgress: (jobId: string) => void;
+  setCvStatus: (jobId: string, status: SubStatus) => void;
+  setApplicationStatus: (jobId: string, status: SubStatus) => void;
 }
 
 const SavedJobsContext = createContext<SavedJobsContextType | undefined>(undefined);
@@ -67,12 +70,13 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
     }
   }, [savedJobs, isLoaded]);
 
-  const saveJob = (job: Omit<SavedJob, 'jobStatus' | 'cvStatus' | 'applicationStatus' | 'savedAt'>) => {
+  const saveJob = (job: Omit<SavedJob, 'jobStatus' | 'cvStatus' | 'applicationStatus' | 'createdAt' | 'updatedAt'>) => {
     setSavedJobs((prev) => {
       // Check if already saved
       if (prev.some((j) => j.id === job.id)) {
         return prev;
       }
+      const now = new Date().toISOString();
       return [
         ...prev,
         {
@@ -80,7 +84,8 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
           jobStatus: 'SAVED',
           cvStatus: 'NOT_STARTED',
           applicationStatus: 'NOT_STARTED',
-          savedAt: new Date().toISOString(),
+          createdAt: now,
+          updatedAt: now,
         },
       ];
     });
@@ -100,23 +105,57 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
 
   const updateJobStatus = (jobId: string, jobStatus: JobStatus) => {
     setSavedJobs((prev) =>
-      prev.map((job) => (job.id === jobId ? { ...job, jobStatus } : job))
+      prev.map((job) => 
+        job.id === jobId 
+          ? { ...job, jobStatus, updatedAt: new Date().toISOString() } 
+          : job
+      )
     );
   };
 
-  const updateSubStatus = (jobId: string, type: 'cv' | 'application', status: SubStatus) => {
+  const markInProgress = (jobId: string) => {
+    setSavedJobs((prev) =>
+      prev.map((job) =>
+        job.id === jobId && job.jobStatus === 'SAVED'
+          ? { ...job, jobStatus: 'IN_PROGRESS', updatedAt: new Date().toISOString() }
+          : job
+      )
+    );
+  };
+
+  const setCvStatus = (jobId: string, status: SubStatus) => {
     setSavedJobs((prev) =>
       prev.map((job) => {
         if (job.id !== jobId) return job;
         
-        const updated = { ...job };
-        if (type === 'cv') {
-          updated.cvStatus = status;
-        } else {
-          updated.applicationStatus = status;
+        const updated = { 
+          ...job, 
+          cvStatus: status,
+          updatedAt: new Date().toISOString()
+        };
+        
+        // Auto-update jobStatus to IN_PROGRESS if working on CV (only when saving draft or final)
+        if (updated.jobStatus === 'SAVED' && status !== 'NOT_STARTED') {
+          updated.jobStatus = 'IN_PROGRESS';
         }
         
-        // Auto-update jobStatus to IN_PROGRESS if working on CV or application
+        return updated;
+      })
+    );
+  };
+
+  const setApplicationStatus = (jobId: string, status: SubStatus) => {
+    setSavedJobs((prev) =>
+      prev.map((job) => {
+        if (job.id !== jobId) return job;
+        
+        const updated = { 
+          ...job, 
+          applicationStatus: status,
+          updatedAt: new Date().toISOString()
+        };
+        
+        // Auto-update jobStatus to IN_PROGRESS if working on application
         if (updated.jobStatus === 'SAVED' && status !== 'NOT_STARTED') {
           updated.jobStatus = 'IN_PROGRESS';
         }
@@ -131,6 +170,8 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
       prev.map((job) => {
         if (job.id !== jobId) return job;
 
+        const now = new Date().toISOString();
+
         // If currently APPLIED, revert to previous status
         if (job.jobStatus === 'APPLIED') {
           const newStatus = job.previousStatus || 
@@ -142,6 +183,7 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
             ...job,
             jobStatus: newStatus,
             previousStatus: undefined,
+            updatedAt: now,
           };
         }
 
@@ -150,6 +192,7 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
           ...job,
           previousStatus: job.jobStatus as 'SAVED' | 'IN_PROGRESS',
           jobStatus: 'APPLIED',
+          updatedAt: now,
         };
       })
     );
@@ -165,7 +208,9 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
         getJobById,
         updateJobStatus,
         toggleApplied,
-        updateSubStatus,
+        markInProgress,
+        setCvStatus,
+        setApplicationStatus,
       }}
     >
       {children}

@@ -45,7 +45,7 @@ const SUBSTATUS_LABELS = {
 };
 
 export function JobCard({ job, onUndo }: JobCardProps) {
-  const { toggleApplied, unsaveJob } = useSavedJobs();
+  const { toggleApplied, unsaveJob, markInProgress } = useSavedJobs();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const statusConfig = STATUS_CONFIG[job.jobStatus];
@@ -63,6 +63,13 @@ export function JobCard({ job, onUndo }: JobCardProps) {
     }
     
     setIsProcessing(false);
+  };
+
+  const handleWorkOnJob = () => {
+    // Only mark as IN_PROGRESS if currently SAVED
+    if (job.jobStatus === 'SAVED') {
+      markInProgress(job.id);
+    }
   };
 
   const getCvStatusText = () => {
@@ -165,7 +172,7 @@ export function JobCard({ job, onUndo }: JobCardProps) {
 
         {/* Saved date */}
         <p className="text-xs text-muted-foreground">
-          Gemt {new Date(job.savedAt).toLocaleDateString('da-DK', {
+          Gemt {new Date(job.createdAt).toLocaleDateString('da-DK', {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
@@ -174,7 +181,7 @@ export function JobCard({ job, onUndo }: JobCardProps) {
 
         {/* Primary CTA */}
         <div className="border-t border-border pt-4">
-          <Link href={`/app/job/${job.id}/cv`}>
+          <Link href={`/app/job/${job.id}/cv`} onClick={handleWorkOnJob}>
             <Button 
               size="sm" 
               className="bg-blue-600 hover:bg-blue-700"

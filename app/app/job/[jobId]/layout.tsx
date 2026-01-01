@@ -33,7 +33,7 @@ export default function JobLayout({ children }: { children: React.ReactNode }) {
   }
 
   const isOnCvPage = pathname.endsWith('/cv');
-  const isOnAnsøgningPage = pathname.endsWith('/ansøgning');
+  const isOnAnsøgningPage = pathname.endsWith('/ansoegning');
   const isOnInterviewPage = pathname.endsWith('/interview');
 
   return (
@@ -86,7 +86,7 @@ export default function JobLayout({ children }: { children: React.ReactNode }) {
             1. CV-tilpasning
           </Link>
           <Link
-            href={`/app/job/${jobId}/ansøgning`}
+            href={`/app/job/${jobId}/ansoegning`}
             className={`flex-1 py-3 px-3 sm:px-4 text-sm font-medium transition-all rounded-lg border-2 text-center ${
               isOnAnsøgningPage
                 ? 'border-primary bg-primary/10 text-primary'

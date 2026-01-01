@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,12 +8,16 @@ import { ArrowLeft, Download, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import { CVPreview } from '@/components/CVPreview/CVPreview';
 import { useResolvedCv } from '@/hooks/use-resolved-cv';
+import { useUserProfile } from '@/contexts/user-profile-context';
+import { ProfileHardGate } from '@/components/profile-hard-gate';
 
 export default function CVPreviewPage() {
   const params = useParams();
   const router = useRouter();
   const { savedJobs, setCvStatus } = useSavedJobs();
+  const { canExport } = useUserProfile();
   const jobId = params.jobId as string;
+  const [showHardGate, setShowHardGate] = useState(false);
   
   // Use centralized CV resolution hook
   const { cv, isLoading, error } = useResolvedCv(jobId);
@@ -27,6 +32,11 @@ export default function CVPreviewPage() {
   };
 
   const handleDownloadPDF = () => {
+    const exportReqs = canExport();
+    if (!exportReqs.canExport) {
+      setShowHardGate(true);
+      return;
+    }
     window.print();
   };
 
@@ -202,6 +212,14 @@ export default function CVPreviewPage() {
           contenteditable: false !important;
         }
       `}</style>
+
+      {/* Hard gate modal */}
+      <ProfileHardGate
+        isOpen={showHardGate}
+        onClose={() => setShowHardGate(false)}
+        action="eksportere CV"
+        returnPath={`/app/job/${jobId}/cv/preview`}
+      />
     </div>
   );
 }

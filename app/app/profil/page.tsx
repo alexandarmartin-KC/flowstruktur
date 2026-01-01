@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { calculateAllDimensionScores } from '@/lib/scoring';
 import { getExplanation, getLevel, type DimensionKey } from '@/lib/dimensionExplanations';
+import { ProfileContactSection } from '@/components/profile-contact-section';
 
 interface CVExtraction {
   summary: string;
@@ -624,6 +625,9 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Contact Information Section - Always visible at top */}
+      <ProfileContactSection />
+
       {/* Premium Header Section */}
       <div className="space-y-3 mb-8">
         <div className="flex items-center gap-3">

@@ -10,6 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, Sparkles, Copy, Check, Wand2, AlertCircle, Edit3, ChevronDown, ChevronUp } from 'lucide-react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import { useResolvedCv } from '@/hooks/use-resolved-cv';
+import { ProfileSoftGate } from '@/components/profile-soft-gate';
+import { useUserProfile } from '@/contexts/user-profile-context';
+import { ProfileHardGate } from '@/components/profile-hard-gate';
 
 interface MatchPoint {
   requirement: string;
@@ -31,7 +34,9 @@ export default function AnsøgningPage() {
   const params = useParams();
   const router = useRouter();
   const { savedJobs, setApplicationStatus } = useSavedJobs();
+  const { canExport } = useUserProfile();
   const jobId = params.jobId as string;
+  const [showHardGate, setShowHardGate] = useState(false);
   
   const job = savedJobs.find((j) => j.id === jobId);
   const { cv, isLoading: cvLoading } = useResolvedCv(jobId);
@@ -185,6 +190,11 @@ export default function AnsøgningPage() {
   };
 
   const handleCopyToClipboard = async () => {
+    const exportReqs = canExport();
+    if (!exportReqs.canExport) {
+      setShowHardGate(true);
+      return;
+    }
     try {
       await navigator.clipboard.writeText(application);
       setIsCopied(true);
@@ -222,6 +232,9 @@ export default function AnsøgningPage() {
 
   return (
     <div className="space-y-8">
+      {/* Profile completeness soft gate */}
+      <ProfileSoftGate context="application" />
+
       {/* Guard: Warn if CV is not final */}
       {job && job.cvStatus !== 'FINAL' && (
         <Alert>
@@ -545,6 +558,14 @@ export default function AnsøgningPage() {
           </Card>
         </>
       )}
+
+      {/* Hard gate modal */}
+      <ProfileHardGate
+        isOpen={showHardGate}
+        onClose={() => setShowHardGate(false)}
+        action="kopiere og eksportere ansøgning"
+        returnPath={`/app/job/${jobId}/ansoegning`}
+      />
     </div>
   );
 }

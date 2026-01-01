@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Loader2, Info, Check, Pencil, X, ChevronDown, ChevronUp, AlertCircle, Plus, Eye } from 'lucide-react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
+import { ProfileSoftGate } from '@/components/profile-soft-gate';
 
 interface CVSection {
   id: string;
@@ -313,6 +314,9 @@ KOMPETENCER
 
   return (
     <div className="space-y-8">
+      {/* Profile completeness soft gate */}
+      <ProfileSoftGate context="cv" />
+
       {/* Explanatory text */}
       <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
         <CardHeader>

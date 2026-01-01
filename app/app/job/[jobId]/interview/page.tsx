@@ -10,6 +10,7 @@ import { Loader2, Sparkles, AlertCircle, ChevronDown, ChevronUp, Play } from 'lu
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import { useResolvedCv } from '@/hooks/use-resolved-cv';
 import InterviewSimulation from '@/components/interview-simulation';
+import { ProfileSoftGate } from '@/components/profile-soft-gate';
 
 interface CVRisk {
   title: string;
@@ -144,6 +145,9 @@ export default function InterviewPreparationPage() {
 
   return (
     <div className="space-y-8">
+      {/* Profile completeness soft gate */}
+      <ProfileSoftGate context="interview" />
+
       {/* Header */}
       <div className="space-y-2">
         <h2 className="text-3xl font-bold">

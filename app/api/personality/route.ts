@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { GLOBAL_RULES } from '@/lib/system-prompts';
 
-const openai = new OpenAI();
+// Lazy initialization to avoid build-time errors
+let openai: OpenAI | null = null;
+
+function getOpenAI() {
+  if (!openai) {
+    openai = new OpenAI();
+  }
+  return openai;
+}
 
 interface QuestionScores {
   [key: string]: number; // Q1-Q40
@@ -96,7 +104,7 @@ export async function POST(request: NextRequest) {
       userMessage += `${qKey}: ${scores[qKey]}\n`;
     }
 
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {

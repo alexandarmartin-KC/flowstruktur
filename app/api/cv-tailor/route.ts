@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI();
+// Lazy initialization to avoid build-time errors
+let openai: OpenAI | null = null;
+
+function getOpenAI() {
+  if (!openai) {
+    openai = new OpenAI();
+  }
+  return openai;
+}
 
 const CV_SECTIONS_PROMPT = `DU ER CLAUDE.
 DU FUNGERER SOM EN STRUKTURERET, FAKTABASERET ASSISTENT
@@ -137,7 +145,7 @@ ${cvAnalysis}
 
 Returnér JSON med sektioner og ikke-dækkede krav.`;
 
-      const response = await openai.chat.completions.create({
+      const response = await getOpenAI().chat.completions.create({
         model: 'gpt-4o',
         messages: [
           {
@@ -185,7 +193,7 @@ ${combinedAnalysis}
 
 Producer nu en fuldstændig CV-match analyse.`;
 
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {

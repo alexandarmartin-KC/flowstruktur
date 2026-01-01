@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { STEP_PROMPTS } from '@/lib/system-prompts';
 
-const openai = new OpenAI();
+// Lazy initialization to avoid build-time errors
+let openai: OpenAI | null = null;
+
+function getOpenAI() {
+  if (!openai) {
+    openai = new OpenAI();
+  }
+  return openai;
+}
 
 interface SimulationFeedback {
   feedback: string;
@@ -64,7 +72,7 @@ ${previousFeedback ? `- Tidligere feedback: ${previousFeedback.feedback}` : ''}
 Giv feedback på svaret. Vær konstruktiv og hjælpsom.
 Output som JSON med præcis struktur som angivet.`;
 
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {

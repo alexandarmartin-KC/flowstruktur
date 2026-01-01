@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI();
+// Lazy initialization to avoid build-time errors
+let openai: OpenAI | null = null;
+
+function getOpenAI() {
+  if (!openai) {
+    openai = new OpenAI();
+  }
+  return openai;
+}
 
 const APPLICATION_ANALYSIS_PROMPT = `DU ER EN ANALYTIKER DER MATCHER CV MOD JOBKRAV.
 
@@ -92,7 +100,7 @@ ${JSON.stringify(dimensionScores, null, 2)}` : ''}
 
 Returner en JSON-analyse med matchPoints (min 3), gaps (min 1) og recommendedFraming.`;
 
-    const analysisResponse = await openai.chat.completions.create({
+    const analysisResponse = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {
@@ -130,7 +138,7 @@ ${JSON.stringify(analysis, null, 2)}
 
 Skriv en fuld ansøgning som ren tekst. Brug KUN dokumenteret erfaring fra CV'et og analysen.`;
 
-    const writingResponse = await openai.chat.completions.create({
+    const writingResponse = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {

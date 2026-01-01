@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI();
+// Lazy initialization to avoid build-time errors
+let openai: OpenAI | null = null;
+
+function getOpenAI() {
+  if (!openai) {
+    openai = new OpenAI();
+  }
+  return openai;
+}
 
 const REWRITE_INSTRUCTIONS = {
   shorter: `Gør ansøgningen KORTERE uden at miste de vigtigste pointer. 
@@ -83,7 +91,7 @@ ${instructionText}
 
 Returner den komplette omskrevne ansøgning som ren tekst.`;
 
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {

@@ -1,5 +1,6 @@
 'use client';
 
+// Job detail layout with sticky navigation
 import { useEffect, useState } from 'react';
 import { useParams, usePathname } from 'next/navigation';
 import Link from 'next/link';

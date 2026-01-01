@@ -1,15 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Sparkles, Copy, Check } from 'lucide-react';
+import { Loader2, Sparkles, Copy, Check, Wand2, AlertCircle, Edit3, ChevronDown, ChevronUp } from 'lucide-react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
-import ReactMarkdown from 'react-markdown';
+import { useResolvedCv } from '@/hooks/use-resolved-cv';
+
+interface MatchPoint {
+  requirement: string;
+  evidence: string;
+}
+
+interface Gap {
+  requirement: string;
+  note: string;
+}
+
+interface ApplicationAnalysis {
+  matchPoints: MatchPoint[];
+  gaps: Gap[];
+  recommendedFraming: string;
+}
 
 export default function AnsøgningPage() {
   const params = useParams();
@@ -18,60 +34,101 @@ export default function AnsøgningPage() {
   const jobId = params.jobId as string;
   
   const job = savedJobs.find((j) => j.id === jobId);
+  const { cv, isLoading: cvLoading } = useResolvedCv(jobId);
   
   const [application, setApplication] = useState<string>('');
+  const [originalApplication, setOriginalApplication] = useState<string>('');
+  const [analysis, setAnalysis] = useState<ApplicationAnalysis | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isRewriting, setIsRewriting] = useState(false);
   const [error, setError] = useState<string>('');
   const [isCopied, setIsCopied] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(true);
+  const [hasEdited, setHasEdited] = useState(false);
+
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(`application_draft_${jobId}`);
+    const savedAnalysis = localStorage.getItem(`application_analysis_${jobId}`);
+    
+    if (savedDraft) {
+      setApplication(savedDraft);
+      setOriginalApplication(savedDraft);
+    }
+    
+    if (savedAnalysis) {
+      try {
+        setAnalysis(JSON.parse(savedAnalysis));
+      } catch (e) {
+        console.error('Error parsing saved analysis:', e);
+      }
+    }
+  }, [jobId]);
+
+  // Save draft to localStorage when it changes
+  useEffect(() => {
+    if (application && application !== originalApplication) {
+      setHasEdited(true);
+      localStorage.setItem(`application_draft_${jobId}`, application);
+    }
+  }, [application, originalApplication, jobId]);
 
   const handleGenerateApplication = async () => {
-    if (!job) return;
+    if (!job || !cv) return;
 
     setIsGenerating(true);
     setError('');
+    setHasEdited(false);
 
     try {
-      // Get the tailored CV from CV step
-      const tailoredCv = localStorage.getItem('flowstruktur_tailored_cv');
+      // Get job description
+      const jobDescription = localStorage.getItem(`job_posting_${jobId}`) || job.description || '';
       
-      // Get other data from localStorage or use mock data
-      let cvAnalysisData = localStorage.getItem('flowstruktur_cv_analysis');
-      let personalityData = localStorage.getItem('flowstruktur_personality_data');
-      let combinedAnalysis = localStorage.getItem('flowstruktur_combined_analysis');
+      // Format CV text
+      const cvText = cv.sections
+        .map(s => `${s.name}:\n${s.suggestedText || ''}`)
+        .join('\n\n');
 
-      // If data is missing, use mock data (for development/testing)
-      if (!cvAnalysisData || !personalityData || !combinedAnalysis) {
-        const { mockCVInterpretation, mockPersonProfilAnalyse, mockSamletAnalyse } = await import('@/lib/mock-data');
-        
-        cvAnalysisData = cvAnalysisData || JSON.stringify(mockCVInterpretation);
-        personalityData = personalityData || JSON.stringify({
-          responses: [3, 4, 3, 3, 4, 4, 4, 3, 4, 3],
-          arbejdsstil: mockPersonProfilAnalyse.arbejdsstil,
-          motivation: mockPersonProfilAnalyse.motivation,
-          draenere: mockPersonProfilAnalyse.draenere,
-          samarbejde: mockPersonProfilAnalyse.samarbejde,
-        });
-        combinedAnalysis = combinedAnalysis || JSON.stringify(mockSamletAnalyse);
+      // Get personality data
+      let dimensionScores = {};
+      const personalityData = localStorage.getItem('flowstruktur_personality_data');
+      if (personalityData) {
+        try {
+          const parsed = JSON.parse(personalityData);
+          dimensionScores = parsed.dimensionScores || {};
+        } catch (e) {
+          console.error('Error parsing personality data:', e);
+        }
       }
 
       const response = await fetch('/api/application', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          jobDescription: job.description || job.fullData?.description || job.title,
-          tailoredCv: tailoredCv || cvAnalysisData,
-          cvAnalysis: cvAnalysisData,
-          personalityData: JSON.parse(personalityData),
-          combinedAnalysis,
+          jobDescription,
+          resolvedCv: cvText,
+          userProfile: cv.profile,
+          dimensionScores,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Kunne ikke generere ansøgning');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Kunne ikke generere ansøgning');
       }
 
       const data = await response.json();
+      
       setApplication(data.application);
+      setOriginalApplication(data.application);
+      
+      if (data.analysis) {
+        setAnalysis(data.analysis);
+        localStorage.setItem(`application_analysis_${jobId}`, JSON.stringify(data.analysis));
+      }
+      
+      localStorage.setItem(`application_draft_${jobId}`, data.application);
+      
     } catch (err: any) {
       setError(err.message || 'Der opstod en fejl ved generering af ansøgning');
     } finally {
@@ -79,8 +136,43 @@ export default function AnsøgningPage() {
     }
   };
 
+  const handleRewrite = async (instruction: string) => {
+    if (!application) return;
+
+    setIsRewriting(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/application-rewrite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentApplication: application,
+          instruction,
+          jobDescription: job?.description || '',
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Kunne ikke omskrive ansøgning');
+      }
+
+      const data = await response.json();
+      setApplication(data.application);
+      setHasEdited(true);
+      localStorage.setItem(`application_draft_${jobId}`, data.application);
+      
+    } catch (err: any) {
+      setError(err.message || 'Der opstod en fejl ved omskrivning');
+    } finally {
+      setIsRewriting(false);
+    }
+  };
+
   const handleSaveDraft = () => {
-    if (job) {
+    if (job && application) {
+      localStorage.setItem(`application_draft_${jobId}`, application);
       setApplicationStatus(job.id, 'DRAFT');
     }
   };
@@ -88,6 +180,7 @@ export default function AnsøgningPage() {
   const handleMarkAsFinal = () => {
     if (job && application) {
       setApplicationStatus(job.id, 'FINAL');
+      localStorage.setItem(`application_final_${jobId}`, application);
     }
   };
 
@@ -100,6 +193,30 @@ export default function AnsøgningPage() {
       console.error('Failed to copy:', err);
     }
   };
+
+  const handleApplicationChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setApplication(e.target.value);
+  };
+
+  if (cvLoading) {
+    return (
+      <div className="flex items-center gap-2">
+        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+        <p className="text-muted-foreground">Indlæser CV data...</p>
+      </div>
+    );
+  }
+
+  if (!cv) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          Kunne ikke indlæse CV data. Gå tilbage og færdiggør CV-tilpasningen først.
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   if (!job) return null;
 
@@ -121,9 +238,92 @@ export default function AnsøgningPage() {
         </Alert>
       )}
 
+      {/* Analysis section - show before or alongside application */}
+      {analysis && (
+        <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
+          <CardHeader className="pb-3">
+            <button
+              onClick={() => setShowAnalysis(!showAnalysis)}
+              className="flex items-center justify-between w-full text-left hover:opacity-80 transition-opacity"
+            >
+              <div>
+                <CardTitle className="text-lg text-blue-900 dark:text-blue-100">
+                  📊 Analyse: CV ↔ Jobkrav
+                </CardTitle>
+                <CardDescription className="text-blue-800 dark:text-blue-200">
+                  Sådan matcher din profil med jobbet
+                </CardDescription>
+              </div>
+              {showAnalysis ? (
+                <ChevronUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              )}
+            </button>
+          </CardHeader>
+          {showAnalysis && (
+            <CardContent className="space-y-4 text-sm">
+              {/* Match Points */}
+              {analysis.matchPoints.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">
+                    ✓ Styrker (Jobkrav → CV-bevis)
+                  </h4>
+                  <div className="space-y-2">
+                    {analysis.matchPoints.map((point, idx) => (
+                      <div key={idx} className="border-l-2 border-green-500 pl-3 py-1">
+                        <p className="font-medium text-green-900 dark:text-green-100">
+                          {point.requirement}
+                        </p>
+                        <p className="text-green-800 dark:text-green-200 text-xs mt-1">
+                          → {point.evidence}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Gaps */}
+              {analysis.gaps.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-orange-900 dark:text-orange-100 mb-2">
+                    ⚠️ Områder at adressere
+                  </h4>
+                  <div className="space-y-2">
+                    {analysis.gaps.map((gap, idx) => (
+                      <div key={idx} className="border-l-2 border-orange-500 pl-3 py-1">
+                        <p className="font-medium text-orange-900 dark:text-orange-100">
+                          {gap.requirement}
+                        </p>
+                        <p className="text-orange-800 dark:text-orange-200 text-xs mt-1">
+                          {gap.note}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Recommended Framing */}
+              {analysis.recommendedFraming && (
+                <div className="pt-3 border-t border-blue-200 dark:border-blue-800">
+                  <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                    💡 Anbefalet vinkel
+                  </h4>
+                  <p className="text-blue-800 dark:text-blue-200 text-xs leading-relaxed">
+                    {analysis.recommendedFraming}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          )}
+        </Card>
+      )}
+
       {/* Explanatory text - only show if no application yet */}
       {!application && !isGenerating && (
-        <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
+        <Card className="border-primary/20">
           <CardHeader>
             <CardTitle className="text-lg">Ansøgning til dette job</CardTitle>
           </CardHeader>
@@ -133,7 +333,7 @@ export default function AnsøgningPage() {
               Ansøgningen bruger kun dokumenteret erfaring fra dit CV og formidler den i forhold til jobbets krav.
             </p>
             <p className="text-sm text-muted-foreground italic">
-              Du kan redigere teksten frit, før du sender den videre til virksomheden.
+              Du kan redigere teksten frit, og AI kan hjælpe med at omskrive specifikke dele.
             </p>
           </CardContent>
         </Card>
@@ -183,9 +383,19 @@ export default function AnsøgningPage() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle>Din ansøgning</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <CardTitle>Din ansøgning</CardTitle>
+                    {hasEdited && (
+                      <Badge variant="secondary" className="gap-1">
+                        <Edit3 className="h-3 w-3" />
+                        Redigeret
+                      </Badge>
+                    )}
+                  </div>
                   <CardDescription>
-                    Et udkast baseret på dit CV og jobopslaget
+                    {hasEdited 
+                      ? 'Du har foretaget ændringer i udkastet'
+                      : 'AI-genereret udkast baseret på dit CV'}
                   </CardDescription>
                 </div>
                 <Button
@@ -201,23 +411,68 @@ export default function AnsøgningPage() {
                   ) : (
                     <>
                       <Copy className="mr-2 h-4 w-4" />
-                      Kopier tekst
+                      Kopier
                     </>
                   )}
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <Textarea
                 value={application}
-                onChange={(e) => setApplication(e.target.value)}
+                onChange={handleApplicationChange}
                 className="min-h-[400px] font-sans text-sm leading-relaxed"
                 placeholder="Din ansøgning..."
               />
               
-              <div className="mt-4 pt-4 border-t border-border">
+              {/* AI Rewrite Buttons */}
+              <div className="space-y-3 pt-4 border-t border-border">
+                <div className="flex items-center gap-2">
+                  <Wand2 className="h-4 w-4 text-primary" />
+                  <p className="text-sm font-medium">AI-hjælp til omskrivning</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRewrite('shorter')}
+                    disabled={isRewriting}
+                  >
+                    Kortere
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRewrite('more_concrete')}
+                    disabled={isRewriting}
+                  >
+                    Mere konkret
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRewrite('more_professional')}
+                    disabled={isRewriting}
+                  >
+                    Mere professionel
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRewrite('more_targeted')}
+                    disabled={isRewriting}
+                  >
+                    Mere målrettet
+                  </Button>
+                  {isRewriting && (
+                    <div className="flex items-center gap-2 ml-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                      <span className="text-xs text-muted-foreground">Omskriver...</span>
+                    </div>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  💡 Du kan redigere teksten direkte i feltet ovenfor. Husk at læse igennem og tilpasse til din egen stemme, før du sender ansøgningen.
+                  💡 Klik på en knap for at få AI til at omskrive ansøgningen. Du kan redigere teksten frit før eller efter.
                 </p>
               </div>
             </CardContent>
@@ -263,10 +518,10 @@ export default function AnsøgningPage() {
                     {job?.applicationStatus === 'FINAL' ? (
                       <>
                         <Check className="mr-2 h-4 w-4" />
-                        Ansøgning markeret som klar
+                        Markeret som klar
                       </>
                     ) : (
-                      'Markér ansøgning som klar'
+                      'Markér som klar'
                     )}
                   </Button>
 
@@ -279,10 +534,10 @@ export default function AnsøgningPage() {
 
                   <Button 
                     variant="outline" 
-                    onClick={() => router.push('/app/gemte-jobs')}
+                    onClick={() => router.push(`/app/job/${jobId}/interview`)}
                     className="ml-auto"
                   >
-                    Tilbage til gemte jobs
+                    Forbered interview →
                   </Button>
                 </div>
               </div>

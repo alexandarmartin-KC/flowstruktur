@@ -33,6 +33,7 @@ export default function JobLayout({ children }: { children: React.ReactNode }) {
 
   const isOnCvPage = pathname.endsWith('/cv');
   const isOnAnsøgningPage = pathname.endsWith('/ansøgning');
+  const isOnInterviewPage = pathname.endsWith('/interview');
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
@@ -47,7 +48,7 @@ export default function JobLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Job context card */}
-      <Card className="p-6">
+      <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800 border-primary/20">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2 flex-1">
             <h1 className="text-2xl font-bold">{job.title}</h1>
@@ -70,31 +71,41 @@ export default function JobLayout({ children }: { children: React.ReactNode }) {
         </div>
       </Card>
 
-      {/* Internal navigation */}
-      <div className="border-b border-border">
-        <nav className="flex gap-6">
+      {/* Process steps - sticky navigation */}
+      <Card className="sticky top-4 z-40 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-primary/30 shadow-lg">
+        <nav className="flex gap-2 sm:gap-4">
           <Link
             href={`/app/job/${jobId}/cv`}
-            className={`pb-3 px-1 text-sm font-medium transition-colors border-b-2 ${
+            className={`flex-1 py-3 px-3 sm:px-4 text-sm font-medium transition-all rounded-lg border-2 text-center ${
               isOnCvPage
-                ? 'border-primary text-foreground'
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
             }`}
           >
-            CV-tilpasning
+            1. CV-tilpasning
           </Link>
           <Link
             href={`/app/job/${jobId}/ansøgning`}
-            className={`pb-3 px-1 text-sm font-medium transition-colors border-b-2 ${
+            className={`flex-1 py-3 px-3 sm:px-4 text-sm font-medium transition-all rounded-lg border-2 text-center ${
               isOnAnsøgningPage
-                ? 'border-primary text-foreground'
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
             }`}
           >
-            Ansøgning
+            2. Ansøgning
+          </Link>
+          <Link
+            href={`/app/job/${jobId}/interview`}
+            className={`flex-1 py-3 px-3 sm:px-4 text-sm font-medium transition-all rounded-lg border-2 text-center ${
+              isOnInterviewPage
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            }`}
+          >
+            3. Interview-forberedelse
           </Link>
         </nav>
-      </div>
+      </Card>
 
       {/* Page content */}
       {children}

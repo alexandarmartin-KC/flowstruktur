@@ -13,7 +13,6 @@ export interface UserProfile {
   // Links
   linkedin?: string;
   portfolio?: string;
-  github?: string;
   
   // Optional
   profileImage?: string;
@@ -62,7 +61,6 @@ const FIELD_LABELS: Record<string, string> = {
   title: 'Jobtitel',
   linkedin: 'LinkedIn',
   portfolio: 'Portfolio/hjemmeside',
-  github: 'GitHub',
   bio: 'Bio',
 };
 

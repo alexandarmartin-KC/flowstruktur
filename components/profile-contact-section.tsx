@@ -188,19 +188,6 @@ export function ProfileContactSection() {
                 placeholder="www.dinhjemmeside.dk"
               />
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="github" className="flex items-center gap-2">
-                <LinkIcon className="h-4 w-4" />
-                GitHub
-              </Label>
-              <Input
-                id="github"
-                value={localProfile.github || ''}
-                onChange={(e) => handleChange('github', e.target.value)}
-                placeholder="github.com/ditbrugernavn"
-              />
-            </div>
           </div>
         </div>
 

@@ -28,8 +28,10 @@ interface SavedJobsContextType {
   isLoaded: boolean;
   saveJob: (job: Omit<SavedJob, 'jobStatus' | 'cvStatus' | 'applicationStatus' | 'createdAt' | 'updatedAt'>) => void;
   unsaveJob: (jobId: string) => void;
+  removeJob: (jobId: string) => void;
   isJobSaved: (jobId: string) => boolean;
   getJobById: (jobId: string) => SavedJob | undefined;
+  findBySourceUrl: (sourceUrl: string) => SavedJob | undefined;
   updateJobStatus: (jobId: string, jobStatus: JobStatus) => void;
   toggleApplied: (jobId: string) => void;
   markInProgress: (jobId: string) => void;
@@ -116,12 +118,21 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
     setSavedJobs((prev) => prev.filter((job) => job.id !== jobId));
   };
 
+  const removeJob = (jobId: string) => {
+    setSavedJobs((prev) => prev.filter((job) => job.id !== jobId));
+  };
+
   const isJobSaved = (jobId: string) => {
     return savedJobs.some((job) => job.id === jobId);
   };
 
   const getJobById = (jobId: string) => {
     return savedJobs.find((job) => job.id === jobId);
+  };
+
+  const findBySourceUrl = (sourceUrl: string) => {
+    if (!sourceUrl) return undefined;
+    return savedJobs.find((job) => job.fullData?.sourceUrl === sourceUrl);
   };
 
   const updateJobStatus = (jobId: string, jobStatus: JobStatus) => {
@@ -226,8 +237,10 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
         isLoaded,
         saveJob,
         unsaveJob,
+        removeJob,
         isJobSaved,
         getJobById,
+        findBySourceUrl,
         updateJobStatus,
         toggleApplied,
         markInProgress,

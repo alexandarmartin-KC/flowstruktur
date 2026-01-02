@@ -164,6 +164,19 @@ export function ProfileContactSection() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="country" className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                Land
+              </Label>
+              <Input
+                id="country"
+                value={localProfile.country || ''}
+                onChange={(e) => handleChange('country', e.target.value)}
+                placeholder="Danmark"
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="linkedin" className="flex items-center gap-2">
                 <LinkIcon className="h-4 w-4" />
                 LinkedIn

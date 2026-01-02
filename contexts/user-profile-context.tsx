@@ -8,6 +8,7 @@ export interface UserProfile {
   email?: string;
   phone?: string;
   location?: string;
+  country?: string;
   title?: string;
   
   // Links

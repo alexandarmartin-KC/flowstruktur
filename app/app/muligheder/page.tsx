@@ -14,13 +14,11 @@ import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import { UrlJobImporter } from '@/components/url-job-importer';
 
 type TrackMode = 'same' | 'new' | 'import';
-type Direction = 'current' | 'new' | null;
 
 function MulighederPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedMode, setSelectedMode] = useState<TrackMode>('same');
-  const [selectedDirection, setSelectedDirection] = useState<Direction>(null);
   const [appliedJobs, setAppliedJobs] = useState<Set<string>>(new Set());
   const [dismissedJobs, setDismissedJobs] = useState<Set<string>>(new Set());
   
@@ -43,9 +41,9 @@ function MulighederPageContent() {
   };
 
   const jobs =
-    selectedDirection === 'current'
+    selectedMode === 'same'
       ? mockJobsForCurrentTrack
-      : selectedDirection === 'new'
+      : selectedMode === 'new'
       ? mockJobsForNewDirection
       : [];
 
@@ -162,144 +160,18 @@ function MulighederPageContent() {
         <UrlJobImporter />
       )}
 
-      {selectedMode === 'same' && (
-        <>
-          {/* Intro */}
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-muted-foreground">
-                Byg videre på det, du allerede kan og har erfaring med. Se jobs, der ligger tæt på
-                din nuværende profil.
-              </p>
-            </CardContent>
-          </Card>
 
-          {/* Direction selection for "same" mode */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card
-              className={`cursor-pointer transition-all ${
-                selectedDirection === 'current'
-                  ? 'border-primary ring-2 ring-primary ring-offset-2'
-                  : 'hover:border-primary/50'
-              }`}
-              onClick={() =>
-                setSelectedDirection(selectedDirection === 'current' ? null : 'current')
-              }
-            >
-              <CardHeader>
-                <CardTitle>Mulighed A</CardTitle>
-                <CardDescription>
-                  Udforske job inden for dit nuværende karrierespor
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Byg videre på det, du allerede kan og har erfaring med. Se jobs, der ligger tæt på
-                  din nuværende profil.
-                </p>
-              </CardContent>
-            </Card>
 
-            <Card
-              className={`cursor-pointer transition-all ${
-                selectedDirection === 'new'
-                  ? 'border-primary ring-2 ring-primary ring-offset-2'
-                  : 'hover:border-primary/50'
-              }`}
-              onClick={() => setSelectedDirection(selectedDirection === 'new' ? null : 'new')}
-            >
-              <CardHeader>
-                <CardTitle>Mulighed B</CardTitle>
-                <CardDescription>
-                  Se hvordan din erfaring kan bruges i en ny branche
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Udforsk, hvordan dine kompetencer kan oversættes til helt nye typer roller eller
-                  brancher.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </>
-      )}
 
-      {selectedMode === 'new' && (
-        <>
-          {/* Intro */}
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-muted-foreground">
-                Udforsk alternative retninger baseret på din profil. Se hvordan dine kompetencer kan oversættes til helt nye typer roller eller brancher.
-              </p>
-            </CardContent>
-          </Card>
 
-          {/* Direction selection for "new" mode */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card
-              className={`cursor-pointer transition-all ${
-                selectedDirection === 'current'
-                  ? 'border-primary ring-2 ring-primary ring-offset-2'
-                  : 'hover:border-primary/50'
-              }`}
-              onClick={() =>
-                setSelectedDirection(selectedDirection === 'current' ? null : 'current')
-              }
-            >
-              <CardHeader>
-                <CardTitle>Mulighed A</CardTitle>
-                <CardDescription>
-                  Udforske job inden for dit nuværende karrierespor
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Byg videre på det, du allerede kan og har erfaring med. Se jobs, der ligger tæt på
-                  din nuværende profil.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card
-              className={`cursor-pointer transition-all ${
-                selectedDirection === 'new'
-                  ? 'border-primary ring-2 ring-primary ring-offset-2'
-                  : 'hover:border-primary/50'
-              }`}
-              onClick={() => setSelectedDirection(selectedDirection === 'new' ? null : 'new')}
-            >
-              <CardHeader>
-                <CardTitle>Mulighed B</CardTitle>
-                <CardDescription>
-                  Se hvordan din erfaring kan bruges i en ny branche
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Udforsk, hvordan dine kompetencer kan oversættes til helt nye typer roller eller
-                  brancher.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </>
-      )}
-
-      {/* Jobs display - shown for both "same" and "new" modes when direction is selected */}
-      {(selectedMode === 'same' || selectedMode === 'new') && selectedDirection && (
+      {/* Jobs display - shown for both "same" and "new" modes */}
+      {(selectedMode === 'same' || selectedMode === 'new') && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold">Jobeksempler</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Her er {visibleJobs.length} eksempler på jobs, der kunne være relevante
-              </p>
-            </div>
-            <Button variant="ghost" size="sm" onClick={() => setSelectedDirection(null)}>
-              Nulstil valg
-            </Button>
+          <div>
+            <h2 className="text-2xl font-semibold">Jobeksempler</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Her er {visibleJobs.length} eksempler på jobs, der kunne være relevante
+            </p>
           </div>
 
           <div className="space-y-6">

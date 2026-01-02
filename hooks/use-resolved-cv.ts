@@ -19,6 +19,14 @@ interface UserProfile {
   location?: string;
   profileImage?: string;
   title?: string;
+  profilePhoto?: {
+    dataUrl?: string;
+    fileName?: string;
+    updatedAt?: string;
+  };
+  cvPreferences?: {
+    showProfilePhoto?: boolean;
+  };
 }
 
 interface ResolvedCV {

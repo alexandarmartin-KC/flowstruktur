@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { calculateAllDimensionScores } from '@/lib/scoring';
 import { getExplanation, getLevel, type DimensionKey } from '@/lib/dimensionExplanations';
 import { ProfileContactSection } from '@/components/profile-contact-section';
+import { ProfilePhotoSection } from '@/components/profile-photo-section';
 
 interface CVExtraction {
   summary: string;
@@ -627,6 +628,9 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
     <div className="mx-auto max-w-5xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
       {/* Contact Information Section - Always visible at top */}
       <ProfileContactSection />
+
+      {/* Profile Photo Section */}
+      <ProfilePhotoSection />
 
       {/* Premium Header Section */}
       <div className="space-y-3 mb-8">

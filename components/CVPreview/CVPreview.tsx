@@ -18,6 +18,14 @@ interface UserProfile {
   location?: string;
   profileImage?: string;
   title?: string;
+  profilePhoto?: {
+    dataUrl?: string;
+    fileName?: string;
+    updatedAt?: string;
+  };
+  cvPreferences?: {
+    showProfilePhoto?: boolean;
+  };
 }
 
 interface CVPreviewProps {
@@ -35,6 +43,9 @@ interface ParsedExperience {
 
 export function CVPreview({ sections, profile, jobTitle }: CVPreviewProps) {
   const approvedSections = sections.filter(s => s.status === 'approved');
+
+  // Determine if we should show profile photo
+  const shouldShowPhoto = profile?.cvPreferences?.showProfilePhoto && profile?.profilePhoto?.dataUrl;
 
   // Improved experience parser - handles multiple formats
   const parseExperienceText = (text: string): ParsedExperience[] => {
@@ -103,7 +114,7 @@ export function CVPreview({ sections, profile, jobTitle }: CVPreviewProps) {
     >
       {/* Header */}
       <header className="mb-10 pb-6 border-b border-gray-300 relative">
-        <div className={profile?.profileImage ? 'pr-24' : ''}>
+        <div className={shouldShowPhoto ? 'pr-24' : ''}>
           <h1 className="text-4xl font-bold mb-2 text-gray-900">{profile?.name || 'Dit Navn'}</h1>
           {profile?.title && (
             <p className="text-lg text-gray-600 mb-3">{profile.title}</p>
@@ -138,11 +149,11 @@ export function CVPreview({ sections, profile, jobTitle }: CVPreviewProps) {
           </div>
         </div>
 
-        {/* Optional profile image */}
-        {profile?.profileImage && (
+        {/* Profile photo - only show if user has enabled it */}
+        {shouldShowPhoto && (
           <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden rounded border border-gray-300">
             <img 
-              src={profile.profileImage} 
+              src={profile.profilePhoto!.dataUrl} 
               alt={profile.name || 'Profilbillede'}
               className="w-full h-full object-cover"
             />

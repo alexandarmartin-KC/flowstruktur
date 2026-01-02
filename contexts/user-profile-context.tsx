@@ -15,8 +15,20 @@ export interface UserProfile {
   linkedin?: string;
   portfolio?: string;
   
+  // Profile photo
+  profilePhoto?: {
+    dataUrl?: string;
+    fileName?: string;
+    updatedAt?: string;
+  };
+  
+  // CV preferences
+  cvPreferences?: {
+    showProfilePhoto?: boolean;
+  };
+  
   // Optional
-  profileImage?: string;
+  profileImage?: string; // Legacy field
   bio?: string;
 }
 
@@ -107,12 +119,12 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
   const getCompleteness = (): ProfileCompleteness => {
     const filledFields = ALL_FIELDS.filter(field => {
       const value = profile[field as keyof UserProfile];
-      return value && value.trim().length > 0;
+      return value && typeof value === 'string' && value.trim().length > 0;
     });
 
     const missingFields = ALL_FIELDS.filter(field => {
       const value = profile[field as keyof UserProfile];
-      return !value || value.trim().length === 0;
+      return !value || (typeof value === 'string' && value.trim().length === 0);
     }).map(field => FIELD_LABELS[field] || field);
 
     const percentage = Math.round((filledFields.length / ALL_FIELDS.length) * 100);
@@ -128,7 +140,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
   const canExport = (): ExportRequirements => {
     const missingRequiredFields = REQUIRED_FOR_EXPORT.filter(field => {
       const value = profile[field as keyof UserProfile];
-      return !value || value.trim().length === 0;
+      return !value || (typeof value === 'string' && value.trim().length === 0);
     }).map(field => FIELD_LABELS[field] || field);
 
     return {

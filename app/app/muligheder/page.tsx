@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Briefcase, AlertCircle, Bookmark, X, Check, Link2, Compass, TrendingUp } from 'lucide-react';
+import { MapPin, Briefcase, AlertCircle, Bookmark, X, Link2, Compass, TrendingUp } from 'lucide-react';
 import {
   mockJobsForCurrentTrack,
   mockJobsForNewDirection,
@@ -19,7 +19,6 @@ function MulighederPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedMode, setSelectedMode] = useState<TrackMode>('same');
-  const [appliedJobs, setAppliedJobs] = useState<Set<string>>(new Set());
   const [dismissedJobs, setDismissedJobs] = useState<Set<string>>(new Set());
   
   const { saveJob, unsaveJob, isJobSaved } = useSavedJobs();
@@ -64,16 +63,6 @@ function MulighederPageContent() {
         fullData: job,
       });
     }
-  };
-
-  const toggleApplied = (jobId: string) => {
-    const newApplied = new Set(appliedJobs);
-    if (newApplied.has(jobId)) {
-      newApplied.delete(jobId);
-    } else {
-      newApplied.add(jobId);
-    }
-    setAppliedJobs(newApplied);
   };
 
   const dismissJob = (jobId: string) => {
@@ -241,15 +230,6 @@ function MulighederPageContent() {
                     >
                       <Bookmark className="mr-2 h-4 w-4" />
                       {isJobSaved(job.id) ? 'Gemt' : 'Gem job'}
-                    </Button>
-
-                    <Button
-                      variant={appliedJobs.has(job.id) ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => toggleApplied(job.id)}
-                    >
-                      <Check className="mr-2 h-4 w-4" />
-                      {appliedJobs.has(job.id) ? 'Markeret som ansøgt' : 'Har ansøgt'}
                     </Button>
 
                     <Button

@@ -238,7 +238,6 @@ function MulighederPageContent() {
                       variant={isJobSaved(job.id) ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => handleSaveJob(job)}
-                      disabled={isJobSaved(job.id)}
                     >
                       <Bookmark className="mr-2 h-4 w-4" />
                       {isJobSaved(job.id) ? 'Gemt' : 'Gem job'}

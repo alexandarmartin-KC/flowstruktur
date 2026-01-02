@@ -282,22 +282,6 @@ function MulighederPageContent() {
           )}
         </div>
       )}
-
-      {/* Info box - shown when no direction selected in "same" or "new" modes */}
-      {(selectedMode === 'same' || selectedMode === 'new') && !selectedDirection && (
-        <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
-              <p className="text-sm text-blue-900 dark:text-blue-100">
-                <strong>Vigtigt at vide:</strong> Disse jobs er eksempler og kommer ikke fra et
-                rigtigt jobfeed. Formålet er at give dig inspiration og afklaring om, hvilke
-                retninger du kunne udforske videre.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ import { UrlJobImporter } from '@/components/url-job-importer';
 type TrackMode = 'same' | 'new' | 'import';
 type Direction = 'current' | 'new' | null;
 
-export default function MulighederPage() {
+function MulighederPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedMode, setSelectedMode] = useState<TrackMode>('same');
@@ -427,5 +427,13 @@ export default function MulighederPage() {
         </Card>
       )}
     </div>
+  );
+}
+
+export default function MulighederPage() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading...</div>}>
+      <MulighederPageContent />
+    </Suspense>
   );
 }

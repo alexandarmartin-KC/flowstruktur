@@ -10,6 +10,7 @@ import {
   mockJobsForNewDirection,
 } from '@/lib/mock-data';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
+import { JobImporter } from '@/components/job-importer';
 
 type Direction = 'current' | 'new' | null;
 
@@ -71,6 +72,9 @@ export default function MulighederPage() {
           Udforsk forskellige retninger baseret på din profil
         </p>
       </div>
+
+      {/* Job Importer - New feature */}
+      <JobImporter />
 
       {/* Intro */}
       <Card>

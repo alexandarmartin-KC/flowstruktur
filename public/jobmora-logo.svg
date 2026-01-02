@@ -1,0 +1,20 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Door icon with gradient colors matching the image -->
+  <defs>
+    <linearGradient id="doorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6FB3D2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8BC1B3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F4A261;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Door frame -->
+  <path d="M8 4 L8 28 L24 28 L24 4 Z" fill="url(#doorGradient)" />
+  
+  <!-- Door panels -->
+  <rect x="10" y="6" width="12" height="8" fill="white" opacity="0.3" rx="1"/>
+  <rect x="10" y="16" width="12" height="10" fill="white" opacity="0.3" rx="1"/>
+  
+  <!-- Door knob -->
+  <circle cx="19" cy="21" r="1.5" fill="white" opacity="0.8"/>
+</svg>

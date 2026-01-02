@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sparkles, Target, Users, Heart } from 'lucide-react';
+import { JobmoraLogo } from '@/components/jobmora-logo';
 
 export default function OmPage() {
   return (
@@ -10,8 +11,8 @@ export default function OmPage() {
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="h-7 w-7 text-primary" />
-            <span className="text-xl font-bold">FlowStruktur</span>
+            <JobmoraLogo size={28} />
+            <span className="text-xl font-bold">Jobmora</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="/pris" className="text-sm font-medium hover:text-primary transition-colors">
@@ -35,7 +36,7 @@ export default function OmPage() {
               Vi hjælper dig med at finde <span className="text-primary">klarhed</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              FlowStruktur er en karrierecoaching platform, der kombinerer AI med menneskeligt fokus 
+              Jobmora er en karrierecoaching platform, der kombinerer AI med menneskeligt fokus 
               for at hjælpe dig med at træffe bedre karrierevalg.
             </p>
           </div>
@@ -79,13 +80,13 @@ export default function OmPage() {
 
           {/* Story */}
           <div className="prose prose-lg max-w-none mb-20">
-            <h2 className="text-3xl font-bold mb-6">Hvorfor FlowStruktur?</h2>
+            <h2 className="text-3xl font-bold mb-6">Hvorfor Jobmora?</h2>
             <p className="text-muted-foreground mb-4">
-              Vi startede FlowStruktur fordi vi selv har oplevet hvor svært det kan være at navigere i karrierevalg. 
+              Vi startede Jobmora fordi vi selv har oplevet hvor svært det kan være at navigere i karrierevalg. 
               Traditionel karrierevejledning er ofte dyr, tidskrævende og baseret på subjektive vurderinger.
             </p>
             <p className="text-muted-foreground mb-4">
-              Med FlowStruktur får du adgang til professionelle værktøjer og analyser der normalt kun er tilgængelige 
+              Med Jobmora får du adgang til professionelle værktøjer og analyser der normalt kun er tilgængelige 
               gennem dyre konsulenter. Vi bruger AI til at identificere mønstre og muligheder, men holder altid 
               mennesket i centrum.
             </p>
@@ -99,7 +100,7 @@ export default function OmPage() {
           <div className="text-center bg-primary text-primary-foreground rounded-2xl p-12">
             <h2 className="text-3xl font-bold mb-4">Klar til at komme i gang?</h2>
             <p className="text-lg mb-8 opacity-90">
-              Start din karriererejse med FlowStruktur i dag
+              Start din karriererejse med Jobmora i dag
             </p>
             <Button asChild size="lg" variant="secondary" className="text-lg">
               <Link href="/app/onboarding">Opret din profil gratis</Link>

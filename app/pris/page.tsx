@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Check, Sparkles } from 'lucide-react';
+import { JobmoraLogo } from '@/components/jobmora-logo';
 
 export default function PrisPage() {
   return (
@@ -11,8 +12,8 @@ export default function PrisPage() {
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="h-7 w-7 text-primary" />
-            <span className="text-xl font-bold">FlowStruktur</span>
+            <JobmoraLogo size={28} />
+            <span className="text-xl font-bold">Jobmora</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="/pris" className="text-sm font-medium hover:text-primary transition-colors">
@@ -181,8 +182,8 @@ export default function PrisPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <span className="font-semibold">FlowStruktur</span>
+              <JobmoraLogo size={20} />
+              <span className="font-semibold">Jobmora</span>
             </div>
             <div className="flex gap-6 text-sm text-muted-foreground">
               <Link href="/pris" className="hover:text-foreground transition-colors">

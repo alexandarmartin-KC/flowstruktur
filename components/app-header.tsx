@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Menu, User, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { JobmoraLogo } from '@/components/jobmora-logo';
 
 interface AppHeaderProps {
   onMenuClick?: () => void;
@@ -37,8 +38,8 @@ export function AppHeader({ onMenuClick }: AppHeaderProps) {
       {/* Mobile logo */}
       <div className="flex lg:hidden">
         <Link href="/app" className="flex items-center gap-2">
-          <Sparkles className="h-6 w-6 text-primary" />
-          <span className="font-semibold">FlowStruktur</span>
+          <JobmoraLogo size={24} />
+          <span className="font-semibold">Jobmora</span>
         </Link>
       </div>
 

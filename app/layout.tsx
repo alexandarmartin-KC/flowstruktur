@@ -8,7 +8,7 @@ import { Toaster } from 'sonner';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FlowStruktur - Din karrierecoach",
+  title: "Jobmora - Din karrierecoach",
   description: "Få overblik over dine kompetencer, find dit næste karrierespor og match med de bedste jobs",
 };
 

@@ -11,6 +11,7 @@ import {
   Bookmark,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { JobmoraLogo } from '@/components/jobmora-logo';
 
 const navigation = [
   { name: 'Overblik', href: '/app', icon: LayoutDashboard },
@@ -31,8 +32,8 @@ export function AppSidebar() {
       <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-border bg-card px-6 pb-4">
         <div className="flex h-16 shrink-0 items-center">
           <Link href="/app" className="flex items-center gap-2">
-            <Sparkles className="h-7 w-7 text-primary" />
-            <span className="text-xl font-semibold">FlowStruktur</span>
+            <JobmoraLogo size={28} />
+            <span className="text-xl font-semibold">Jobmora</span>
           </Link>
         </div>
         <nav className="flex flex-1 flex-col">

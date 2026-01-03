@@ -100,9 +100,7 @@ const questions = [
   { id: 'Q24', dimension: 'Sociale præferencer i arbejdet', question: 'Jeg synes det er vigtigt at have god social kontakt med mine kolleger.' },
   { id: 'Q25', dimension: 'Sociale præferencer i arbejdet', question: 'Jeg trives i arbejdsmiljøer hvor der er meget samarbejde og dialog.' },
   
-  // Ledestep1Data, setStep1Data] = useState<Step1Output | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [loadingStep1, setLoadingStep16-Q30)
+  // Ledelse & Autoritet (Q26-Q30)
   { id: 'Q26', dimension: 'Ledelse & Autoritet', question: 'Jeg foretrækker at få klare instrukser fra min leder.' },
   { id: 'Q27', dimension: 'Ledelse & Autoritet', question: 'Jeg trives i roller hvor jeg har ansvar for at lede eller koordinere andre.' },
   { id: 'Q28', dimension: 'Ledelse & Autoritet', question: 'Jeg foretrækker at arbejde i teams uden tydelig hierarkisk struktur.' },
@@ -135,6 +133,11 @@ export default function ProfilPage() {
   const [feedback, setFeedback] = useState('');
   const [revising, setRevising] = useState(false);
   const [revised, setRevised] = useState<string | null>(null);
+  
+  // Step 1 state
+  const [step1Data, setStep1Data] = useState<Step1Output | null>(null);
+  const [loadingStep1, setLoadingStep1] = useState(false);
+  const [step1Error, setStep1Error] = useState<string | null>(null);
   
   // Personality profile state
   const [currentStep, setCurrentStep] = useState<'cv' | 'questionnaire' | 'results'>('cv');

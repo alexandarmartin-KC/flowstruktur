@@ -475,7 +475,15 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
     const lines = analysis.split('\n');
     let currentSection: { title: string; content: string; bullets: string[] } | null = null;
 
+    // Både gamle og nye sektionstitler
     const sectionTitles = [
+      // Nye titler
+      'KORT KONKLUSION',
+      'OVERORDNET ARBEJDSPROFIL',
+      'SAMMENHÆNG MELLEM CV OG ARBEJDSPROFIL',
+      'POTENTIELLE SPÆNDINGSFELTER',
+      'AFSLUTTENDE KONTEKST',
+      // Gamle titler (for bagudkompatibilitet)
       'SAMLET PROFILFORSTÅELSE',
       'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN',
       'POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL',
@@ -512,11 +520,19 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
         } else {
           currentSection.content += line + '\n';
         }
+      } else {
+        // Hvis ingen sektion er startet, opret en default sektion
+        currentSection = { title: 'SAMLET ANALYSE', content: line + '\n', bullets: [] };
       }
     }
 
     if (currentSection) {
       sections.push(currentSection);
+    }
+
+    // Hvis ingen sektioner fundet, returner hele teksten som én sektion
+    if (sections.length === 0 && analysis.trim()) {
+      return [{ title: 'SAMLET ANALYSE', content: analysis.trim(), bullets: [] }];
     }
 
     return sections.map(section => ({

@@ -24,32 +24,38 @@ const FALLBACK_RESPONSE: Step1Output = {
 // System prompt for OpenAI - Step 1 "Hvad vi udleder af dit CV"
 const SYSTEM_PROMPT = `Generér Step 1-tekst der bekræfter brugerens professionelle identitet.
 
-PRÆCIS STRUKTUR (5 afsnit, følg denne rækkefølge og disse formuleringer):
+HÅRDE FORBUD:
+- INGEN engelske termer (skriv "specialist", ikke "Security Specialist")
+- INGEN firmanavne (skriv "samme organisation", ikke "Ørsted A/S")
+- INGEN "håndtering", "ledelse", "overvågning" - brug konkrete formuleringer
+- INGEN generiske vendinger
 
-AFSNIT 1 - Start ALTID med:
-"På baggrund af dit CV ser vi en klar og konsistent profil som [senior] [rolle] inden for [domæne] i [kontekst]. Din erfaring er opbygget omkring [kernekompetence]."
+PRÆCIS STRUKTUR (5 afsnit):
 
-AFSNIT 2 - Start ALTID med:
-"Dit CV viser særlig erfaring med [overordnet område], herunder [2-3 centrale domæner], samt [ansvarsniveau]."
+AFSNIT 1:
+"På baggrund af dit CV ser vi en klar og konsistent profil som senior specialist inden for [domæne] i større, regulerede organisationer. Din erfaring er opbygget omkring ansvar for drift, struktur og sikkerhed i komplekse enterprise-miljøer."
 
-AFSNIT 3 - Start ALTID med:
-"Din rolle har været [rolletype] med [ansvarstype], hvor du har arbejdet tæt sammen med både [interne] og [eksterne] i forbindelse med [opgavetype]."
+AFSNIT 2:
+"Dit CV viser særlig erfaring med arbejdet inden for [domæne], herunder [2-3 konkrete områder som fx adgangskontrol, CCTV og alarmsystemer], samt ansvar for sikkerhedsfunktioner på både lokalt og globalt niveau."
 
-AFSNIT 4 - Start ALTID med:
-"Overordnet fremstår dit CV struktureret og konsistent, med tydelig progression inden for [område] og [erfaring fra organisation(er)]."
+AFSNIT 3:
+"Din rolle har været en specialistrolle med operationelt ansvar, hvor du har arbejdet tæt sammen med både interne interessenter og eksterne leverandører i forbindelse med daglig drift og koordinering af sikkerhedsopgaver."
 
-AFSNIT 5 - Brug PRÆCIS denne sætning:
+AFSNIT 4:
+"Overordnet fremstår dit CV struktureret og konsistent, med tydelig progression inden for [område] og flere års erfaring fra samme organisation."
+
+AFSNIT 5 (PRÆCIS DENNE SÆTNING):
 "Du kan justere dit CV senere, hvis noget ikke matcher din egen opfattelse."
 
 REGLER:
-- Brug "senior" hvis >8-10 års erfaring
-- Ingen detaljer om hvordan noget er udført
-- Ingen rosende formuleringer
-- Ingen tekniske systemnævn ud over overordnede kategorier
-- Ingen navne eller kontaktoplysninger
-- Ca. 100-130 ord total
+- Brug "senior specialist" (ikke engelske jobtitler)
+- Brug "større, regulerede organisationer" eller "komplekse enterprise-miljøer"
+- Brug "interne interessenter" og "eksterne leverandører"
+- Brug "daglig drift og koordinering"
+- Brug "flere års erfaring fra samme organisation" (aldrig firmanavne)
+- Ca. 120-140 ord total
 
-SPROG: Dansk
+SPROG: Kun dansk. Ingen engelske termer.
 
 OUTPUT: Returnér KUN valid JSON: { "text": "den fulde tekst her" }`;
 
@@ -57,7 +63,7 @@ const USER_PROMPT_TEMPLATE = (cvText: string) => `
 CV-TEKST:
 ${cvText}
 
-Skriv Step 1 med PRÆCIS de 5 afsnit og startformuleringer fra prompten. Returnér KUN JSON.`;
+Skriv Step 1. Brug PRÆCIS formuleringerne fra prompten. INGEN engelske termer. INGEN firmanavne. Returnér KUN JSON.`;
 
 // Validate output - kun text felt krævet
 function validateStep1Output(data: any): data is Step1Output {

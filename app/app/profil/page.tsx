@@ -18,15 +18,9 @@ interface CVExtraction {
   cvText: string;
 }
 
-// Step 1 output interface - sammenhængende tekst
+// Step 1 output interface - kun tekst
 interface Step1Output {
   text: string;
-  dataExtracted: {
-    name: string | null;
-    email: string | null;
-    phone: string | null;
-    location: string | null;
-  };
 }
 
 interface QuestionScores {
@@ -162,13 +156,7 @@ CV'et peger på en rolle som teknisk specialist med projektkoordinerende ansvar.
 
 Helhedsindtrykket er en struktureret karriereprogression med konsistent fokus på kvalitet i webudvikling. Erfaringen spænder fra hands-on kodning til teknisk sparring og teamkoordinering, hvilket giver en alsidig profil der kan bidrage på flere niveauer.
 
-Hvis noget i ovenstående ikke stemmer overens med din oplevelse, kan du justere det i næste trin.`,
-      dataExtracted: {
-        name: "Test Bruger",
-        email: "test@example.com",
-        phone: "+45 12 34 56 78",
-        location: "København"
-      }
+Hvis noget i ovenstående ikke stemmer overens med din oplevelse, kan du justere det i næste trin.`
     });
     
     // Mock questionnaire answers (varied scores for testing)
@@ -797,42 +785,6 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
                       {step1Data.text}
                     </div>
                   </div>
-
-                  {/* Contact Data Extracted */}
-                  {(step1Data.dataExtracted.name || step1Data.dataExtracted.email || 
-                    step1Data.dataExtracted.phone || step1Data.dataExtracted.location) && (
-                    <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-800">
-                      <h3 className="font-semibold text-lg text-foreground">Kontaktoplysninger (fundet i CV)</h3>
-                      <div className="rounded-lg bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 p-5">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {step1Data.dataExtracted.name && (
-                            <div>
-                              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Navn</span>
-                              <p className="text-sm text-foreground mt-1">{step1Data.dataExtracted.name}</p>
-                            </div>
-                          )}
-                          {step1Data.dataExtracted.email && (
-                            <div>
-                              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Email</span>
-                              <p className="text-sm text-foreground mt-1">{step1Data.dataExtracted.email}</p>
-                            </div>
-                          )}
-                          {step1Data.dataExtracted.phone && (
-                            <div>
-                              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Telefon</span>
-                              <p className="text-sm text-foreground mt-1">{step1Data.dataExtracted.phone}</p>
-                            </div>
-                          )}
-                          {step1Data.dataExtracted.location && (
-                            <div>
-                              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Lokation</span>
-                              <p className="text-sm text-foreground mt-1">{step1Data.dataExtracted.location}</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 

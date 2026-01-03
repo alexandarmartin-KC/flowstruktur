@@ -11,104 +11,83 @@ function getOpenAI() {
   return openai;
 }
 
-// Step 1 output - nu som sammenhængende tekst
+// Step 1 output - kun tekst, ingen kontaktoplysninger
 export interface Step1Output {
   text: string;
-  dataExtracted: {
-    name: string | null;
-    email: string | null;
-    phone: string | null;
-    location: string | null;
-  };
 }
 
 // Fallback response in case of complete failure
 const FALLBACK_RESPONSE: Step1Output = {
-  text: "Vi har modtaget dit CV, men kunne ikke generere en opsummering i øjeblikket. Prøv venligst igen om et øjeblik.",
-  dataExtracted: {
-    name: null,
-    email: null,
-    phone: null,
-    location: null
-  }
+  text: "Vi har modtaget dit CV, men kunne ikke generere en opsummering i øjeblikket. Prøv venligst igen om et øjeblik."
 };
 
 // System prompt for OpenAI - Step 1 "Hvad vi udleder af dit CV"
 const SYSTEM_PROMPT = `Du er en erfaren karriererådgiver. Din opgave er at skrive en præcis, professionel spejling af et CV.
 
 FORMÅL:
-Vis brugeren at systemet har forstået deres professionelle profil korrekt. Dette er IKKE analyse, coaching, feedback, vurdering eller interview-forberedelse. Det er en neutral, professionel spejling.
+Vis brugeren at systemet har forstået deres professionelle profil. Dette er IKKE analyse, coaching, feedback eller interview-forberedelse.
 
-TONALITET (MEGET VIGTIGT):
-- Rolig
-- Præcis  
-- Professionel
-- Menneskelig
-
-UNDGÅ ALTID:
-- Marketing-sprog
-- Generiske CV-floskler
-- AI-agtige formuleringer
-- For mange bullet points
-- Ord som: "vi anbefaler", "du bør", "forbered dig", "svaghed", "mangler"
+HÅRDE FORBUD (output er ugyldigt hvis disse forekommer):
+- Kontaktoplysninger (navn, email, telefon, adresse)
+- Overskrifter som "Kontaktoplysninger"
+- Punktet "uddannelse"
+- Anbefalinger eller råd
 - Interview- eller jobreferencer
-- Fremadrettede råd
-- Spørgsmål
-- Buzzwords
+- Ord som: "vi anbefaler", "du bør", "forbered dig", "svaghed", "mangler"
 
-STRUKTUR (SKAL FØLGES PRÆCIST):
+SENIORITETS-REGEL:
+- Mere end 8-10 års relevant erfaring → brug ordet "senior"
+- Ansvar for enterprise, globalt setup eller governance → fremhæv i afsnit 1
+
+STRUKTUR (SKAL FØLGES 100% - alle 5 dele SKAL være med):
 
 1) ÅBNENDE OVERBLIK (2-3 linjer)
-   Samlet vurdering af profilen. Rolle, senioritet og kontekst. Ingen forbehold, ingen analyse.
+   - Fastslå professionel identitet
+   - Fastslå senioritet
+   - Fastslå kontekst (fx enterprise / regulerede organisationer)
 
-2) "Dit CV viser særlig erfaring med:" (kort liste)
-   3-5 konkrete erfaringsområder. Kun high-confidence indhold fra CV'et. Ingen generaliseringer.
+2) "Dit CV viser særlig erfaring med:" (efterfulgt af 3-5 korte linjer)
+   - Kun konkrete, verificerbare erfaringer fra CV'et
+   - Ingen generaliseringer
 
 3) ROLLE- OG ANSVARSAFKLARING (1 afsnit)
-   Hvilken type rolle CV'et peger på. Specialist vs. ledelse. Samarbejde, ansvar, kontekst.
+   - Specialist vs. ledelse
+   - Operationelt ansvar
+   - Samarbejde med interne/eksterne stakeholders
 
 4) SAMLET HELHEDSINDTRYK (1 afsnit)
-   Struktur, konsistens og progression. Overordnet erfaringstype. Ingen vurdering af "svagheder".
+   - Struktur
+   - Konsistens
+   - Progression over tid
 
 5) AFSLUTTENDE VALIDERING (1 sætning)
-   Giv brugeren mulighed for at korrigere senere. Neutral og ikke-undskyldende formulering.
+   - Brugeren kan justere sit CV senere, hvis noget ikke matcher
 
-EKSEMPEL PÅ KVALITETSNIVEAU (retning, ikke kopiér):
-"På baggrund af dit CV ser vi en klar og konsistent profil som senior specialist inden for fysisk sikkerhed og security operations i større, regulerede organisationer…"
+STIL:
+- Professionel, menneskelig, rolig, klar
+- Undgå generiske fraser, AI-sprog, marketing-ord
+- Vær præcis frem for forsigtig
 
 SPROG: Dansk
 
 OUTPUT-FORMAT:
-Returnér KUN valid JSON med denne struktur:
+Returnér KUN valid JSON:
 {
-  "text": "den fulde tekst her",
-  "dataExtracted": {
-    "name": "navn eller null",
-    "email": "email eller null", 
-    "phone": "telefon eller null",
-    "location": "lokation eller null"
-  }
-}`;
+  "text": "den fulde tekst her"
+}
+
+Ingen dataExtracted. Ingen kontaktoplysninger. KUN teksten.`;
 
 const USER_PROMPT_TEMPLATE = (cvText: string) => `
 CV-TEKST:
 ${cvText}
 
-Skriv nu Step 1-teksten "Hvad vi udleder af dit CV" baseret på ovenstående CV.
-Følg strukturen præcist. Returnér KUN JSON.`;
+Skriv Step 1-teksten med PRÆCIS 5 afsnit som specificeret. Returnér KUN JSON med "text" felt.`;
 
-// Validate output
+// Validate output - kun text felt krævet
 function validateStep1Output(data: any): data is Step1Output {
   if (!data || typeof data !== 'object') return false;
   if (typeof data.text !== 'string' || data.text.length < 200) return false;
-  if (!data.dataExtracted || typeof data.dataExtracted !== 'object') return false;
-  
-  const { name, email, phone, location } = data.dataExtracted;
-  if (name !== null && typeof name !== 'string') return false;
-  if (email !== null && typeof email !== 'string') return false;
-  if (phone !== null && typeof phone !== 'string') return false;
-  if (location !== null && typeof location !== 'string') return false;
-  
   return true;
 }
 

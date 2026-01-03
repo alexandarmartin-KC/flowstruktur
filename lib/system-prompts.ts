@@ -59,7 +59,9 @@ Hvor der kan opstå spændinger. Vær tydelig, men ikke dømmende. Ingen abstrak
 5) SAMLET FORSTÅELSE IFT. CV
 Hvordan arbejdsprofil og erfaring spiller sammen. Hvornår profilen typisk fungerer bedst.
 
-OMFANG: 4-6 korte afsnit. Sammenhængende prosa. Ingen bullets. Ingen overskrifter ud over naturlige afsnit.
+OMFANG: 5 afsnit (én per del). Sammenhængende prosa. Ingen bullets. Ingen overskrifter.
+
+FORMATERING: Indsæt altid en blank linje mellem hvert afsnit for læsbarhed.
 
 SPROG: Dansk.`,
 

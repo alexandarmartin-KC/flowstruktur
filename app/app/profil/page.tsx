@@ -294,25 +294,6 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
   };
   // ============ END TEST MODE ============
 
-POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL
-- Startup-erfaring kan have indebåret arbejde under højt tempo og skiftende prioriteter, hvilket kan have været belastende set i lyset af moderat tolerance for tempo
-- Arbejde med brugervenlige interfaces kræver ofte hurtig iteration og konstant feedback fra mange stakeholders, hvilket kan udfordre præferencen for rolige arbejdsgange
-
-ARBEJDSKONTEKSTER DER TYPISK VIL UNDERSTØTTE PROFILEN
-Profilen indikerer at arbejdssituationer med etablerede udviklingsprocesser, klare roller og regelmæssige feedback-loops typisk vil understøtte arbejdsstilen. Miljøer hvor der er balance mellem selvstændigt kodningsarbejde og struktureret teamsamarbejde, samt organisationer der har stabile rammer men plads til teknisk udvikling.
-
-KONTEKSTER DER KAN KRÆVE BEVIDST TILPASNING
-Situationer med meget korte deadlines, hyppige prioritetsskift eller konstant brand-slukningspræg kan kræve særlig opmærksomhed. Ligeledes miljøer med uklare ansvarsområder eller begrænset struktur i udviklingsprocessen. Roller hvor feedback primært er negativ eller sporadisk kan også kræve aktiv håndtering.
-
-AFSLUTTENDE NOTE
-Den samlede analyse er vejledende og bygger på mønstre i erfaring og arbejdspræferencer.
-Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
-    });
-    
-    setCurrentStep('results');
-  };
-  // ============ END TEST MODE ============
-
   // CV confirmed - move to questionnaire
   const cvConfirmed = step1Data !== null;
 

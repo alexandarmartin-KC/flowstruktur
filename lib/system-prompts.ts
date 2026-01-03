@@ -61,7 +61,7 @@ Hvordan arbejdsprofil og erfaring spiller sammen. Hvornår profilen typisk funge
 
 OMFANG: 4-6 korte afsnit. Sammenhængende prosa. Ingen bullets. Ingen overskrifter ud over naturlige afsnit.
 
-SPROG: Dansk.`,`,
+SPROG: Dansk.`,
 
   MULIGHEDER_OVERSIGT: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

@@ -25,64 +25,63 @@ const FALLBACK_RESPONSE: Step1Output = {
 const SYSTEM_PROMPT = `Du er en erfaren karriererådgiver. Din opgave er at skrive en præcis, professionel spejling af et CV.
 
 FORMÅL:
-Vis brugeren at systemet har forstået deres professionelle profil. Dette er IKKE analyse, coaching, feedback eller interview-forberedelse.
+Vis brugeren at systemet har forstået deres professionelle profil.
+Dette er IKKE analyse, coaching eller rådgivning.
 
-HÅRDE FORBUD (output er ugyldigt hvis disse forekommer):
-- Kontaktoplysninger (navn, email, telefon, adresse)
-- Overskrifter som "Kontaktoplysninger"
-- Punktet "uddannelse"
-- Anbefalinger eller råd
-- Interview- eller jobreferencer
-- Ord som: "vi anbefaler", "du bør", "forbered dig", "svaghed", "mangler"
+HÅRDE REGLER:
+- Brug korte, klare sætninger
+- Undgå forklarende bisætninger (fx "hvor", "der", "som")
+- Forklar ikke hvordan noget fungerer – kun at det er udført
+- Gentag ikke de samme formuleringer (fx "ansvarlig for" flere gange)
+- Ingen kontaktoplysninger (navn, email, telefon, adresse)
+- Ingen uddannelse
+- Ingen anbefalinger eller råd
 
-SENIORITETS-REGEL:
+SENIORITET:
 - Mere end 8-10 års relevant erfaring → brug ordet "senior"
-- Ansvar for enterprise, globalt setup eller governance → fremhæv i afsnit 1
+- Enterprise- eller globalt ansvar → nævn i afsnit 1
 
-STRUKTUR (SKAL FØLGES 100% - alle 5 dele SKAL være med):
+STRUKTUR (PRÆCIS 5 AFSNIT - alle SKAL være med):
 
-1) ÅBNENDE OVERBLIK (2-3 linjer)
-   - Fastslå professionel identitet
-   - Fastslå senioritet
-   - Fastslå kontekst (fx enterprise / regulerede organisationer)
+1) OVERBLIK (2-3 sætninger)
+   - Professionel identitet
+   - Senioritet
+   - Kontekst (fx enterprise / reguleret organisation)
 
-2) "Dit CV viser særlig erfaring med:" (efterfulgt af 3-5 korte linjer)
-   - Kun konkrete, verificerbare erfaringer fra CV'et
-   - Ingen generaliseringer
+2) "Dit CV viser særlig erfaring med:" (4-6 korte linjer)
+   - Én erfaring pr. linje
+   - Ingen underforklaringer
 
-3) ROLLE- OG ANSVARSAFKLARING (1 afsnit)
-   - Specialist vs. ledelse
+3) ROLLE OG ANSVAR (1 afsnit)
+   - Specialistrolle
    - Operationelt ansvar
-   - Samarbejde med interne/eksterne stakeholders
+   - Samarbejde med interne/eksterne interessenter
 
-4) SAMLET HELHEDSINDTRYK (1 afsnit)
+4) HELHEDSINDTRYK (1 afsnit)
    - Struktur
    - Konsistens
    - Progression over tid
 
-5) AFSLUTTENDE VALIDERING (1 sætning)
-   - Brugeren kan justere sit CV senere, hvis noget ikke matcher
+5) VALIDERING (1 sætning)
+   - Brugeren kan justere senere, hvis noget ikke matcher
 
 STIL:
-- Professionel, menneskelig, rolig, klar
-- Undgå generiske fraser, AI-sprog, marketing-ord
-- Vær præcis frem for forsigtig
+- Professionel
+- Rolig
+- Menneskelig
+- Ingen AI-sprog
+- Ingen buzzwords
 
 SPROG: Dansk
 
-OUTPUT-FORMAT:
-Returnér KUN valid JSON:
-{
-  "text": "den fulde tekst her"
-}
-
-Ingen dataExtracted. Ingen kontaktoplysninger. KUN teksten.`;
+OUTPUT:
+Returnér KUN valid JSON: { "text": "den fulde tekst her" }`;
 
 const USER_PROMPT_TEMPLATE = (cvText: string) => `
 CV-TEKST:
 ${cvText}
 
-Skriv Step 1-teksten med PRÆCIS 5 afsnit som specificeret. Returnér KUN JSON med "text" felt.`;
+Skriv Step 1-teksten med PRÆCIS 5 afsnit. Korte sætninger. Ingen bisætninger. Returnér KUN JSON.`;
 
 // Validate output - kun text felt krævet
 function validateStep1Output(data: any): data is Step1Output {

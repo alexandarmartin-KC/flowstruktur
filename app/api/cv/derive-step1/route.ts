@@ -22,43 +22,32 @@ const FALLBACK_RESPONSE: Step1Output = {
 };
 
 // System prompt for OpenAI - Step 1 "Hvad vi udleder af dit CV"
-const SYSTEM_PROMPT = `Step 1 bekræfter at systemet har forstået brugerens professionelle identitet på et overordnet niveau.
+const SYSTEM_PROMPT = `Generér Step 1-tekst der bekræfter brugerens professionelle identitet.
 
-DEN VIGTIGSTE REGEL:
-Dit primære ansvar er at FJERNE information, ikke at forklare den.
-Hvis noget kan udelades uden at ændre brugerens forståelse af sin professionelle identitet, skal det udelades.
+PRÆCIS STRUKTUR (5 afsnit, følg denne rækkefølge og disse formuleringer):
 
-ABSOLUTTE GRÆNSER:
-- Beskriv kun hvad CV'et viser på et overordnet niveau
+AFSNIT 1 - Start ALTID med:
+"På baggrund af dit CV ser vi en klar og konsistent profil som [senior] [rolle] inden for [domæne] i [kontekst]. Din erfaring er opbygget omkring [kernekompetence]."
+
+AFSNIT 2 - Start ALTID med:
+"Dit CV viser særlig erfaring med [overordnet område], herunder [2-3 centrale domæner], samt [ansvarsniveau]."
+
+AFSNIT 3 - Start ALTID med:
+"Din rolle har været [rolletype] med [ansvarstype], hvor du har arbejdet tæt sammen med både [interne] og [eksterne] i forbindelse med [opgavetype]."
+
+AFSNIT 4 - Start ALTID med:
+"Overordnet fremstår dit CV struktureret og konsistent, med tydelig progression inden for [område] og [erfaring fra organisation(er)]."
+
+AFSNIT 5 - Brug PRÆCIS denne sætning:
+"Du kan justere dit CV senere, hvis noget ikke matcher din egen opfattelse."
+
+REGLER:
+- Brug "senior" hvis >8-10 års erfaring
 - Ingen detaljer om hvordan noget er udført
-- Ingen forklaring af effekt, forbedringer eller resultater
-- Ingen rosende eller vurderende formuleringer
-- Ingen tekniske eller systemmæssige detaljer
-- Ingen navngivne personer
-- Brug altid "du", aldrig tredje person
-
-Hvis teksten kunne bruges i en jobansøgning eller føles som en performancebeskrivelse, er den ugyldig.
-
-LÆNGDE: Maks 120 ord. 4-5 korte afsnit. Sammenhængende prosa. Ingen bullets. Ingen overskrifter.
-
-INDHOLD (kun dette, i flydende prosa):
-
-1) Professionel identitet
-   - Rolle, senioritet (brug "senior" ved >8-10 års erfaring), overordnet arbejdskontekst
-
-2) Overordnet erfaringsområde
-   - Centrale domæner, ingen eksempler
-
-3) Rolletype
-   - Specialistrolle, operationelt ansvar, samarbejde med interne/eksterne aktører
-
-4) Helhedsindtryk
-   - Struktur, konsistens, progression over tid
-
-5) Afsluttende validering
-   - Brugeren kan justere senere, hvis noget ikke matcher
-
-STIL: Roligt, nøgternt, menneskeligt. Ikke "AI-velskrevet".
+- Ingen rosende formuleringer
+- Ingen tekniske systemnævn ud over overordnede kategorier
+- Ingen navne eller kontaktoplysninger
+- Ca. 100-130 ord total
 
 SPROG: Dansk
 
@@ -68,7 +57,7 @@ const USER_PROMPT_TEMPLATE = (cvText: string) => `
 CV-TEKST:
 ${cvText}
 
-Skriv Step 1. Maks 120 ord. Fjern alt der kan udelades. Ingen detaljer. Kun overordnet niveau. Returnér KUN JSON.`;
+Skriv Step 1 med PRÆCIS de 5 afsnit og startformuleringer fra prompten. Returnér KUN JSON.`;
 
 // Validate output - kun text felt krævet
 function validateStep1Output(data: any): data is Step1Output {

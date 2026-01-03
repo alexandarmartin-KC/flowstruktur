@@ -18,6 +18,32 @@ interface CVExtraction {
   cvText: string;
 }
 
+// Step 1 output interface
+interface Step1Output {
+  headline: string;
+  summary: string;
+  roleIdentity: {
+    title: string;
+    seniority: 'junior' | 'mid' | 'senior' | 'unknown';
+    domain: string;
+  };
+  highConfidenceHighlights: string[];
+  toolsAndSystems: string[];
+  industriesAndContexts: string[];
+  languages: string[];
+  workHistoryOverview: {
+    yearsExperienceApprox: string;
+    careerProgressionNote: string;
+  };
+  dataExtracted: {
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    location: string | null;
+  };
+  limitationsNote: string;
+}
+
 interface QuestionScores {
   [key: string]: number; // Q1-Q40
 }
@@ -74,7 +100,9 @@ const questions = [
   { id: 'Q24', dimension: 'Sociale præferencer i arbejdet', question: 'Jeg synes det er vigtigt at have god social kontakt med mine kolleger.' },
   { id: 'Q25', dimension: 'Sociale præferencer i arbejdet', question: 'Jeg trives i arbejdsmiljøer hvor der er meget samarbejde og dialog.' },
   
-  // Ledelse & Autoritet (Q26-Q30)
+  // Ledestep1Data, setStep1Data] = useState<Step1Output | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingStep1, setLoadingStep16-Q30)
   { id: 'Q26', dimension: 'Ledelse & Autoritet', question: 'Jeg foretrækker at få klare instrukser fra min leder.' },
   { id: 'Q27', dimension: 'Ledelse & Autoritet', question: 'Jeg trives i roller hvor jeg har ansvar for at lede eller koordinere andre.' },
   { id: 'Q28', dimension: 'Ledelse & Autoritet', question: 'Jeg foretrækker at arbejde i teams uden tydelig hierarkisk struktur.' },
@@ -131,7 +159,52 @@ export default function ProfilPage() {
       summary: 'Test CV Summary: 10 års erfaring med React, TypeScript, og Next.js udvikling. Specialiseret i brugervenlige interfaces og skalerbare webapplikationer. Arbejdet i både startups og større virksomheder med fokus på agile metoder og teamsamarbejde.',
       cvText: 'Mock CV text content...'
     });
-    setAgreement('agree');
+    
+    // Mock Step 1 data
+    setStep1Data({
+      headline: "Erfaring med softwareudvikling og projektledelse",
+      summary: "CV'et viser 10+ års erfaring med softwareudvikling, primært inden for webudvikling og projektkoordinering. Der er arbejdet både i startups og etablerede virksomheder med fokus på agile metoder og brugervenligt design.",
+      roleIdentity: {
+        title: "Softwareudvikler / Frontend Specialist",
+        seniority: "senior",
+        domain: "IT og softwareudvikling"
+      },
+      highConfidenceHighlights: [
+        "10 års erfaring med React, TypeScript og moderne webudvikling",
+        "Ledt mindre udviklingsteams og koordineret projekter på tværs af afdelinger",
+        "Arbejdet med brugercentreret design og agile udviklingsmetoder",
+        "Erfaring fra både startup-miljø og større tech-virksomheder",
+        "Dokumenteret erfaring med Next.js og full-stack udvikling"
+      ],
+      toolsAndSystems: [
+        "React",
+        "TypeScript",
+        "Next.js",
+        "Git",
+        "Figma",
+        "Jira"
+      ],
+      industriesAndContexts: [
+        "Softwareudvikling",
+        "E-commerce",
+        "SaaS-produkter"
+      ],
+      languages: [
+        "Dansk - modersmål",
+        "Engelsk - flydende"
+      ],
+      workHistoryOverview: {
+        yearsExperienceApprox: "Ca. 10 år",
+        careerProgressionNote: "Progression fra udvikler til rolle med projektkoordinering og teamansvar"
+      },
+      dataExtracted: {
+        name: "Test Bruger",
+        email: "test@example.com",
+        phone: "+45 12 34 56 78",
+        location: "København"
+      },
+      limitationsNote: "Præcise ansættelsesperioder for de tidligste stillinger fremgår ikke. Specifikke teknologiversioner er ikke dokumenteret."
+    });
     
     // Mock questionnaire answers (varied scores for testing)
     const testScores: QuestionScores = {
@@ -218,8 +291,27 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
   };
   // ============ END TEST MODE ============
 
+POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL
+- Startup-erfaring kan have indebåret arbejde under højt tempo og skiftende prioriteter, hvilket kan have været belastende set i lyset af moderat tolerance for tempo
+- Arbejde med brugervenlige interfaces kræver ofte hurtig iteration og konstant feedback fra mange stakeholders, hvilket kan udfordre præferencen for rolige arbejdsgange
+
+ARBEJDSKONTEKSTER DER TYPISK VIL UNDERSTØTTE PROFILEN
+Profilen indikerer at arbejdssituationer med etablerede udviklingsprocesser, klare roller og regelmæssige feedback-loops typisk vil understøtte arbejdsstilen. Miljøer hvor der er balance mellem selvstændigt kodningsarbejde og struktureret teamsamarbejde, samt organisationer der har stabile rammer men plads til teknisk udvikling.
+
+KONTEKSTER DER KAN KRÆVE BEVIDST TILPASNING
+Situationer med meget korte deadlines, hyppige prioritetsskift eller konstant brand-slukningspræg kan kræve særlig opmærksomhed. Ligeledes miljøer med uklare ansvarsområder eller begrænset struktur i udviklingsprocessen. Roller hvor feedback primært er negativ eller sporadisk kan også kræve aktiv håndtering.
+
+AFSLUTTENDE NOTE
+Den samlede analyse er vejledende og bygger på mønstre i erfaring og arbejdspræferencer.
+Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
+    });
+    
+    setCurrentStep('results');
+  };
+  // ============ END TEST MODE ============
+
   // CV confirmed - move to questionnaire
-  const cvConfirmed = agreement === 'agree' || revised !== null;
+  const cvConfirmed = step1Data !== null;
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -260,10 +352,46 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
 
       const data = await res.json();
       setExtraction(data);
+      
+      // After extraction, automatically generate Step 1 data
+      if (data.cvText) {
+        await generateStep1Data(data.cvText, data.extracted);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Der opstod en fejl');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generateStep1Data = async (cvText: string, extracted?: any) => {
+    setLoadingStep1(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/cv/derive-step1', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cvText,
+          extracted,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Kunne ikke generere Step 1 data');
+      }
+
+      const data = await res.json();
+      setStep1Data(data);
+    } catch (err) {
+      console.error('Step 1 generation error:', err);
+      setError(err instanceof Error ? err.message : 'Der opstod en fejl ved Step 1 generering');
+    } finally {
+      setLoadingStep1(false);
     }
   };
 
@@ -346,8 +474,8 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
       setCurrentStep('results');
       
       // Automatically generate combined analysis when both CV and personality are ready
-      if (extraction) {
-        generateCombinedAnalysis(extraction.summary, data.scores);
+      if (step1Data) {
+        generateCombinedAnalysis(step1Data.summary, data.scores);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Der opstod en fejl');
@@ -515,106 +643,6 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
     return sections;
   };
 
-  const displaySummary = revised || extraction?.summary || '';
-
-  // Parse summary til forskellige sektioner med farver
-  const parseSummary = (summary: string) => {
-    const lines = summary.split('\n');
-    let text = '';
-    const positiveBullets: string[] = [];
-    const negativeBullets: string[] = [];
-    let currentSection = 'text';
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-      
-      // Skip empty lines
-      if (!trimmed) {
-        continue;
-      }
-      
-      // Skip decorative lines - lines with only dashes, underscores, equals signs, or spaces
-      if (/^[-_=\s]+$/.test(trimmed)) {
-        continue;
-      }
-      
-      // Skip lines that are mostly decorative characters (80% or more)
-      const decorativeChars = (trimmed.match(/[-_=]/g) || []).length;
-      if (decorativeChars / trimmed.length >= 0.8) {
-        continue;
-      }
-      
-      // Detekter overskrifter (skal ikke inkluderes i output)
-      if (trimmed === 'OVERORDNET UDLEDNING' ||
-          trimmed === 'HVAD CV\'ET TYDELIGT DOKUMENTERER (HARD FACTS)' ||
-          trimmed === 'Rolle og erfaring' ||
-          trimmed === 'Teknisk og systemmæssig tyngde' ||
-          trimmed === 'SAMLET, NEUTRAL KONKLUSION' ||
-          trimmed === 'TRIN 2 — SENIOR KONSULENT & REDAKTØR' ||
-          trimmed.startsWith('TRIN')) {
-        currentSection = 'text';
-        continue;
-      }
-      
-      // Detekter positive sektioner
-      if (trimmed.includes('STYRKER') || trimmed === 'Konkrete ansvarsområder') {
-        currentSection = 'positive';
-        continue;
-      }
-      
-      // Detekter negative sektioner
-      if (trimmed.includes('BEGRÆNSNINGER') || trimmed.includes('IKKE DOKUMENTERER')) {
-        currentSection = 'negative';
-        continue;
-      }
-      
-      // Parse positive bullets
-      if (currentSection === 'positive' && (trimmed.startsWith('- ') || trimmed.startsWith('→'))) {
-        const bulletText = trimmed.startsWith('- ') ? trimmed.substring(2) : trimmed.substring(1).trim();
-        positiveBullets.push(bulletText);
-      } 
-      // Parse negative bullets
-      else if (currentSection === 'negative' && (trimmed.startsWith('- ') || trimmed.startsWith('→'))) {
-        const bulletText = trimmed.startsWith('- ') ? trimmed.substring(2) : trimmed.substring(1).trim();
-        negativeBullets.push(bulletText);
-      }
-      // Parse tekst (inkluder alt andet indhold)
-      else if (currentSection === 'text' && trimmed && 
-               !trimmed.includes('STYRKER') && 
-               !trimmed.includes('BEGRÆNSNINGER') && 
-               trimmed !== 'Konkrete ansvarsområder') {
-        // Extra check: don't add lines that are mostly decorative
-        const decorativeChars = (trimmed.match(/[-_=]/g) || []).length;
-        if (decorativeChars / trimmed.length < 0.5) {
-          text += line + '\n';
-        }
-      }
-    }
-
-    return { text: text.trim(), positiveBullets, negativeBullets };
-  };
-
-  // Clean text function to remove any remaining decorative lines
-  const cleanText = (text: string): string => {
-    return text
-      .split('\n')
-      .filter(line => {
-        const trimmed = line.trim();
-        if (!trimmed) return false;
-        // Remove lines that are only decorative characters
-        if (/^[─━═_\-–—=\s]+$/.test(trimmed)) return false;
-        // Remove lines where more than 50% are decorative
-        const decorativeCount = (trimmed.match(/[─━═_\-–—=]/g) || []).length;
-        if (trimmed.length > 3 && decorativeCount / trimmed.length > 0.5) return false;
-        return true;
-      })
-      .join('\n')
-      .trim();
-  };
-
-  const { text: rawSummaryText, positiveBullets, negativeBullets } = displaySummary ? parseSummary(displaySummary) : { text: '', positiveBullets: [], negativeBullets: [] };
-  const summaryText = cleanText(rawSummaryText);
-
   // Determine which step we're on
   const activeStep = personalityProfile ? 'results' : (cvConfirmed && currentStep === 'questionnaire') ? 'questionnaire' : 'cv';
 
@@ -749,6 +777,7 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
                 onClick={() => {
                   setFile(null);
                   setExtraction(null);
+                  setStep1Data(null);
                   setAgreement(null);
                 }}
                 className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
@@ -783,193 +812,210 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
         </CardContent>
       </Card>
 
-      {/* Udtræk visning */}
-      {extraction && (
+      {/* Step 1: Hvad vi udleder af dit CV */}
+      {extraction && step1Data && (
         <div className="space-y-8">
-          {/* Analyse resultat card */}
-          <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">
-            <CardHeader className="pb-6 border-b border-slate-200 dark:border-slate-800">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                    Din AI Analyse
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground mt-2">Baseret på indholdet af dit CV</p>
-                </div>
-                <Badge className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                  ✓ Færdiggjort
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-8 pt-8">
-              {/* Tekst sektion - Overordnet udledning og konklusion */}
-              {summaryText && (
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-lg text-foreground">Analyse Sammenfatning</h3>
-                  <div className="rounded-lg bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 p-6">
-                    <div className="prose prose-sm max-w-none dark:prose-invert text-base leading-relaxed">
-                      <div className="whitespace-pre-wrap text-foreground">
-                        {summaryText}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Positive bullets - Styrker */}
-              {positiveBullets.length > 0 && (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                      <span className="text-lg">✓</span>
-                    </div>
-                    <h3 className="font-semibold text-lg text-foreground">Styrker & Dokumenterede Kompetencer</h3>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {positiveBullets.map((bullet, index) => (
-                      <div 
-                        key={index}
-                        className="rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4 hover:shadow-md transition-shadow"
-                      >
-                        <p className="text-sm font-medium text-green-900 dark:text-green-300">{bullet}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Negative bullets - Begrænsninger */}
-              {negativeBullets.length > 0 && (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                      <span className="text-lg">⚠</span>
-                    </div>
-                    <h3 className="font-semibold text-lg text-foreground">Områder at Udvikle</h3>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {negativeBullets.map((bullet, index) => (
-                      <div 
-                        key={index}
-                        className="rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 p-4 hover:shadow-md transition-shadow"
-                      >
-                        <p className="text-sm font-medium text-amber-900 dark:text-amber-300">{bullet}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {revised && (
-                <div className="rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-300 dark:border-green-800 p-5 flex items-start gap-3">
-                  <span className="text-2xl">✓</span>
-                  <div>
-                    <p className="font-semibold text-green-900 dark:text-green-300">Analyse Revideret</p>
-                    <p className="text-sm text-green-800 dark:text-green-400 mt-1">Din feedback blev indarbejdet. Se den opdaterede analyse ovenfor.</p>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Feedback sektion som separat card */}
-          {!revised && (
+          {/* Step 1 Loading State */}
+          {loadingStep1 && (
             <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl">Din Feedback</CardTitle>
-                <p className="text-sm text-muted-foreground mt-2">Hjælp os med at forbedre analysen</p>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label className="text-base font-semibold mb-4 block">Stemmer analysen overens med din CV?</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button
-                      variant={agreement === 'agree' ? 'default' : 'outline'}
-                      onClick={() => setAgreement('agree')}
-                      className={`h-12 text-base font-medium transition-all ${
-                        agreement === 'agree'
-                          ? 'bg-green-600 hover:bg-green-700 border-green-600'
-                          : 'border-slate-300 dark:border-slate-600 hover:border-green-500'
-                      }`}
-                    >
-                      <ThumbsUp className="mr-2 h-5 w-5" />
-                      Ja, helt enig
-                    </Button>
-                    <Button
-                      variant={agreement === 'disagree' ? 'default' : 'outline'}
-                      onClick={() => setAgreement('disagree')}
-                      className={`h-12 text-base font-medium transition-all ${
-                        agreement === 'disagree'
-                          ? 'bg-orange-600 hover:bg-orange-700 border-orange-600'
-                          : 'border-slate-300 dark:border-slate-600 hover:border-orange-500'
-                      }`}
-                    >
-                      <ThumbsDown className="mr-2 h-5 w-5" />
-                      Nej, ændringer nødvendige
-                    </Button>
-                  </div>
+              <CardContent className="py-12">
+                <div className="flex flex-col items-center gap-4">
+                  <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+                  <p className="text-lg font-medium text-muted-foreground">Analyserer dit CV...</p>
                 </div>
-
-                {agreement === 'agree' && (
-                  <div className="space-y-4">
-                    <div className="rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-300 dark:border-green-800 p-5 flex items-start gap-3">
-                      <span className="text-2xl">✓</span>
-                      <div>
-                        <p className="font-semibold text-green-900 dark:text-green-300">Tak for din bekræftelse!</p>
-                        <p className="text-sm text-green-800 dark:text-green-400 mt-1">Nu kan du fortsætte til personlighedsprofilen.</p>
-                      </div>
-                    </div>
-                    <Button
-                      onClick={() => setCurrentStep('questionnaire')}
-                      className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold"
-                    >
-                      Fortsæt til Personlighedsprofil
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </div>
-                )}
-
-                {agreement === 'disagree' && (
-                  <div className="space-y-5 rounded-lg bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 p-6">
-                    <div>
-                      <Label htmlFor="feedback" className="text-base font-semibold mb-3 block">
-                        Hvad skal ændres? (obligatorisk)
-                      </Label>
-                      <Textarea
-                        id="feedback"
-                        value={feedback}
-                        onChange={(e) => setFeedback(e.target.value)}
-                        placeholder="Fortæl os hvad der var unøjagtigt eller mangler i analysen..."
-                        rows={5}
-                        className="resize-none"
-                      />
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Jo mere detaljeret feedback, desto bedre kan vi forbedre analysen
-                      </p>
-                    </div>
-                    <Button
-                      onClick={handleRevise}
-                      disabled={!feedback.trim() || revising}
-                      className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold disabled:opacity-50"
-                    >
-                      {revising && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      {revising ? 'Reviderer analysen...' : 'Revider Analyse'}
-                    </Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
           )}
 
-          {/* Continue to questionnaire button after revision */}
-          {revised && (
-            <Button
-              onClick={() => setCurrentStep('questionnaire')}
-              className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold"
-            >
-              Fortsæt til Personlighedsprofil
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+          {/* Step 1 Main Card */}
+          {!loadingStep1 && (
+            <>
+              <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">
+                <CardHeader className="pb-6 border-b border-slate-200 dark:border-slate-800">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                        Hvad vi udleder af dit CV
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground mt-2">Step 1: Bekræftelse af CV-indhold</p>
+                    </div>
+                    <Badge className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                      ✓ Færdiggjort
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-8 pt-8">
+                  {/* Headline */}
+                  <div>
+                    <h2 className="text-3xl font-bold text-foreground">{step1Data.headline}</h2>
+                  </div>
+
+                  {/* Summary */}
+                  <div className="rounded-lg bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 p-6">
+                    <p className="text-base leading-relaxed text-foreground">{step1Data.summary}</p>
+                  </div>
+
+                  {/* Role Identity */}
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
+                      <User className="h-5 w-5 text-blue-600" />
+                      Din professionelle identitet
+                    </h3>
+                    <div className="rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-5">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-blue-900 dark:text-blue-300">Rolle:</span>
+                          <span className="text-blue-800 dark:text-blue-400">{step1Data.roleIdentity.title}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-blue-900 dark:text-blue-300">Senioritet:</span>
+                          <Badge variant="secondary">
+                            {step1Data.roleIdentity.seniority === 'junior' && 'Junior'}
+                            {step1Data.roleIdentity.seniority === 'mid' && 'Mellem'}
+                            {step1Data.roleIdentity.seniority === 'senior' && 'Senior'}
+                            {step1Data.roleIdentity.seniority === 'unknown' && 'Ikke identificeret'}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-blue-900 dark:text-blue-300">Domæne:</span>
+                          <span className="text-blue-800 dark:text-blue-400">{step1Data.roleIdentity.domain}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* High Confidence Highlights */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      </div>
+                      <h3 className="font-semibold text-lg text-foreground">Det vi tydeligt kan se</h3>
+                    </div>
+                    <div className="grid grid-cols-1 gap-3">
+                      {step1Data.highConfidenceHighlights.map((highlight, index) => (
+                        <div 
+                          key={index}
+                          className="rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4 hover:shadow-md transition-shadow"
+                        >
+                          <p className="text-sm font-medium text-green-900 dark:text-green-300">{highlight}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tools and Systems */}
+                  {step1Data.toolsAndSystems.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-lg text-foreground">Værktøjer & Systemer</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {step1Data.toolsAndSystems.map((tool, index) => (
+                          <Badge key={index} variant="secondary" className="px-3 py-1">
+                            {tool}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Industries and Contexts */}
+                  {step1Data.industriesAndContexts.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-lg text-foreground">Brancher & Kontekster</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {step1Data.industriesAndContexts.map((industry, index) => (
+                          <Badge key={index} variant="outline" className="px-3 py-1">
+                            {industry}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Languages */}
+                  {step1Data.languages.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-lg text-foreground">Sprog</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {step1Data.languages.map((language, index) => (
+                          <Badge key={index} variant="secondary" className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-900 dark:text-purple-300">
+                            {language}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Work History Overview */}
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-lg text-foreground">Erhvervserfaring</h3>
+                    <div className="rounded-lg bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 p-5">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-foreground">Erfaring:</span>
+                          <span className="text-muted-foreground">{step1Data.workHistoryOverview.yearsExperienceApprox}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{step1Data.workHistoryOverview.careerProgressionNote}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contact Data Extracted */}
+                  {(step1Data.dataExtracted.name || step1Data.dataExtracted.email || 
+                    step1Data.dataExtracted.phone || step1Data.dataExtracted.location) && (
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-lg text-foreground">Kontaktoplysninger (fundet i CV)</h3>
+                      <div className="rounded-lg bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 p-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {step1Data.dataExtracted.name && (
+                            <div>
+                              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Navn</span>
+                              <p className="text-sm text-foreground mt-1">{step1Data.dataExtracted.name}</p>
+                            </div>
+                          )}
+                          {step1Data.dataExtracted.email && (
+                            <div>
+                              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Email</span>
+                              <p className="text-sm text-foreground mt-1">{step1Data.dataExtracted.email}</p>
+                            </div>
+                          )}
+                          {step1Data.dataExtracted.phone && (
+                            <div>
+                              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Telefon</span>
+                              <p className="text-sm text-foreground mt-1">{step1Data.dataExtracted.phone}</p>
+                            </div>
+                          )}
+                          {step1Data.dataExtracted.location && (
+                            <div>
+                              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Lokation</span>
+                              <p className="text-sm text-foreground mt-1">{step1Data.dataExtracted.location}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Limitations Note */}
+                  <div className="rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 p-5 flex items-start gap-3">
+                    <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">Bemærk</p>
+                      <p className="text-sm text-amber-800 dark:text-amber-400 mt-1">{step1Data.limitationsNote}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Continue to questionnaire button */}
+              <Button
+                onClick={() => setCurrentStep('questionnaire')}
+                className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold"
+              >
+                Fortsæt til Personlighedsprofil
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </>
           )}
         </div>
       )}

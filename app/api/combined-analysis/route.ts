@@ -115,8 +115,47 @@ Generér den samlede analyse.`;
       throw new Error('Ingen tekstrespons fra AI');
     }
 
+    // Parse JSON response from AI
+    let analysisData;
+    try {
+      // Remove potential markdown code blocks
+      const cleanedContent = textContent
+        .replace(/^```json\s*/i, '')
+        .replace(/^```\s*/i, '')
+        .replace(/\s*```$/i, '')
+        .trim();
+      analysisData = JSON.parse(cleanedContent);
+    } catch (parseError) {
+      console.error('Failed to parse AI response as JSON:', textContent);
+      // Fallback: return as plain text if JSON parsing fails
+      return NextResponse.json({
+        analysis: textContent,
+        work_profile: '',
+        work_patterns: '',
+        strengths: '',
+        frictions: '',
+        cv_alignment: '',
+      });
+    }
+
+    // Validate required keys exist
+    const requiredKeys = ['work_profile', 'work_patterns', 'strengths', 'frictions', 'cv_alignment'];
+    for (const key of requiredKeys) {
+      if (!(key in analysisData)) {
+        analysisData[key] = '';
+      }
+    }
+
     return NextResponse.json({
-      analysis: textContent,
+      ...analysisData,
+      // Also include combined text for backward compatibility
+      analysis: [
+        analysisData.work_profile,
+        analysisData.work_patterns,
+        analysisData.strengths,
+        analysisData.frictions,
+        analysisData.cv_alignment,
+      ].filter(Boolean).join('\n\n'),
     });
   } catch (err) {
     console.error('Error in combined-analysis:', err);

@@ -11,162 +11,98 @@ function getOpenAI() {
   return openai;
 }
 
-// Type definitions matching the strict JSON schema
+// Step 1 output - nu som sammenhængende tekst
 export interface Step1Output {
-  headline: string;
-  summary: string;
-  roleIdentity: {
-    title: string;
-    seniority: 'junior' | 'mid' | 'senior' | 'unknown';
-    domain: string;
-  };
-  highConfidenceHighlights: string[];
-  toolsAndSystems: string[];
-  industriesAndContexts: string[];
-  languages: string[];
-  workHistoryOverview: {
-    yearsExperienceApprox: string;
-    careerProgressionNote: string;
-  };
+  text: string;
   dataExtracted: {
     name: string | null;
     email: string | null;
     phone: string | null;
     location: string | null;
   };
-  limitationsNote: string;
 }
 
 // Fallback response in case of complete failure
 const FALLBACK_RESPONSE: Step1Output = {
-  headline: "CV modtaget",
-  summary: "Vi har modtaget dit CV og arbejder på at behandle indholdet. Prøv venligst igen om et øjeblik.",
-  roleIdentity: {
-    title: "Ikke identificeret",
-    seniority: "unknown",
-    domain: "Ikke identificeret"
-  },
-  highConfidenceHighlights: [],
-  toolsAndSystems: [],
-  industriesAndContexts: [],
-  languages: [],
-  workHistoryOverview: {
-    yearsExperienceApprox: "Ikke identificeret",
-    careerProgressionNote: "Information er ved at blive behandlet"
-  },
+  text: "Vi har modtaget dit CV, men kunne ikke generere en opsummering i øjeblikket. Prøv venligst igen om et øjeblik.",
   dataExtracted: {
     name: null,
     email: null,
     phone: null,
     location: null
-  },
-  limitationsNote: "Vi oplever tekniske udfordringer med at behandle dit CV. Prøv venligst igen."
+  }
 };
 
-// System prompt for OpenAI - STRAM OG KONTROLLERET
-const SYSTEM_PROMPT = `Du er en præcis CV-udtræker. Din ENESTE opgave er at strukturere information fra et CV i JSON-format.
+// System prompt for OpenAI - Step 1 "Hvad vi udleder af dit CV"
+const SYSTEM_PROMPT = `Du er en erfaren karriererådgiver. Din opgave er at skrive en præcis, professionel spejling af et CV.
 
-ABSOLUTTE FORBUD:
-- Anbefalinger eller råd
-- Analyse eller vurdering
-- Interview-forberedelse
-- "Du bør" eller "Vi anbefaler"
-- Svagheder eller gaps
-- Spekulationer
+FORMÅL:
+Vis brugeren at systemet har forstået deres professionelle profil korrekt. Dette er IKKE analyse, coaching, feedback, vurdering eller interview-forberedelse. Det er en neutral, professionel spejling.
 
-KUN TILLADT:
-- Beskrive hvad der faktisk står i CV'et
-- Neutral til let positiv tone
-- Udelade usikre oplysninger
+TONALITET (MEGET VIGTIGT):
+- Rolig
+- Præcis  
+- Professionel
+- Menneskelig
 
-OUTPUT:
-Returnér KUN valid JSON. Ingen markdown. Ingen forklaringer. KUN JSON.
+UNDGÅ ALTID:
+- Marketing-sprog
+- Generiske CV-floskler
+- AI-agtige formuleringer
+- For mange bullet points
+- Ord som: "vi anbefaler", "du bør", "forbered dig", "svaghed", "mangler"
+- Interview- eller jobreferencer
+- Fremadrettede råd
+- Spørgsmål
+- Buzzwords
 
-SPROG: Dansk`;
+STRUKTUR (SKAL FØLGES PRÆCIST):
 
-const USER_PROMPT_TEMPLATE = (cvText: string, extracted?: Partial<Step1Output['dataExtracted']>) => `
+1) ÅBNENDE OVERBLIK (2-3 linjer)
+   Samlet vurdering af profilen. Rolle, senioritet og kontekst. Ingen forbehold, ingen analyse.
+
+2) "Dit CV viser særlig erfaring med:" (kort liste)
+   3-5 konkrete erfaringsområder. Kun high-confidence indhold fra CV'et. Ingen generaliseringer.
+
+3) ROLLE- OG ANSVARSAFKLARING (1 afsnit)
+   Hvilken type rolle CV'et peger på. Specialist vs. ledelse. Samarbejde, ansvar, kontekst.
+
+4) SAMLET HELHEDSINDTRYK (1 afsnit)
+   Struktur, konsistens og progression. Overordnet erfaringstype. Ingen vurdering af "svagheder".
+
+5) AFSLUTTENDE VALIDERING (1 sætning)
+   Giv brugeren mulighed for at korrigere senere. Neutral og ikke-undskyldende formulering.
+
+EKSEMPEL PÅ KVALITETSNIVEAU (retning, ikke kopiér):
+"På baggrund af dit CV ser vi en klar og konsistent profil som senior specialist inden for fysisk sikkerhed og security operations i større, regulerede organisationer…"
+
+SPROG: Dansk
+
+OUTPUT-FORMAT:
+Returnér KUN valid JSON med denne struktur:
+{
+  "text": "den fulde tekst her",
+  "dataExtracted": {
+    "name": "navn eller null",
+    "email": "email eller null", 
+    "phone": "telefon eller null",
+    "location": "lokation eller null"
+  }
+}`;
+
+const USER_PROMPT_TEMPLATE = (cvText: string) => `
 CV-TEKST:
 ${cvText}
 
-${extracted ? `
-KONTAKTINFO ALLEREDE FUNDET:
-${extracted.name ? `Navn: ${extracted.name}` : ''}
-${extracted.email ? `Email: ${extracted.email}` : ''}
-${extracted.phone ? `Telefon: ${extracted.phone}` : ''}
-${extracted.location ? `Lokation: ${extracted.location}` : ''}
-` : ''}
+Skriv nu Step 1-teksten "Hvad vi udleder af dit CV" baseret på ovenstående CV.
+Følg strukturen præcist. Returnér KUN JSON.`;
 
-REGLER:
-1. Beskriv KUN hvad der står i CV'et
-2. Ingen anbefalinger, analyse eller vurderinger
-3. Udelad usikker information
-4. Skriv på dansk
-5. Neutral til let positiv tone
-
-STRICT JSON SCHEMA (SKAL FØLGES 100%):
-{
-  "headline": string (max 100 tegn, neutral overskrift),
-  "summary": string (max 500 tegn, hvad CV'et viser),
-  "roleIdentity": {
-    "title": string (primær rolle),
-    "seniority": "junior" | "mid" | "senior" | "unknown",
-    "domain": string (fagområde)
-  },
-  "highConfidenceHighlights": string[] (præcis 4-6 bullets, max 120 tegn hver, KUN dokumenterede ting),
-  "toolsAndSystems": string[] (0-8 værktøjer/systemer EKSPLICIT nævnt i CV),
-  "industriesAndContexts": string[] (0-6 brancher/kontekster),
-  "languages": string[] (0-6 sprog med niveau hvis muligt),
-  "workHistoryOverview": {
-    "yearsExperienceApprox": string ("Ca. X år"),
-    "careerProgressionNote": string (max 150 tegn, neutral beskrivelse)
-  },
-  "dataExtracted": {
-    "name": string | null,
-    "email": string | null,
-    "phone": string | null,
-    "location": string | null
-  },
-  "limitationsNote": string (max 250 tegn, hvad der IKKE fremgår klart)
-}
-
-VIGTIGT: Output skal være KUN ren JSON. Ingen markdown-tags. Ingen tekst før eller efter JSON.
-Alt udenfor JSON er ugyldigt output.
-
-Returnér nu JSON:`;
-
-// Validate output against schema
+// Validate output
 function validateStep1Output(data: any): data is Step1Output {
   if (!data || typeof data !== 'object') return false;
-  
-  // Check required string fields
-  if (typeof data.headline !== 'string' || data.headline.length > 100) return false;
-  if (typeof data.summary !== 'string' || data.summary.length > 500) return false;
-  if (typeof data.limitationsNote !== 'string' || data.limitationsNote.length > 250) return false;
-  
-  // Check roleIdentity
-  if (!data.roleIdentity || typeof data.roleIdentity !== 'object') return false;
-  if (typeof data.roleIdentity.title !== 'string') return false;
-  if (!['junior', 'mid', 'senior', 'unknown'].includes(data.roleIdentity.seniority)) return false;
-  if (typeof data.roleIdentity.domain !== 'string') return false;
-  
-  // Check arrays
-  if (!Array.isArray(data.highConfidenceHighlights) || 
-      data.highConfidenceHighlights.length < 4 || 
-      data.highConfidenceHighlights.length > 6) return false;
-  if (!data.highConfidenceHighlights.every((h: any) => typeof h === 'string' && h.length <= 120)) return false;
-  
-  if (!Array.isArray(data.toolsAndSystems) || data.toolsAndSystems.length > 8) return false;
-  if (!Array.isArray(data.industriesAndContexts) || data.industriesAndContexts.length > 6) return false;
-  if (!Array.isArray(data.languages) || data.languages.length > 6) return false;
-  
-  // Check workHistoryOverview
-  if (!data.workHistoryOverview || typeof data.workHistoryOverview !== 'object') return false;
-  if (typeof data.workHistoryOverview.yearsExperienceApprox !== 'string') return false;
-  if (typeof data.workHistoryOverview.careerProgressionNote !== 'string' || 
-      data.workHistoryOverview.careerProgressionNote.length > 150) return false;
-  
-  // Check dataExtracted
+  if (typeof data.text !== 'string' || data.text.length < 200) return false;
   if (!data.dataExtracted || typeof data.dataExtracted !== 'object') return false;
+  
   const { name, email, phone, location } = data.dataExtracted;
   if (name !== null && typeof name !== 'string') return false;
   if (email !== null && typeof email !== 'string') return false;
@@ -179,7 +115,7 @@ function validateStep1Output(data: any): data is Step1Output {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { cvText, extracted } = body;
+    const { cvText } = body;
 
     if (!cvText || typeof cvText !== 'string') {
       return NextResponse.json(
@@ -191,9 +127,9 @@ export async function POST(req: NextRequest) {
     const client = getOpenAI();
     
     // First attempt
-    let result = await attemptDerivation(client, cvText, extracted);
+    let result = await attemptDerivation(client, cvText);
     
-    // If first attempt failed, try one more time with a fix prompt
+    // If first attempt failed, try one more time
     if (!result.success && result.rawResponse) {
       console.log('First attempt failed, trying to fix JSON...');
       result = await attemptJsonFix(client, result.rawResponse);
@@ -218,20 +154,19 @@ export async function POST(req: NextRequest) {
 
 async function attemptDerivation(
   client: OpenAI, 
-  cvText: string, 
-  extracted?: Partial<Step1Output['dataExtracted']>
+  cvText: string
 ): Promise<{ success: boolean; data?: Step1Output; rawResponse?: string }> {
   try {
     const completion = await client.chat.completions.create({
       model: 'gpt-4o-mini',
-      temperature: 0.2,
+      temperature: 0.3,
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0,
-      max_tokens: 800,
+      max_tokens: 1500,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: USER_PROMPT_TEMPLATE(cvText, extracted) }
+        { role: 'user', content: USER_PROMPT_TEMPLATE(cvText) }
       ],
       response_format: { type: 'json_object' }
     });
@@ -266,17 +201,16 @@ async function attemptJsonFix(
 
 ${rawJson}
 
-Ret JSON så den matcher schema:
-- headline: string (max 100 tegn)
-- summary: string (max 500 tegn)
-- roleIdentity: { title, seniority ("junior"|"mid"|"senior"|"unknown"), domain }
-- highConfidenceHighlights: 4-6 strings (max 120 tegn hver)
-- toolsAndSystems: 0-8 strings
-- industriesAndContexts: 0-6 strings
-- languages: 0-6 strings
-- workHistoryOverview: { yearsExperienceApprox, careerProgressionNote (max 150 tegn) }
-- dataExtracted: { name, email, phone, location (alle nullable) }
-- limitationsNote: string (max 250 tegn)
+Ret JSON så den matcher dette schema:
+{
+  "text": "den fulde Step 1 tekst (mindst 200 tegn)",
+  "dataExtracted": {
+    "name": "navn eller null",
+    "email": "email eller null",
+    "phone": "telefon eller null", 
+    "location": "lokation eller null"
+  }
+}
 
 Returnér KUN rettet JSON. Ingen markdown.`;
 
@@ -286,7 +220,7 @@ Returnér KUN rettet JSON. Ingen markdown.`;
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0,
-      max_tokens: 800,
+      max_tokens: 1500,
       messages: [
         { role: 'system', content: 'Du retter JSON. Returnér KUN valid JSON.' },
         { role: 'user', content: fixPrompt }

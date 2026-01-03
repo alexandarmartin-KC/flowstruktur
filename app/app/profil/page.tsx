@@ -18,30 +18,15 @@ interface CVExtraction {
   cvText: string;
 }
 
-// Step 1 output interface
+// Step 1 output interface - sammenhængende tekst
 interface Step1Output {
-  headline: string;
-  summary: string;
-  roleIdentity: {
-    title: string;
-    seniority: 'junior' | 'mid' | 'senior' | 'unknown';
-    domain: string;
-  };
-  highConfidenceHighlights: string[];
-  toolsAndSystems: string[];
-  industriesAndContexts: string[];
-  languages: string[];
-  workHistoryOverview: {
-    yearsExperienceApprox: string;
-    careerProgressionNote: string;
-  };
+  text: string;
   dataExtracted: {
     name: string | null;
     email: string | null;
     phone: string | null;
     location: string | null;
   };
-  limitationsNote: string;
 }
 
 interface QuestionScores {
@@ -165,48 +150,25 @@ export default function ProfilPage() {
     
     // Mock Step 1 data
     setStep1Data({
-      headline: "Erfaring med softwareudvikling og projektledelse",
-      summary: "CV'et viser 10+ års erfaring med softwareudvikling, primært inden for webudvikling og projektkoordinering. Der er arbejdet både i startups og etablerede virksomheder med fokus på agile metoder og brugervenligt design.",
-      roleIdentity: {
-        title: "Softwareudvikler / Frontend Specialist",
-        seniority: "senior",
-        domain: "IT og softwareudvikling"
-      },
-      highConfidenceHighlights: [
-        "10 års erfaring med React, TypeScript og moderne webudvikling",
-        "Ledt mindre udviklingsteams og koordineret projekter på tværs af afdelinger",
-        "Arbejdet med brugercentreret design og agile udviklingsmetoder",
-        "Erfaring fra både startup-miljø og større tech-virksomheder",
-        "Dokumenteret erfaring med Next.js og full-stack udvikling"
-      ],
-      toolsAndSystems: [
-        "React",
-        "TypeScript",
-        "Next.js",
-        "Git",
-        "Figma",
-        "Jira"
-      ],
-      industriesAndContexts: [
-        "Softwareudvikling",
-        "E-commerce",
-        "SaaS-produkter"
-      ],
-      languages: [
-        "Dansk - modersmål",
-        "Engelsk - flydende"
-      ],
-      workHistoryOverview: {
-        yearsExperienceApprox: "Ca. 10 år",
-        careerProgressionNote: "Progression fra udvikler til rolle med projektkoordinering og teamansvar"
-      },
+      text: `På baggrund af dit CV ser vi en erfaren og teknisk solid profil som senior softwareudvikler med særlig styrke inden for moderne webudvikling og frontend-arkitektur.
+
+Dit CV viser særlig erfaring med:
+- React, TypeScript og Next.js som primære teknologier gennem ca. 10 år
+- Ledelse af mindre udviklingsteams og koordinering af projekter på tværs af afdelinger
+- Brugercentreret design og agile udviklingsmetoder i praksis
+- Arbejde i både hurtige startup-miljøer og større, etablerede tech-virksomheder
+
+CV'et peger på en rolle som teknisk specialist med projektkoordinerende ansvar. Du har bevæget dig fra individuel udviklerrolle til en position med bredere ansvar for løsninger og samarbejde på tværs af teams. Der er en klar teknisk dybde kombineret med erfaring i at arbejde tæt med design, produkt og stakeholders.
+
+Helhedsindtrykket er en struktureret karriereprogression med konsistent fokus på kvalitet i webudvikling. Erfaringen spænder fra hands-on kodning til teknisk sparring og teamkoordinering, hvilket giver en alsidig profil der kan bidrage på flere niveauer.
+
+Hvis noget i ovenstående ikke stemmer overens med din oplevelse, kan du justere det i næste trin.`,
       dataExtracted: {
         name: "Test Bruger",
         email: "test@example.com",
         phone: "+45 12 34 56 78",
         location: "København"
-      },
-      limitationsNote: "Præcise ansættelsesperioder for de tidligste stillinger fremgår ikke. Specifikke teknologiversioner er ikke dokumenteret."
+      }
     });
     
     // Mock questionnaire answers (varied scores for testing)
@@ -459,7 +421,7 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
       
       // Automatically generate combined analysis when both CV and personality are ready
       if (step1Data) {
-        generateCombinedAnalysis(step1Data.summary, data.scores);
+        generateCombinedAnalysis(step1Data.text, data.scores);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Der opstod en fejl');
@@ -829,125 +791,17 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-8 pt-8">
-                  {/* Headline */}
-                  <div>
-                    <h2 className="text-3xl font-bold text-foreground">{step1Data.headline}</h2>
-                  </div>
-
-                  {/* Summary */}
-                  <div className="rounded-lg bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 p-6">
-                    <p className="text-base leading-relaxed text-foreground">{step1Data.summary}</p>
-                  </div>
-
-                  {/* Role Identity */}
-                  <div className="space-y-3">
-                    <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
-                      <User className="h-5 w-5 text-blue-600" />
-                      Din professionelle identitet
-                    </h3>
-                    <div className="rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-5">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-blue-900 dark:text-blue-300">Rolle:</span>
-                          <span className="text-blue-800 dark:text-blue-400">{step1Data.roleIdentity.title}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-blue-900 dark:text-blue-300">Senioritet:</span>
-                          <Badge variant="secondary">
-                            {step1Data.roleIdentity.seniority === 'junior' && 'Junior'}
-                            {step1Data.roleIdentity.seniority === 'mid' && 'Mellem'}
-                            {step1Data.roleIdentity.seniority === 'senior' && 'Senior'}
-                            {step1Data.roleIdentity.seniority === 'unknown' && 'Ikke identificeret'}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-blue-900 dark:text-blue-300">Domæne:</span>
-                          <span className="text-blue-800 dark:text-blue-400">{step1Data.roleIdentity.domain}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* High Confidence Highlights */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-                      </div>
-                      <h3 className="font-semibold text-lg text-foreground">Det vi tydeligt kan se</h3>
-                    </div>
-                    <div className="grid grid-cols-1 gap-3">
-                      {step1Data.highConfidenceHighlights.map((highlight, index) => (
-                        <div 
-                          key={index}
-                          className="rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4 hover:shadow-md transition-shadow"
-                        >
-                          <p className="text-sm font-medium text-green-900 dark:text-green-300">{highlight}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Tools and Systems */}
-                  {step1Data.toolsAndSystems.length > 0 && (
-                    <div className="space-y-3">
-                      <h3 className="font-semibold text-lg text-foreground">Værktøjer & Systemer</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {step1Data.toolsAndSystems.map((tool, index) => (
-                          <Badge key={index} variant="secondary" className="px-3 py-1">
-                            {tool}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Industries and Contexts */}
-                  {step1Data.industriesAndContexts.length > 0 && (
-                    <div className="space-y-3">
-                      <h3 className="font-semibold text-lg text-foreground">Brancher & Kontekster</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {step1Data.industriesAndContexts.map((industry, index) => (
-                          <Badge key={index} variant="outline" className="px-3 py-1">
-                            {industry}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Languages */}
-                  {step1Data.languages.length > 0 && (
-                    <div className="space-y-3">
-                      <h3 className="font-semibold text-lg text-foreground">Sprog</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {step1Data.languages.map((language, index) => (
-                          <Badge key={index} variant="secondary" className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-900 dark:text-purple-300">
-                            {language}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Work History Overview */}
-                  <div className="space-y-3">
-                    <h3 className="font-semibold text-lg text-foreground">Erhvervserfaring</h3>
-                    <div className="rounded-lg bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 p-5">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-foreground">Erfaring:</span>
-                          <span className="text-muted-foreground">{step1Data.workHistoryOverview.yearsExperienceApprox}</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{step1Data.workHistoryOverview.careerProgressionNote}</p>
-                      </div>
+                  {/* Step 1 Text - Prose format */}
+                  <div className="prose prose-slate dark:prose-invert max-w-none">
+                    <div className="text-base leading-relaxed text-foreground whitespace-pre-wrap">
+                      {step1Data.text}
                     </div>
                   </div>
 
                   {/* Contact Data Extracted */}
                   {(step1Data.dataExtracted.name || step1Data.dataExtracted.email || 
                     step1Data.dataExtracted.phone || step1Data.dataExtracted.location) && (
-                    <div className="space-y-3">
+                    <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-800">
                       <h3 className="font-semibold text-lg text-foreground">Kontaktoplysninger (fundet i CV)</h3>
                       <div className="rounded-lg bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 p-5">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -979,15 +833,6 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
                       </div>
                     </div>
                   )}
-
-                  {/* Limitations Note */}
-                  <div className="rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 p-5 flex items-start gap-3">
-                    <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">Bemærk</p>
-                      <p className="text-sm text-amber-800 dark:text-amber-400 mt-1">{step1Data.limitationsNote}</p>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
 

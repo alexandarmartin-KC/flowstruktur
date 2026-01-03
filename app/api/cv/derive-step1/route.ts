@@ -22,64 +22,53 @@ const FALLBACK_RESPONSE: Step1Output = {
 };
 
 // System prompt for OpenAI - Step 1 "Hvad vi udleder af dit CV"
-const SYSTEM_PROMPT = `Du er en erfaren karriererådgiver. Skriv en sammenhængende, professionel tekst som du ville sige højt til en kandidat.
+const SYSTEM_PROMPT = `Step 1 bekræfter at systemet har forstået brugerens professionelle identitet på et overordnet niveau.
 
-FORMÅL:
-Præsentér en flydende prosa-tekst der viser at systemet har forstået brugerens professionelle profil.
-Dette er IKKE analyse, coaching eller rådgivning.
+DEN VIGTIGSTE REGEL:
+Dit primære ansvar er at FJERNE information, ikke at forklare den.
+Hvis noget kan udelades uden at ændre brugerens forståelse af sin professionelle identitet, skal det udelades.
 
-HÅRDE KRAV:
-- Skriv i FULDE sætninger med naturligt flow
-- Undgå telegram-stil og korte hovedsætninger
-- Undgå gentagelser af standardfraser
-- Undgå generiske AI-formuleringer
-- Ingen bullets eller punktlister
-- Ingen overskrifter
-- Ingen kontaktoplysninger eller uddannelse
-- Ingen anbefalinger eller råd
+ABSOLUTTE GRÆNSER:
+- Beskriv kun hvad CV'et viser på et overordnet niveau
+- Ingen detaljer om hvordan noget er udført
+- Ingen forklaring af effekt, forbedringer eller resultater
+- Ingen rosende eller vurderende formuleringer
+- Ingen tekniske eller systemmæssige detaljer
+- Ingen navngivne personer
+- Brug altid "du", aldrig tredje person
 
-Hvis teksten lyder som en statusrapport, er den ugyldig.
+Hvis teksten kunne bruges i en jobansøgning eller føles som en performancebeskrivelse, er den ugyldig.
 
-INDHOLD (skrives som naturlig prosa, ikke som struktur):
+LÆNGDE: Maks 120 ord. 4-5 korte afsnit. Sammenhængende prosa. Ingen bullets. Ingen overskrifter.
 
-1) Indledende afsnit:
-   Beskriv professionel identitet, senioritet og kontekst i sammenhængende sætninger.
+INDHOLD (kun dette, i flydende prosa):
 
-2) Erfaringsafsnit:
-   Saml de vigtigste erfaringsområder i flydende tekst – ikke som hårde bullets.
+1) Professionel identitet
+   - Rolle, senioritet (brug "senior" ved >8-10 års erfaring), overordnet arbejdskontekst
 
-3) Rolle og ansvar:
-   Forklar typen af rolle (specialist/ledelse), operationelt ansvar og samarbejdsrelationer.
+2) Overordnet erfaringsområde
+   - Centrale domæner, ingen eksempler
 
-4) Helhedsindtryk:
-   Beskriv struktur, konsistens og progression over tid.
+3) Rolletype
+   - Specialistrolle, operationelt ansvar, samarbejde med interne/eksterne aktører
 
-5) Afslutning:
-   En rolig, professionel sætning der inviterer til senere justering hvis noget ikke matcher.
+4) Helhedsindtryk
+   - Struktur, konsistens, progression over tid
 
-FORBUD:
-- Ingen punkt-sætninger uden bindeord
-- Ingen "specialistrolle med…", "fokus på…", "erfaring fra…" som løsrevne fragmenter
-- Alt skal indgå i hele, flydende sætninger
+5) Afsluttende validering
+   - Brugeren kan justere senere, hvis noget ikke matcher
 
-SENIORITET:
-- Mere end 8-10 års relevant erfaring → brug ordet "senior"
-- Globalt eller enterprise ansvar → nævn eksplicit
-
-STIL:
-- Professionel, menneskelig, rolig, flydende
-- Som en erfaren rådgiver der taler til en kandidat
+STIL: Roligt, nøgternt, menneskeligt. Ikke "AI-velskrevet".
 
 SPROG: Dansk
 
-OUTPUT:
-Returnér KUN valid JSON: { "text": "den fulde tekst her" }`;
+OUTPUT: Returnér KUN valid JSON: { "text": "den fulde tekst her" }`;
 
 const USER_PROMPT_TEMPLATE = (cvText: string) => `
 CV-TEKST:
 ${cvText}
 
-Skriv Step 1-teksten som flydende prosa. Ingen bullets. Ingen overskrifter. Naturligt flow. Returnér KUN JSON.`;
+Skriv Step 1. Maks 120 ord. Fjern alt der kan udelades. Ingen detaljer. Kun overordnet niveau. Returnér KUN JSON.`;
 
 // Validate output - kun text felt krævet
 function validateStep1Output(data: any): data is Step1Output {

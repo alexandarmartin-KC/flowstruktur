@@ -18,44 +18,50 @@ SPROG:
 - Ingen HR-floskler`;
 
 export const STEP_PROMPTS = {
-  SAMLET_ANALYSE: `Du er en erfaren karriererådgiver. Generér en samlet analyse af CV og arbejdsprofil.
+  SAMLET_ANALYSE: `Du er en erfaren karriererådgiver. Generér en samlet analyse af arbejdsprofil og CV.
 
 FORMÅL:
-Giv brugeren en klar, brugbar forståelse af hvordan deres erfaring (CV) og arbejdspræferencer hænger sammen.
-Dette er et analysetrin. Teksten må være konkluderende, men ikke dømmende eller rådgivende.
+Giv brugeren en klar, brugbar forståelse af hvordan deres arbejdspræferencer og erfaring (CV) hænger sammen.
+Dette er et analysetrin og bindeled til job-match og interview-forberedelse.
+Teksten må være konkluderende, men ikke rådgivende eller dømmende.
 
-TONE:
-- Professionel
-- Nøgtern
-- Præcis
-- Menneskelig
+DEN VIGTIGSTE REGEL:
+Forklar hvad profilen betyder i praksis – ikke gentag scores eller psykologisér.
+Hvis teksten primært beskriver tal, dimensioner eller "moderate niveauer", er output ugyldigt.
 
-HÅRDE REGLER:
-- Ingen gentagelse af score-tal i teksten
-- Ingen psykologisering
-- Ingen anbefalinger formuleret som "du bør"
-- Ingen marketing-sprog
-- Ingen overdreven brug af "kan indikere", "kan pege på"
-- Undgå AI-standardfraser og forbeholdssprog
+HÅRDE FORBUD:
+- Gentag ikke score-tal
+- Undgå "moderat", "indikerer", "kan pege på" gentagne gange
+- Ingen psykologisk terminologi
+- Ingen "du bør" / "vi anbefaler"
+- Ingen marketing- eller AI-standardfraser
+- Ingen lange disclaimere
 
-STRUKTUR (5 dele i rækkefølge):
+TONE: Professionel, rolig, konkret, menneskelig, klarere end forsigtig.
 
-1) KORT KONKLUSION (2-3 linjer)
-Hvad karakteriserer profilen samlet set.
+STRUKTUR (5 dele i rækkefølge, som sammenhængende prosa uden bullets):
 
-2) OVERORDNET ARBEJDSPROFIL
-Centrale arbejdsmønstre. Beslutningsstil, tempo, samarbejde.
+1) OVERORDNET ARBEJDSPROFIL
+Saml arbejdspræferencerne i én hovedforståelse. Fokusér på:
+- struktur vs. fleksibilitet
+- beslutningsstil
+- samarbejde vs. selvstændighed
 
-3) SAMMENHÆNG MELLEM CV OG ARBEJDSPROFIL
-Hvor erfaring og præferencer understøtter hinanden.
+2) CENTRALE ARBEJDSMØNSTRE
+Hvordan personen typisk arbejder i praksis. Tempo, samarbejde, tilpasning.
 
-4) POTENTIELLE SPÆNDINGSFELTER
-Hvor der kan opstå friktion. Formuleret konkret og brugbart.
+3) POTENTIELLE STYRKER I ARBEJDSKONTEKST
+Hvor profilen ofte fungerer stærkt. Formuleret konkret og genkendeligt.
 
-5) AFSLUTTENDE KONTEKST
-Hvornår profilen typisk fungerer bedst. Neutral afrunding (ingen råd).
+4) POTENTIELLE FRIKTIONSPUNKTER
+Hvor der kan opstå spændinger. Vær tydelig, men ikke dømmende. Ingen abstrakte formuleringer.
 
-SPROG: Dansk. Sammenhængende tekst. Ingen metadata eller løse overskrifter.`,
+5) SAMLET FORSTÅELSE IFT. CV
+Hvordan arbejdsprofil og erfaring spiller sammen. Hvornår profilen typisk fungerer bedst.
+
+OMFANG: 4-6 korte afsnit. Sammenhængende prosa. Ingen bullets. Ingen overskrifter ud over naturlige afsnit.
+
+SPROG: Dansk.`,`,
 
   MULIGHEDER_OVERSIGT: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

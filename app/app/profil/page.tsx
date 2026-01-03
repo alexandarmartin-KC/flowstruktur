@@ -475,20 +475,25 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
     const lines = analysis.split('\n');
     let currentSection: { title: string; content: string; bullets: string[] } | null = null;
 
-    // Både gamle og nye sektionstitler
+    // Sektionstitler der matcher den nye prompt-struktur
     const sectionTitles = [
-      // Nye titler
-      'KORT KONKLUSION',
+      // Aktuelle titler
       'OVERORDNET ARBEJDSPROFIL',
+      'CENTRALE ARBEJDSMØNSTRE',
+      'POTENTIELLE STYRKER I ARBEJDSKONTEKST',
+      'POTENTIELLE FRIKTIONSPUNKTER',
+      'SAMLET FORSTÅELSE',
+      // Alternative formuleringer
+      'KORT KONKLUSION',
       'SAMMENHÆNG MELLEM CV OG ARBEJDSPROFIL',
       'POTENTIELLE SPÆNDINGSFELTER',
       'AFSLUTTENDE KONTEKST',
-      // Gamle titler (for bagudkompatibilitet)
+      // Gamle titler (bagudkompatibilitet)
       'SAMLET PROFILFORSTÅELSE',
       'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN',
-      'POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL',
-      'ARBEJDSKONTEKSTER DER TYPISK VIL UNDERSTØTTE PROFILEN',
-      'KONTEKSTER DER KAN KRÆVE BEVIDST TILPASNING',
+      'POTENTIELLE SPÆNDINGER',
+      'ARBEJDSKONTEKSTER',
+      'KONTEKSTER DER KAN KRÆVE',
       'AFSLUTTENDE NOTE',
     ];
 

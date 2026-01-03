@@ -28,6 +28,14 @@ Alle pointer skal kunne forklares direkte med input:
 - eller fra CV'et (rolle, kontekst, ansvar, reguleret miljø mv.)
 Hvis en pointe ikke tydeligt kan spores til input, må den IKKE medtages.
 
+SKRIVESTIL (KRITISK):
+- Skriv flydende, sammenhængende prosa – ikke opremsende eller mekanisk
+- Brug SPECIFIK CV-kontekst (fx "fysisk sikkerhed i enterprise-miljøer", ikke bare "regulerede miljøer")
+- Skriv DIREKTE og konstaterende – undgå "kan betyde", "kan ses", "kan styrke"
+- Formulér som observationer, ikke som muligheder
+- Brug naturligt dansk sprog uden tekniske termer fra arbejdsprofilen
+- Undgå at gentage ordret fra dimensionsbeskrivelserne
+
 OUTPUT FORMAT (FAST – MÅ IKKE ÆNDRES):
 Returnér et JSON-objekt med PRÆCIS disse keys:
 {
@@ -43,37 +51,62 @@ SEKTIONER:
 
 1) work_profile
 Formål: Overordnet forståelse af arbejdspræferencer. Fokus på struktur vs fleksibilitet, tempo og samarbejde.
-Regler: Kun begreber direkte afledt af arbejdsprofilen. Ingen score-tal. Ingen generiske kompetencer. 2–4 sætninger.
+Regler:
+- Skriv som én sammenhængende observation
+- Brug formuleringer som "peger på en præference for..." eller "foretrækkes organiseret med..."
+- Forklar hvad præferencerne BETYDER i praksis, ikke hvad de ER
+- 2–4 sætninger
 Fallback: Hvis arbejdsprofilen er for jævn/moderat: skriv én nøgtern sætning om balance og fleksibilitet.
 
 2) work_patterns
 Formål: Hvordan præferencer typisk viser sig i praksis.
-Regler: Kun observerbare arbejdsmønstre. Ingen "evner", ingen psykologisering. 2–3 sætninger.
+Regler:
+- Beskriv den konkrete arbejdsform (fx "selvstændigt ansvar kombineres med løbende samarbejde")
+- Skriv om beslutningstagning og tempo i forhold til CV-konteksten
+- Undgå "kan" – skriv hvad der "afspejles", "fungerer bedst", "foretrækkes"
+- 2–3 sætninger
 Fallback: Hvis der ikke kan udledes klare mønstre: returnér tom streng "".
 
 3) strengths
-Formål: Kontekstuelle styrker i arbejdssammenhæng.
-Regler: Kun styrker der opstår af samspil mellem præferencer og erfaring. Ingen abstrakte eller generelle kompetencer. Ingen rosende sprog. 1–3 sætninger.
+Formål: Sammenhæng mellem erfaring og præferencer.
+Regler:
+- Start med "Set i lyset af din erfaring med [specifik CV-kontekst]..."
+- Beskriv HVORDAN erfaring og præferencer hænger sammen (fx "harmonerer med", "fremstår tydelig sammenhæng")
+- Nævn konkrete elementer fra CV (operationelt ansvar, koordinering, sikkerhedsrammer etc.)
+- Ingen rosende eller vurderende sprog
+- 2–3 sætninger
 Fallback: Hvis styrker ville blive generiske: returnér tom streng "".
 
 4) frictions
-Formål: Potentielle spændinger mellem præferencer og CV-kontekst.
-Regler: Hver sætning skal nævne både en præference OG en arbejdskontekst. Ingen hypotetiske arbejdsmiljøer. Ingen råd. 1–3 sætninger.
-Fallback: Hvis der ikke findes tydelige kontraster: returnér én nøgtern sætning om at profilen generelt er forenelig med erfaringen.
+Formål: Potentielle spændinger mellem præferencer og arbejdskontekster.
+Regler:
+- Skriv "Der kan opstå spændinger i situationer, hvor..."
+- Nævn BÅDE præferencen OG den konkrete situation (fx "hurtige beslutninger under højt pres" + "grundig beslutningsstil")
+- Brug "Tilsvarende kan..." for anden friktion
+- Ingen råd eller anbefalinger
+- 2–3 sætninger
+Fallback: Hvis ingen tydelige kontraster: én sætning om at profilen er forenelig med erfaringen.
 
 5) cv_alignment
-Formål: Samlet forståelse af hvornår profilen typisk fungerer bedst.
-Regler: Skal eksplicit referere til CV-kontekst. Ingen vurdering af person. Ingen anbefalinger. 1–2 sætninger.
-Fallback: Hvis der ikke kan udledes klar sammenhæng: skriv at analysen bør ses i sammenhæng med konkret rolle.
+Formål: Hvornår profilen typisk fungerer bedst.
+Regler:
+- Start med "Samlet set fungerer profilen typisk bedst i..."
+- Referer til specifik organisationstype fra CV (fx "regulerede organisationer med behov for struktureret sikkerhedsstyring")
+- Nævn hvad der skal være plads til (fx "professionelt skøn", "koordinering", "samarbejde på tværs")
+- Afslut med "Analysen bør ses i sammenhæng med den konkrete rolle og organisatoriske kontekst."
+- 2–3 sætninger
+Fallback: Skriv at analysen bør ses i sammenhæng med konkret rolle.
 
 HÅRDE FORBUD (OVERTRÆDELSE = UGYLDIGT OUTPUT):
 MÅ IKKE FOREKOMME I NOGEN SEKTION:
 - Generiske kompetencer: kreativ, strategisk, innovativ, problemløsning, proaktiv, stærk evne, adds value, highly skilled
 - Personlighedssprog: personlighed, mindset, motivation, passion, engagement
 - Rådgivning: "du bør", "vi anbefaler", "det er vigtigt at"
-- Marketing- eller AI-standardfraser: "kan indikere", "kan pege på", "gør dig velegnet til"
+- Marketing- eller AI-standardfraser: "kan indikere", "kan pege på", "gør dig velegnet til", "styrke evnen til"
+- Mekanisk sprog: "afbalanceret social præference", "en jævn fordeling af"
+- Usikkert sprog: "kan betyde", "kan ses", "kan også"
 
-SPROG & TONE: Dansk (eller brugerens input-sprog). Nøgternt. Professionelt. Datatro. Ikke "pænt" for enhver pris.
+SPROG & TONE: Dansk. Flydende prosa. Professionelt men naturligt. Konkret og specifikt. Datatro.
 
 OUTPUT: Returnér KUN JSON-objektet. Ingen forklaring. Ingen metadata. Ingen ekstra tekst.`,
 

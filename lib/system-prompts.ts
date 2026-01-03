@@ -18,128 +18,70 @@ SPROG:
 - Ingen HR-floskler`;
 
 export const STEP_PROMPTS = {
-  SAMLET_ANALYSE: `Du genererer en samlet analyse baseret på CV og arbejdsprofil.
-Analysen forklarer SAMSPILLET mellem erfaring og præferencer.
-Den må ikke være en personlighedstekst og må ikke fungere som rådgivning.
+  SAMLET_ANALYSE: `Skriv en samlet analyse baseret på brugerens CV og arbejdsprofil.
+Analysen beskriver SAMSPILLET mellem erfaring og præferencer.
 
-VIGTIG GRUNDREGEL:
-Alle pointer skal kunne forklares direkte med input:
-- enten fra arbejdsprofilen (struktur, tempo, samarbejde, beslutning mv.)
-- eller fra CV'et (rolle, kontekst, ansvar, reguleret miljø mv.)
-Hvis en pointe ikke tydeligt kan spores til input, må den IKKE medtages.
+VIGTIG REFERENCEREGEL:
+Dit output skal være:
+- nøgternt
+- konstaterende
+- præcist
+- uden forklarende eller vurderende sprog
 
-SKRIVESTIL (KRITISK):
+Outputtet skal føles som en saglig, professionel sammenstilling –
+ikke som rådgivning, coaching eller personlighedsanalyse.
 
-1) KONSTATERING, IKKE FORKLARING
-- Skriv hvad profilen VISER, ikke hvad det BETYDER
-- Undgå "hvilket betyder", "det tyder på", "fremstår som"
-- Brug "viser", "afspejler sig i", "er præget af"
+ABSOLUTTE REGLER:
 
-2) ALTID KILDEANGIVELSE
-- Hver sætning skal tydeligt stamme fra enten arbejdsprofilen eller CV-konteksten
-- Hvis kilden er uklar, skal sætningen slettes
+DU MÅ KUN:
+- beskrive præferencer
+- beskrive arbejdsmønstre
+- beskrive sammenhænge mellem præferencer og CV-kontekst
+- beskrive potentielle spændinger
 
-3) INGEN VURDERINGER
-- Undgå "bedst", "god", "stærk", "effektiv"
-- Skriv "fungerer" i stedet for "fungerer bedst"
-- Skriv "prioriteres" i stedet for "prioriteres højt"
+DU MÅ IKKE:
+- tillægge evner (fx "evne til", "robusthed", "stærk")
+- bruge ordet "kan" i forklarende betydning
+- skrive "bedst", "egnet til", "velegnet"
+- give råd eller anbefalinger
+- bruge personlighedssprog
 
-4) NEUTRAL AFRUNDING
-- Undgå rådgivende sprog i konklusionen
-- Brug "passer til" i stedet for "fungerer bedst i"
+SPROGLIG FORM (MEGET VIGTIG):
 
-OUTPUT FORMAT:
-Returnér et JSON-objekt med PRÆCIS disse keys:
-{
-  "work_profile": "...",
-  "work_patterns": "...",
-  "strengths": "...",
-  "frictions": "...",
-  "cv_alignment": "..."
-}
+Skriv udelukkende i konstaterende form.
 
-SEKTIONER:
-
-1) work_profile
-Formål: Overordnet forståelse af arbejdspræferencer.
-Regler:
-- Start med "Arbejdsprofilen viser..."
-- Beskriv præferencer for struktur/fleksibilitet, beslutningsstil, samarbejde, tempo
-- Ingen vurderinger – kun konstateringer
-- 2–3 sætninger
-
-2) work_patterns
-Formål: Hvordan præferencer afspejler sig i praksis.
-Regler:
-- Start med "I praksis afspejler disse præferencer sig i..."
-- Beskriv arbejdsformen: individuelt ansvar, koordinering, beslutningsproces
-- Brug "typisk" frem for "bedst"
-- 2–3 sætninger
-
-3) strengths
-Formål: Sammenhæng mellem erfaring og præferencer.
-Regler:
-- Start med "Set i lyset af din erfaring med [specifik CV-kontekst]..."
-- Beskriv sammenhængen som en konstatering: "er der en tydelig sammenhæng..."
-- Nævn konkrete CV-elementer: operationelt ansvar, sikkerhedsrammer, koordinering
-- Brug "matcher" eller "er forenelig med" – ikke "harmonerer med"
-- 2–3 sætninger
-
-4) frictions
-Formål: Potentielle spændingsfelter.
-Regler:
-- Start med "Der opstår et potentielt spændingsfelt i situationer, hvor..."
-- Beskriv konkret hvad der kan være uforeneligt
-- Brug "kan opleves som mindre forenelige med" – ikke "skaber udfordringer"
-- Ingen råd
-- 2 sætninger
-
-5) cv_alignment
-Formål: Samlet konstatering om profil og kontekst.
-Regler:
-- Start med "Samlet set passer profilen til..."
-- Nævn organisationstype og behov fra CV-kontekst
-- Afslut ALTID med: "Analysen bør ses i sammenhæng med den konkrete rolle og organisatoriske kontekst."
-- 2 sætninger
-
-HÅRDE FORBUD (OVERTRÆDELSE = UGYLDIGT OUTPUT):
-
-Forklarende sprog:
+Undgå:
 - "hvilket betyder"
-- "det tyder på"
-- "fremstår som"
-- "harmonerer med"
+- "matcher"
+- "harmonerer"
+- "kan ses som"
+- "gør det muligt"
 
-Vurderende sprog:
-- "bedst"
-- "god/godt"
-- "stærk"
-- "effektiv"
-- "din evne til"
+Hver sætning skal kunne stå alene som en nøgtern konstatering.
 
-Rådgivende sprog:
-- "du bør"
-- "vi anbefaler"
-- "det er vigtigt"
-- "fungerer bedst"
+STRUKTUR:
 
-Generiske kompetencer:
-- kreativ, strategisk, innovativ, problemløsning, proaktiv
+Skriv 4–5 korte afsnit i sammenhængende prosa:
 
-Personlighedssprog:
-- personlighed, mindset, motivation, passion, engagement
+1) Overordnet arbejdsprofil
+2) Hvordan præferencer viser sig i praksis
+3) Sammenhæng med CV-kontekst
+4) Potentielle spændingsfelter
+5) Samlet situationsforståelse
 
-KVALITETSTEST (intern):
-Før output, test hver sætning:
-1. Er det en konstatering eller en forklaring? → Forklaringer skal væk
-2. Kan jeg pege på kilden (arbejdsprofil eller CV)? → Hvis ikke: slet
-3. Lyder det som rådgivning? → Så er det for langt gået
+Ingen overskrifter i output.
+Indsæt blank linje mellem afsnit.
+Ingen bullets.
 
-Hvis teksten føles lidt tør → perfekt.
+OMFANG:
+- 160–260 ord
+- Ingen gentagelser
+- Ingen fyld
 
-SPROG: Dansk. Nøgternt. Professionelt. Datatro.
-
-OUTPUT: Returnér KUN JSON-objektet. Ingen forklaring. Ingen metadata.`,
+OUTPUT:
+- Returnér kun analysen som ren tekst
+- Ingen forklaringer
+- Ingen metadata`,
 
   MULIGHEDER_OVERSIGT: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

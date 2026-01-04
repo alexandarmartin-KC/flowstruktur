@@ -903,8 +903,59 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
           <p className="text-sm text-muted-foreground mt-2">Understøtter PDF, DOCX og TXT filer</p>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Drag and drop area */}
-          <div className="relative">
+          {/* Show saved CV info if extraction exists but no file selected */}
+          {extraction && !file && (
+            <div className="flex items-center gap-3 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4">
+              <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-sm text-foreground">CV allerede uploadet</p>
+                <p className="text-xs text-muted-foreground">
+                  Dit CV er gemt og analyseret
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-blue-600 border-blue-300 hover:bg-blue-50"
+              >
+                Upload nyt CV
+              </Button>
+            </div>
+          )}
+
+          {/* Drag and drop area - only show if no extraction or user wants to upload new */}
+          {!extraction && (
+            <div className="relative">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.docx,.txt"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={loading}
+                className="w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="flex flex-col items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                    <Upload className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div className="text-center">
+                    <p className="font-semibold text-foreground">Træk din CV her eller klik for at vælge</p>
+                    <p className="text-sm text-muted-foreground mt-1">PDF, DOCX eller TXT</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {/* Hidden file input for "Upload nyt CV" button */}
+          {extraction && !file && (
             <input
               ref={fileInputRef}
               type="file"
@@ -912,22 +963,7 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
               onChange={handleFileSelect}
               className="hidden"
             />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={loading}
-              className="w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <div className="flex flex-col items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <Upload className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div className="text-center">
-                  <p className="font-semibold text-foreground">Træk din CV her eller klik for at vælge</p>
-                  <p className="text-sm text-muted-foreground mt-1">PDF, DOCX eller TXT</p>
-                </div>
-              </div>
-            </button>
-          </div>
+          )}
 
           {/* Selected file info */}
           {file && (
@@ -985,7 +1021,7 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
       </Card>
 
       {/* Step 1: Hvad vi udleder af dit CV */}
-      {extraction && step1Data && (
+      {step1Data && (
         <div className="space-y-8">
           {/* Step 1 Loading State */}
           {loadingStep1 && (

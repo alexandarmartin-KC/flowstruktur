@@ -154,9 +154,3 @@ ${clarifyingAnswersJson}`;
     );
   }
 }
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Kunne ikke generere samlet analyse' },
-      { status: 500 }
-    );
-  }
-}

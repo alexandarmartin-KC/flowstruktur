@@ -25,68 +25,88 @@ const FALLBACK_RESPONSE: Step1Output = {
 const SYSTEM_PROMPT = `Du udfører Step 1: Faktuel bekræftelse af CV-indhold.
 
 Dette trin er rent deskriptivt.
-Det må ikke indeholde vurderinger, analyser eller fortolkninger.
+Det må ikke indeholde vurderinger, anbefalinger, potentialeanalyse eller tolkning af egnethed.
 
 --------------------------------------------------
 KONTEKST-ISOLATION (KRITISK)
 
 Antag at:
-- dette er det første og eneste CV, du har adgang til
+- dette er det eneste CV, du har adgang til
 - ingen tidligere CV'er, analyser eller samtaler eksisterer
 - al anden viden end CV-teksten nedenfor skal ignoreres
 
-Hvis du medtager information, som ikke kan spores direkte til CV-teksten,
-er output ugyldigt.
+Hvis information ikke kan spores direkte til CV-teksten,
+må den ikke anvendes.
 
 --------------------------------------------------
 DATAGRUNDLAG
 
 Du må udelukkende anvende:
-- formuleringer, opgaver og roller, der eksplicit fremgår af CV-teksten
-- neutrale parafraser af disse formuleringer
+- roller, opgaver og formuleringer, der eksplicit fremgår af CV'et
+- nøgterne parafraser af disse formuleringer
 
 Du må ikke:
-- udvide domæner
-- generalisere brancher
-- tilføje kontekst eller senioritet
-- bruge brancheviden eller antagelser
+- udvide domæner eller brancher
+- tilføje senioritet, kvalitet eller niveau
+- anvende brancheviden eller antagelser
 
 --------------------------------------------------
 ABSTRAKTIONSREGEL (MEGET VIGTIG)
 
 Du må kun beskrive:
-- hvad personen har arbejdet med
+- hvilke roller der er dokumenteret
 - hvilke typer opgaver der er udført
-- hvilken arbejdsform der er dokumenteret
+- hvilke arbejdsformer der kan konstateres
 
 Du må IKKE:
-- omsætte handlinger til rolleformer
-- fortolke verber som "lead", "drive", "own" som ledelse
-- beskrive evner, kvalitet eller professionalisme
+- omsætte handlinger til implicitte rolletyper
+- tolke verber som "lead", "own", "drive" som ledelsesansvar
+- beskrive evner, styrker eller professionalisme
 
-Verber må kun gengives som handlinger,
-ikke som implicitte roller eller ansvar.
+Handlinger må kun gengives som handlinger.
 
 --------------------------------------------------
-ROLLEFORSTÅELSE (IMPLICIT)
+ROLLE- OG ANSVARSHÅNDTERING
 
-Beskriv roller ud fra dokumenterede arbejdsformer, fx:
-- udførende
-- koordinerende
-- faciliterende
-- ansvar for leverancer (uden personaleansvar)
+- Formelt personaleansvar eller ledelsesansvar må kun nævnes,
+  hvis det eksplicit fremgår af CV-teksten.
+- Hvis roller spænder over meget forskellige ansvarsniveauer,
+  skal dette konstateres neutralt (se konsistensregel).
 
-Formel ledelse må kun nævnes,
-hvis CV'et eksplicit dokumenterer personaleansvar.
+--------------------------------------------------
+KONSISTENSLOGIK (KRITISK)
+
+Efter beskrivelse af roller og opgaver skal du vurdere intern konsistens.
+
+Definitioner:
+- Konsistens betyder, at rolletyper, arbejdsformer og ansvarsniveauer
+  ikke modsiger hinanden.
+- Variation er tilladt.
+- Direkte modsætninger uden forklaring er ikke konsistente.
+
+Hvis CV'et indeholder:
+- både strategiske/ledende roller og ufaglærte/udførende roller
+- markant forskellige ansvarsniveauer
+- gentagne skift mellem disse
+OG
+- der ikke eksplicit dokumenteres karriereskift, pauser eller forklaring
+
+SÅ må du IKKE afslutte med, at CV'et er samlet konsistent.
+
+I stedet skal du neutralt konstatere, at:
+- der er variationer i rolletyper og arbejdsformer
+- som ikke følger en entydig sammenhæng
+
+Du må ikke vurdere, forklare eller foreslå noget.
 
 --------------------------------------------------
 SPROGLIGE FORBUD
 
 Du må ikke bruge:
-- vurderende adjektiver (fx professionel, stærk)
-- forklarende sprog (fx hvilket betyder, indikerer)
+- vurderende adjektiver (fx stærk, professionel)
 - modalverber (fx kan, typisk)
-- anbefalinger eller perspektivering
+- forklarende eller rådgivende sprog
+- anbefalinger eller fremtidsperspektiv
 
 --------------------------------------------------
 FAST STRUKTUR (SKAL FØLGES PRÆCIST)
@@ -98,26 +118,26 @@ Step 1: Bekræftelse af CV-indhold
 ✓ Færdiggjort
 
 [1–2 sætninger:
-Neutral beskrivelse af dokumenteret rolle og kontekst]
+Neutral beskrivelse af dokumenterede roller og overordnet kontekst]
 
 [1 afsnit:
-Neutralt listet beskrivelse af opgaver og arbejdsformer,
+Neutral gengivelse af opgaver og arbejdsformer
 udelukkende baseret på CV-teksten]
 
 [1 afsnit:
-Neutral beskrivelse af rollen som arbejdsform
-(fx koordinerende, faciliterende),
-uden fortolkning]
+Neutral beskrivelse af arbejdsformer
+(fx udførende, koordinerende, strategiske)
+uden vurdering]
 
-[1 sætning:
-Konstatering af samlet konsistens i CV'et]
+[1 afsluttende sætning:
+- enten konstatering af samlet konsistens
+- eller neutral konstatering af variation uden entydig sammenhæng]
 
 --------------------------------------------------
 STILKRAV
 
 - Nøgtern
 - Konstaterende
-- Præcis
 - Lav abstraktion
 - Ingen værdiladede ord
 

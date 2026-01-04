@@ -154,20 +154,6 @@ ${clarifyingAnswersJson}`;
     );
   }
 }
-    } catch (parseErr) {
-      console.error('Failed to parse AI response as JSON:', textContent);
-      // Fallback: return the text as analysis
-      return NextResponse.json({
-        needs_clarifications: false,
-        clarifications: [],
-        analysis_text: textContent.trim(),
-        ui_hint: 'analysis_only'
-      });
-    }
-
-    return NextResponse.json(parsedResponse);
-  } catch (err) {
-    console.error('Error in combined-analysis:', err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Kunne ikke generere samlet analyse' },
       { status: 500 }

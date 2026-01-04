@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,6 +12,13 @@ import { calculateAllDimensionScores } from '@/lib/scoring';
 import { getExplanation, getLevel, type DimensionKey } from '@/lib/dimensionExplanations';
 import { ProfileContactSection } from '@/components/profile-contact-section';
 import { ProfilePhotoSection } from '@/components/profile-photo-section';
+
+// Storage keys - same as used by other pages (muligheder, job)
+const STORAGE_KEYS = {
+  CV_ANALYSIS: 'flowstruktur_cv_analysis',
+  PERSONALITY_DATA: 'flowstruktur_personality_data',
+  COMBINED_ANALYSIS: 'flowstruktur_combined_analysis',
+};
 
 interface CVExtraction {
   summary: string;
@@ -153,6 +160,73 @@ export default function ProfilPage() {
   const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set());
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load saved profile data from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedCvAnalysis = localStorage.getItem(STORAGE_KEYS.CV_ANALYSIS);
+      const savedPersonalityData = localStorage.getItem(STORAGE_KEYS.PERSONALITY_DATA);
+      const savedCombinedAnalysis = localStorage.getItem(STORAGE_KEYS.COMBINED_ANALYSIS);
+      
+      if (savedCvAnalysis) {
+        const parsedCv = JSON.parse(savedCvAnalysis);
+        setStep1Data(parsedCv);
+        setCurrentStep('questionnaire'); // CV already done, go to questionnaire
+      }
+      
+      if (savedPersonalityData) {
+        const parsedPersonality = JSON.parse(savedPersonalityData);
+        setPersonalityProfile(parsedPersonality);
+        if (parsedPersonality.scores) {
+          setScores(parsedPersonality.scores);
+        }
+        setCurrentStep('results'); // Both CV and personality done
+      }
+      
+      if (savedCombinedAnalysis) {
+        const parsedCombined = JSON.parse(savedCombinedAnalysis);
+        setCombinedAnalysis(parsedCombined);
+        if (parsedCombined.clarifyingAnswers) {
+          setClarifyingAnswers(parsedCombined.clarifyingAnswers);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading saved profile data:', error);
+    }
+  }, []);
+
+  // Save step1Data (CV analysis) to localStorage when it changes
+  useEffect(() => {
+    if (step1Data) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.CV_ANALYSIS, JSON.stringify(step1Data));
+      } catch (error) {
+        console.error('Error saving CV analysis:', error);
+      }
+    }
+  }, [step1Data]);
+
+  // Save personality profile to localStorage when it changes
+  useEffect(() => {
+    if (personalityProfile) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.PERSONALITY_DATA, JSON.stringify(personalityProfile));
+      } catch (error) {
+        console.error('Error saving personality data:', error);
+      }
+    }
+  }, [personalityProfile]);
+
+  // Save combined analysis to localStorage when it changes
+  useEffect(() => {
+    if (combinedAnalysis) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.COMBINED_ANALYSIS, JSON.stringify(combinedAnalysis));
+      } catch (error) {
+        console.error('Error saving combined analysis:', error);
+      }
+    }
+  }, [combinedAnalysis]);
 
   // ============ TEST MODE - REMOVE BEFORE PRODUCTION ============
   const loadTestData = () => {
@@ -611,6 +685,29 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
     }
   };
 
+  // Reset all profile data
+  const resetProfile = () => {
+    // Clear localStorage
+    localStorage.removeItem(STORAGE_KEYS.CV_ANALYSIS);
+    localStorage.removeItem(STORAGE_KEYS.PERSONALITY_DATA);
+    localStorage.removeItem(STORAGE_KEYS.COMBINED_ANALYSIS);
+    
+    // Reset all state
+    setFile(null);
+    setExtraction(null);
+    setStep1Data(null);
+    setCurrentStep('cv');
+    setCurrentQuestionIndex(0);
+    setScores({});
+    setPersonalityProfile(null);
+    setCombinedAnalysis(null);
+    setClarifyingAnswers({});
+    setError(null);
+    setAgreement(null);
+    setFeedback('');
+    setRevised(null);
+  };
+
   // Parse personality profile sections
   const parsePersonalityProfile = (profile: string) => {
     const sections: { title: string; content: string; bullets: string[] }[] = [];
@@ -703,7 +800,7 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
 
       {/* ============ TEST MODE BUTTON - REMOVE BEFORE PRODUCTION ============ */}
       {!personalityProfile && (
-        <div className="mb-6">
+        <div className="mb-6 flex gap-2">
           <Button
             onClick={loadTestData}
             variant="outline"
@@ -714,6 +811,19 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
         </div>
       )}
       {/* ============ END TEST MODE ============ */}
+
+      {/* Reset Profile Button - shown when there's saved data */}
+      {(step1Data || personalityProfile) && (
+        <div className="mb-6">
+          <Button
+            onClick={resetProfile}
+            variant="outline"
+            className="border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+          >
+            🔄 Start forfra (nulstil profil)
+          </Button>
+        </div>
+      )}
 
       {/* Step Indicator */}
       <div className="flex items-center gap-2 mb-8">

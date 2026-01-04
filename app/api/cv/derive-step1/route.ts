@@ -24,97 +24,93 @@ const FALLBACK_RESPONSE: Step1Output = {
 // System prompt for OpenAI - Step 1 "Hvad vi udleder af dit CV"
 const SYSTEM_PROMPT = `Du udfører Step 1: Faktuel bekræftelse af CV-indhold.
 
-Dette trin er udelukkende deskriptivt og faktuelt.
-Det er ikke analyse, vurdering, rådgivning eller fortolkning.
+Dette trin er rent deskriptivt.
+Det må ikke indeholde vurderinger, analyser eller fortolkninger.
 
 --------------------------------------------------
-KONTEKST-ISOLATION (OBLIGATORISK)
+KONTEKST-ISOLATION (KRITISK)
 
-Du skal arbejde som om:
+Antag at:
 - dette er det første og eneste CV, du har adgang til
-- ingen tidligere CV'er, profiler eller samtaler eksisterer
-- al anden viden end CV-teksten nedenfor er irrelevant
+- ingen tidligere CV'er, analyser eller samtaler eksisterer
+- al anden viden end CV-teksten nedenfor skal ignoreres
 
-Hvis du nævner information, der ikke står i CV'et,
+Hvis du medtager information, som ikke kan spores direkte til CV-teksten,
 er output ugyldigt.
 
 --------------------------------------------------
 DATAGRUNDLAG
 
-Du må KUN anvende information, der:
-- står eksplicit i CV-teksten
-- kan genfindes direkte i formuleringerne
+Du må udelukkende anvende:
+- formuleringer, opgaver og roller, der eksplicit fremgår af CV-teksten
+- neutrale parafraser af disse formuleringer
 
-Antagelser, generaliseringer og brancheviden er ikke tilladt.
-
---------------------------------------------------
-GRUNDPRINCIP
-
-CV'et skal forstås ud fra dokumenterede ARBEJDSFORMER –
-ikke jobtitler, senioritet eller branchelogik.
+Du må ikke:
+- udvide domæner
+- generalisere brancher
+- tilføje kontekst eller senioritet
+- bruge brancheviden eller antagelser
 
 --------------------------------------------------
-UNIVERSELLE ARBEJDSFORMER (REFERENCE, IKKE OUTPUT)
+ABSTRAKTIONSREGEL (MEGET VIGTIG)
 
-Når du beskriver roller, må du kun udlede på baggrund af,
-hvilke arbejdsformer der dokumenteres i CV'et:
+Du må kun beskrive:
+- hvad personen har arbejdet med
+- hvilke typer opgaver der er udført
+- hvilken arbejdsform der er dokumenteret
 
-- udførende arbejde
-- relationsarbejde
-- koordinerende arbejde
-- kommercielt arbejde
-- fagligt-specialiseret arbejde
-- formel ledelse
+Du må IKKE:
+- omsætte handlinger til rolleformer
+- fortolke verber som "lead", "drive", "own" som ledelse
+- beskrive evner, kvalitet eller professionalisme
+
+Verber må kun gengives som handlinger,
+ikke som implicitte roller eller ansvar.
+
+--------------------------------------------------
+ROLLEFORSTÅELSE (IMPLICIT)
+
+Beskriv roller ud fra dokumenterede arbejdsformer, fx:
+- udførende
+- koordinerende
+- faciliterende
+- ansvar for leverancer (uden personaleansvar)
 
 Formel ledelse må kun nævnes,
 hvis CV'et eksplicit dokumenterer personaleansvar.
 
 --------------------------------------------------
-FORBUD (ABSOLUT)
+SPROGLIGE FORBUD
 
-Du må IKKE:
-- nævne personens navn i analysen
-- tillægge evner, egenskaber eller potentiale
-- udlede ansvar, der ikke er tydeligt dokumenteret
-- bruge vurderende eller forklarende sprog
-- anvende ord som:
-  "kan", "typisk", "indikerer", "matcher", "egnet", "robust"
-- beskrive ledelse uden eksplicit personaleansvar
-- omskrive opgaver - brug CV'ets egen terminologi
+Du må ikke bruge:
+- vurderende adjektiver (fx professionel, stærk)
+- forklarende sprog (fx hvilket betyder, indikerer)
+- modalverber (fx kan, typisk)
+- anbefalinger eller perspektivering
 
 --------------------------------------------------
-FAST STRUKTUR (SKAL FØLGES)
+FAST STRUKTUR (SKAL FØLGES PRÆCIST)
 
-Returnér teksten i præcis denne struktur og rækkefølge:
+Returnér teksten i præcis denne struktur:
 
-Hvad vi udleder af dit CV  
 Step 1: Bekræftelse af CV-indhold
 
 ✓ Færdiggjort
 
-[Afsnit 1: 1–2 sætninger
-Neutral, faktuel beskrivelse af rolle og fagligt domæne.
-Nævn IKKE navn. Brug formuleringer direkte fra CV'et.
-Inkluder kontekst hvis relevant (fx "i både private og offentlige organisationer")]
+[1–2 sætninger:
+Neutral beskrivelse af dokumenteret rolle og kontekst]
 
-[Afsnit 2: 1 afsnit
-Hvilke konkrete opgaver CV'et dokumenterer.
-Brug samme ordvalg som CV'et (fx "forbedring af" hvis CV'et skriver "improve",
-"koordinering af" hvis CV'et skriver "coordinate").
-Liste opgaver præcist uden at fortolke eller udvide]
+[1 afsnit:
+Neutralt listet beskrivelse af opgaver og arbejdsformer,
+udelukkende baseret på CV-teksten]
 
-[Afsnit 3: 1 afsnit
-Hvordan rollen er beskrevet mht. arbejdsformer
-(fx koordinerende, faciliterende, udførende).
-Vær specifik om relationelle aspekter hvis dokumenteret
-(fx "samarbejde på tværs af organisatoriske enheder")]
+[1 afsnit:
+Neutral beskrivelse af rollen som arbejdsform
+(fx koordinerende, faciliterende),
+uden fortolkning]
 
-[Afsnit 4: 1 sætning
-Hvordan CV'et fremstår overordnet.
-Brug "CV'et fremstår [adjektiv]" eller lignende neutral formulering]
-
-Du kan justere dit CV senere,
-hvis noget ikke matcher din egen opfattelse.
+[1 sætning:
+Konstatering af samlet konsistens i CV'et]
 
 --------------------------------------------------
 STILKRAV
@@ -122,8 +118,8 @@ STILKRAV
 - Nøgtern
 - Konstaterende
 - Præcis
-- Professionel
-- Kortfattet
+- Lav abstraktion
+- Ingen værdiladede ord
 
 OUTPUT: Returnér KUN valid JSON: { "text": "den fulde tekst her" }`;
 

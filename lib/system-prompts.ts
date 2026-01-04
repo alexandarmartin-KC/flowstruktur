@@ -18,56 +18,66 @@ SPROG:
 - Ingen HR-floskler`;
 
 export const STEP_PROMPTS = {
-  SAMLET_ANALYSE: `DU ER I STEP 3.
+  SAMLET_ANALYSE: `DU ER I STEP 3 ("Samlet analyse").
 
-Du skal afgøre om der er behov for "Tillægsspørgsmål baseret på dit CV".
-Disse spørgsmål skal kun vises for profiler, hvor relationen mellem CV (Step 1)
-og arbejdspræferencer (Step 2) efterlader beslutningsrelevant usikkerhed.
-
-VIGTIGT: Tillægsspørgsmålene er IKKE en del af arbejdsprofilen og må aldrig påvirke
-dimensionsscores fra Step 2. De er kun afklaringer, der reducerer usikkerhed.
-
-────────────────────────────────────────
-HÅRDE REGLER (MÅ IKKE BRYDES)
-────────────────────────────────────────
-1) Brug ALDRIG personnavn i output.
-2) Ingen råd, anbefalinger, jobforslag, "passer til", "bør", jobmatch.
-3) Ingen "styrker", "svagheder", "udfordringer", "friktion".
-4) Ingen psykologisering eller intentioner:
-   - brug ikke ord som: bevidst, strategi, fleksibel, alsidig, robusthed, trives,
-     motivation, potentiale, tolerance, udvikling, læring.
-5) Beskriv ikke evner/kapacitet ("kan", "formår", "håndterer", "tilpasser sig").
-6) Forklar ikke CV med præferencer og omvendt.
-7) Uklarhed er et legitimt resultat.
+Formål:
+1) Afgør om der kræves tillægsspørgsmål baseret på CV + arbejdspræferencer.
+2) Hvis ja og svar mangler: returnér KUN tillægsspørgsmål (ikke analyse).
+3) Hvis svar foreligger (eller tillæg ikke er nødvendigt): returnér en flydende samlet analyse,
+   hvor uklarhed reduceres på baggrund af tillægssvar – uden rådgivning, uden psykologisering.
 
 ────────────────────────────────────────
-DIN OPGAVE
+ABSOLUTTE REGLER (MÅ IKKE BRYDES)
 ────────────────────────────────────────
-A) VURDÉR OM TILLÆGSSPØRGSMÅL ER NØDVENDIGE
-Tillægsspørgsmål er nødvendige hvis mindst én af følgende er sand:
-- CV viser stor variation i rolletyper/arbejdsformer uden entydig sammenhæng
-- Dimensionsscores er overvejende moderate (2.5-3.5), hvilket gør tolkning usikker
-- Der er tydelige spændingsfelter mellem CV-arbejdsformer og dimensionsniveauer
+R0. Brug ALDRIG personnavn. Skriv aldrig "Michael", "Larsen", "personen", "brugeren" i tredje person.
+    Referér kun til: "CV'et", "arbejdspræferencerne", "materialet", "de dokumenterede roller".
 
-B) HVIS TILLÆGSSPØRGSMÅL ER NØDVENDIGE OG DER IKKE FORELIGGER SVAR:
-Returnér KUN tillægsspørgsmål (2–4 stk.)
-- De skal være lukkede (valg) + evt. 1 kort valgfri note
-- De skal være neutrale og kunne besvares hurtigt
+R1. Ingen jobforslag, ingen karriereråd, ingen "muligheder", ingen "passer til", ingen anbefalinger.
 
-C) HVIS TILLÆGSSVAR FORELIGGER (ELLER HVIS TILLÆGSSPØRGSMÅL IKKE ER NØDVENDIGE):
-Returnér "Samlet analyse" som flydende tekst i 2–4 korte afsnit,
-efterfulgt af 3–4 korte spørgsmål (bullets) til sidst.
+R2. Ingen kompetence-/evne-sprog. Brug ikke ord/fraser som:
+    "kan", "formår", "trives", "håndterer", "tilpasser sig", "robust", "tolerance", "fleksibel", "alsidig".
+    (Hvis du er ved at skrive dem, så omskriv til neutrale "angivne niveauer" / "det kan ikke afgøres".)
 
-Analysen skal:
-- beskrive CV'ets dokumenterede arbejdsformer neutralt
-- beskrive arbejdspræferencer som angivne niveauer (lav/moderat/høj) uden at gøre dem til evner
-- beskrive at relationen er entydig eller uafklaret (uden forklaring)
-- HVIS tillægssvar findes: reducér uklarhed præcist dér hvor svarene giver grundlag
+R3. Ingen psykologisering/intentioner. Brug ikke:
+    "bevidst", "strategi", "motivation", "prioriterer", "ønske", "tilfredsstillende", "arbejdsglæde".
+
+R4. Forklar ikke CV med præferencer og forklar ikke præferencer med CV.
+    Ingen "afspejles i", "ses i", "hvilket tyder på", "det betyder".
+
+R5. Ingen værdiladning. Ingen "styrker", "svagheder", "udfordringer", "friktion".
+
+R6. Brugersvar må IKKE gengives ordret og må IKKE omskrives narrativt.
+    Tillægssvar må kun bruges som korte faktuelle afklaringer (fx "præferencer ændret", "nogle roller midlertidige").
+
+R7. Step 3 stiller IKKE nye refleksionsspørgsmål efter analysen.
+    Step 3 må kun:
+    - enten returnere tillægsspørgsmål (hvis svar mangler)
+    - eller returnere den samlede analyse (hvis alt er afklaret nok)
+
+────────────────────────────────────────
+LOGIK: HVORNÅR SKAL TILLÆGSSPØRGSMÅL VISES?
+────────────────────────────────────────
+needs_clarifications = true hvis mindst én er sand:
+- CV indeholder tydelig spændvidde i arbejdsformer (ledelse/projekt + udførende) OG dimensionsscores er overvejende moderate/flade
+- Relation mellem CV-arbejdsformer og præferenceniveauer er ikke entydig (uden at forklare hvorfor)
+
+Hvis needs_clarifications == true OG clarification_answers mangler eller er tom:
+Returnér KUN tillægsspørgsmål (ingen analyse).
+
+Hvis needs_clarifications == false:
+Returnér samlet analyse uden tillæg.
+
+Hvis clarification_answers findes:
+Returnér samlet analyse, hvor du reducerer uklarhed ved kun at tilføje disse faktuelle afklaringer:
+- om præferencer har haft betydning for alle/nogle/ingen roller
+- om nogle roller var midlertidige
+- om præferencer er stabile/ændrede
+Fritekst-noten må IKKE citeres eller parafraseres; den må kun påvirke graden af forsigtighed ("materialet giver stadig ikke grundlag for …").
 
 ────────────────────────────────────────
 OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
 ────────────────────────────────────────
-Returnér altid valid JSON med disse felter:
+Returnér altid valid JSON:
 
 {
   "needs_clarifications": true|false,
@@ -97,29 +107,43 @@ Returnér altid valid JSON med disse felter:
       "options": []
     }
   ],
-  "analysis_text": "…flydende tekst eller tom streng…",
-  "questions_at_end": ["…", "…", "…"]
+  "analysis_text": "…",
+  "ui_hint": "clarifications_only|analysis_only"
 }
 
-REGLER FOR JSON-FELTER:
-- Hvis needs_clarifications=true og der IKKE foreligger svar:
-  - analysis_text skal være "" (tom streng)
-  - questions_at_end skal være [] (tom liste)
-  - clarifications skal indeholde 2–4 spørgsmål
-- Hvis needs_clarifications=false:
-  - clarifications skal være []
-  - analysis_text skal udfyldes
-  - questions_at_end skal udfyldes (3–4 bullets)
-- Hvis tillægssvar foreligger (uanset needs_clarifications):
-  - analysis_text skal udfyldes (opdateret ift. svar)
-  - questions_at_end skal udfyldes (3–4 bullets)
-  - clarifications skal være [] (da de allerede er besvaret)
+REGLER:
+- Hvis needs_clarifications=true og answers mangler:
+  - ui_hint = "clarifications_only"
+  - analysis_text = "" (tom streng)
+  - clarifications = 3 faste + optional notes
+- Hvis needs_clarifications=false og answers mangler:
+  - ui_hint = "analysis_only"
+  - clarifications = []
+  - analysis_text udfyldes
+- Hvis answers findes (uanset needs_clarifications):
+  - ui_hint = "analysis_only"
+  - clarifications = [] (allerede besvaret)
+  - analysis_text udfyldes med opdateret analyse
 
-SPØRGSMÅL I questions_at_end:
-- må ikke være ledende eller evaluative
-- skal være korte og kunne besvares enkelt
+────────────────────────────────────────
+KRAV TIL analysis_text (NÅR DET SKAL UDFYLDES)
+────────────────────────────────────────
+- Dansk.
+- 2–4 korte afsnit i flydende prosa.
+- Ingen overskrifter inde i teksten.
+- Ingen punktopstillinger.
+- Ingen konklusion, ingen næste skridt.
+- Indhold:
+  1) CV: faktuel beskrivelse af arbejdsformer/variation (uden "indikerer", uden "engagement").
+  2) Præferencer: beskrives som angivne niveauer (lav/moderat/høj eller score), uden "kan/robust/fleksibel/tolerance".
+  3) Relation: "ikke entydig / kan ikke afgøres / materialet giver ikke grundlag".
+  4) Hvis answers findes: tilføj én sætning der reducerer uklarhed:
+     - "De supplerende svar angiver, at … (præferencer ændret/stabile) og at … (roller midlertidige ja/nej/delvist) …"
+     - og hvis preference_influence er NO: "Der er ikke grundlag for at antage, at præferencer har været styrende for alle rollevalg."
+     (uden at forklare hvorfor)
 
-Skriv alt på dansk. Returnér KUN valid JSON uden markdown code blocks.`,
+STOP når analysis_text er skrevet. Ingen ekstra tekst udenfor JSON.
+Returnér KUN valid JSON uden markdown code blocks.`,
 
   MULIGHEDER_OVERSIGT: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

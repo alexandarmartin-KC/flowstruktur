@@ -50,7 +50,7 @@ interface CombinedAnalysisResponse {
   needs_clarifications: boolean;
   clarifications: ClarificationQuestion[];
   analysis_text: string;
-  questions_at_end: string[];
+  ui_hint: 'clarifications_only' | 'analysis_only';
 }
 
 interface CombinedAnalysis {
@@ -240,16 +240,12 @@ Denne profil er baseret på selvrapporterede præferencer og skal ses som et sup
       response: {
         needs_clarifications: false,
         clarifications: [],
-        analysis_text: `Profilen viser en teknisk erfaren udvikler med stærke kompetencer inden for moderne webudvikling, kombineret med præference for strukturerede arbejdsgange og direkte kommunikation. Erfaringen med både startups og etablerede virksomheder indikerer evne til at navigere i forskellige organisatoriske kontekster.
+        analysis_text: `CV'et dokumenterer arbejde inden for webudvikling med fokus på React, TypeScript og Next.js. De angivne roller omfatter både startups og etablerede virksomheder.
 
-Erfaring med strukturerede frameworks (React, TypeScript) matcher præferencen for klare rammer og definerede processer. Fokus på agile metoder understøtter både behovet for struktur og fleksibiliteten i forhold til forandring. Erfaring med teamsamarbejde passer til balancen mellem selvstændighed og dialog i arbejdsstil.
+Arbejdspræferencerne er angivet med moderate til høje niveauer for struktur og rammer samt behov for feedback. Niveauet for selvstændighed er moderat, og niveauet for tempo-tolerance er ligeledes moderat.
 
-Den samlede analyse er vejledende og bygger på mønstre i erfaring og arbejdspræferencer. Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`,
-        questions_at_end: [
-          "Har du oplevet situationer hvor dine præferencer ikke matchede jobkravene?",
-          "Er der bestemte arbejdsformer du aktivt opsøger eller undgår?",
-          "Hvordan har din arbejdsstil udviklet sig over tid?"
-        ]
+Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveauer er ikke entydig. Materialet giver ikke grundlag for at afgøre, hvordan præferencerne har påvirket de konkrete rollevalg, eller om arbejdsformerne har påvirket præferencerne over tid.`,
+        ui_hint: 'analysis_only'
       }
     });
     
@@ -1141,38 +1137,23 @@ Den samlede analyse er vejledende og bygger på mønstre i erfaring og arbejdspr
                     <p className="text-sm text-muted-foreground mt-2">Sammenstilling af CV og arbejdspræferencer</p>
                   </div>
                   <Badge className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                    {combinedAnalysis.response.analysis_text ? '✓ Komplet' : '📋 Afventer svar'}
+                    {combinedAnalysis.response.ui_hint === 'analysis_only' ? '✓ Komplet' : '📋 Afventer svar'}
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="pt-8 space-y-8">
-                {/* Show analysis text if available */}
-                {combinedAnalysis.response.analysis_text && (
-                  <div className="space-y-4">
-                    <div className="rounded-lg p-5 bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700">
-                      <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                        {combinedAnalysis.response.analysis_text}
-                      </p>
-                    </div>
-                    
-                    {/* Questions at end */}
-                    {combinedAnalysis.response.questions_at_end && combinedAnalysis.response.questions_at_end.length > 0 && (
-                      <div className="space-y-2 pt-4">
-                        <p className="text-sm font-medium text-muted-foreground">Refleksionsspørgsmål:</p>
-                        <ul className="list-disc list-inside space-y-1">
-                          {combinedAnalysis.response.questions_at_end.map((q, idx) => (
-                            <li key={idx} className="text-sm text-muted-foreground">{q}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+              <CardContent className="pt-8 space-y-6">
+                {/* Show analysis text if ui_hint is analysis_only */}
+                {combinedAnalysis.response.ui_hint === 'analysis_only' && combinedAnalysis.response.analysis_text && (
+                  <div className="rounded-lg p-5 bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700">
+                    <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                      {combinedAnalysis.response.analysis_text}
+                    </p>
                   </div>
                 )}
 
-                {/* Show clarifying questions if needed and not yet answered */}
-                {combinedAnalysis.response.needs_clarifications && 
-                 combinedAnalysis.response.clarifications.length > 0 && 
-                 !combinedAnalysis.clarifyingAnswers && (
+                {/* Show clarifying questions if ui_hint is clarifications_only */}
+                {combinedAnalysis.response.ui_hint === 'clarifications_only' && 
+                 combinedAnalysis.response.clarifications.length > 0 && (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-lg">📝</span>
@@ -1243,7 +1224,7 @@ Den samlede analyse er vejledende og bygger på mønstre i erfaring og arbejdspr
                 {/* Show answers summary if clarifying answers were given */}
                 {combinedAnalysis.clarifyingAnswers && Object.keys(combinedAnalysis.clarifyingAnswers).length > 0 && (
                   <div className="space-y-3 pt-4 border-t border-indigo-200 dark:border-indigo-800">
-                    <h4 className="font-medium text-sm text-muted-foreground">Dine svar:</h4>
+                    <h4 className="font-medium text-sm text-muted-foreground">Afklarende svar:</h4>
                     <div className="flex flex-wrap gap-2">
                       {Object.entries(combinedAnalysis.clarifyingAnswers).map(([key, value]) => 
                         value ? (

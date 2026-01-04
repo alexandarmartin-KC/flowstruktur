@@ -31,7 +31,7 @@ interface AnalysisResponse {
   needs_clarifications: boolean;
   clarifications: ClarificationQuestion[];
   analysis_text: string;
-  questions_at_end: string[];
+  ui_hint: 'clarifications_only' | 'analysis_only';
 }
 
 export async function POST(request: NextRequest) {
@@ -56,33 +56,38 @@ export async function POST(request: NextRequest) {
       return "lav";
     };
 
+    // Build step1 JSON-like structure
+    const step1Data = {
+      cv_summary: cvAnalysis,
+      roles: [], // Extracted from CV if available
+      work_forms: [] // Extracted from CV if available
+    };
+
     // Build step2 JSON-like structure for the prompt
     const step2Data = {
-      dimension_scores: Object.entries(dimensionScores).map(([dimension, score]) => ({
-        dimension,
-        level: getLevel(score)
-      }))
+      dimension_scores: Object.fromEntries(
+        Object.entries(dimensionScores).map(([dimension, score]) => [
+          dimension,
+          { score: score.toFixed(1), level: getLevel(score) }
+        ])
+      )
     };
 
     // Build clarifying answers JSON if provided
-    let clarifyingAnswersJson = '';
-    if (clarifyingAnswers) {
-      const hasAnswers = Object.values(clarifyingAnswers).some(v => v && v !== '');
-      if (hasAnswers) {
-        clarifyingAnswersJson = JSON.stringify(clarifyingAnswers, null, 2);
-      }
+    let clarifyingAnswersJson = '(ingen svar endnu)';
+    const hasAnswers = clarifyingAnswers && Object.values(clarifyingAnswers).some(v => v && v !== '');
+    if (hasAnswers) {
+      clarifyingAnswersJson = JSON.stringify(clarifyingAnswers, null, 2);
     }
 
-    const userMessage = `Step 1-output (CV-bekræftelse):
-${cvAnalysis}
+    const userMessage = `step1_json:
+${JSON.stringify(step1Data, null, 2)}
 
-Step 2-output (arbejdsprofil):
+step2_json:
 ${JSON.stringify(step2Data, null, 2)}
 
-Tillægssvar (kun hvis brugeren allerede har besvaret dem):
-${clarifyingAnswersJson || '(ingen svar endnu)'}
-
-Returnér valid JSON.`;
+clarification_answers_json:
+${clarifyingAnswersJson}`;
 
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
@@ -97,7 +102,7 @@ Returnér valid JSON.`;
         },
       ],
       max_tokens: 1500,
-      temperature: 0.4,
+      temperature: 0.3,
     });
 
     const textContent = response.choices[0]?.message?.content;
@@ -116,6 +121,15 @@ Returnér valid JSON.`;
         .trim();
       
       parsedResponse = JSON.parse(cleanedContent);
+      
+      // Ensure ui_hint is set correctly based on logic
+      if (!parsedResponse.ui_hint) {
+        if (parsedResponse.needs_clarifications && parsedResponse.clarifications.length > 0 && !parsedResponse.analysis_text) {
+          parsedResponse.ui_hint = 'clarifications_only';
+        } else {
+          parsedResponse.ui_hint = 'analysis_only';
+        }
+      }
     } catch (parseErr) {
       console.error('Failed to parse AI response as JSON:', textContent);
       // Fallback: return the text as analysis
@@ -123,7 +137,7 @@ Returnér valid JSON.`;
         needs_clarifications: false,
         clarifications: [],
         analysis_text: textContent.trim(),
-        questions_at_end: []
+        ui_hint: 'analysis_only'
       });
     }
 

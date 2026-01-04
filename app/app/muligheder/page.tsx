@@ -1,265 +1,742 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Briefcase, AlertCircle, Bookmark, X, Link2, Compass, TrendingUp } from 'lucide-react';
-import {
-  mockJobsForCurrentTrack,
-  mockJobsForNewDirection,
-} from '@/lib/mock-data';
-import { useSavedJobs } from '@/contexts/saved-jobs-context';
-import { UrlJobImporter } from '@/components/url-job-importer';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { 
+  Loader2, 
+  Compass, 
+  TrendingUp, 
+  Link2, 
+  MessageCircle, 
+  CheckCircle2,
+  ArrowRight,
+  RefreshCw,
+  AlertCircle
+} from 'lucide-react';
 
-type TrackMode = 'same' | 'new' | 'import';
+type DirectionChoice = 'A' | 'B' | 'C' | '';
+
+// Coach question types
+interface CoachQuestion {
+  id: string;
+  type: 'single_choice' | 'multi_choice' | 'short_text';
+  prompt: string;
+  options?: string[];
+}
+
+// Direction state from API
+interface DirectionState {
+  choice: 'A' | 'B' | 'C' | 'UNSET';
+  priorities_top3: string[];
+  non_negotiables: string[];
+  negotiables: string[];
+  cv_weighting_focus: string[];
+  risk_notes: string[];
+  next_step_ready_for_jobs: boolean;
+}
+
+// API response
+interface CareerCoachResponse {
+  mode: 'ask_to_choose' | 'deepening';
+  coach_message: string;
+  questions: CoachQuestion[];
+  direction_state: DirectionState;
+}
+
+// User answer structure
+interface UserAnswer {
+  question_id: string;
+  answer: string | string[];
+}
+
+// Local storage keys
+const STORAGE_KEYS = {
+  CV_ANALYSIS: 'flowstruktur_cv_analysis',
+  PERSONALITY_DATA: 'flowstruktur_personality_data',
+  COMBINED_ANALYSIS: 'flowstruktur_combined_analysis',
+  DIRECTION_STATE: 'flowstruktur_direction_state',
+};
 
 function MulighederPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [selectedMode, setSelectedMode] = useState<TrackMode>('same');
-  const [dismissedJobs, setDismissedJobs] = useState<Set<string>>(new Set());
   
-  const { saveJob, unsaveJob, isJobSaved } = useSavedJobs();
+  // State
+  const [selectedChoice, setSelectedChoice] = useState<DirectionChoice>('');
+  const [jobAdText, setJobAdText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [coachResponse, setCoachResponse] = useState<CareerCoachResponse | null>(null);
+  const [userAnswers, setUserAnswers] = useState<{ [questionId: string]: string | string[] }>({});
+  const [directionState, setDirectionState] = useState<DirectionState | null>(null);
+  const [hasProfileData, setHasProfileData] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [conversationHistory, setConversationHistory] = useState<UserAnswer[]>([]);
 
-  // Initialize mode from query param
+  // Load profile data on mount
   useEffect(() => {
-    const mode = searchParams.get('mode');
-    if (mode === 'same' || mode === 'new' || mode === 'import') {
-      setSelectedMode(mode);
+    const cvAnalysis = localStorage.getItem(STORAGE_KEYS.CV_ANALYSIS);
+    const personalityData = localStorage.getItem(STORAGE_KEYS.PERSONALITY_DATA);
+    const combinedAnalysis = localStorage.getItem(STORAGE_KEYS.COMBINED_ANALYSIS);
+    
+    setHasProfileData(!!(cvAnalysis && personalityData && combinedAnalysis));
+    
+    // Load saved direction state if exists
+    const savedDirectionState = localStorage.getItem(STORAGE_KEYS.DIRECTION_STATE);
+    if (savedDirectionState) {
+      try {
+        const parsed = JSON.parse(savedDirectionState);
+        setDirectionState(parsed);
+        if (parsed.choice && parsed.choice !== 'UNSET') {
+          setSelectedChoice(parsed.choice);
+        }
+      } catch (e) {
+        console.error('Error parsing saved direction state:', e);
+      }
+    }
+  }, []);
+
+  // Initialize from query params
+  useEffect(() => {
+    const choice = searchParams.get('choice');
+    if (choice === 'A' || choice === 'B' || choice === 'C') {
+      setSelectedChoice(choice);
     }
   }, [searchParams]);
 
-  const handleModeChange = (mode: TrackMode) => {
-    setSelectedMode(mode);
-    // Update query param (shallow routing)
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('mode', mode);
-    router.push(`/app/muligheder?${params.toString()}`, { scroll: false });
-  };
+  // Build step data for API
+  const buildStepData = useCallback(() => {
+    const cvAnalysis = localStorage.getItem(STORAGE_KEYS.CV_ANALYSIS);
+    const personalityData = localStorage.getItem(STORAGE_KEYS.PERSONALITY_DATA);
+    const combinedAnalysis = localStorage.getItem(STORAGE_KEYS.COMBINED_ANALYSIS);
 
-  const jobs =
-    selectedMode === 'same'
-      ? mockJobsForCurrentTrack
-      : selectedMode === 'new'
-      ? mockJobsForNewDirection
-      : [];
+    if (!cvAnalysis || !personalityData || !combinedAnalysis) {
+      return null;
+    }
 
-  const visibleJobs = jobs.filter((job) => !dismissedJobs.has(job.id));
+    let step1_json, step2_json, step3_json;
+    
+    try {
+      // Parse CV analysis
+      const cvData = JSON.parse(cvAnalysis);
+      step1_json = {
+        cv_summary: typeof cvData === 'string' ? cvData : cvData.text || cvData.summary || ''
+      };
 
-  const handleSaveJob = (job: any) => {
-    if (isJobSaved(job.id)) {
-      unsaveJob(job.id);
-    } else {
-      saveJob({
-        id: job.id,
-        title: job.titel,
-        company: job.virksomhed,
-        description: job.beskrivelse,
-        location: job.lokation,
-        type: job.type,
-        source: 'muligheder',
-        fullData: job,
+      // Parse personality data
+      const personality = JSON.parse(personalityData);
+      const dimensionScores: { [key: string]: { score: string; level: string } } = {};
+      
+      if (personality.scores) {
+        // Calculate dimension scores from raw scores
+        const dimensions = [
+          'Struktur & Rammer',
+          'Beslutningsstil',
+          'Forandring & Stabilitet',
+          'Selvstændighed & Sparring',
+          'Sociale præferencer i arbejdet',
+          'Ledelse & Autoritet',
+          'Arbejdstempo & Pres',
+          'Risiko & Sikkerhed'
+        ];
+        
+        dimensions.forEach((dim, idx) => {
+          const startQ = idx * 5 + 1;
+          let sum = 0;
+          let count = 0;
+          for (let q = startQ; q < startQ + 5; q++) {
+            const score = personality.scores[`Q${q}`];
+            if (score !== undefined) {
+              sum += score;
+              count++;
+            }
+          }
+          const avg = count > 0 ? sum / count : 3;
+          const level = avg >= 3.7 ? 'høj' : avg >= 2.5 ? 'moderat' : 'lav';
+          dimensionScores[dim] = { score: avg.toFixed(1), level };
+        });
+      } else if (personality.dimensionScores) {
+        Object.entries(personality.dimensionScores).forEach(([dim, data]: [string, any]) => {
+          dimensionScores[dim] = {
+            score: data.average?.toFixed(1) || data.score?.toString() || '3.0',
+            level: data.level || 'moderat'
+          };
+        });
+      }
+
+      step2_json = { dimension_scores: dimensionScores };
+
+      // Parse combined analysis
+      const combined = JSON.parse(combinedAnalysis);
+      step3_json = {
+        analysis_text: combined.analysis_text || combined.response?.analysis_text || '',
+        clarification_answers: combined.clarifyingAnswers || combined.response?.clarifyingAnswers || null
+      };
+
+      return { step1_json, step2_json, step3_json };
+    } catch (e) {
+      console.error('Error building step data:', e);
+      return null;
+    }
+  }, []);
+
+  // Call career coach API
+  const callCareerCoach = useCallback(async (
+    choice: DirectionChoice,
+    answers: UserAnswer[] = [],
+    jobAd?: string
+  ) => {
+    setIsLoading(true);
+    setError(null);
+
+    const stepData = buildStepData();
+    if (!stepData) {
+      setError('Manglende profildata. Gå til Profil for at udfylde CV og præferencer.');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/career-coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...stepData,
+          user_choice: choice || '',
+          job_ad_text_or_url: choice === 'C' ? jobAd : undefined,
+          user_answers: answers.length > 0 ? answers : undefined,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Fejl ved kald til karrierecoach');
+      }
+
+      const data: CareerCoachResponse = await response.json();
+      setCoachResponse(data);
+      setDirectionState(data.direction_state);
+      
+      // Save direction state
+      localStorage.setItem(STORAGE_KEYS.DIRECTION_STATE, JSON.stringify(data.direction_state));
+      
+    } catch (e) {
+      console.error('Error calling career coach:', e);
+      setError('Der opstod en fejl. Prøv venligst igen.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [buildStepData]);
+
+  // Handle choice selection
+  const handleChoiceSelect = (choice: DirectionChoice) => {
+    setSelectedChoice(choice);
+    setUserAnswers({});
+    setConversationHistory([]);
+    
+    // Update URL
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('choice', choice);
+    router.push(`/app/muligheder?${params.toString()}`, { scroll: false });
+    
+    // Call API with the new choice
+    if (choice === 'C') {
+      // For option C, wait for job ad input
+      setCoachResponse(null);
+    } else {
+      callCareerCoach(choice);
     }
   };
 
-  const dismissJob = (jobId: string) => {
-    const newDismissed = new Set(dismissedJobs);
-    newDismissed.add(jobId);
-    setDismissedJobs(newDismissed);
+  // Handle answering a question
+  const handleAnswer = (questionId: string, answer: string | string[]) => {
+    setUserAnswers(prev => ({
+      ...prev,
+      [questionId]: answer
+    }));
   };
 
+  // Submit answers and continue conversation
+  const handleSubmitAnswers = () => {
+    const newAnswers: UserAnswer[] = Object.entries(userAnswers).map(([question_id, answer]) => ({
+      question_id,
+      answer
+    }));
+    
+    const allAnswers = [...conversationHistory, ...newAnswers];
+    setConversationHistory(allAnswers);
+    setUserAnswers({});
+    
+    callCareerCoach(selectedChoice, allAnswers, jobAdText);
+  };
+
+  // Handle job ad submission for option C
+  const handleJobAdSubmit = () => {
+    if (!jobAdText.trim()) return;
+    callCareerCoach('C', [], jobAdText);
+  };
+
+  // Start initial conversation (without choice)
+  const handleStartCoaching = () => {
+    callCareerCoach('');
+  };
+
+  // Reset and start over
+  const handleReset = () => {
+    setSelectedChoice('');
+    setJobAdText('');
+    setCoachResponse(null);
+    setUserAnswers({});
+    setDirectionState(null);
+    setConversationHistory([]);
+    localStorage.removeItem(STORAGE_KEYS.DIRECTION_STATE);
+    router.push('/app/muligheder', { scroll: false });
+  };
+
+  // Check if all current questions are answered
+  const allQuestionsAnswered = coachResponse?.questions?.every(q => {
+    const answer = userAnswers[q.id];
+    if (q.type === 'multi_choice') {
+      return Array.isArray(answer) && answer.length > 0;
+    }
+    return answer && (typeof answer === 'string' ? answer.trim() !== '' : true);
+  }) ?? false;
+
+  // Render question based on type
+  const renderQuestion = (question: CoachQuestion) => {
+    const currentAnswer = userAnswers[question.id];
+
+    if (question.type === 'single_choice' && question.options) {
+      return (
+        <div key={question.id} className="space-y-3">
+          <Label className="text-base font-medium">{question.prompt}</Label>
+          <div className="grid gap-2">
+            {question.options.map((option, idx) => (
+              <Button
+                key={idx}
+                variant={currentAnswer === option ? 'default' : 'outline'}
+                className="justify-start text-left h-auto py-3 px-4"
+                onClick={() => handleAnswer(question.id, option)}
+              >
+                {option}
+              </Button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (question.type === 'multi_choice' && question.options) {
+      const selectedOptions = Array.isArray(currentAnswer) ? currentAnswer : [];
+      return (
+        <div key={question.id} className="space-y-3">
+          <Label className="text-base font-medium">{question.prompt}</Label>
+          <p className="text-sm text-muted-foreground">Vælg alle der passer</p>
+          <div className="grid gap-2">
+            {question.options.map((option, idx) => {
+              const isSelected = selectedOptions.includes(option);
+              return (
+                <Button
+                  key={idx}
+                  variant={isSelected ? 'default' : 'outline'}
+                  className="justify-start text-left h-auto py-3 px-4"
+                  onClick={() => {
+                    const newSelection = isSelected
+                      ? selectedOptions.filter(o => o !== option)
+                      : [...selectedOptions, option];
+                    handleAnswer(question.id, newSelection);
+                  }}
+                >
+                  {isSelected && <CheckCircle2 className="mr-2 h-4 w-4" />}
+                  {option}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // short_text
+    return (
+      <div key={question.id} className="space-y-3">
+        <Label className="text-base font-medium">{question.prompt}</Label>
+        <Textarea
+          value={typeof currentAnswer === 'string' ? currentAnswer : ''}
+          onChange={(e) => handleAnswer(question.id, e.target.value)}
+          placeholder="Skriv dit svar her..."
+          rows={3}
+        />
+      </div>
+    );
+  };
+
+  // If no profile data, show message
+  if (!hasProfileData) {
+    return (
+      <div className="mx-auto max-w-3xl space-y-8 py-8">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight">Muligheder</h1>
+          <p className="mt-3 text-lg text-muted-foreground">
+            Afklar din retning med en coachende dialog
+          </p>
+        </div>
+
+        <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20">
+          <CardContent className="flex items-start gap-4 pt-6">
+            <AlertCircle className="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-amber-900 dark:text-amber-100">
+                Profil mangler
+              </h3>
+              <p className="text-sm text-amber-800 dark:text-amber-200 mt-1">
+                For at bruge karrierecoachen skal du først udfylde din profil med CV og arbejdspræferencer.
+              </p>
+              <Button 
+                className="mt-4"
+                onClick={() => router.push('/app/profil')}
+              >
+                Gå til Profil
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-auto max-w-5xl space-y-8 py-8">
+    <div className="mx-auto max-w-3xl space-y-8 py-8">
       {/* Header */}
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Muligheder</h1>
         <p className="mt-3 text-lg text-muted-foreground">
-          Vælg hvordan du vil arbejde videre med din profil
+          Afklar din retning med en coachende dialog – ingen jobforslag endnu
         </p>
       </div>
 
-      {/* Track Selection Cards */}
+      {/* Direction Choice Cards - always visible */}
       <div className="grid gap-4 md:grid-cols-3">
-        {/* Card A: Same Track */}
+        {/* Card A: Related Direction */}
         <Card
           className={`cursor-pointer transition-all ${
-            selectedMode === 'same'
+            selectedChoice === 'A'
               ? 'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2'
               : 'hover:border-primary/50 hover:bg-accent/50'
           }`}
-          onClick={() => handleModeChange('same')}
+          onClick={() => handleChoiceSelect('A')}
         >
-          <CardHeader>
+          <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">Bliv i samme karriere track</CardTitle>
+              <CardTitle className="text-base">Beslægtet retning</CardTitle>
             </div>
-            <CardDescription>
-              Se jobmuligheder der matcher dit nuværende spor.
+            <CardDescription className="text-sm">
+              Byg videre på din dokumenterede erfaring
             </CardDescription>
           </CardHeader>
         </Card>
 
-        {/* Card B: New Track */}
+        {/* Card B: New Direction */}
         <Card
           className={`cursor-pointer transition-all ${
-            selectedMode === 'new'
+            selectedChoice === 'B'
               ? 'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2'
               : 'hover:border-primary/50 hover:bg-accent/50'
           }`}
-          onClick={() => handleModeChange('new')}
+          onClick={() => handleChoiceSelect('B')}
         >
-          <CardHeader>
+          <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <Compass className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">Udforsk nyt karriere track</CardTitle>
+              <CardTitle className="text-base">Ny retning</CardTitle>
             </div>
-            <CardDescription>
-              Udforsk alternative retninger baseret på din profil.
+            <CardDescription className="text-sm">
+              Skift eller udvid din arbejdsform
             </CardDescription>
           </CardHeader>
         </Card>
 
-        {/* Card C: Import Job */}
+        {/* Card C: Specific Job Ad */}
         <Card
           className={`cursor-pointer transition-all ${
-            selectedMode === 'import'
+            selectedChoice === 'C'
               ? 'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2'
               : 'hover:border-primary/50 hover:bg-accent/50'
           }`}
-          onClick={() => handleModeChange('import')}
+          onClick={() => handleChoiceSelect('C')}
         >
-          <CardHeader>
+          <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <Link2 className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">Upload et job du selv har fundet</CardTitle>
+              <CardTitle className="text-base">Konkret jobannonce</CardTitle>
             </div>
-            <CardDescription>
-              Indsæt et link til et jobopslag og arbejd videre med det.
+            <CardDescription className="text-sm">
+              Sammenlign med et specifikt opslag
             </CardDescription>
           </CardHeader>
         </Card>
       </div>
 
-      {/* Content based on selected mode */}
-      {selectedMode === 'import' && (
-        <UrlJobImporter />
+      {/* No choice yet - show start button */}
+      {!selectedChoice && !coachResponse && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center space-y-4">
+              <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto" />
+              <div>
+                <h3 className="font-semibold text-lg">Klar til at starte?</h3>
+                <p className="text-muted-foreground mt-1">
+                  Vælg en retning ovenfor, eller lad coachen hjælpe dig med at vælge.
+                </p>
+              </div>
+              <Button onClick={handleStartCoaching} disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Indlæser...
+                  </>
+                ) : (
+                  <>
+                    Start coachende dialog
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
+      {/* Option C: Job Ad Input */}
+      {selectedChoice === 'C' && !coachResponse && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Indsæt jobannonce</CardTitle>
+            <CardDescription>
+              Kopiér teksten fra jobannoncen eller indsæt et link
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Textarea
+              value={jobAdText}
+              onChange={(e) => setJobAdText(e.target.value)}
+              placeholder="Indsæt jobannoncentekst eller URL her..."
+              rows={6}
+            />
+            <Button 
+              onClick={handleJobAdSubmit} 
+              disabled={!jobAdText.trim() || isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Analyserer...
+                </>
+              ) : (
+                <>
+                  Fortsæt med denne annonce
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
+      {/* Error message */}
+      {error && (
+        <Card className="border-red-200 bg-red-50/50 dark:border-red-900 dark:bg-red-950/20">
+          <CardContent className="flex items-start gap-4 pt-6">
+            <AlertCircle className="h-6 w-6 text-red-600 flex-shrink-0" />
+            <div>
+              <p className="text-red-800 dark:text-red-200">{error}</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-3"
+                onClick={() => setError(null)}
+              >
+                Luk
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
+      {/* Loading state */}
+      {isLoading && (
+        <Card>
+          <CardContent className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">Karrierecoachen tænker...</span>
+          </CardContent>
+        </Card>
+      )}
 
-
-      {/* Jobs display - shown for both "same" and "new" modes */}
-      {(selectedMode === 'same' || selectedMode === 'new') && (
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-2xl font-semibold">Jobeksempler</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Her er {visibleJobs.length} eksempler på jobs, der kunne være relevante
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            {visibleJobs.map((job) => (
-              <Card key={job.id} className="overflow-hidden">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <CardTitle className="text-xl">{job.titel}</CardTitle>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Briefcase className="h-4 w-4" />
-                          {job.virksomhed}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {job.lokation}
-                        </div>
-                        <Badge variant="outline">{job.type}</Badge>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="space-y-6">
-                  {/* Beskrivelse */}
-                  <div>
-                    <p className="text-sm text-muted-foreground">{job.beskrivelse}</p>
-                  </div>
-
-                  {/* Hvorfor relevant */}
-                  <div className="rounded-lg border border-green-200 bg-green-50/50 p-4 dark:border-green-900 dark:bg-green-950/20">
-                    <h4 className="mb-2 font-semibold text-green-900 dark:text-green-100">
-                      Hvorfor dette job kan være relevant for dig
-                    </h4>
-                    <p className="text-sm leading-relaxed text-green-800 dark:text-green-200">
-                      {job.hvorforRelevant}
-                    </p>
-                  </div>
-
-                  {/* Udfordringer */}
-                  <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-900 dark:bg-amber-950/20">
-                    <h4 className="mb-2 font-semibold text-amber-900 dark:text-amber-100">
-                      Hvad der kan være en udfordring i rollen
-                    </h4>
-                    <p className="text-sm leading-relaxed text-amber-800 dark:text-amber-200">
-                      {job.udfordringer}
-                    </p>
-                  </div>
-
-                  {/* Afklaring */}
-                  <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-4 dark:border-blue-900 dark:bg-blue-950/20">
-                    <h4 className="mb-2 font-semibold text-blue-900 dark:text-blue-100">
-                      Hvad dette job kan bruges til i din afklaring
-                    </h4>
-                    <p className="text-sm leading-relaxed text-blue-800 dark:text-blue-200">
-                      {job.afklaring}
-                    </p>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex flex-wrap gap-2 border-t border-border pt-4">
-                    <Button
-                      variant={isJobSaved(job.id) ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => handleSaveJob(job)}
-                    >
-                      <Bookmark className="mr-2 h-4 w-4" />
-                      {isJobSaved(job.id) ? 'Gemt' : 'Gem job'}
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => dismissJob(job.id)}
-                      className="ml-auto"
-                    >
-                      <X className="mr-2 h-4 w-4" />
-                      Ikke relevant
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {visibleJobs.length === 0 && (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <AlertCircle className="mb-4 h-12 w-12 text-muted-foreground" />
-                <p className="text-center text-muted-foreground">
-                  Du har markeret alle jobs som ikke relevante.
-                  <br />
-                  Vælg et andet karrierespor for at se flere muligheder.
+      {/* Coach Response */}
+      {coachResponse && !isLoading && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <MessageCircle className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">Karrierecoach</CardTitle>
+            </div>
+            {coachResponse.mode === 'ask_to_choose' && (
+              <Badge variant="outline">Afklaring af retning</Badge>
+            )}
+            {coachResponse.mode === 'deepening' && (
+              <Badge variant="outline">Uddybning af valgt retning</Badge>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Coach message */}
+            {coachResponse.coach_message && (
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <p className="text-base leading-relaxed whitespace-pre-wrap">
+                  {coachResponse.coach_message}
                 </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+              </div>
+            )}
+
+            {/* Questions */}
+            {coachResponse.questions && coachResponse.questions.length > 0 && (
+              <div className="space-y-6 border-t pt-6">
+                {coachResponse.questions.map(renderQuestion)}
+                
+                <Button 
+                  onClick={handleSubmitAnswers}
+                  disabled={!allQuestionsAnswered || isLoading}
+                  className="w-full"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Behandler...
+                    </>
+                  ) : (
+                    <>
+                      Send svar og fortsæt
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Direction State Summary */}
+      {directionState && directionState.choice !== 'UNSET' && (
+        <Card className={directionState.next_step_ready_for_jobs 
+          ? 'border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20'
+          : ''
+        }>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Retningsresumé</CardTitle>
+              {directionState.next_step_ready_for_jobs && (
+                <Badge className="bg-green-600">Klar til jobforslag</Badge>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Choice */}
+            <div>
+              <Label className="text-sm text-muted-foreground">Valgt retning</Label>
+              <p className="font-medium">
+                {directionState.choice === 'A' && 'Beslægtet retning (byg videre på erfaring)'}
+                {directionState.choice === 'B' && 'Ny retning (skift/udvid arbejdsform)'}
+                {directionState.choice === 'C' && 'Konkret jobannonce'}
+              </p>
+            </div>
+
+            {/* Priorities */}
+            {directionState.priorities_top3.length > 0 && (
+              <div>
+                <Label className="text-sm text-muted-foreground">Top prioriteringer</Label>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {directionState.priorities_top3.map((p, i) => (
+                    <Badge key={i} variant="secondary">{p}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Non-negotiables */}
+            {directionState.non_negotiables.length > 0 && (
+              <div>
+                <Label className="text-sm text-muted-foreground">Ufravigelige krav</Label>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {directionState.non_negotiables.map((n, i) => (
+                    <Badge key={i} variant="outline" className="border-red-300 text-red-700 dark:border-red-800 dark:text-red-300">
+                      {n}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Negotiables */}
+            {directionState.negotiables.length > 0 && (
+              <div>
+                <Label className="text-sm text-muted-foreground">Fleksible områder</Label>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {directionState.negotiables.map((n, i) => (
+                    <Badge key={i} variant="outline">{n}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* CV Focus */}
+            {directionState.cv_weighting_focus.length > 0 && (
+              <div>
+                <Label className="text-sm text-muted-foreground">Fremhæv fra CV</Label>
+                <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                  {directionState.cv_weighting_focus.map((c, i) => (
+                    <li key={i}>{c}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Risk notes */}
+            {directionState.risk_notes.length > 0 && (
+              <div>
+                <Label className="text-sm text-muted-foreground">At teste / afprøve</Label>
+                <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                  {directionState.risk_notes.map((r, i) => (
+                    <li key={i}>{r}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex flex-wrap gap-3 pt-4 border-t">
+              {directionState.next_step_ready_for_jobs ? (
+                <Button onClick={() => router.push('/app/gemte-jobs')}>
+                  Se jobforslag
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Besvar flere spørgsmål for at få jobforslag
+                </p>
+              )}
+              <Button variant="outline" onClick={handleReset}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Start forfra
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
@@ -267,7 +744,19 @@ function MulighederPageContent() {
 
 export default function MulighederPage() {
   return (
-    <Suspense fallback={<div className="p-8">Loading...</div>}>
+    <Suspense fallback={
+      <div className="mx-auto max-w-3xl py-8">
+        <div className="animate-pulse space-y-4">
+          <div className="h-10 bg-muted rounded w-1/3"></div>
+          <div className="h-6 bg-muted rounded w-2/3"></div>
+          <div className="grid gap-4 md:grid-cols-3 mt-8">
+            <div className="h-32 bg-muted rounded"></div>
+            <div className="h-32 bg-muted rounded"></div>
+            <div className="h-32 bg-muted rounded"></div>
+          </div>
+        </div>
+      </div>
+    }>
       <MulighederPageContent />
     </Suspense>
   );

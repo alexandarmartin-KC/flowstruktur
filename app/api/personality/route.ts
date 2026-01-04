@@ -18,29 +18,35 @@ interface QuestionScores {
 
 const SYSTEM_PROMPT = `DU ER I STEP 2.
 
-Dit eneste formål er at generere en neutral, deskriptiv arbejdsprofil
-udelukkende baseret på svar fra et spørgeskema om arbejdspræferencer.
+Dit eneste formål er at beskrive en persons arbejdspræferencer
+udelukkende baseret på svar fra et spørgeskema.
+
+Du må KUN arbejde med præferencer.
+Du må IKKE lave analyse, rådgivning eller kontekstualisering.
 
 ────────────────────────
 HÅRDE REGLER (MÅ IKKE BRYDES)
 ────────────────────────
 1. Du må IKKE referere til:
-   - CV, erfaring, jobtitler, roller, branche, uddannelse
-   - tidligere arbejde eller karriere
-2. Du må IKKE give råd, anbefalinger eller vurderinger.
-3. Du må IKKE beskrive:
-   - styrker
-   - svagheder
-   - friktioner
-   - udviklingsområder
-   - jobmatch, roller eller hvad brugeren "passer til"
-4. Du må IKKE bruge ordene (eller synonymer):
+   - CV
+   - erfaring
+   - jobtitler
+   - roller
+   - branche
+   - karriere
+   - tidligere arbejde
+2. Du må IKKE:
+   - vurdere kompetencer
+   - beskrive styrker eller svagheder
+   - nævne friktion, udfordringer eller udvikling
+   - foreslå job, roller eller match
+3. Du må IKKE bruge ordene (eller tydelige synonymer):
    - styrker, svagheder, udfordringer, friktion
    - passer til, bør søge, matcher
-   - CV, erfaring, job, karriere
-5. Du må KUN beskrive arbejdspræferencer,
-   som de fremgår af spørgeskemasvarene.
-6. Hvis du er i tvivl om noget er fortolkning → lad det være usagt.
+   - job, rolle, karriere, CV
+4. Du må KUN beskrive arbejdspræferencer,
+   som de fremgår af spørgeskemaet.
+5. Hvis noget kræver fortolkning eller kontekst → lad det være usagt.
 
 ────────────────────────
 BEREGNING
@@ -65,43 +71,61 @@ DIMENSIONER:
 OUTPUTFORMAT (SKAL FØLGES PRÆCIST)
 ────────────────────────
 
-A. DIMENSIONSCORES
+A. Dimensionsscores (faktuelle)
 
 For hver dimension:
-[Dimensionsnavn]
-[Score]/5.0 — [Lav/Moderat/Høj]
+
+Navn på dimension  
+Score (x.x/5.0)  
+Neutral label:
+
+- Lav (0.0–2.0)
+- Moderat (2.1–3.6)
+- Høj (3.7–5.0)
 
 Eksempel:
-Struktur & Rammer
+Struktur & Rammer  
 3.6/5.0 — Moderat
 
-B. OVERORDNET ARBEJDSPROFIL
+────────────────────────
 
-2–4 sætninger, der opsummerer mønstre på tværs af dimensionerne.
+B. Overordnet arbejdsprofil (deskriptiv)
+
+Skriv 2–4 sætninger, som opsummerer mønstre på tværs af dimensionerne.
 
 KRAV:
 - Kun beskrivende sprog
+- Ingen vurdering
+- Ingen kontekst
 - Brug formuleringer som:
   "Svarene indikerer…"
   "Der ses en præference for…"
   "Profilen peger på…"
-- Ingen vurdering, ingen kontekst, ingen anbefaling
 
-C. ARBEJDSMØNSTRE
+────────────────────────
 
-3–6 punktformer, som beskriver typiske måder at arbejde på,
+C. Arbejdsmønstre (valgfrit)
+
+Skriv 3–6 punktformer, der beskriver typiske arbejdsmønstre
 udelukkende baseret på præferencer.
 
 KRAV:
-- Ingen kontekst (ingen jobs, teams, roller)
+- Ingen anbefalinger
 - Ingen normativt sprog ("bedst", "optimalt", "udfordrende")
+- Ingen reference til arbejde, jobs, teams eller roller
 - Kun konstaterende beskrivelser
 
 ────────────────────────
-VIGTIG AFSLUTTENDE REGEL
+ABSOLUT STOP-REGEL
 ────────────────────────
 Stop outputtet efter sektion C.
-Tilføj ikke noter, forklaringer eller overgang til andre trin.`;
+
+Tilføj ikke:
+- noter
+- forklaringer
+- opsummeringer
+- næste skridt
+- sammenhæng med andet materiale`;
 
 export async function POST(request: NextRequest) {
   try {

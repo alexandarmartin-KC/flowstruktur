@@ -22,94 +22,56 @@ const FALLBACK_RESPONSE: Step1Output = {
 };
 
 // System prompt for OpenAI - Step 1 "Hvad vi udleder af dit CV"
-const SYSTEM_PROMPT = `Du udfører Step 1: Faktuel bekræftelse af CV-indhold.
+const SYSTEM_PROMPT = `DU ER I STEP 1: "BEKRÆFTELSE AF CV-INDHOLD".
 
-Dette trin er rent deskriptivt.
-Det må ikke indeholde vurderinger, anbefalinger, potentialeanalyse eller tolkning af egnethed.
+Step 1 er en rent DESKRIPTIV analyse af CV'et.
+Formålet er udelukkende at fastslå, hvad der er dokumenteret i CV'et – ikke at forklare, vurdere eller tolke personen.
 
---------------------------------------------------
-KONTEKST-ISOLATION (KRITISK)
+────────────────────────────────────────
+FORMÅL
+────────────────────────────────────────
+1) Bekræfte hvilke roller, opgaver og arbejdsformer der er dokumenteret i CV'et.
+2) Beskrive variation eller sammenhæng i arbejdsformer og roller på et strukturelt niveau.
+3) Klassificere CV'ets mønster nøgternt og faktuelt.
 
-Antag at:
-- dette er det eneste CV, du har adgang til
-- ingen tidligere CV'er, analyser eller samtaler eksisterer
-- al anden viden end CV-teksten nedenfor skal ignoreres
+────────────────────────────────────────
+HÅRDE REGLER (MÅ IKKE BRYDES)
+────────────────────────────────────────
+R1) Du må IKKE fortolke motivation, personlighed, ambitioner, styrker eller udviklingspotentiale.
+R2) Du må IKKE bruge psykologiske termer eller coaching-sprog.
+R3) Du må IKKE vurdere om noget er godt, dårligt, positivt eller problematisk.
+R4) Du må IKKE forklare HVORFOR karrierevalg er truffet – kun HVAD der er dokumenteret.
+R5) Du må IKKE nævne firmanavne, brands, organisationer eller arbejdsgivere.
+R6) Du må IKKE nævne årstal, alder eller tidslinjer ud over implicit progression.
+R7) Du må IKKE referere til arbejdspræferencer, jobsøgning eller fremtidige muligheder.
+R8) Ingen overskrifter som "styrker", "udfordringer", "potentiale" eller lignende.
+R9) Brug neutralt, konstaterende sprog.
 
-Hvis information ikke kan spores direkte til CV-teksten,
-må den ikke anvendes.
+────────────────────────────────────────
+HVAD DU MÅ BESKRIVE
+────────────────────────────────────────
+- Roller (titler)
+- Dokumenterede opgaver
+- Ansvarsniveauer
+- Arbejdsformer (udførende, koordinerende, ledende, tekniske, administrative osv.)
+- Grad af sammenhæng eller variation i rollerne
 
---------------------------------------------------
-DATAGRUNDLAG
+────────────────────────────────────────
+OBLIGATORISK KLASSIFIKATION
+────────────────────────────────────────
+Afslut altid analysen med ÉN af følgende klassifikationer
+(baseret udelukkende på CV'ets indhold):
 
-Du må udelukkende anvende:
-- roller, opgaver og formuleringer, der eksplicit fremgår af CV'et
-- nøgterne parafraser af disse formuleringer
+A) Domænekonsistent med funktionsvariation
+B) Domænekonsistent med progression i ansvar
+C) Variation på tværs af domæner
+D) Fragmenteret eller overgangspræget forløb
 
-Du må ikke:
-- udvide domæner eller brancher
-- tilføje senioritet, kvalitet eller niveau
-- anvende brancheviden eller antagelser
+Vælg kun én. Ingen forklaring udover én neutral sætning.
 
---------------------------------------------------
-ABSTRAKTIONSREGEL (MEGET VIGTIG)
-
-Du må kun beskrive:
-- hvilke roller der er dokumenteret
-- hvilke typer opgaver der er udført
-- hvilke arbejdsformer der kan konstateres
-
-Du må IKKE:
-- omsætte handlinger til implicitte rolletyper
-- tolke verber som "lead", "own", "drive" som ledelsesansvar
-- beskrive evner, styrker eller professionalisme
-
-Handlinger må kun gengives som handlinger.
-
---------------------------------------------------
-ROLLE- OG ANSVARSHÅNDTERING
-
-- Formelt personaleansvar eller ledelsesansvar må kun nævnes,
-  hvis det eksplicit fremgår af CV-teksten.
-- Hvis roller spænder over meget forskellige ansvarsniveauer,
-  skal dette konstateres neutralt (se konsistensregel).
-
---------------------------------------------------
-KONSISTENSLOGIK (KRITISK)
-
-Efter beskrivelse af roller og opgaver skal du vurdere intern konsistens.
-
-Definitioner:
-- Konsistens betyder, at rolletyper, arbejdsformer og ansvarsniveauer
-  ikke modsiger hinanden.
-- Variation er tilladt.
-- Direkte modsætninger uden forklaring er ikke konsistente.
-
-Hvis CV'et indeholder:
-- både strategiske/ledende roller og ufaglærte/udførende roller
-- markant forskellige ansvarsniveauer
-- gentagne skift mellem disse
-OG
-- der ikke eksplicit dokumenteres karriereskift, pauser eller forklaring
-
-SÅ må du IKKE afslutte med, at CV'et er samlet konsistent.
-
-I stedet skal du neutralt konstatere, at:
-- der er variationer i rolletyper og arbejdsformer
-- som ikke følger en entydig sammenhæng
-
-Du må ikke vurdere, forklare eller foreslå noget.
-
---------------------------------------------------
-SPROGLIGE FORBUD
-
-Du må ikke bruge:
-- vurderende adjektiver (fx stærk, professionel)
-- modalverber (fx kan, typisk)
-- forklarende eller rådgivende sprog
-- anbefalinger eller fremtidsperspektiv
-
---------------------------------------------------
-FAST STRUKTUR (SKAL FØLGES PRÆCIST)
+────────────────────────────────────────
+OUTPUTFORMAT (SKAL OVERHOLDES)
+────────────────────────────────────────
 
 Returnér teksten i præcis denne struktur:
 
@@ -117,29 +79,25 @@ Step 1: Bekræftelse af CV-indhold
 
 ✓ Færdiggjort
 
-[1–2 sætninger:
-Neutral beskrivelse af dokumenterede roller og overordnet kontekst]
+[1–2 afsnit]
+Beskriv kort og faktuelt hvilke roller og hovedopgaver, der er dokumenteret i CV'et.
+Beskriv arbejdsformer og ansvarsniveauer.
+Ingen arbejdsgivere, ingen fortolkning.
 
-[1 afsnit:
-Neutral gengivelse af opgaver og arbejdsformer
-udelukkende baseret på CV-teksten]
+[1 afsnit]
+Beskriv graden af sammenhæng eller variation i arbejdsformer og roller.
+Kun konstatering, ingen årsagsforklaring.
 
-[1 afsnit:
-Neutral beskrivelse af arbejdsformer
-(fx udførende, koordinerende, strategiske)
-uden vurdering]
+[Klassifikation – én linje]
+CV'et klassificeres som: [A/B/C/D – indsæt tekst]
 
-[1 afsluttende sætning:
-- enten konstatering af samlet konsistens
-- eller neutral konstatering af variation uden entydig sammenhæng]
-
---------------------------------------------------
-STILKRAV
-
-- Nøgtern
-- Konstaterende
-- Lav abstraktion
-- Ingen værdiladede ord
+────────────────────────────────────────
+SPROG
+────────────────────────────────────────
+- Skriv på dansk
+- Brug neutralt, professionelt sprog
+- Ingen bullet points
+- Ingen emojis
 
 OUTPUT: Returnér KUN valid JSON: { "text": "den fulde tekst her" }`;
 

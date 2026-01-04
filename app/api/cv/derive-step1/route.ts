@@ -22,40 +22,87 @@ const FALLBACK_RESPONSE: Step1Output = {
 };
 
 // System prompt for OpenAI - Step 1 "Hvad vi udleder af dit CV"
-const SYSTEM_PROMPT = `Generér Step 1-tekst der bekræfter brugerens professionelle identitet.
+const SYSTEM_PROMPT = `Du udfører Step 1: Faktuel bekræftelse af CV-indhold.
 
-HÅRDE FORBUD:
-- INGEN engelske termer (skriv "specialist", ikke "Security Specialist")
-- INGEN firmanavne (skriv "samme organisation", ikke "Ørsted A/S")
-- INGEN "håndtering", "ledelse", "overvågning" - brug konkrete formuleringer
-- INGEN generiske vendinger
+Dette trin er MEKANISK og FAKTUELT.
+Det er IKKE analyse, vurdering, coaching eller fortolkning.
 
-PRÆCIS STRUKTUR (5 afsnit):
+--------------------------------------------------
+ABSOLUT KONTEKST-ISOLATION (VIGTIGST)
 
-AFSNIT 1:
-"På baggrund af dit CV ser vi en klar og konsistent profil som senior specialist inden for [domæne] i større, regulerede organisationer. Din erfaring er opbygget omkring ansvar for drift, struktur og sikkerhed i komplekse enterprise-miljøer."
+Du skal opføre dig som om:
+- dette er første og eneste CV, du nogensinde har set
+- der findes ingen tidligere samtaler, profiler eller brugere
+- al anden kontekst er irrelevant og må ignoreres fuldstændigt
 
-AFSNIT 2:
-"Dit CV viser særlig erfaring med arbejdet inden for [domæne], herunder [2-3 konkrete områder som fx adgangskontrol, CCTV og alarmsystemer], samt ansvar for sikkerhedsfunktioner på både lokalt og globalt niveau."
+Hvis du genbruger ord, begreber eller domæner,
+som ikke står i CV'et nedenfor, er output ugyldigt.
 
-AFSNIT 3:
-"Din rolle har været en specialistrolle med operationelt ansvar, hvor du har arbejdet tæt sammen med både interne interessenter og eksterne leverandører i forbindelse med daglig drift og koordinering af sikkerhedsopgaver."
+--------------------------------------------------
+DATAGRUNDLAG (ENESTE KILDE)
 
-AFSNIT 4:
-"Overordnet fremstår dit CV struktureret og konsistent, med tydelig progression inden for [område] og flere års erfaring fra samme organisation."
+Du må KUN bruge oplysninger, der:
+- står eksplicit i CV-teksten nedenfor
+- kan citeres direkte eller parafraseres neutralt
 
-AFSNIT 5 (PRÆCIS DENNE SÆTNING):
-"Du kan justere dit CV senere, hvis noget ikke matcher din egen opfattelse."
+Hvis en oplysning ikke fremgår tydeligt af CV'et,
+må den IKKE medtages.
 
-REGLER:
-- Brug "senior specialist" (ikke engelske jobtitler)
-- Brug "større, regulerede organisationer" eller "komplekse enterprise-miljøer"
-- Brug "interne interessenter" og "eksterne leverandører"
-- Brug "daglig drift og koordinering"
-- Brug "flere års erfaring fra samme organisation" (aldrig firmanavne)
-- Ca. 120-140 ord total
+--------------------------------------------------
+HÅRDE FORBUD (ABSOLUT)
 
-SPROG: Kun dansk. Ingen engelske termer.
+Du MÅ IKKE:
+- nævne domæner, roller eller fagområder, som ikke står i CV'et
+- importere begreber fra tidligere CV'er eller samtaler
+- udlede "ansvar", "drift", "sikkerhed", "operationelt ansvar",
+  medmindre disse ord direkte eller entydigt fremgår af CV'et
+- bruge ord som:
+  "kan", "typisk", "peger på", "indikerer", "giver indtryk af"
+- vurdere senioritet, egnethed eller potentiale ud over det dokumenterede
+- skrive rådgivende eller analyserende tekst
+
+Dette trin er IKKE en analyse.
+Det er en konstatering.
+
+--------------------------------------------------
+FORMÅL MED STEP 1
+
+At give brugeren en faktuel bekræftelse af:
+- hvilken rolle CV'et dokumenterer
+- hvilket fagligt domæne CV'et tilhører
+- hvilke typer opgaver og ansvar der eksplicit fremgår
+- om CV'et fremstår konsistent og sammenhængende
+
+--------------------------------------------------
+FAST STRUKTUR (SKAL FØLGES)
+
+Returnér teksten i præcis denne struktur og rækkefølge:
+
+Hvad vi udleder af dit CV  
+Step 1: Bekræftelse af CV-indhold
+
+✓ Færdiggjort
+
+[1–2 sætninger: Overordnet, faktuel rolle- og domænebeskrivelse]
+
+[1 afsnit: Hvad CV'et viser særlig erfaring med – kun baseret på konkrete opgaver nævnt i CV'et]
+
+[1 afsnit: Hvordan rollen er beskrevet i CV'et
+(fx koordinerende, planlæggende, udviklende – kun hvis dokumenteret)]
+
+[1 sætning: Overordnet konsistens og progression, uden vurdering]
+
+Du kan justere dit CV senere, hvis noget ikke matcher din egen opfattelse.
+
+--------------------------------------------------
+STILKRAV
+
+- Nøgtern
+- Konstaterende
+- Professionel
+- Kort og præcis
+- Ingen metaforer
+- Ingen AI-sprog
 
 OUTPUT: Returnér KUN valid JSON: { "text": "den fulde tekst her" }`;
 
@@ -63,7 +110,16 @@ const USER_PROMPT_TEMPLATE = (cvText: string) => `
 CV-TEKST:
 ${cvText}
 
-Skriv Step 1. Brug PRÆCIS formuleringerne fra prompten. INGEN engelske termer. INGEN firmanavne. Returnér KUN JSON.`;
+--------------------------------------------------
+OUTPUTKRAV
+
+- Returnér KUN teksten
+- Ingen forklaringer
+- Ingen metadata
+- Ingen referencer til tidligere kontekst
+- Returner valid JSON: { "text": "den fulde tekst her" }
+
+Udfør Step 1-bekræftelsen baseret KUN på ovenstående CV-tekst.`;
 
 // Validate output - kun text felt krævet
 function validateStep1Output(data: any): data is Step1Output {
@@ -163,13 +219,7 @@ ${rawJson}
 
 Ret JSON så den matcher dette schema:
 {
-  "text": "den fulde Step 1 tekst (mindst 200 tegn)",
-  "dataExtracted": {
-    "name": "navn eller null",
-    "email": "email eller null",
-    "phone": "telefon eller null", 
-    "location": "lokation eller null"
-  }
+  "text": "den fulde Step 1 tekst (mindst 200 tegn)"
 }
 
 Returnér KUN rettet JSON. Ingen markdown.`;

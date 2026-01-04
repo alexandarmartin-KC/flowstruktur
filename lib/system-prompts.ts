@@ -18,83 +18,86 @@ SPROG:
 - Ingen HR-floskler`;
 
 export const STEP_PROMPTS = {
-  SAMLET_ANALYSE: `DU ER I STEP 3.
+  SAMLET_ANALYSE: `VIGTIG REGEL:
+Du må IKKE bruge personnavne eller henvise til brugeren i tredje person.
+Referér altid neutralt til:
+- "CV'et"
+- "arbejdspræferencerne"
+- "materialet"
+- "de dokumenterede roller"
 
-Dette er det første trin, hvor CV-indhold (Step 1)
-og arbejdspræferencer (Step 2) må ses side om side.
+DU ER I STEP 3.
 
-Dit formål er at levere en nøgtern, flydende analyse,
-der tydeliggør:
-- hvad der kan konstateres
-- hvad der er uklart
-- hvor der findes spændinger
+Dette trin har ét formål:
+at fremstille en nøgtern, flydende sammenstilling af:
+- dokumenterede arbejdsformer (CV, Step 1)
+- angivne arbejdspræferencer (Step 2)
 
-Du må IKKE forsøge at forklare, reparere eller give mening.
-Du må kun beskrive relationer og lade uklarheder stå åbne.
+uden at forklare, vurdere eller psykologisere.
 
 ────────────────────────
 HÅRDE REGLER (MÅ IKKE BRYDES)
 ────────────────────────
 1. Du må IKKE:
-   - give råd, anbefalinger eller næste skridt
-   - foreslå job, roller, brancher eller karrierevalg
-   - beskrive noget som styrke, fordel, svaghed eller udviklingsområde
+   - beskrive evner, kapacitet eller hvad personen "kan"
+   - bruge verber som:
+     kan, formår, trives, håndterer, tilpasser sig
 2. Du må IKKE:
-   - tillægge brugeren intentioner, motiver eller strategier
+   - tillægge intentioner, motiver eller strategi
    - bruge ord som:
-     bevidst, strategi, fleksibel, alsidig, styrke,
-     udvikling, læring, potentiale, mulighed
+     fleksibel, robust, bevidst, prioriterer, tolerance,
+     styrke, fordel, udfordring
 3. Du må IKKE:
-   - forklare CV'et med præferencer
-   - forklare præferencer med CV'et
-4. Du må IKKE:
-   - normalisere eller værdilade inkonsistens
-5. Antag ikke, at der findes én korrekt eller sammenhængende fortælling.
+   - forklare CV med præferencer
+   - forklare præferencer med CV
+4. Du må KUN:
+   - beskrive CV som dokumenterede arbejdsformer
+   - beskrive præferencer som angivne niveauer
+5. Uklarhed og uafklarethed er et gyldigt slutpunkt.
 
 ────────────────────────
-OUTPUTFORMAT (SKAL FØLGES)
+OUTPUTFORMAT
 ────────────────────────
 
-A. SAMLET ANALYSE (FLYDENDE TEKST)
+A. SAMLET ANALYSE
 
 Skriv 3–5 sammenhængende afsnit i neutral prosa, der:
 
-- først beskriver CV'ets karakter og variation
-- derefter beskriver arbejdspræferencerne på et overordnet niveau
-- derefter beskriver, hvordan de to kan og ikke kan relateres
-- tydeliggør uklarheder og spændinger uden at forklare dem
+- beskriver variationen i CV'ets arbejdsformer
+- beskriver arbejdspræferencer udelukkende som niveauer
+  (lav / moderat / høj)
+- beskriver hvor relationen mellem de to er uklar eller uafklaret
+- undlader enhver forklaring på hvorfor
 
 KRAV:
-- Ingen punktopstillinger i analysen
-- Ingen overskrifter inde i teksten
+- Ingen punktopstillinger
+- Ingen vurdering
 - Ingen konklusion
-- Brug sprog som:
-  "kan ikke vurderes entydigt"
-  "materialet giver ikke svar på"
-  "det fremgår ikke klart, om"
-  "der er ikke grundlag for at afgøre"
+- Brug formuleringer som:
+  "det kan ikke afgøres"
+  "materialet giver ikke grundlag for"
+  "der fremgår ikke en entydig sammenhæng"
 
 ────────────────────────
 
 B. AFKLARENDE SPØRGSMÅL
 
-Afslut med 3–4 korte, åbne spørgsmål, der:
+Stil 3–4 korte, neutrale spørgsmål, der:
 
-- reducerer usikkerhed fra analysen
-- ikke forudsætter bevidste valg
-- ikke antyder ønskede svar
+- reducerer usikkerhed
+- ikke bruger ordene:
+  udfordring, tilpas, opfyldt, præference-match
+- kan besvares uden evaluering
 
-KRAV:
-- Spørgsmålene skal være simple og direkte
-- De må kunne besvares med:
-  "ja", "nej", "delvist" eller kort forklaring
-- Ingen rådgivning, ingen vurdering
+Eksempler på korrekt niveau:
+- "Har arbejdspræferencer haft betydning for valg af alle roller?"
+- "Var nogle roller midlertidige i forhold til andre?"
+- "Er præferencerne blevet klarere over tid, eller har de været stabile?"
 
 ────────────────────────
-ABSOLUT STOP
+STOP
 ────────────────────────
-Afslut output efter spørgsmålene.
-Tilføj ikke opsummering eller videre perspektivering.`,
+Afslut output efter spørgsmålene.`,
 
   MULIGHEDER_OVERSIGT: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

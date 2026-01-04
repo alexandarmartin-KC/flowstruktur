@@ -18,86 +18,100 @@ SPROG:
 - Ingen HR-floskler`;
 
 export const STEP_PROMPTS = {
-  SAMLET_ANALYSE: `VIGTIG REGEL:
-Du må IKKE bruge personnavne eller henvise til brugeren i tredje person.
-Referér altid neutralt til:
-- "CV'et"
-- "arbejdspræferencerne"
-- "materialet"
-- "de dokumenterede roller"
+  SAMLET_ANALYSE: `DU ER I STEP 3.
 
-DU ER I STEP 3.
-
-Dette trin har ét formål:
-at fremstille en nøgtern, flydende sammenstilling af:
-- dokumenterede arbejdsformer (CV, Step 1)
-- angivne arbejdspræferencer (Step 2)
-
-uden at forklare, vurdere eller psykologisere.
+Dette trin har to formål:
+1) at levere en foreløbig, åben analyse baseret på CV (Step 1)
+   og arbejdspræferencer (Step 2)
+2) at indsamle afklarende svar og derefter opdatere analysen,
+   uden at skabe konklusioner eller anbefalinger
 
 ────────────────────────
-HÅRDE REGLER (MÅ IKKE BRYDES)
+ABSOLUTTE REGLER (GÆLDER I BEGGE FASER)
 ────────────────────────
-1. Du må IKKE:
-   - beskrive evner, kapacitet eller hvad personen "kan"
-   - bruge verber som:
-     kan, formår, trives, håndterer, tilpasser sig
-2. Du må IKKE:
-   - tillægge intentioner, motiver eller strategi
-   - bruge ord som:
-     fleksibel, robust, bevidst, prioriterer, tolerance,
-     styrke, fordel, udfordring
-3. Du må IKKE:
-   - forklare CV med præferencer
-   - forklare præferencer med CV
-4. Du må KUN:
-   - beskrive CV som dokumenterede arbejdsformer
-   - beskrive præferencer som angivne niveauer
-5. Uklarhed og uafklarethed er et gyldigt slutpunkt.
+- Brug aldrig personnavn
+- Giv ingen råd, anbefalinger eller jobforslag
+- Beskriv aldrig evner, kapacitet eller "hvad personen kan"
+- Tillæg ikke intention, strategi, motivation eller værdier
+- Forklar ikke CV med præferencer og omvendt
+- Uklarhed er et legitimt slutresultat
 
 ────────────────────────
 OUTPUTFORMAT
 ────────────────────────
 
-A. SAMLET ANALYSE
+A. FORELØBIG SAMLET ANALYSE
 
-Skriv 3–5 sammenhængende afsnit i neutral prosa, der:
+Skriv 3–4 sammenhængende afsnit i neutral prosa, der:
 
-- beskriver variationen i CV'ets arbejdsformer
-- beskriver arbejdspræferencer udelukkende som niveauer
-  (lav / moderat / høj)
-- beskriver hvor relationen mellem de to er uklar eller uafklaret
-- undlader enhver forklaring på hvorfor
+- beskriver variationen i de dokumenterede arbejdsformer
+- beskriver arbejdspræferencerne udelukkende som niveauer
+- beskriver hvor relationen mellem de to er uklar
+- undlader enhver forklaring eller vurdering
 
 KRAV:
-- Ingen punktopstillinger
-- Ingen vurdering
+- Ingen bullet points
 - Ingen konklusion
 - Brug formuleringer som:
   "det kan ikke afgøres"
   "materialet giver ikke grundlag for"
-  "der fremgår ikke en entydig sammenhæng"
+  "relationen er uafklaret"
 
 ────────────────────────
 
 B. AFKLARENDE SPØRGSMÅL
 
-Stil 3–4 korte, neutrale spørgsmål, der:
+Stil præcist disse spørgsmål i denne form:
 
-- reducerer usikkerhed
-- ikke bruger ordene:
-  udfordring, tilpas, opfyldt, præference-match
-- kan besvares uden evaluering
+1) Har arbejdspræferencer haft betydning for valg af roller?
+   - alle
+   - nogle
+   - ingen
+   - ved ikke
 
-Eksempler på korrekt niveau:
-- "Har arbejdspræferencer haft betydning for valg af alle roller?"
-- "Var nogle roller midlertidige i forhold til andre?"
-- "Er præferencerne blevet klarere over tid, eller har de været stabile?"
+2) Har nogle roller været midlertidige?
+   - ja
+   - nej
+   - delvist
+   - ved ikke
+
+3) Har arbejdspræferencerne været stabile over tid?
+   - stabile
+   - ændret
+   - ved ikke
+
+(Valgfrit)
+4) Er der noget, som nuancerer ovenstående?
+   - fritekst (kort)
+
+────────────────────────
+
+C. OPDATERET SAMLET ANALYSE (KUN HVIS SVAR FORELIGGER)
+
+Hvis svar på spørgsmålene foreligger,
+skal analysen fra sektion A omskrives let,
+så den:
+
+- reducerer uklarhed dér, hvor svarene giver grundlag
+- stadig undlader forklaringer, vurderinger og råd
+- tydeligt angiver, hvad der nu er afklaret, og hvad der stadig er åbent
+
+KRAV:
+- Ingen nye antagelser
+- Ingen konklusion
+- Brug formuleringer som:
+  "På baggrund af de afgivne svar kan det konstateres, at…"
+  "Der er fortsat ikke grundlag for at afgøre…"
+
+Hvis der ikke foreligger svar:
+- vis kun sektion A og B
+- udelad sektion C
 
 ────────────────────────
 STOP
 ────────────────────────
-Afslut output efter spørgsmålene.`,
+Afslut output efter relevant sektion (B eller C).
+Tilføj ingen opsummering eller anbefalinger.`,
 
   MULIGHEDER_OVERSIGT: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

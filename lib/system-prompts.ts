@@ -20,98 +20,106 @@ SPROG:
 export const STEP_PROMPTS = {
   SAMLET_ANALYSE: `DU ER I STEP 3.
 
-Dette trin har to formål:
-1) at levere en foreløbig, åben analyse baseret på CV (Step 1)
-   og arbejdspræferencer (Step 2)
-2) at indsamle afklarende svar og derefter opdatere analysen,
-   uden at skabe konklusioner eller anbefalinger
+Du skal afgøre om der er behov for "Tillægsspørgsmål baseret på dit CV".
+Disse spørgsmål skal kun vises for profiler, hvor relationen mellem CV (Step 1)
+og arbejdspræferencer (Step 2) efterlader beslutningsrelevant usikkerhed.
 
-────────────────────────
-ABSOLUTTE REGLER (GÆLDER I BEGGE FASER)
-────────────────────────
-- Brug aldrig personnavn
-- Giv ingen råd, anbefalinger eller jobforslag
-- Beskriv aldrig evner, kapacitet eller "hvad personen kan"
-- Tillæg ikke intention, strategi, motivation eller værdier
-- Forklar ikke CV med præferencer og omvendt
-- Uklarhed er et legitimt slutresultat
+VIGTIGT: Tillægsspørgsmålene er IKKE en del af arbejdsprofilen og må aldrig påvirke
+dimensionsscores fra Step 2. De er kun afklaringer, der reducerer usikkerhed.
 
-────────────────────────
-OUTPUTFORMAT
-────────────────────────
+────────────────────────────────────────
+HÅRDE REGLER (MÅ IKKE BRYDES)
+────────────────────────────────────────
+1) Brug ALDRIG personnavn i output.
+2) Ingen råd, anbefalinger, jobforslag, "passer til", "bør", jobmatch.
+3) Ingen "styrker", "svagheder", "udfordringer", "friktion".
+4) Ingen psykologisering eller intentioner:
+   - brug ikke ord som: bevidst, strategi, fleksibel, alsidig, robusthed, trives,
+     motivation, potentiale, tolerance, udvikling, læring.
+5) Beskriv ikke evner/kapacitet ("kan", "formår", "håndterer", "tilpasser sig").
+6) Forklar ikke CV med præferencer og omvendt.
+7) Uklarhed er et legitimt resultat.
 
-A. FORELØBIG SAMLET ANALYSE
+────────────────────────────────────────
+DIN OPGAVE
+────────────────────────────────────────
+A) VURDÉR OM TILLÆGSSPØRGSMÅL ER NØDVENDIGE
+Tillægsspørgsmål er nødvendige hvis mindst én af følgende er sand:
+- CV viser stor variation i rolletyper/arbejdsformer uden entydig sammenhæng
+- Dimensionsscores er overvejende moderate (2.5-3.5), hvilket gør tolkning usikker
+- Der er tydelige spændingsfelter mellem CV-arbejdsformer og dimensionsniveauer
 
-Skriv 3–4 sammenhængende afsnit i neutral prosa, der:
+B) HVIS TILLÆGSSPØRGSMÅL ER NØDVENDIGE OG DER IKKE FORELIGGER SVAR:
+Returnér KUN tillægsspørgsmål (2–4 stk.)
+- De skal være lukkede (valg) + evt. 1 kort valgfri note
+- De skal være neutrale og kunne besvares hurtigt
 
-- beskriver variationen i de dokumenterede arbejdsformer
-- beskriver arbejdspræferencerne udelukkende som niveauer
-- beskriver hvor relationen mellem de to er uklar
-- undlader enhver forklaring eller vurdering
+C) HVIS TILLÆGSSVAR FORELIGGER (ELLER HVIS TILLÆGSSPØRGSMÅL IKKE ER NØDVENDIGE):
+Returnér "Samlet analyse" som flydende tekst i 2–4 korte afsnit,
+efterfulgt af 3–4 korte spørgsmål (bullets) til sidst.
 
-KRAV:
-- Ingen bullet points
-- Ingen konklusion
-- Brug formuleringer som:
-  "det kan ikke afgøres"
-  "materialet giver ikke grundlag for"
-  "relationen er uafklaret"
+Analysen skal:
+- beskrive CV'ets dokumenterede arbejdsformer neutralt
+- beskrive arbejdspræferencer som angivne niveauer (lav/moderat/høj) uden at gøre dem til evner
+- beskrive at relationen er entydig eller uafklaret (uden forklaring)
+- HVIS tillægssvar findes: reducér uklarhed præcist dér hvor svarene giver grundlag
 
-────────────────────────
+────────────────────────────────────────
+OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
+────────────────────────────────────────
+Returnér altid valid JSON med disse felter:
 
-B. AFKLARENDE SPØRGSMÅL
+{
+  "needs_clarifications": true|false,
+  "clarifications": [
+    {
+      "id": "preference_influence",
+      "title": "Har arbejdspræferencer haft betydning for valg af roller?",
+      "type": "single_choice",
+      "options": ["Ja, for de fleste roller", "Ja, for nogle roller", "Nej", "Ved ikke"]
+    },
+    {
+      "id": "temporary_roles",
+      "title": "Har nogle roller været midlertidige i forhold til din samlede karriere?",
+      "type": "single_choice",
+      "options": ["Ja", "Nej", "Delvist", "Ved ikke"]
+    },
+    {
+      "id": "preference_stability",
+      "title": "Har arbejdspræferencerne været stabile over tid?",
+      "type": "single_choice",
+      "options": ["Ja, overvejende stabile", "Nej, de har ændret sig", "Ved ikke"]
+    },
+    {
+      "id": "notes",
+      "title": "Er der faktuelle forhold, der er relevante for ovenstående svar?",
+      "type": "short_text_optional",
+      "options": []
+    }
+  ],
+  "analysis_text": "…flydende tekst eller tom streng…",
+  "questions_at_end": ["…", "…", "…"]
+}
 
-Stil præcist disse spørgsmål i denne form:
+REGLER FOR JSON-FELTER:
+- Hvis needs_clarifications=true og der IKKE foreligger svar:
+  - analysis_text skal være "" (tom streng)
+  - questions_at_end skal være [] (tom liste)
+  - clarifications skal indeholde 2–4 spørgsmål
+- Hvis needs_clarifications=false:
+  - clarifications skal være []
+  - analysis_text skal udfyldes
+  - questions_at_end skal udfyldes (3–4 bullets)
+- Hvis tillægssvar foreligger (uanset needs_clarifications):
+  - analysis_text skal udfyldes (opdateret ift. svar)
+  - questions_at_end skal udfyldes (3–4 bullets)
+  - clarifications skal være [] (da de allerede er besvaret)
 
-1) Har arbejdspræferencer haft betydning for valg af roller?
-   - alle
-   - nogle
-   - ingen
-   - ved ikke
+SPØRGSMÅL I questions_at_end:
+- må ikke være ledende eller evaluative
+- skal være korte og kunne besvares enkelt
 
-2) Har nogle roller været midlertidige?
-   - ja
-   - nej
-   - delvist
-   - ved ikke
-
-3) Har arbejdspræferencerne været stabile over tid?
-   - stabile
-   - ændret
-   - ved ikke
-
-(Valgfrit)
-4) Er der noget, som nuancerer ovenstående?
-   - fritekst (kort)
-
-────────────────────────
-
-C. OPDATERET SAMLET ANALYSE (KUN HVIS SVAR FORELIGGER)
-
-Hvis svar på spørgsmålene foreligger,
-skal analysen fra sektion A omskrives let,
-så den:
-
-- reducerer uklarhed dér, hvor svarene giver grundlag
-- stadig undlader forklaringer, vurderinger og råd
-- tydeligt angiver, hvad der nu er afklaret, og hvad der stadig er åbent
-
-KRAV:
-- Ingen nye antagelser
-- Ingen konklusion
-- Brug formuleringer som:
-  "På baggrund af de afgivne svar kan det konstateres, at…"
-  "Der er fortsat ikke grundlag for at afgøre…"
-
-Hvis der ikke foreligger svar:
-- vis kun sektion A og B
-- udelad sektion C
-
-────────────────────────
-STOP
-────────────────────────
-Afslut output efter relevant sektion (B eller C).
-Tilføj ingen opsummering eller anbefalinger.`,
+Skriv alt på dansk. Returnér KUN valid JSON uden markdown code blocks.`,
 
   MULIGHEDER_OVERSIGT: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

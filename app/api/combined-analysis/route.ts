@@ -16,11 +16,30 @@ interface DimensionScores {
   [dimension: string]: number;
 }
 
+interface ClarifyingAnswers {
+  [key: string]: string | null | undefined;
+}
+
+interface ClarificationQuestion {
+  id: string;
+  title: string;
+  type: 'single_choice' | 'short_text_optional';
+  options: string[];
+}
+
+interface AnalysisResponse {
+  needs_clarifications: boolean;
+  clarifications: ClarificationQuestion[];
+  analysis_text: string;
+  questions_at_end: string[];
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { cvAnalysis, dimensionScores }: { 
+    const { cvAnalysis, dimensionScores, clarifyingAnswers }: { 
       cvAnalysis: string; 
       dimensionScores: DimensionScores;
+      clarifyingAnswers?: ClarifyingAnswers;
     } = await request.json();
 
     if (!cvAnalysis || !dimensionScores) {
@@ -30,69 +49,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build dimension descriptions without scores (per prompt requirements)
+    // Build dimension descriptions with levels only (no scores)
     const getLevel = (score: number): string => {
       if (score >= 3.7) return "høj";
       if (score >= 2.5) return "moderat";
       return "lav";
     };
 
-    const dimensionDescriptions: Record<string, Record<string, string>> = {
-      "Struktur & Rammer": {
-        "lav": "lavt behov for faste rammer, kan arbejde i uklare kontekster",
-        "moderat": "balance mellem behov for struktur og fleksibilitet",
-        "høj": "tydeligt behov for klare rammer og definerede processer"
-      },
-      "Beslutningsstil": {
-        "lav": "høj tolerance for beslutninger under usikkerhed",
-        "moderat": "afbalanceret beslutningsstil, tilpasser efter situation",
-        "høj": "behov for grundig overvejelse før beslutninger"
-      },
-      "Forandring & Stabilitet": {
-        "lav": "høj tolerance for forandring, tilpasser sig hurtigt",
-        "moderat": "kan håndtere forandringer hvis de er forudsigelige",
-        "høj": "tydeligt behov for stabilitet og forudsigelighed"
-      },
-      "Selvstændighed & Sparring": {
-        "lav": "høj grad af selvstændighed, foretrækker autonomi",
-        "moderat": "balance mellem selvstændighed og samarbejde",
-        "høj": "tydeligt behov for sparring og dialog"
-      },
-      "Sociale præferencer i arbejdet": {
-        "lav": "lavt behov for social interaktion, foretrækker fordybelse",
-        "moderat": "afbalanceret socialt behov",
-        "høj": "højt behov for social kontakt og samarbejde"
-      },
-      "Ledelse & Autoritet": {
-        "lav": "lavt behov for hierarkisk ledelse, trives med selvstyring",
-        "moderat": "fleksibel i forhold til ledelsesform",
-        "høj": "behov for klar ledelse og retning"
-      },
-      "Tempo & Belastning": {
-        "lav": "høj tolerance for tempo og belastning",
-        "moderat": "vis robusthed kombineret med behov for balance",
-        "høj": "lav tolerance for vedvarende højt tempo"
-      },
-      "Konflikt & Feedback": {
-        "lav": "høj tolerance for direkte kommunikation og uenighed",
-        "moderat": "behov for konstruktiv og respektfuld dialog",
-        "høj": "lav tolerance for konfliktfyldte miljøer"
-      }
+    // Build step2 JSON-like structure for the prompt
+    const step2Data = {
+      dimension_scores: Object.entries(dimensionScores).map(([dimension, score]) => ({
+        dimension,
+        level: getLevel(score)
+      }))
     };
 
-    let dimensionsText = "ARBEJDSPROFIL (arbejdsdimensioner):\n";
-    for (const [dimension, score] of Object.entries(dimensionScores)) {
-      const level = getLevel(score);
-      const description = dimensionDescriptions[dimension]?.[level] || level;
-      dimensionsText += `- ${dimension}: ${description}\n`;
+    // Build clarifying answers JSON if provided
+    let clarifyingAnswersJson = '';
+    if (clarifyingAnswers) {
+      const hasAnswers = Object.values(clarifyingAnswers).some(v => v && v !== '');
+      if (hasAnswers) {
+        clarifyingAnswersJson = JSON.stringify(clarifyingAnswers, null, 2);
+      }
     }
 
-    const userMessage = `CV-RESUMÉ:
+    const userMessage = `Step 1-output (CV-bekræftelse):
 ${cvAnalysis}
 
-${dimensionsText}
+Step 2-output (arbejdsprofil):
+${JSON.stringify(step2Data, null, 2)}
 
-Generér den samlede analyse.`;
+Tillægssvar (kun hvis brugeren allerede har besvaret dem):
+${clarifyingAnswersJson || '(ingen svar endnu)'}
+
+Returnér valid JSON.`;
 
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
@@ -106,8 +96,8 @@ Generér den samlede analyse.`;
           content: userMessage,
         },
       ],
-      max_tokens: 1000,
-      temperature: 0.5,
+      max_tokens: 1500,
+      temperature: 0.4,
     });
 
     const textContent = response.choices[0]?.message?.content;
@@ -115,9 +105,29 @@ Generér den samlede analyse.`;
       throw new Error('Ingen tekstrespons fra AI');
     }
 
-    return NextResponse.json({
-      analysis: textContent.trim(),
-    });
+    // Parse the JSON response
+    let parsedResponse: AnalysisResponse;
+    try {
+      // Clean up potential markdown code blocks
+      const cleanedContent = textContent
+        .replace(/^```json\s*/i, '')
+        .replace(/^```\s*/i, '')
+        .replace(/\s*```$/i, '')
+        .trim();
+      
+      parsedResponse = JSON.parse(cleanedContent);
+    } catch (parseErr) {
+      console.error('Failed to parse AI response as JSON:', textContent);
+      // Fallback: return the text as analysis
+      return NextResponse.json({
+        needs_clarifications: false,
+        clarifications: [],
+        analysis_text: textContent.trim(),
+        questions_at_end: []
+      });
+    }
+
+    return NextResponse.json(parsedResponse);
   } catch (err) {
     console.error('Error in combined-analysis:', err);
     return NextResponse.json(

@@ -38,8 +38,24 @@ interface PersonalityProfile {
   };
 }
 
+// New API response format
+interface ClarificationQuestion {
+  id: string;
+  title: string;
+  type: 'single_choice' | 'short_text_optional';
+  options: string[];
+}
+
+interface CombinedAnalysisResponse {
+  needs_clarifications: boolean;
+  clarifications: ClarificationQuestion[];
+  analysis_text: string;
+  questions_at_end: string[];
+}
+
 interface CombinedAnalysis {
-  analysis: string;
+  response: CombinedAnalysisResponse;
+  clarifyingAnswers?: { [key: string]: string | null };
 }
 
 // Spørgsmål til personlighedsprofil (40 spørgsmål - 8 dimensioner × 5)
@@ -129,6 +145,10 @@ export default function ProfilPage() {
   const [combinedAnalysis, setCombinedAnalysis] = useState<CombinedAnalysis | null>(null);
   const [analyzingCombined, setAnalyzingCombined] = useState(false);
   
+  // Clarifying questions state - dynamic based on API response
+  const [clarifyingAnswers, setClarifyingAnswers] = useState<{ [key: string]: string | null }>({});
+  const [updatingAnalysis, setUpdatingAnalysis] = useState(false);
+  
   // Track which dimension explanations are expanded
   const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set());
   
@@ -217,27 +237,20 @@ Denne profil er baseret på selvrapporterede præferencer og skal ses som et sup
     
     // Mock combined analysis
     setCombinedAnalysis({
-      analysis: `SAMLET PROFILFORSTÅELSE
-Profilen viser en teknisk erfaren udvikler med stærke kompetencer inden for moderne webudvikling, kombineret med præference for strukturerede arbejdsgange og direkte kommunikation. Erfaringen med både startups og etablerede virksomheder indikerer evne til at navigere i forskellige organisatoriske kontekster.
+      response: {
+        needs_clarifications: false,
+        clarifications: [],
+        analysis_text: `Profilen viser en teknisk erfaren udvikler med stærke kompetencer inden for moderne webudvikling, kombineret med præference for strukturerede arbejdsgange og direkte kommunikation. Erfaringen med både startups og etablerede virksomheder indikerer evne til at navigere i forskellige organisatoriske kontekster.
 
-HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN
-- Erfaring med strukturerede frameworks (React, TypeScript) matcher præferencen for klare rammer og definerede processer
-- Fokus på agile metoder understøtter både behovet for struktur og fleksibiliteten i forhold til forandring
-- Erfaring med teamsamarbejde passer til balancen mellem selvstændighed og dialog i arbejdsstil
+Erfaring med strukturerede frameworks (React, TypeScript) matcher præferencen for klare rammer og definerede processer. Fokus på agile metoder understøtter både behovet for struktur og fleksibiliteten i forhold til forandring. Erfaring med teamsamarbejde passer til balancen mellem selvstændighed og dialog i arbejdsstil.
 
-POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL
-- Startup-erfaring kan have indebåret arbejde under højt tempo og skiftende prioriteter, hvilket kan have været belastende set i lyset af moderat tolerance for tempo
-- Arbejde med brugervenlige interfaces kræver ofte hurtig iteration og konstant feedback fra mange stakeholders, hvilket kan udfordre præferencen for rolige arbejdsgange
-
-ARBEJDSKONTEKSTER DER TYPISK VIL UNDERSTØTTE PROFILEN
-Profilen indikerer at arbejdssituationer med etablerede udviklingsprocesser, klare roller og regelmæssige feedback-loops typisk vil understøtte arbejdsstilen. Miljøer hvor der er balance mellem selvstændigt kodningsarbejde og struktureret teamsamarbejde, samt organisationer der har stabile rammer men plads til teknisk udvikling.
-
-KONTEKSTER DER KAN KRÆVE BEVIDST TILPASNING
-Situationer med meget korte deadlines, hyppige prioritetsskift eller konstant brand-slukningspræg kan kræve særlig opmærksomhed. Ligeledes miljøer med uklare ansvarsområder eller begrænset struktur i udviklingsprocessen. Roller hvor feedback primært er negativ eller sporadisk kan også kræve aktiv håndtering.
-
-AFSLUTTENDE NOTE
-Den samlede analyse er vejledende og bygger på mønstre i erfaring og arbejdspræferencer.
-Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
+Den samlede analyse er vejledende og bygger på mønstre i erfaring og arbejdspræferencer. Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`,
+        questions_at_end: [
+          "Har du oplevet situationer hvor dine præferencer ikke matchede jobkravene?",
+          "Er der bestemte arbejdsformer du aktivt opsøger eller undgår?",
+          "Hvordan har din arbejdsstil udviklet sig over tid?"
+        ]
+      }
     });
     
     setCurrentStep('results');
@@ -447,8 +460,17 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
         throw new Error(errorData.error || 'Kunne ikke generere samlet analyse');
       }
 
-      const data = await res.json();
-      setCombinedAnalysis(data);
+      const data: CombinedAnalysisResponse = await res.json();
+      setCombinedAnalysis({ response: data });
+      
+      // Initialize clarifying answers if needed
+      if (data.needs_clarifications && data.clarifications.length > 0) {
+        const initialAnswers: { [key: string]: string | null } = {};
+        data.clarifications.forEach(q => {
+          initialAnswers[q.id] = null;
+        });
+        setClarifyingAnswers(initialAnswers);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Der opstod en fejl ved generering af samlet analyse');
     } finally {
@@ -544,6 +566,53 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
       ...section,
       content: section.content.trim()
     }));
+  };
+
+  // Update analysis with clarifying answers
+  const updateAnalysisWithAnswers = async () => {
+    if (!combinedAnalysis || !step1Data) return;
+    
+    // Check if any answers are provided
+    const hasAnswers = Object.values(clarifyingAnswers).some(v => v && v !== '');
+    
+    if (!hasAnswers) return;
+    
+    setUpdatingAnalysis(true);
+    
+    try {
+      // Calculate dimension scores
+      const dimensionScores = calculateAllDimensionScores(scores);
+      const dimensionScoresMap: { [key: string]: number } = {};
+      dimensionScores.forEach(dim => {
+        dimensionScoresMap[dim.dimension] = dim.score;
+      });
+      
+      const res = await fetch('/api/combined-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cvAnalysis: step1Data.text,
+          dimensionScores: dimensionScoresMap,
+          clarifyingAnswers: clarifyingAnswers
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Kunne ikke opdatere analyse');
+      }
+
+      const data: CombinedAnalysisResponse = await res.json();
+      setCombinedAnalysis({
+        response: data,
+        clarifyingAnswers: clarifyingAnswers
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Der opstod en fejl ved opdatering af analyse');
+    } finally {
+      setUpdatingAnalysis(false);
+    }
   };
 
   // Parse personality profile sections
@@ -1067,65 +1136,123 @@ Den bør ses i sammenhæng med konkret rolleindhold og organisatorisk kontekst.`
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="text-2xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-                      Samlet Profilforståelse
+                      Samlet analyse
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground mt-2">Sammenhæng mellem CV og arbejdspræferencer</p>
+                    <p className="text-sm text-muted-foreground mt-2">Sammenstilling af CV og arbejdspræferencer</p>
                   </div>
                   <Badge className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                    🔗 Integreret
+                    {combinedAnalysis.response.analysis_text ? '✓ Komplet' : '📋 Afventer svar'}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent className="pt-8 space-y-8">
-                {parseCombinedAnalysis(combinedAnalysis.analysis).map((section, index) => (
-                  <div key={index} className="space-y-3">
-                    <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
-                      {section.title === 'SAMLET PROFILFORSTÅELSE' && '🔍'}
-                      {section.title === 'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN' && '✓'}
-                      {section.title === 'POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL' && '⚡'}
-                      {section.title === 'ARBEJDSKONTEKSTER DER TYPISK VIL UNDERSTØTTE PROFILEN' && '🎯'}
-                      {section.title === 'KONTEKSTER DER KAN KRÆVE BEVIDST TILPASNING' && '⚙️'}
-                      {section.title === 'AFSLUTTENDE NOTE' && 'ℹ️'}
-                      {section.title.charAt(0) + section.title.slice(1).toLowerCase()}
-                    </h3>
+                {/* Show analysis text if available */}
+                {combinedAnalysis.response.analysis_text && (
+                  <div className="space-y-4">
+                    <div className="rounded-lg p-5 bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700">
+                      <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                        {combinedAnalysis.response.analysis_text}
+                      </p>
+                    </div>
                     
-                    {section.content && (
-                      <div className={`rounded-lg p-5 ${
-                        section.title === 'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN'
-                          ? 'bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800'
-                          : section.title === 'POTENTIELLE SPÆNDINGER MELLEM ERFARING OG ARBEJDSSTIL'
-                          ? 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800'
-                          : section.title === 'AFSLUTTENDE NOTE'
-                          ? 'bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700'
-                          : 'bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700'
-                      }`}>
-                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                          {section.content}
-                        </p>
-                      </div>
-                    )}
-                    
-                    {section.bullets.length > 0 && (
-                      <div className="space-y-2">
-                        {section.bullets.map((bullet, bIndex) => (
-                          <div
-                            key={bIndex}
-                            className={`flex items-start gap-3 rounded-lg p-4 ${
-                              section.title === 'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN'
-                                ? 'bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800'
-                                : 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800'
-                            }`}
-                          >
-                            <span className="text-lg mt-0.5">
-                              {section.title === 'HVOR CV OG ARBEJDSSTIL UNDERSTØTTER HINANDEN' ? '✓' : '⚡'}
-                            </span>
-                            <p className="text-sm font-medium flex-1">{bullet}</p>
-                          </div>
-                        ))}
+                    {/* Questions at end */}
+                    {combinedAnalysis.response.questions_at_end && combinedAnalysis.response.questions_at_end.length > 0 && (
+                      <div className="space-y-2 pt-4">
+                        <p className="text-sm font-medium text-muted-foreground">Refleksionsspørgsmål:</p>
+                        <ul className="list-disc list-inside space-y-1">
+                          {combinedAnalysis.response.questions_at_end.map((q, idx) => (
+                            <li key={idx} className="text-sm text-muted-foreground">{q}</li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                   </div>
-                ))}
+                )}
+
+                {/* Show clarifying questions if needed and not yet answered */}
+                {combinedAnalysis.response.needs_clarifications && 
+                 combinedAnalysis.response.clarifications.length > 0 && 
+                 !combinedAnalysis.clarifyingAnswers && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-lg">📝</span>
+                      <h3 className="font-semibold text-base">Tillægsspørgsmål baseret på dit CV</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      For at give en mere præcis analyse har vi brug for et par afklaringer:
+                    </p>
+                    
+                    <div className="grid gap-3">
+                      {combinedAnalysis.response.clarifications.map((question) => (
+                        <div key={question.id} className="flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                          <span className="text-sm flex-shrink-0 sm:w-72">{question.title}</span>
+                          {question.type === 'single_choice' ? (
+                            <div className="flex flex-wrap gap-1.5">
+                              {question.options.map(option => (
+                                <Button
+                                  key={option}
+                                  type="button"
+                                  variant={clarifyingAnswers[question.id] === option ? 'default' : 'outline'}
+                                  size="sm"
+                                  className="h-7 px-2.5 text-xs"
+                                  onClick={() => setClarifyingAnswers(prev => ({
+                                    ...prev,
+                                    [question.id]: option
+                                  }))}
+                                >
+                                  {option}
+                                </Button>
+                              ))}
+                            </div>
+                          ) : (
+                            <Textarea
+                              placeholder="Kort kommentar (valgfrit)..."
+                              value={clarifyingAnswers[question.id] || ''}
+                              onChange={(e) => setClarifyingAnswers(prev => ({
+                                ...prev,
+                                [question.id]: e.target.value || null
+                              }))}
+                              className="min-h-[50px] text-sm flex-1"
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Update button */}
+                    <Button
+                      onClick={updateAnalysisWithAnswers}
+                      disabled={updatingAnalysis || !Object.values(clarifyingAnswers).some(v => v && v !== '')}
+                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                    >
+                      {updatingAnalysis ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Opdaterer analyse...
+                        </>
+                      ) : (
+                        <>
+                          <ArrowRight className="mr-2 h-4 w-4" />
+                          Opdater analyse med svar
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Show answers summary if clarifying answers were given */}
+                {combinedAnalysis.clarifyingAnswers && Object.keys(combinedAnalysis.clarifyingAnswers).length > 0 && (
+                  <div className="space-y-3 pt-4 border-t border-indigo-200 dark:border-indigo-800">
+                    <h4 className="font-medium text-sm text-muted-foreground">Dine svar:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {Object.entries(combinedAnalysis.clarifyingAnswers).map(([key, value]) => 
+                        value ? (
+                          <Badge key={key} variant="outline">{value}</Badge>
+                        ) : null
+                      )}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ) : analyzingCombined ? (

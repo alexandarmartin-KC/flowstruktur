@@ -94,34 +94,45 @@ Struktur & Rammer
 
 B. Præferenceoversigt
 
-Skriv 2–3 korte sætninger, der UDELUKKENDE rapporterer hvad svarene viser.
+Skriv PRÆCIS 2 sætninger i dette format:
 
-TILLADT:
-"Svarene viser høje scorer på X og Y."
-"Der ses præference for Z."
-"Scorer er lavest inden for A."
+"Høje scorer: [dimension 1], [dimension 2]."
+"Moderate/lave scorer: [dimension 3], [dimension 4]."
 
-FORBUDT:
-"Dette betyder at..."
-"Personen vil sandsynligvis..."
-"I praksis vil dette..."
-"Kombinationen af X og Y indikerer..."
+EKSEMPEL:
+"Høje scorer: Forandring & Stabilitet (3.8), Ledelse & Autoritet (3.8)."
+"Moderate scorer: Struktur & Rammer (3.0), Beslutningsstil (2.8), Selvstændighed & Sparring (3.2), Sociale præferencer (3.4), Tempo & Belastning (3.6), Konflikt & Feedback (3.2)."
+
+ABSOLUT FORBUDT:
+- Ordet "person/personen"
+- Ordet "indikerer/tyder/peger"
+- Ordet "arbejde/arbejdsplads/opgaver"
+- Fortolkende sprog
+- Beskrivende adjektiver
 
 ────────────────────────
 
 C. Præferencebeskrivelse
 
-Skriv 3–5 punktformer, der DIREKTE beskriver præferencer.
+Skriv PRÆCIS 3–5 punkter i dette format:
 
-FORMAT:
-"Præference for [konkret ting fra spørgeskemaet]"
-"Lavere præference for [konkret ting fra spørgeskemaet]"
+"Præference for [dimensionsnavn]: [hvad høje/lave svar betyder rent teknisk]"
 
-FORBUDT:
-- Fortolkning af hvad præferencen betyder
-- Reference til hvordan det viser sig
-- Sammenhænge mellem præferencer
-- Konsekvenser eller implikationer
+EKSEMPEL FOR HØJ SCORE (3.7-5.0):
+"Præference for Struktur & Rammer: Klare deadlines, planlagt arbejdsdag, etablerede procedurer."
+
+EKSEMPEL FOR MODERAT SCORE (2.1-3.6):
+"Præference for Beslutningsstil: Balance mellem hurtige beslutninger og grundig analyse."
+
+EKSEMPEL FOR LAV SCORE (0-2.0):
+"Præference for Struktur & Rammer: Fleksibilitet og løse rammer fremfor faste strukturer."
+
+ABSOLUT FORBUDT:
+- "personen/han/hun"
+- "vant til", "kan håndtere", "er i stand til"
+- "tilpasningsdygtig", "robust", "stærk"
+- "arbejdsplads", "job", "rolle"
+- Fortolkninger eller sammenhænge
 
 ────────────────────────
 ABSOLUT STOP-REGEL

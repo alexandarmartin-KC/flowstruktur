@@ -18,70 +18,63 @@ SPROG:
 - Ingen HR-floskler`;
 
 export const STEP_PROMPTS = {
-  SAMLET_ANALYSE: `Skriv en samlet analyse baseret på brugerens CV og arbejdsprofil.
-Analysen beskriver SAMSPILLET mellem erfaring og præferencer.
+  SAMLET_ANALYSE: `DU ER I STEP 3.
 
-VIGTIG REFERENCEREGEL:
-Dit output skal være:
-- nøgternt
-- konstaterende
-- præcist
-- uden forklarende eller vurderende sprog
+Dit formål er at KOBLE CV-erfaring med arbejdspræferencer.
 
-Outputtet skal føles som en saglig, professionel sammenstilling –
-ikke som rådgivning, coaching eller personlighedsanalyse.
+Dette er FØRSTE GANG de to dele mødes.
+STEP 2 HAR IKKE LAVET DENNE KOBLING.
 
-ABSOLUTTE REGLER:
+────────────────────────
+REGLER FOR KOBLING
+────────────────────────
 
-DU MÅ KUN:
-- beskrive præferencer
-- beskrive arbejdsmønstre
-- beskrive sammenhænge mellem præferencer og CV-kontekst
-- beskrive potentielle spændinger
+DU MÅ:
+- Konstatere sammenfald mellem CV-erfaring og præferencer
+- Konstatere forskelle mellem CV-erfaring og præferencer
+- Beskrive hvor præferencer kan have påvirket karrierevalg
+- Beskrive hvor karriereforløb kan have formet præferencer
 
 DU MÅ IKKE:
-- tillægge evner (fx "evne til", "robusthed", "stærk")
-- bruge ordet "kan" i forklarende betydning
-- skrive "bedst", "egnet til", "velegnet"
-- give råd eller anbefalinger
-- bruge personlighedssprog
+- Vurdere om koblingen er "god" eller "dårlig"
+- Bruge ord som: styrker, svagheder, evner, robusthed
+- Give råd eller anbefalinger
+- Bruge ordet "matcher", "harmonerer", "passer"
+- Forklare hvad det betyder for fremtiden
 
-SPROGLIG FORM (MEGET VIGTIG):
+────────────────────────
+SPROGLIG FORM
+────────────────────────
 
-Skriv udelukkende i konstaterende form.
+Skriv i NEUTRAL, KONSTATERENDE form.
 
-Undgå:
-- "hvilket betyder"
-- "matcher"
-- "harmonerer"
-- "kan ses som"
-- "gør det muligt"
+TILLADT:
+"CV viser X. Præferencer viser Y."
+"Erfaring med Z står i kontrast til præference for W."
+"Præference for A ses i valg af B."
 
-Hver sætning skal kunne stå alene som en nøgtern konstatering.
+FORBUDT:
+"Dette betyder at..."
+"Dette er en styrke fordi..."
+"Dette kan være udfordrende..."
+"Personen vil sandsynligvis..."
 
-STRUKTUR:
+────────────────────────
+STRUKTUR
+────────────────────────
 
-Skriv 4–5 korte afsnit i sammenhængende prosa:
+Skriv 3–4 korte afsnit (ren tekst, ingen overskrifter):
 
-1) Overordnet arbejdsprofil
-2) Hvordan præferencer viser sig i praksis
-3) Sammenhæng med CV-kontekst
-4) Potentielle spændingsfelter
-5) Samlet situationsforståelse
+1) Hovedmønstre i CV
+2) Hovedmønstre i præferencer  
+3) Hvor erfaring og præferencer stemmer overens
+4) Hvor erfaring og præferencer divergerer
 
-Ingen overskrifter i output.
-Indsæt blank linje mellem afsnit.
-Ingen bullets.
-
-OMFANG:
-- 160–260 ord
-- Ingen gentagelser
-- Ingen fyld
+OMFANG: 160–220 ord
+Ingen gentagelser.
 
 OUTPUT:
-- Returnér kun analysen som ren tekst
-- Ingen forklaringer
-- Ingen metadata`,
+Returnér kun analysen som ren tekst.`,
 
   MULIGHEDER_OVERSIGT: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

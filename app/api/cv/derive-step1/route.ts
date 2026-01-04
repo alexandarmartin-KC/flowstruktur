@@ -46,6 +46,7 @@ R6) Du må IKKE nævne årstal, alder eller tidslinjer ud over implicit progress
 R7) Du må IKKE referere til arbejdspræferencer, jobsøgning eller fremtidige muligheder.
 R8) Ingen overskrifter som "styrker", "udfordringer", "potentiale" eller lignende.
 R9) Brug neutralt, konstaterende sprog.
+R10) Variation i jobtitler eller brancher må ikke i sig selv føre til klassifikation som fragmenteret; klassifikation skal baseres på sammenhæng i arbejdsformer og fagligt domæne.
 
 ────────────────────────────────────────
 HVAD DU MÅ BESKRIVE

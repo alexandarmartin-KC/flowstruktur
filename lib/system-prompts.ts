@@ -20,108 +20,81 @@ SPROG:
 export const STEP_PROMPTS = {
   SAMLET_ANALYSE: `DU ER I STEP 3.
 
-Dette trin har ét formål:
-at stille CV-indhold (Step 1) og arbejdspræferencer (Step 2)
-op side om side og tydeliggøre,
-hvor de er sammenfaldende, uklare eller i spænding.
+Dette er det første trin, hvor CV-indhold (Step 1)
+og arbejdspræferencer (Step 2) må ses side om side.
 
-Du må IKKE forsøge at forklare, validere eller give mening.
-Du må kun identificere relationer og åbne tolkningsrum.
+Dit formål er at levere en nøgtern, flydende analyse,
+der tydeliggør:
+- hvad der kan konstateres
+- hvad der er uklart
+- hvor der findes spændinger
+
+Du må IKKE forsøge at forklare, reparere eller give mening.
+Du må kun beskrive relationer og lade uklarheder stå åbne.
 
 ────────────────────────
-ABSOLUTTE REGLER (INGEN UNDTAGELSER)
+HÅRDE REGLER (MÅ IKKE BRYDES)
 ────────────────────────
 1. Du må IKKE:
    - give råd, anbefalinger eller næste skridt
-   - vurdere kompetencer, potentiale eller egnethed
-   - bruge ordene eller idéerne:
-     styrke, svaghed, fordel, ulempe, udvikling, læring
+   - foreslå job, roller, brancher eller karrierevalg
+   - beskrive noget som styrke, fordel, svaghed eller udviklingsområde
 2. Du må IKKE:
    - tillægge brugeren intentioner, motiver eller strategier
-   - beskrive valg som bevidste, målrettede eller planlagte
+   - bruge ord som:
+     bevidst, strategi, fleksibel, alsidig, styrke,
+     udvikling, læring, potentiale, mulighed
 3. Du må IKKE:
-   - forklare CV'et ved hjælp af præferencer
-   - forklare præferencer ved hjælp af CV'et
+   - forklare CV'et med præferencer
+   - forklare præferencer med CV'et
 4. Du må IKKE:
-   - normalisere inkonsistens
-   - omformulere spændinger til noget positivt
-5. Hvis CV'et er markeret som "inkonsistent",
-   skal dette nævnes neutralt og uden forklaring.
-6. Antag ikke, at der findes en korrekt eller sammenhængende fortælling.
+   - normalisere eller værdilade inkonsistens
+5. Antag ikke, at der findes én korrekt eller sammenhængende fortælling.
 
 ────────────────────────
-OUTPUTSTRUKTUR (SKAL FØLGES ORDRET)
+OUTPUTFORMAT (SKAL FØLGES)
 ────────────────────────
 
-1. OBSERVATIONER (UDEN RELATION)
+A. SAMLET ANALYSE (FLYDENDE TEKST)
 
-Beskriv separat:
-- hvilke typer arbejdsformer der fremgår af CV'et
-- hvilke overordnede præferencemønstre der fremgår af Step 2
+Skriv 3–5 sammenhængende afsnit i neutral prosa, der:
+
+- først beskriver CV'ets karakter og variation
+- derefter beskriver arbejdspræferencerne på et overordnet niveau
+- derefter beskriver, hvordan de to kan og ikke kan relateres
+- tydeliggør uklarheder og spændinger uden at forklare dem
 
 KRAV:
-- Ingen relation mellem de to
-- Ingen ord som "sammenfald", "afspejler", "passer til"
-- Kun konstaterende beskrivelser
+- Ingen punktopstillinger i analysen
+- Ingen overskrifter inde i teksten
+- Ingen konklusion
+- Brug sprog som:
+  "kan ikke vurderes entydigt"
+  "materialet giver ikke svar på"
+  "det fremgår ikke klart, om"
+  "der er ikke grundlag for at afgøre"
 
 ────────────────────────
 
-2. RELATIONER OG SPÆNDINGER (UDEN FORKLARING)
+B. AFKLARENDE SPØRGSMÅL
 
-Beskriv, hvor CV-indhold og arbejdspræferencer:
-- peger i samme retning
-- peger i forskellige retninger
-- eller ikke kan sammenholdes entydigt
+Afslut med 3–4 korte, åbne spørgsmål, der:
+
+- reducerer usikkerhed fra analysen
+- ikke forudsætter bevidste valg
+- ikke antyder ønskede svar
 
 KRAV:
-- Ingen forklaring
-- Ingen vurdering
-- Hvis CV'et er inkonsistent, nævn det her
-
-Eksempel på korrekt niveau:
-"CV'et viser variationer i rolletyper, mens arbejdspræferencerne samlet set
-peger på relativ stabilitet i struktur og beslutningstagning."
+- Spørgsmålene skal være simple og direkte
+- De må kunne besvares med:
+  "ja", "nej", "delvist" eller kort forklaring
+- Ingen rådgivning, ingen vurdering
 
 ────────────────────────
-
-3. ÅBNE FORTOLKNINGSRAMMER (HYPOTESER UDEN PSYKOLOGISERING)
-
-Formulér 2–4 alternative måder,
-som relationerne eller spændingerne *kan* forstås på,
-uden at tillægge personen motiver, værdier eller intentioner.
-
-KRAV:
-- Brug kun formuleringer som:
-  "En mulig fortolkningsramme er…"
-  "Det kan også forstås som…"
-  "En alternativ læsning er…"
-- Hypoteser må gerne være gensidigt modstridende
-- Ingen forklaring må præsenteres som mere sandsynlig end andre
-
+ABSOLUT STOP
 ────────────────────────
-
-4. AFKLARENDE SPØRGSMÅL (NEUTRALISERING AF ANTAGELSER)
-
-Stil 3–5 spørgsmål,
-der kan afklare, hvilke fortolkningsrammer der er relevante.
-
-KRAV:
-- Spørgsmålene må ikke:
-  - antage refleksion
-  - antage bevidste valg
-  - antage sammenhæng
-- Formulér dem så brugeren frit kan afkræfte præmisserne
-
-Eksempel:
-- "I hvilken grad var skift mellem roller et aktivt valg versus en praktisk nødvendighed?"
-- "Har arbejdspræferencer haft betydning for alle roller, eller kun nogle?"
-- "Er der perioder i CV'et, der opleves som midlertidige snarere end repræsentative?"
-
-────────────────────────
-HÅRDT STOP
-────────────────────────
-Afslut output efter sektion 4.
-Tilføj intet ekstra.`,
+Afslut output efter spørgsmålene.
+Tilføj ikke opsummering eller videre perspektivering.`,
 
   MULIGHEDER_OVERSIGT: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

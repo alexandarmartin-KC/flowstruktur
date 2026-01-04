@@ -18,6 +18,8 @@ const STORAGE_KEYS = {
   CV_ANALYSIS: 'flowstruktur_cv_analysis',
   PERSONALITY_DATA: 'flowstruktur_personality_data',
   COMBINED_ANALYSIS: 'flowstruktur_combined_analysis',
+  CV_EXTRACTION: 'flowstruktur_cv_extraction',
+  QUESTIONNAIRE_SCORES: 'flowstruktur_questionnaire_scores',
 };
 
 interface CVExtraction {
@@ -164,16 +166,30 @@ export default function ProfilPage() {
   // Load saved profile data from localStorage on mount
   useEffect(() => {
     try {
-      const savedCvAnalysis = localStorage.getItem(STORAGE_KEYS.CV_ANALYSIS);
-      const savedPersonalityData = localStorage.getItem(STORAGE_KEYS.PERSONALITY_DATA);
-      const savedCombinedAnalysis = localStorage.getItem(STORAGE_KEYS.COMBINED_ANALYSIS);
+      // Load CV extraction (raw upload data)
+      const savedExtraction = localStorage.getItem(STORAGE_KEYS.CV_EXTRACTION);
+      if (savedExtraction) {
+        const parsedExtraction = JSON.parse(savedExtraction);
+        setExtraction(parsedExtraction);
+      }
       
+      // Load CV analysis (step1 data)
+      const savedCvAnalysis = localStorage.getItem(STORAGE_KEYS.CV_ANALYSIS);
       if (savedCvAnalysis) {
         const parsedCv = JSON.parse(savedCvAnalysis);
         setStep1Data(parsedCv);
         setCurrentStep('questionnaire'); // CV already done, go to questionnaire
       }
       
+      // Load questionnaire scores (partial progress)
+      const savedScores = localStorage.getItem(STORAGE_KEYS.QUESTIONNAIRE_SCORES);
+      if (savedScores) {
+        const parsedScores = JSON.parse(savedScores);
+        setScores(parsedScores);
+      }
+      
+      // Load personality data (completed questionnaire)
+      const savedPersonalityData = localStorage.getItem(STORAGE_KEYS.PERSONALITY_DATA);
       if (savedPersonalityData) {
         const parsedPersonality = JSON.parse(savedPersonalityData);
         setPersonalityProfile(parsedPersonality);
@@ -183,6 +199,8 @@ export default function ProfilPage() {
         setCurrentStep('results'); // Both CV and personality done
       }
       
+      // Load combined analysis
+      const savedCombinedAnalysis = localStorage.getItem(STORAGE_KEYS.COMBINED_ANALYSIS);
       if (savedCombinedAnalysis) {
         const parsedCombined = JSON.parse(savedCombinedAnalysis);
         setCombinedAnalysis(parsedCombined);
@@ -195,6 +213,17 @@ export default function ProfilPage() {
     }
   }, []);
 
+  // Save extraction to localStorage when it changes
+  useEffect(() => {
+    if (extraction) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.CV_EXTRACTION, JSON.stringify(extraction));
+      } catch (error) {
+        console.error('Error saving CV extraction:', error);
+      }
+    }
+  }, [extraction]);
+
   // Save step1Data (CV analysis) to localStorage when it changes
   useEffect(() => {
     if (step1Data) {
@@ -205,6 +234,17 @@ export default function ProfilPage() {
       }
     }
   }, [step1Data]);
+
+  // Save questionnaire scores to localStorage when they change (for partial progress)
+  useEffect(() => {
+    if (Object.keys(scores).length > 0) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.QUESTIONNAIRE_SCORES, JSON.stringify(scores));
+      } catch (error) {
+        console.error('Error saving questionnaire scores:', error);
+      }
+    }
+  }, [scores]);
 
   // Save personality profile to localStorage when it changes
   useEffect(() => {
@@ -691,6 +731,8 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
     localStorage.removeItem(STORAGE_KEYS.CV_ANALYSIS);
     localStorage.removeItem(STORAGE_KEYS.PERSONALITY_DATA);
     localStorage.removeItem(STORAGE_KEYS.COMBINED_ANALYSIS);
+    localStorage.removeItem(STORAGE_KEYS.CV_EXTRACTION);
+    localStorage.removeItem(STORAGE_KEYS.QUESTIONNAIRE_SCORES);
     
     // Reset all state
     setFile(null);

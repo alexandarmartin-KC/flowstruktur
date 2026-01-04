@@ -50,7 +50,7 @@ interface CombinedAnalysisResponse {
   needs_clarifications: boolean;
   clarifications: ClarificationQuestion[];
   analysis_text: string;
-  ui_hint: 'clarifications_only' | 'analysis_only';
+  ui_state: 'clarifications_only' | 'analysis_only';
 }
 
 interface CombinedAnalysis {
@@ -242,10 +242,10 @@ Denne profil er baseret på selvrapporterede præferencer og skal ses som et sup
         clarifications: [],
         analysis_text: `CV'et dokumenterer arbejde inden for webudvikling med fokus på React, TypeScript og Next.js. De angivne roller omfatter både startups og etablerede virksomheder.
 
-Arbejdspræferencerne er angivet med moderate til høje niveauer for struktur og rammer samt behov for feedback. Niveauet for selvstændighed er moderat, og niveauet for tempo-tolerance er ligeledes moderat.
+Arbejdspræferencerne er angivet med moderate til høje niveauer for struktur og rammer samt behov for feedback. Niveauet for selvstændighed er moderat, og niveauet for tempo er ligeledes moderat.
 
 Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveauer er ikke entydig. Materialet giver ikke grundlag for at afgøre, hvordan præferencerne har påvirket de konkrete rollevalg, eller om arbejdsformerne har påvirket præferencerne over tid.`,
-        ui_hint: 'analysis_only'
+        ui_state: 'analysis_only'
       }
     });
     
@@ -1137,13 +1137,13 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
                     <p className="text-sm text-muted-foreground mt-2">Sammenstilling af CV og arbejdspræferencer</p>
                   </div>
                   <Badge className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                    {combinedAnalysis.response.ui_hint === 'analysis_only' ? '✓ Komplet' : '📋 Afventer svar'}
+                    {combinedAnalysis.response.ui_state === 'analysis_only' ? '✓ Komplet' : '📋 Afventer svar'}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent className="pt-8 space-y-6">
-                {/* Show analysis text if ui_hint is analysis_only */}
-                {combinedAnalysis.response.ui_hint === 'analysis_only' && combinedAnalysis.response.analysis_text && (
+                {/* Show analysis text if ui_state is analysis_only */}
+                {combinedAnalysis.response.ui_state === 'analysis_only' && combinedAnalysis.response.analysis_text && (
                   <div className="rounded-lg p-5 bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700">
                     <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                       {combinedAnalysis.response.analysis_text}
@@ -1151,8 +1151,8 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
                   </div>
                 )}
 
-                {/* Show clarifying questions if ui_hint is clarifications_only */}
-                {combinedAnalysis.response.ui_hint === 'clarifications_only' && 
+                {/* Show clarifying questions if ui_state is clarifications_only */}
+                {combinedAnalysis.response.ui_state === 'clarifications_only' && 
                  combinedAnalysis.response.clarifications.length > 0 && (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 mb-2">
@@ -1218,20 +1218,6 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
                         </>
                       )}
                     </Button>
-                  </div>
-                )}
-
-                {/* Show answers summary if clarifying answers were given */}
-                {combinedAnalysis.clarifyingAnswers && Object.keys(combinedAnalysis.clarifyingAnswers).length > 0 && (
-                  <div className="space-y-3 pt-4 border-t border-indigo-200 dark:border-indigo-800">
-                    <h4 className="font-medium text-sm text-muted-foreground">Afklarende svar:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {Object.entries(combinedAnalysis.clarifyingAnswers).map(([key, value]) => 
-                        value ? (
-                          <Badge key={key} variant="outline">{value}</Badge>
-                        ) : null
-                      )}
-                    </div>
                   </div>
                 )}
               </CardContent>

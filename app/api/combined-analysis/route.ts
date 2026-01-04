@@ -31,7 +31,7 @@ interface AnalysisResponse {
   needs_clarifications: boolean;
   clarifications: ClarificationQuestion[];
   analysis_text: string;
-  ui_hint: 'clarifications_only' | 'analysis_only';
+  ui_state: 'clarifications_only' | 'analysis_only';
 }
 
 export async function POST(request: NextRequest) {
@@ -58,9 +58,7 @@ export async function POST(request: NextRequest) {
 
     // Build step1 JSON-like structure
     const step1Data = {
-      cv_summary: cvAnalysis,
-      roles: [], // Extracted from CV if available
-      work_forms: [] // Extracted from CV if available
+      cv_summary: cvAnalysis
     };
 
     // Build step2 JSON-like structure for the prompt
@@ -122,14 +120,40 @@ ${clarifyingAnswersJson}`;
       
       parsedResponse = JSON.parse(cleanedContent);
       
-      // Ensure ui_hint is set correctly based on logic
-      if (!parsedResponse.ui_hint) {
+      // Ensure ui_state is set correctly based on logic
+      if (!parsedResponse.ui_state) {
         if (parsedResponse.needs_clarifications && parsedResponse.clarifications.length > 0 && !parsedResponse.analysis_text) {
-          parsedResponse.ui_hint = 'clarifications_only';
+          parsedResponse.ui_state = 'clarifications_only';
         } else {
-          parsedResponse.ui_hint = 'analysis_only';
+          parsedResponse.ui_state = 'analysis_only';
         }
       }
+      
+      // Handle legacy ui_hint field if present
+      if ('ui_hint' in parsedResponse && !parsedResponse.ui_state) {
+        parsedResponse.ui_state = (parsedResponse as { ui_hint?: string }).ui_hint as 'clarifications_only' | 'analysis_only';
+      }
+      
+    } catch (parseErr) {
+      console.error('Failed to parse AI response as JSON:', textContent);
+      // Fallback: return the text as analysis
+      return NextResponse.json({
+        needs_clarifications: false,
+        clarifications: [],
+        analysis_text: textContent.trim(),
+        ui_state: 'analysis_only'
+      });
+    }
+
+    return NextResponse.json(parsedResponse);
+  } catch (err) {
+    console.error('Error in combined-analysis:', err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'Kunne ikke generere samlet analyse' },
+      { status: 500 }
+    );
+  }
+}
     } catch (parseErr) {
       console.error('Failed to parse AI response as JSON:', textContent);
       // Fallback: return the text as analysis

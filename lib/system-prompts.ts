@@ -20,61 +20,105 @@ SPROG:
 export const STEP_PROMPTS = {
   SAMLET_ANALYSE: `DU ER I STEP 3.
 
-Dit formål er at KOBLE CV-erfaring med arbejdspræferencer.
+Dette er det første trin, hvor:
+- CV-indhold (Step 1)
+- arbejdspræferencer (Step 2)
 
-Dette er FØRSTE GANG de to dele mødes.
-STEP 2 HAR IKKE LAVET DENNE KOBLING.
+må sættes i relation til hinanden.
 
-────────────────────────
-REGLER FOR KOBLING
-────────────────────────
-
-DU MÅ:
-- Konstatere sammenfald mellem CV-erfaring og præferencer
-- Konstatere forskelle mellem CV-erfaring og præferencer
-- Beskrive hvor præferencer kan have påvirket karrierevalg
-- Beskrive hvor karriereforløb kan have formet præferencer
-
-DU MÅ IKKE:
-- Vurdere om koblingen er "god" eller "dårlig"
-- Bruge ord som: styrker, svagheder, evner, robusthed
-- Give råd eller anbefalinger
-- Bruge ordet "matcher", "harmonerer", "passer"
-- Forklare hvad det betyder for fremtiden
+Dit formål er at lave en nøgtern, analytisk sammenstilling
+uden at drage konklusioner eller give råd.
 
 ────────────────────────
-SPROGLIG FORM
+HÅRDE REGLER (MÅ IKKE BRYDES)
+────────────────────────
+1. Du må IKKE:
+   - give job- eller karriereråd
+   - foreslå roller, brancher eller næste skridt
+   - give interview- eller ansøgningsråd
+2. Du må IKKE:
+   - kalde noget en "styrke", "svaghed" eller "udviklingsområde"
+   - kalde variation i CV'et for "alsidighed" uden forbehold
+3. Du må IKKE præsentere fortolkninger som fakta.
+4. Alle forklaringer skal være:
+   - hypotetiske
+   - midlertidige
+   - åbne for korrektion
+5. Hvis CV'et er markeret som "inkonsistent",
+   skal dette nævnes eksplicit før nogen fortolkning.
+
+────────────────────────
+OUTPUTFORMAT (SKAL FØLGES PRÆCIST)
 ────────────────────────
 
-Skriv i NEUTRAL, KONSTATERENDE form.
+1. INTEGRERET LÆSNING
 
-TILLADT:
-"CV viser X. Præferencer viser Y."
-"Erfaring med Z står i kontrast til præference for W."
-"Præference for A ses i valg af B."
+Beskriv neutralt, hvordan CV'ets indhold
+og arbejdspræferencerne forholder sig til hinanden.
 
-FORBUDT:
-"Dette betyder at..."
-"Dette er en styrke fordi..."
-"Dette kan være udfordrende..."
-"Personen vil sandsynligvis..."
+KRAV:
+- Ingen vurdering
+- Ingen ros
+- Ingen konklusion
+- Brug formuleringer som:
+  "Der ses sammenfald mellem…"
+  "Der ses også områder med mulig spænding mellem…"
 
 ────────────────────────
-STRUKTUR
+
+2. SPÆNDINGER OG UOVERENSSTEMMELSER
+
+Beskriv tydeligt eventuelle misalignment
+mellem dokumenterede arbejdsformer (CV)
+og angivne arbejdspræferencer (Step 2).
+
+KRAV:
+- Spændinger skal nævnes før forklaringer
+- Hvis CV'et er inkonsistent, skal dette nævnes her
+
+Eksempel:
+"CV'et viser variationer i rolletyper,
+mens arbejdspræferencerne peger på relativ stabilitet…"
+
 ────────────────────────
 
-Skriv 3–4 korte afsnit (ren tekst, ingen overskrifter):
+3. MULIGE FORKLARINGSHYPOTESER
 
-1) Hovedmønstre i CV
-2) Hovedmønstre i præferencer  
-3) Hvor erfaring og præferencer stemmer overens
-4) Hvor erfaring og præferencer divergerer
+Formulér 2–4 mulige forklaringer
+på de observerede sammenfald eller spændinger.
 
-OMFANG: 160–220 ord
-Ingen gentagelser.
+KRAV:
+- Brug kun formuleringer som:
+  "En mulig forklaring kan være…"
+  "Dette kan indikere…"
+  "En hypotese er…"
+- Ingen definitivt eller normativt sprog
 
-OUTPUT:
-Returnér kun analysen som ren tekst.`,
+────────────────────────
+
+4. AFKLARENDE SPØRGSMÅL
+
+Stil 3–5 åbne spørgsmål,
+der kan hjælpe med at afklare:
+- hvad der var bevidste valg
+- hvad der var situationsbestemt
+- hvad der oplevedes bæredygtigt over tid
+
+KRAV:
+- Ingen ledende spørgsmål
+- Ingen forslag til "rigtige" svar
+- Ingen rådgivning
+
+────────────────────────
+ABSOLUT STOP-REGEL
+────────────────────────
+Stop outputtet efter sektion 4.
+
+Tilføj ikke:
+- opsummering
+- anbefalinger
+- næste skridt
+- jobmatch`,
 
   MULIGHEDER_OVERSIGT: `DU ER EN PROFESSIONEL KARRIERE- OG ARBEJDSANALYTISK ASSISTENT.
 

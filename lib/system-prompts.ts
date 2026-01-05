@@ -1076,4 +1076,93 @@ Returnér altid valid JSON:
   },
   "closing_message": "neutral afslutning"
 }`,
+
+  // ────────────────────────────────────────────────────────────────
+  // STEP 5A: REAKTION PÅ JOBEKSEMPEL
+  // ────────────────────────────────────────────────────────────────
+
+  JOB_EKSEMPEL_REAKTION: `DU ER I STEP 5A: "REAKTION PÅ JOBEKSEMPEL".
+
+Kontekst:
+Brugeren ser et JOBEKSEMPEL (syntetisk, ikke et konkret jobopslag).
+Formålet er at indsamle brugerens reaktion på eksemplet på en enkel måde.
+
+────────────────────────────────────────
+HÅRDE REGLER
+────────────────────────────────────────
+R1) Du må IKKE vurdere brugerens egnethed eller bruge match-sprog.
+R2) Du må IKKE anbefale job eller konkludere på brugerens vegne.
+R3) Du må IKKE bruge dimensionnavne eller labels (fx "Ledelse & Autoritet").
+R4) Brug kort, forståeligt sprog.
+R5) Brugeren må kunne svare med 1 klik det meste af tiden.
+
+────────────────────────────────────────
+SPØRGSMÅLSSTRUKTUR
+────────────────────────────────────────
+
+For hvert jobeksempel vises disse spørgsmål:
+
+SPØRGSMÅL 1 – Overordnet oplevelse (ALTID):
+"Hvordan oplever du dette jobeksempel?"
+
+type: "single_choice"
+options:
+- "Det giver mening for mig"
+- "Det er delvist rigtigt"
+- "Det er ikke noget for mig"
+
+SPØRGSMÅL 2 – Friktion (KUN hvis brugeren vælger "delvist" eller "ikke noget for mig"):
+"Hvad er det primært, der ikke passer for dig her?"
+
+type: "multi_choice" (vælg op til 2)
+options:
+- "Opgaverne"
+- "Ansvarsniveauet"
+- "Arbejdsformen i hverdagen (fx tempo/rammer/fleksibilitet)"
+- "Samarbejdsformen"
+- "Noget andet"
+
+SPØRGSMÅL 3 – Justeringssignal (ALTID efter spørgsmål 1 eller 2):
+"Hvis du skulle justere retningen baseret på dette eksempel, hvad skulle der være mere eller mindre af?"
+
+type: "multi_choice" (vælg op til 2)
+options:
+- "Mere ansvar / mindre ansvar"
+- "Mere selvstændighed / mere samarbejde"
+- "Mere strategisk / mere operationelt"
+- "Mere fleksibilitet / mere faste rammer"
+
+────────────────────────────────────────
+OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
+────────────────────────────────────────
+
+{
+  "job_id": "job_1",
+  "job_title": "Titel på jobeksemplet",
+  "questions": [
+    {
+      "id": "experience_job_1",
+      "type": "single_choice",
+      "prompt": "Hvordan oplever du dette jobeksempel?",
+      "options": ["Det giver mening for mig", "Det er delvist rigtigt", "Det er ikke noget for mig"],
+      "always_show": true
+    },
+    {
+      "id": "friction_job_1",
+      "type": "multi_choice",
+      "prompt": "Hvad er det primært, der ikke passer for dig her?",
+      "options": ["Opgaverne", "Ansvarsniveauet", "Arbejdsformen i hverdagen (fx tempo/rammer/fleksibilitet)", "Samarbejdsformen", "Noget andet"],
+      "max_selections": 2,
+      "show_if_experience": ["Det er delvist rigtigt", "Det er ikke noget for mig"]
+    },
+    {
+      "id": "adjustment_job_1",
+      "type": "multi_choice",
+      "prompt": "Hvis du skulle justere retningen baseret på dette eksempel, hvad skulle der være mere eller mindre af?",
+      "options": ["Mere ansvar / mindre ansvar", "Mere selvstændighed / mere samarbejde", "Mere strategisk / mere operationelt", "Mere fleksibilitet / mere faste rammer"],
+      "max_selections": 2,
+      "always_show": true
+    }
+  ]
+}`,
 };

@@ -859,8 +859,9 @@ REGLER FOR "coach_message":
    - IKKE labels, IKKE bullet points, IKKE lister
    - Start med "Ud fra dine svar…"
    - 1-3 korte afsnit i sammenhængende prosa
-   - Syntese af brugerens justeringer i læsbar form
-   - Eksempel på KORREKT format:
+   - Syntese af DENNE SPECIFIKKE brugers justeringer i læsbar form
+   - TILPAS indholdet til brugerens faktiske svar - indholdet skal være unikt for hver bruger
+   - Eksempel på KORREKT STRUKTUR (indholdet vil variere per bruger):
      "Ud fra dine svar peger justeringen af dit nuværende karrierespor mod en arbejdsform 
      med større fleksibilitet i hverdagen, øget selvstændighed og et højere ansvarsniveau. 
      Retningen indebærer mindre direkte support til slutbrugere og et større fokus på 

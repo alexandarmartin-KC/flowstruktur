@@ -1039,43 +1039,53 @@ Du modtager:
 ────────────────────────────────────────
 OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
 ────────────────────────────────────────
-Returnér altid valid JSON:
+Returnér altid valid JSON med DENNE struktur (samme som karrierecoach):
 
 {
-  "introduction": "introduktionstekst",
-  "job_examples": [
+  "mode": "job_examples",
+  "coach_message": "Her er eksempler på jobroller, der ligger inden for den retning, du har valgt at undersøge. Eksemplerne er ikke konkrete stillinger, men viser, hvordan den type arbejde ofte ser ud i praksis.",
+  "questions": [
     {
-      "id": "job_1",
-      "title": "Generisk jobtitel",
-      "description": "3-5 linjers beskrivelse af rollen"
-    },
-    {
-      "id": "job_2",
-      "title": "Generisk jobtitel",
-      "description": "3-5 linjers beskrivelse af rollen"
-    },
-    {
-      "id": "job_3",
-      "title": "Generisk jobtitel",
-      "description": "3-5 linjers beskrivelse af rollen"
-    }
-  ],
-  "reflection_questions_per_job": [
-    {
-      "id": "q1_job_1",
+      "id": "experience_job_1",
       "type": "single_choice",
-      "prompt": "Hvordan oplever du dette jobeksempel?",
+      "prompt": "Jobeksempel 1: [JOBTITEL]\\n\\n[3-5 linjers beskrivelse af rollen]\\n\\nHvordan oplever du dette jobeksempel?",
       "options": ["Det giver mening for mig", "Det er delvist rigtigt", "Det er ikke noget for mig"]
+    },
+    {
+      "id": "experience_job_2",
+      "type": "single_choice",
+      "prompt": "Jobeksempel 2: [JOBTITEL]\\n\\n[3-5 linjers beskrivelse af rollen]\\n\\nHvordan oplever du dette jobeksempel?",
+      "options": ["Det giver mening for mig", "Det er delvist rigtigt", "Det er ikke noget for mig"]
+    },
+    {
+      "id": "experience_job_3",
+      "type": "single_choice",
+      "prompt": "Jobeksempel 3: [JOBTITEL]\\n\\n[3-5 linjers beskrivelse af rollen]\\n\\nHvordan oplever du dette jobeksempel?",
+      "options": ["Det giver mening for mig", "Det er delvist rigtigt", "Det er ikke noget for mig"]
+    },
+    {
+      "id": "clarity_check",
+      "type": "single_choice",
+      "prompt": "Føler du, at du nu har et klarere billede af, hvilken type rolle du vil gå videre med?",
+      "options": ["Ja, det er blevet tydeligere", "Delvist", "Nej, jeg er stadig i tvivl"]
     }
   ],
-  "final_question": {
-    "id": "clarity_check",
-    "type": "single_choice",
-    "prompt": "Føler du, at du nu har et klarere billede af, hvilken type rolle du vil gå videre med?",
-    "options": ["Ja, det er blevet tydeligere", "Delvist", "Nej, jeg er stadig i tvivl"]
-  },
-  "closing_message": "neutral afslutning"
-}`,
+  "direction_state": {
+    "choice": "A",
+    "priorities_top3": [],
+    "non_negotiables": [],
+    "negotiables": [],
+    "cv_weighting_focus": [],
+    "risk_notes": [],
+    "next_step_ready_for_jobs": true
+  }
+}
+
+VIGTIGT:
+- Erstat [JOBTITEL] med en generisk jobtitel (fx "Projektansvarlig rolle i driftsnære miljøer")
+- Erstat [3-5 linjers beskrivelse] med en konkret beskrivelse af rollen baseret på brugerens retning
+- Bevar "choice" værdien fra brugerens valg (A, B eller C)
+- Brug \\n for linjeskift i prompt-teksten`,
 
   // ────────────────────────────────────────────────────────────────
   // STEP 5A: REAKTION PÅ JOBEKSEMPEL

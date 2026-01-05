@@ -627,6 +627,29 @@ function MulighederPageContent() {
                 </Button>
               </div>
             )}
+
+            {/* Continue button when no questions */}
+            {(!coachResponse.questions || coachResponse.questions.length === 0) && (
+              <div className="border-t pt-6">
+                <Button 
+                  onClick={handleSubmitAnswers}
+                  disabled={isLoading}
+                  className="w-full"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Behandler...
+                    </>
+                  ) : (
+                    <>
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      Fortsæt samtalen
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

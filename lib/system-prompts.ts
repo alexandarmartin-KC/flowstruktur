@@ -828,7 +828,7 @@ Returnér altid valid JSON:
 
 {
   "mode": "ask_to_choose" | "deepening",
-  "coach_message": "kort besked på dansk – ingen vurderinger, kun introduktion til spørgsmål",
+  "coach_message": "se detaljerede regler nedenfor",
   "questions": [
      {
        "id": "string",
@@ -848,7 +848,30 @@ Returnér altid valid JSON:
   }
 }
 
-REGLER:
+REGLER FOR "coach_message":
+────────────────────────────────────────
+1) NÅR DER ER SPØRGSMÅL (questions.length > 0):
+   - coach_message skal være en kort introduktion til spørgsmålene
+   - Ingen vurderinger, kun neutral kontekst
+
+2) NÅR DER IKKE ER SPØRGSMÅL (questions.length = 0) OG next_step_ready_for_jobs = true:
+   - coach_message skal være et FLYDENDE RETNINGSRESUMÉ
+   - IKKE labels, IKKE bullet points, IKKE lister
+   - Start med "Ud fra dine svar…"
+   - 1-3 korte afsnit i sammenhængende prosa
+   - Syntese af brugerens justeringer i læsbar form
+   - Eksempel på KORREKT format:
+     "Ud fra dine svar peger justeringen af dit nuværende karrierespor mod en arbejdsform 
+     med større fleksibilitet i hverdagen, øget selvstændighed og et højere ansvarsniveau. 
+     Retningen indebærer mindre direkte support til slutbrugere og et større fokus på 
+     overblik og koordinering frem for løbende drift."
+   - Eksempel på FORKERT format (GØR IKKE DETTE):
+     "Valgt retning: Beslægtet retning
+     Top prioriteringer:
+     - Fleksibilitet i arbejdstid
+     - Mulighed for selvstændigt arbejde"
+
+ANDRE REGLER:
 - Hvis user_choice er tom: mode = "ask_to_choose", stil kun routing-spørgsmålet.
 - Hvis user_choice er A/B/C: mode = "deepening", stil de relevante opfølgende spørgsmål.
 - next_step_ready_for_jobs = true KUN når alle spørgsmål i det valgte spor er besvaret.

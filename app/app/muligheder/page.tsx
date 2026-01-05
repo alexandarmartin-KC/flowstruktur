@@ -273,6 +273,11 @@ function MulighederPageContent() {
     callCareerCoach(selectedChoice, allAnswers, jobAdText);
   };
 
+  // Continue to job examples (no new answers)
+  const handleContinueToJobExamples = () => {
+    callCareerCoach(selectedChoice, conversationHistory, jobAdText);
+  };
+
   // Handle job ad submission for option C
   const handleJobAdSubmit = () => {
     if (!jobAdText.trim()) return;
@@ -755,7 +760,7 @@ function MulighederPageContent() {
             {/* Actions */}
             <div className="flex flex-wrap gap-3 pt-4 border-t">
               {directionState.next_step_ready_for_jobs ? (
-                <Button onClick={handleSubmitAnswers} disabled={isLoading}>
+                <Button onClick={handleContinueToJobExamples} disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

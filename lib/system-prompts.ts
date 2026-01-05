@@ -1076,3 +1076,4 @@ Returnér altid valid JSON:
   },
   "closing_message": "neutral afslutning"
 }`,
+};

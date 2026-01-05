@@ -277,14 +277,17 @@ function validateAndNormalizeResponse(
     response.direction_state.next_step_ready_for_jobs = false;
   }
   
-  // MODE 2 rules - only ready for jobs if we have enough info
+  // MODE 2 rules - ready for jobs if:
+  // 1. AI explicitly set it to true, OR
+  // 2. We have a choice and no more questions to ask
   if (response.mode === 'deepening') {
     const hasChoice = response.direction_state.choice !== 'UNSET';
-    const hasPriorities = response.direction_state.priorities_top3.length >= 2;
-    const hasNonNegotiables = response.direction_state.non_negotiables.length >= 1 ||
-      response.direction_state.negotiables.some(n => n.toLowerCase().includes('ingen'));
+    const noMoreQuestions = !response.questions || response.questions.length === 0;
     
-    response.direction_state.next_step_ready_for_jobs = hasChoice && hasPriorities && hasNonNegotiables;
+    // Trust the AI's decision if it set ready to true, otherwise check conditions
+    if (!response.direction_state.next_step_ready_for_jobs) {
+      response.direction_state.next_step_ready_for_jobs = hasChoice && noMoreQuestions;
+    }
   }
   
   // Ensure questions array exists

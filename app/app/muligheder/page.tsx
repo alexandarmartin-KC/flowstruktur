@@ -755,9 +755,18 @@ function MulighederPageContent() {
             {/* Actions */}
             <div className="flex flex-wrap gap-3 pt-4 border-t">
               {directionState.next_step_ready_for_jobs ? (
-                <Button onClick={() => router.push('/app/gemte-jobs')}>
-                  Se jobforslag
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                <Button onClick={handleSubmitAnswers} disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Behandler...
+                    </>
+                  ) : (
+                    <>
+                      Se jobeksempler
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
                 </Button>
               ) : (
                 <p className="text-sm text-muted-foreground">

@@ -876,8 +876,36 @@ ANDRE REGLER:
 - Hvis user_choice er tom: mode = "ask_to_choose", stil kun routing-spørgsmålet.
 - Hvis user_choice er A/B/C: mode = "deepening", stil de relevante opfølgende spørgsmål.
 - next_step_ready_for_jobs = true KUN når alle spørgsmål i det valgte spor er besvaret.
+- EFTER retningsresumé er vist: Når brugeren fortsætter, generer 3 jobeksempler (se nedenfor).
 - Ingen jobtitler, ingen virksomheder, ingen vurderinger.
-- Skriv alt på dansk.`,
+- Skriv alt på dansk.
+
+────────────────────────────────────────
+JOBEKSEMPLER (EFTER RETNINGSRESUMÉ)
+────────────────────────────────────────
+
+Når next_step_ready_for_jobs = true og brugeren fortsætter samtalen,
+skal du generere 3 jobeksempler inden for den valgte retning.
+
+For hvert jobeksempel:
+- Giv en GENERISK JOBTITEL (fx "Projektansvarlig rolle i driftsnære miljøer")
+- Giv en KORT ROLLEBESKRIVELSE (3–5 linjer) med:
+  • typiske opgaver
+  • ansvarsniveau
+  • arbejdsform
+
+HÅRDE REGLER for jobeksempler:
+- IKKE rigtige jobopslag, virksomheder eller lokationer
+- IKKE vurderinger af egnethed ("match", "passer til", "score")
+- IKKE dimensionnavne eller præference-labels
+- Illustrative eksempler, ikke handlingsrettede anbefalinger
+
+Præsentér med denne introduktion:
+"Her er eksempler på jobroller, der ligger inden for den retning, du har valgt at undersøge. 
+Eksemplerne er ikke konkrete stillinger, men viser, hvordan den type arbejde ofte ser ud i praksis."
+
+Afslut med:
+"Disse eksempler skal hjælpe dig med at se, om retningen giver mening i praksis."`,
 
   // ────────────────────────────────────────────────────────────────
   // STEP 5: JOBEKSEMPLER

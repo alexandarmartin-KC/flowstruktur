@@ -49,6 +49,7 @@ interface CareerCoachRequest {
   user_choice?: 'A' | 'B' | 'C' | '';
   job_ad_text_or_url?: string;
   user_answers?: UserAnswer[];
+  request_job_examples?: boolean;
 }
 
 // Output interfaces
@@ -69,11 +70,18 @@ interface DirectionState {
   next_step_ready_for_jobs: boolean;
 }
 
+interface JobExample {
+  id: string;
+  title: string;
+  description: string;
+}
+
 interface CareerCoachResponse {
-  mode: 'ask_to_choose' | 'deepening';
+  mode: 'ask_to_choose' | 'deepening' | 'job_examples';
   coach_message: string;
   questions: CoachQuestion[];
   direction_state: DirectionState;
+  job_examples?: JobExample[];
 }
 
 export async function POST(request: NextRequest) {
@@ -86,7 +94,8 @@ export async function POST(request: NextRequest) {
       step3_json, 
       user_choice, 
       job_ad_text_or_url,
-      user_answers 
+      user_answers,
+      request_job_examples
     } = body;
 
     // Validate required inputs
@@ -129,12 +138,16 @@ user_choice: ${user_choice || '(tom)'}`;
       userMessage += `\n\nuser_answers:\n${JSON.stringify(user_answers, null, 2)}`;
     }
 
+    if (request_job_examples) {
+      userMessage += `\n\nREQUEST: Brugeren har bekræftet retningen og ønsker nu at se JOBEKSEMPLER. Generér 3 jobeksempler.`;
+    }
+
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {
           role: 'system',
-          content: STEP_PROMPTS.KARRIERE_COACH,
+          content: request_job_examples ? STEP_PROMPTS.JOB_EKSEMPLER : STEP_PROMPTS.KARRIERE_COACH,
         },
         {
           role: 'user',

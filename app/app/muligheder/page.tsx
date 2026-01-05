@@ -40,12 +40,20 @@ interface DirectionState {
   next_step_ready_for_jobs: boolean;
 }
 
+// Job example structure
+interface JobExample {
+  id: string;
+  title: string;
+  description: string;
+}
+
 // API response
 interface CareerCoachResponse {
-  mode: 'ask_to_choose' | 'deepening';
+  mode: 'ask_to_choose' | 'deepening' | 'job_examples';
   coach_message: string;
   questions: CoachQuestion[];
   direction_state: DirectionState;
+  job_examples?: JobExample[];
 }
 
 // User answer structure
@@ -76,6 +84,7 @@ function MulighederPageContent() {
   const [hasProfileData, setHasProfileData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [conversationHistory, setConversationHistory] = useState<UserAnswer[]>([]);
+  const [showJobExamples, setShowJobExamples] = useState(false);
 
   // Load profile data on mount
   useEffect(() => {
@@ -188,7 +197,8 @@ function MulighederPageContent() {
   const callCareerCoach = useCallback(async (
     choice: DirectionChoice,
     answers: UserAnswer[] = [],
-    jobAd?: string
+    jobAd?: string,
+    requestJobExamples: boolean = false
   ) => {
     setIsLoading(true);
     setError(null);
@@ -209,6 +219,7 @@ function MulighederPageContent() {
           user_choice: choice || '',
           job_ad_text_or_url: choice === 'C' ? jobAd : undefined,
           user_answers: answers.length > 0 ? answers : undefined,
+          request_job_examples: requestJobExamples,
         }),
       });
 
@@ -275,7 +286,8 @@ function MulighederPageContent() {
 
   // Continue to job examples (no new answers)
   const handleContinueToJobExamples = () => {
-    callCareerCoach(selectedChoice, conversationHistory, jobAdText);
+    setShowJobExamples(true);
+    callCareerCoach(selectedChoice, conversationHistory, jobAdText, true);
   };
 
   // Handle job ad submission for option C
@@ -589,13 +601,18 @@ function MulighederPageContent() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">Karrierecoach</CardTitle>
+              <CardTitle className="text-lg">
+                {coachResponse.mode === 'job_examples' ? 'Jobeksempler' : 'Karrierecoach'}
+              </CardTitle>
             </div>
             {coachResponse.mode === 'ask_to_choose' && (
               <Badge variant="outline">Afklaring af retning</Badge>
             )}
             {coachResponse.mode === 'deepening' && (
               <Badge variant="outline">Uddybning af valgt retning</Badge>
+            )}
+            {coachResponse.mode === 'job_examples' && (
+              <Badge variant="outline">Illustrative eksempler</Badge>
             )}
           </CardHeader>
           <CardContent className="space-y-6">
@@ -605,6 +622,26 @@ function MulighederPageContent() {
                 <p className="text-base leading-relaxed whitespace-pre-wrap">
                   {coachResponse.coach_message}
                 </p>
+              </div>
+            )}
+
+            {/* Job Examples */}
+            {coachResponse.job_examples && coachResponse.job_examples.length > 0 && (
+              <div className="space-y-4 border-t pt-6">
+                {coachResponse.job_examples.map((job, index) => (
+                  <Card key={job.id} className="bg-muted/30">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base font-medium">
+                        {index + 1}. {job.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                        {job.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
 
@@ -633,8 +670,9 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* Continue button when no questions */}
-            {(!coachResponse.questions || coachResponse.questions.length === 0) && (
+            {/* Continue button when no questions and not showing job examples */}
+            {(!coachResponse.questions || coachResponse.questions.length === 0) && 
+             (!coachResponse.job_examples || coachResponse.job_examples.length === 0) && (
               <div className="border-t pt-6">
                 <Button 
                   onClick={handleSubmitAnswers}

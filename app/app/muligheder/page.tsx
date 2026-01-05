@@ -669,76 +669,87 @@ function MulighederPageContent() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Choice */}
-            <div>
-              <Label className="text-sm text-muted-foreground">Valgt retning</Label>
-              <p className="font-medium">
-                {directionState.choice === 'A' && 'Beslægtet retning (byg videre på erfaring)'}
-                {directionState.choice === 'B' && 'Ny retning (skift/udvid arbejdsform)'}
-                {directionState.choice === 'C' && 'Konkret jobannonce'}
-              </p>
-            </div>
-
-            {/* Priorities */}
-            {directionState.priorities_top3.length > 0 && (
-              <div>
-                <Label className="text-sm text-muted-foreground">Top prioriteringer</Label>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {directionState.priorities_top3.map((p, i) => (
-                    <Badge key={i} variant="secondary">{p}</Badge>
-                  ))}
+            {/* Show flowing narrative from coach_message if ready for jobs */}
+            {directionState.next_step_ready_for_jobs && coachResponse?.coach_message ? (
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <p className="text-base leading-relaxed whitespace-pre-wrap">
+                  {coachResponse.coach_message}
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* Choice */}
+                <div>
+                  <Label className="text-sm text-muted-foreground">Valgt retning</Label>
+                  <p className="font-medium">
+                    {directionState.choice === 'A' && 'Beslægtet retning (byg videre på erfaring)'}
+                    {directionState.choice === 'B' && 'Ny retning (skift/udvid arbejdsform)'}
+                    {directionState.choice === 'C' && 'Konkret jobannonce'}
+                  </p>
                 </div>
-              </div>
-            )}
 
-            {/* Non-negotiables */}
-            {directionState.non_negotiables.length > 0 && (
-              <div>
-                <Label className="text-sm text-muted-foreground">Ufravigelige krav</Label>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {directionState.non_negotiables.map((n, i) => (
-                    <Badge key={i} variant="outline" className="border-red-300 text-red-700 dark:border-red-800 dark:text-red-300">
-                      {n}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
+                {/* Priorities */}
+                {directionState.priorities_top3.length > 0 && (
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Top prioriteringer</Label>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {directionState.priorities_top3.map((p, i) => (
+                        <Badge key={i} variant="secondary">{p}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            {/* Negotiables */}
-            {directionState.negotiables.length > 0 && (
-              <div>
-                <Label className="text-sm text-muted-foreground">Fleksible områder</Label>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {directionState.negotiables.map((n, i) => (
-                    <Badge key={i} variant="outline">{n}</Badge>
-                  ))}
-                </div>
-              </div>
-            )}
+                {/* Non-negotiables */}
+                {directionState.non_negotiables.length > 0 && (
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Ufravigelige krav</Label>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {directionState.non_negotiables.map((n, i) => (
+                        <Badge key={i} variant="outline" className="border-red-300 text-red-700 dark:border-red-800 dark:text-red-300">
+                          {n}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            {/* CV Focus */}
-            {directionState.cv_weighting_focus.length > 0 && (
-              <div>
-                <Label className="text-sm text-muted-foreground">Fremhæv fra CV</Label>
-                <ul className="list-disc list-inside text-sm mt-1 space-y-1">
-                  {directionState.cv_weighting_focus.map((c, i) => (
-                    <li key={i}>{c}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                {/* Negotiables */}
+                {directionState.negotiables.length > 0 && (
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Fleksible områder</Label>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {directionState.negotiables.map((n, i) => (
+                        <Badge key={i} variant="outline">{n}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            {/* Risk notes */}
-            {directionState.risk_notes.length > 0 && (
-              <div>
-                <Label className="text-sm text-muted-foreground">At teste / afprøve</Label>
-                <ul className="list-disc list-inside text-sm mt-1 space-y-1">
-                  {directionState.risk_notes.map((r, i) => (
-                    <li key={i}>{r}</li>
-                  ))}
-                </ul>
-              </div>
+                {/* CV Focus */}
+                {directionState.cv_weighting_focus.length > 0 && (
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Fremhæv fra CV</Label>
+                    <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                      {directionState.cv_weighting_focus.map((c, i) => (
+                        <li key={i}>{c}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Risk notes */}
+                {directionState.risk_notes.length > 0 && (
+                  <div>
+                    <Label className="text-sm text-muted-foreground">At teste / afprøve</Label>
+                    <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                      {directionState.risk_notes.map((r, i) => (
+                        <li key={i}>{r}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Actions */}

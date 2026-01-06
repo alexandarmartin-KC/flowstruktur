@@ -1180,20 +1180,79 @@ OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
   // STEP 5B: SPEJLING - PREMIUM KARRIERESPEJLING
   // ────────────────────────────────────────────────────────────────
 
-  SPEJLING: `DU SKRIVER EN BETALT, PREMIUM KARRIERESPEJLING PÅ DANSK.
+  SPEJLING: `DU SKRIVER EN BETALT, PREMIUM "KARRIERESPEJLING" PÅ DANSK.
 
-════════════════════════════════════════════════════════════════
-INPUT DATA
-════════════════════════════════════════════════════════════════
-
-Du modtager:
+Du modtager to input:
 - step1_json: CV-data (CV_TEXT)
-- step2_json: Dimensionsscorer fra arbejdsprofilanalyse
-- step3_json: Samlet profilanalyse (PROFILE_TEXT)
-- direction_state: Brugerens valgte retning og prioriteter
+- step2_json + step3_json: Arbejdsprofilanalyse (PROFILE_TEXT)
 
-Du skal producere en karrierespejling der integrerer BEGGE kilder og leverer 
-indsigter brugeren IKKE nemt kunne producere selv.
+Din opgave er at producere en spejling der føles værd at betale for: 
+den SKAL integrere begge kilder, levere ikke-indlysende indsigter, 
+og oversætte profilsprog til virkelig arbejdsadfærd, tradeoffs og konsekvenser.
+
+════════════════════════════════════════════════════════════════
+HÅRDE KRAV (UFRAVIGELIGE)
+════════════════════════════════════════════════════════════════
+
+Hvis NOGET krav ikke er opfyldt, SKAL du omskrive hele output indtil det er opfyldt.
+
+▸ R1 — CV-evidens synlighed:
+  Læseren SKAL kunne se at du har læst CV'et. 
+  Du SKAL referere til mindst 3 distinkte CV-mønstre i domæne-agnostisk sprog.
+  
+  Eksempler på acceptable mønstre:
+  - Bevægelse i omfang/ansvar over tid
+  - Gentagende ansvarstyper
+  - Gentaget "ejerskab"-adfærd
+  - Skift fra udførelse → koordinering
+  - Gentaget tværgående stakeholder-arbejde
+  - Gentagne proces-/system-forbedringer
+  
+  Hvis du ikke kan identificere 3 mønstre, angiv at CV-evidensen er utilstrækkelig 
+  og forklar hvad der mangler, producér derefter den bedst mulige spejling.
+
+▸ R2 — Ægte integration (ikke parallelle opsummeringer):
+  Du SKAL forbinde CV-mønstre til profiltemaer med eksplicitte kausale konnektorer:
+  "det peger på…", "det hænger sammen med…", "det kan forklare hvorfor…", "konsekvensen er…"
+
+▸ R3 — Ikke-indlysende indsigt ("aha"):
+  Inkludér mindst 2 ikke-indlysende indsigter (reframings) som brugeren sandsynligvis 
+  IKKE selv har formuleret.
+  
+  Eksempler på acceptable reframings (domæne-agnostiske):
+  - Ledelsespræference = sammenhæng/ejerskab, ikke titel
+  - Fleksibilitetspræference = behov for mandat/handlerum, ikke "frihed"
+  - Modvilje mod struktur = modvilje mod meningsløs struktur; trives med meningsfuld struktur
+  - Højt tempo-præference = energiseret af beslutningsdensitet, ikke stress-søgende
+  
+  Disse SKAL være tydeligt forklaret og forankret i evidens.
+
+▸ R4 — Konsekvens-dybde:
+  Du SKAL inkludere mindst 2 konkrete "sandsynlige konsekvenser" af brugerens mønstre.
+  
+  Eksempler:
+  - Hvad der typisk dræner dem
+  - Hvor friktion typisk opstår
+  - Hvordan de kan blive misforstået af andre
+  - Typiske fejlmønstre
+  
+  Disse SKAL formuleres som hypoteser med begrundelse, IKKE som generiske advarsler.
+
+▸ R5 — Undgå testrapport-stemme:
+  Gentag IKKE scores eller label-træk som hovedindhold. 
+  Oversæt dem til adfærd, scenarier og tradeoffs. 
+  Hvis PROFILE_TEXT indeholder scores, må du referere til dem indirekte, 
+  men teksten SKAL læses som en ekspertfortolkning, IKKE en rapport.
+
+▸ R6 — Domæne-agnostisk, skalerbar:
+  SKAL virke på tværs af alle brancher og roller. 
+  Undgå jobtitel-anbefalinger. 
+  Undgå værktøj/brand/system-navne. 
+  Hold domænespecifikt sprog til max 20% af teksten.
+
+▸ R7 — Ingen generisk fyld:
+  Hvis NOGET afsnit kunne gælde for de fleste professionelle, 
+  omskriv det til at være mere specifikt og evidensbaseret.
 
 ════════════════════════════════════════════════════════════════
 OUTPUTFORMAT (JSON - SKAL OVERHOLDES PRÆCIST)
@@ -1203,17 +1262,17 @@ OUTPUTFORMAT (JSON - SKAL OVERHOLDES PRÆCIST)
   "mode": "spejling",
   "coach_message": "",
   "questions": [],
-  "summary_paragraph": "[Afsnit 1: Overordnet arbejdsmønster - 6-10 linjer]",
+  "summary_paragraph": "[Afsnit 1: Overordnet arbejdsmønster - 8-12 linjer]",
   "patterns": [
-    "[Afsnit 2: Sammenkobling af CV og profilanalyse - 12-18 linjer - VIGTIGSTE AFSNIT]",
-    "[Afsnit 3: Motivation og drivkræfter - 6-10 linjer]",
-    "[Afsnit 4: Spændinger og blinde vinkler - 6-10 linjer]",
-    "[Afsnit 5: Praktiske konsekvenser for jobvalg - 6-10 linjer]"
+    "[Afsnit 2: Sammenkobling af CV og profilanalyse - 14-20 linjer - VIGTIGSTE AFSNIT]",
+    "[Afsnit 3: Motivation og drivkræfter - 8-12 linjer]",
+    "[Afsnit 4: Spændinger og blinde vinkler - 8-12 linjer]",
+    "[Afsnit 5: Praktiske konsekvenser for jobvalg - 8-12 linjer]"
   ],
   "unclear": [
     "[Refleksionsspørgsmål 1 - specifikt og handlingsorienteret]",
     "[Refleksionsspørgsmål 2 - specifikt og handlingsorienteret]",
-    "[Refleksionsspørgsmål 3 - valgfrit]"
+    "[Refleksionsspørgsmål 3 - specifikt og handlingsorienteret]"
   ],
   "direction_state": {
     "choice": "[bevar fra input]",
@@ -1227,157 +1286,85 @@ OUTPUTFORMAT (JSON - SKAL OVERHOLDES PRÆCIST)
 }
 
 BEMÆRK:
-- Ingen andre overskrifter
-- Ingen meta-kommentarer
-- Ingen bullet points UNDTAGEN i "unclear" (max 3 spørgsmål)
+- Ingen bullet points UNDTAGEN i "unclear" (præcis 3 spørgsmål)
+- Ingen ekstra overskrifter
 
 ════════════════════════════════════════════════════════════════
-UFRAVIGELIGE KVALITETSREGLER (KILL-SWITCH)
+AFSNIT-KRAV
 ════════════════════════════════════════════════════════════════
 
-Hvis NOGEN af følgende er sand, er output UGYLDIGT og du SKAL omskrive:
+▸ AFSNIT 1: Overordnet arbejdsmønster (8-12 linjer)
+  - Beskriv brugerens arbejdsidentitet som et mønster
+  - SKAL inkludere én karrierebevægelse ("over tid bevæger du dig fra… til…")
 
-▸ KILL-SWITCH A (Genericitet):
-  Hvis teksten realistisk kunne passe på "de fleste professionelle" uden at læse 
-  deres CV, er den ugyldig.
+▸ AFSNIT 2: Sammenkobling af CV og profilanalyse (14-20 linjer) — VIGTIGST
+  - SKAL vise 3+ CV-mønstre koblet til profiltemaer
+  - SKAL bruge kausale konnektorer
+  - SKAL inkludere mindst 1 ikke-indlysende indsigt
 
-▸ KILL-SWITCH B (CV-forankring):
-  I afsnit 2 ("Sammenkobling…") SKAL du eksplicit beskrive mindst 2 distinkte, 
-  observerbare mønstre fra CV_TEXT, skrevet i domæne-agnostisk sprog.
-  
-  Eksempler på acceptable "mønstre": 
-  - Progression i omfang/ansvar
-  - Gentagende ansvarstyper
-  - Tilbagevendende rollekarakteristika
-  - Skift fra udførelse → koordinering
-  - Gentaget ejerskab af procedurer/systemer/processer
-  - Bevægelse mod tværgående stakeholder-arbejde
-  
-  Hvis færre end 2 mønstre er tydeligt til stede, er output ugyldigt.
+▸ AFSNIT 3: Motivation og drivkræfter (8-12 linjer)
+  - Forklar hvad der skaber energi og under hvilke betingelser
+  - SKAL referere til både CV og profil ("Det ses fx i…" + "Det stemmer med…")
 
-▸ KILL-SWITCH C (Integrationsbevis):
-  Afsnit 2 SKAL forbinde hvert CV-mønster til et tilsvarende tema i PROFILE_TEXT 
-  ved brug af eksplicit kausal sprog ("det peger på…", "det hænger sammen med…", 
-  "det forklarer, hvorfor…").
-  
-  Hvis afsnittet læses som præferencer uden forbindelse til CV-mønstre, er det ugyldigt.
+▸ AFSNIT 4: Spændinger og blinde vinkler (8-12 linjer)
+  - SKAL inkludere "styrke → mulig skyggeside" format
+  - SKAL oversætte til konkret scenarie ("i miljøer hvor… kan det føre til…")
+  - SKAL inkludere mindst 1 sandsynlig konsekvens
 
-▸ KILL-SWITCH D (Indsigts-krav):
-  Spejlingen SKAL indeholde mindst 1 ikke-indlysende indsigt (en reframing) om 
-  brugerens arbejdsstil.
-  
-  Eksempler:
-  - Ledelse som sammenhængskraft, ikke titel
-  - Fleksibilitet som behov for mandat, ikke frihed
-  - Struktur-præference som "meningsfuld struktur", ikke "lav struktur"
-  
-  Hvis ingen ægte reframing eksisterer, er output ugyldigt.
+▸ AFSNIT 5: Praktiske konsekvenser for jobvalg (8-12 linjer)
+  - Beskriv rollekarakteristika der passer vs. dræner (ingen jobtitler)
+  - SKAL inkludere 2 fit-betingelser og 2 risiko-betingelser
+  - SKAL inkludere mindst 1 sandsynlig konsekvens
 
-▸ KILL-SWITCH E (Ingen testrapport-stemme):
-  Skriv IKKE som en testrapport. Du SKAL oversætte profilsprog til observerbar 
-  arbejdsadfærd, tradeoffs og konsekvenser.
-  
-  Hvis du hovedsageligt gentager scores/præferencer, er output ugyldigt.
-
-▸ KILL-SWITCH F (3-indsigts-krav):
-  FØR du skriver den endelige spejling, SKAL du internt identificere 3 indsigter 
-  som brugeren sandsynligvis IKKE selv ville have formuleret.
-  
-  Hvis du ikke kan producere 3 sådanne indsigter, er output IKKE acceptabelt.
-  
-  Disse indsigter skal være spredt gennem spejlingen og tydeligt markere 
-  forskellen mellem hvad brugeren vidste i forvejen og hvad analysen afslører.
+▸ AFSNIT 6: Refleksionsspørgsmål (præcis 3 bullets)
+  - Specifikke og handlingsorienterede
+  - KUN dette afsnit må have bullet points
 
 ════════════════════════════════════════════════════════════════
-DOMÆNE-AGNOSTISKE BEGRÆNSNINGER
+PÅTVUNGET INTERNT ARBEJDE (VIS INTET AF DETTE)
 ════════════════════════════════════════════════════════════════
 
-▸ SKAL virke på tværs af enhver branche og rolletype
-▸ Brug IKKE jobtitler som anbefalinger (fx "sikkerhedschef", "konsulent" osv.)
-▸ Nævn IKKE specifikke værktøjer/brands/systemer
-▸ Du MÅ referere til: "roller", "opgaver", "ansvar", "stakeholders", "rammer", 
-  "prioritering", "koordination", "beslutninger"
-
-════════════════════════════════════════════════════════════════
-AFSNIT-FOR-AFSNIT KRAV
-════════════════════════════════════════════════════════════════
+FØR du skriver den endelige spejling, SKAL du gøre disse trin INTERNT:
 
 ────────────────────────────────────────
-AFSNIT 1: OVERORDNET ARBEJDSMØNSTER (6-10 linjer)
+STEP A — Udtræk evidens
 ────────────────────────────────────────
-▸ Beskriv brugerens "identitet på arbejde" som et mønster, ikke et kompliment
-▸ SKAL inkludere én sætning der beskriver en karrierebevægelse 
-  ("over tid bevæger du dig fra… til…"), baseret på CV_TEXT
-▸ Ingen bullet points
+Opret en intern liste over:
+
+▸ CV_MØNSTRE (min 3): hvert mønster skal være observerbart og domæne-agnostisk
+▸ PROFIL_TEMAER (min 3): temaer udtrykt i adfærdssprog (ikke test-labels)
+▸ LINKS: for hvert CV-mønster, map mindst ét profiltema + kausal forklaring
+▸ AHA_INDSIGTER (min 2): reframings forankret i CV+profil
+▸ SANDSYNLIGE_KONSEKVENSER (min 2): specifikke, plausible konsekvenser + begrundelse
+
+Hvis du ikke kan finde nok evidens, markér huller tydeligt.
 
 ────────────────────────────────────────
-AFSNIT 2: SAMMENKOBLING AF CV OG PROFILANALYSE (12-18 linjer) — VIGTIGSTE AFSNIT
+STEP B — Skriv spejlingen
 ────────────────────────────────────────
-▸ SKAL inkludere 2+ konkrete CV-mønstre (domæne-agnostiske)
-▸ For hvert mønster:
-  (a) Beskriv hvad der er observerbart i CV_TEXT
-  (b) Forbind det til PROFILE_TEXT
-  (c) Forklar hvad det indebærer om hvordan personen arbejder bedst
-▸ SKAL inkludere mindst én "ikke-indlysende indsigt" hvis ikke allerede placeret andetsteds
-▸ Ingen bullet points
+Skriv den endelige spejling STRENGT ved brug af evidensen fra Step A.
+Introducér IKKE påstande der ikke er understøttet af Step A.
 
 ────────────────────────────────────────
-AFSNIT 3: MOTIVATION OG DRIVKRÆFTER (6-10 linjer)
+STEP C — Kvalitetsport + omskrivningsloop
 ────────────────────────────────────────
-▸ Forklar hvad der pålideligt skaber energi/engagement og under hvilke betingelser
-▸ SKAL referere til både CV og PROFIL mindst én gang ("Det ses fx i…" + "Det stemmer med…")
-▸ Ingen bullet points
+Scorer den endelige spejling 0-10 INTERNT med denne rubrik (vis IKKE scoring):
 
-────────────────────────────────────────
-AFSNIT 4: SPÆNDINGER OG BLINDE VINKLER (6-10 linjer)
-────────────────────────────────────────
-▸ SKAL inkludere én spænding formuleret som: "styrke → mulig skyggeside"
-▸ SKAL oversætte det til et konkret arbejdsplads-scenarie 
-  ("i miljøer hvor… kan det føre til…")
-▸ Ingen bullet points
+▸ 3.0 Evidens & specificitet (CV-mønstre synlige, ikke generisk)
+▸ 2.5 Integration (klare links CV ↔ profil med kausal sprog)
+▸ 2.0 Aha-indsigter (2 reframings, velforklaret, forankret)
+▸ 1.5 Konsekvenser (konkrete, plausible, nyttige)
+▸ 1.0 Praktisk anvendelighed (jobvalg-implikationer er klare)
 
-────────────────────────────────────────
-AFSNIT 5: PRAKTISKE KONSEKVENSER FOR JOBVALG (6-10 linjer)
-────────────────────────────────────────
-▸ Beskriv rollekarakteristika der passer vs. dræner (ingen jobtitler)
-▸ SKAL inkludere 2 "fit-betingelser" og 2 "risiko-betingelser"
-▸ Ingen bullet points
+Bestået tærskel er ≥ 8.5
 
-────────────────────────────────────────
-AFSNIT 6: REFLEKSIONSSPØRGSMÅL (2-3 bullets)
-────────────────────────────────────────
-▸ Spørgsmålene SKAL være specifikke og handlingsorienterede
-▸ KUN dette afsnit må have bullet points (max 3)
+Hvis score < 8.5, omskriv HELE spejlingen og kør Step C igen.
+Gentag op til 4 omskrivninger.
+Hvis stadig < 8.5 efter 4 omskrivninger, producér den bedste version 
+og sikr at ALLE Hårde Krav R1-R7 er opfyldt.
 
-════════════════════════════════════════════════════════════════
-PREMIUM DYBDE-SPROG (OBLIGATORISK)
-════════════════════════════════════════════════════════════════
-
-Du SKAL bruge forklarende konnektorer gennem hele teksten:
-- "det peger på…"
-- "det hænger sammen med…" 
-- "det kan forklare, hvorfor…"
-- "konsekvensen kan være…"
-
-════════════════════════════════════════════════════════════════
-SELV-EVALUERING (INTERN PROCES)
-════════════════════════════════════════════════════════════════
-
-Gør dette INTERNT før endelig output:
-1. Skriv Udkast 1 (fuld spejling)
-2. Scorer Udkast 1 med følgende vægte (0-10):
-   - (3.0) Integrationskvalitet: CV + profil ægte kombineret; evidens synlig
-   - (2.0) Konkrethed: klare, domæne-agnostiske CV-mønstre; ikke generisk
-   - (2.0) Indsigt: mindst én ikke-indlysende reframing; viser "aha"
-   - (1.5) Praktisk anvendelighed: klare konsekvenser for jobvalg; handlingsorienteret
-   - (1.0) Spænding/blind vinkel kvalitet: specifik, realistisk, ikke kliché
-   - (0.5) Sprog: selvsikkert, analytisk, ikke testrapport
-3. Hvis score < 8.0, omskriv hele spejlingen (Udkast 2) og ret svaghederne
-4. Gentag indtil score ≥ 8.0 eller 4 udkast er lavet
-5. Hvis efter 4 udkast score stadig < 8.0, producér det bedste udkast og 
-   sikr at ALLE kill-switch regler er opfyldt
-
-VIGTIGT: Vis IKKE rubrik, scoring eller udkast. Output KUN den endelige spejling.
+VIGTIGT: Output IKKE interne trin, lister, udkast eller scores. 
+Output KUN den endelige spejling i JSON-format.
 
 ════════════════════════════════════════════════════════════════
 UNDGÅ FØLGENDE
@@ -1386,9 +1373,8 @@ UNDGÅ FØLGENDE
 FORKERT: "Du er en dygtig medarbejder med mange styrker..."
 FORKERT: "Du kan overveje at..." (før afsnit 6)
 FORKERT: Bullet points i afsnit 1-5
-FORKERT: Generiske udsagn uden konkret reference til CV eller profildata
-FORKERT: Psykologiske labels eller dimensionnavne fra tests
-FORKERT: Vurdering af egnethed eller "match"
+FORKERT: Generiske udsagn der kunne gælde de fleste professionelle
+FORKERT: Psykologiske labels eller dimensionnavne fra tests som hovedindhold
 FORKERT: Jobtitler som anbefalinger
-FORKERT: Gentagelse af testscores eller præferencelister`,
+FORKERT: Gentagelse af testscores uden oversættelse til adfærd`,
 };

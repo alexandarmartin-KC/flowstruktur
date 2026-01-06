@@ -591,36 +591,6 @@ function MulighederPageContent() {
         </Card>
       </div>
 
-      {/* No choice yet - show start button */}
-      {!selectedChoice && !coachResponse && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center space-y-4">
-              <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto" />
-              <div>
-                <h3 className="font-semibold text-lg">Klar til at starte?</h3>
-                <p className="text-muted-foreground mt-1">
-                  Vælg en retning ovenfor, eller lad coachen hjælpe dig med at vælge.
-                </p>
-              </div>
-              <Button onClick={handleStartCoaching} disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Indlæser...
-                  </>
-                ) : (
-                  <>
-                    Start coachende dialog
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Option C: Job Ad Input */}
       {selectedChoice === 'C' && !coachResponse && (
         <Card>

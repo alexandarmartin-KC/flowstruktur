@@ -931,8 +931,8 @@ function MulighederPageContent() {
         </Card>
       )}
 
-      {/* Direction State Summary - only show when no questions are pending and NOT ready for jobs (to avoid duplicate with main card) */}
-      {directionState && directionState.choice !== 'UNSET' && !showSpejling && 
+      {/* Direction State Summary - only show when no questions are pending, NOT ready for jobs, and NOT showing job examples */}
+      {directionState && directionState.choice !== 'UNSET' && !showSpejling && !showJobExamples &&
        (!coachResponse?.questions || coachResponse.questions.length === 0) && 
        !directionState.next_step_ready_for_jobs && (
         <Card className={directionState.next_step_ready_for_jobs 

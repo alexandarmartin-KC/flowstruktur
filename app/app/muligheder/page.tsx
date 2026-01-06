@@ -305,6 +305,8 @@ function MulighederPageContent() {
   const handleContinueToJobExamples = () => {
     setShowJobExamples(true);
     callCareerCoach(selectedChoice, conversationHistory, jobAdText, true);
+    // Scroll to top to see job examples
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Handle feedback and proceed to spejling

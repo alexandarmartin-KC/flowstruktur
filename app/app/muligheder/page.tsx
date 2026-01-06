@@ -85,6 +85,7 @@ function MulighederPageContent() {
   const [error, setError] = useState<string | null>(null);
   const [conversationHistory, setConversationHistory] = useState<UserAnswer[]>([]);
   const [showJobExamples, setShowJobExamples] = useState(false);
+  const [jobExamplesFeedback, setJobExamplesFeedback] = useState<string>('');
 
   // Load profile data on mount
   useEffect(() => {
@@ -627,21 +628,79 @@ function MulighederPageContent() {
 
             {/* Job Examples */}
             {coachResponse.job_examples && coachResponse.job_examples.length > 0 && (
-              <div className="space-y-4 border-t pt-6">
-                {coachResponse.job_examples.map((job, index) => (
-                  <Card key={job.id} className="bg-muted/30">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-base font-medium">
-                        {index + 1}. {job.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                        {job.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
+              <div className="space-y-6 border-t pt-6">
+                <div className="space-y-4">
+                  {coachResponse.job_examples.map((job, index) => (
+                    <Card key={job.id} className="bg-muted/30">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-base font-medium">
+                          {index + 1}. {job.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                          {job.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Feedback options after job examples */}
+                <Card className="border-primary/50 bg-primary/5">
+                  <CardHeader>
+                    <CardTitle className="text-base">Ud fra dine svar har vi samlet et par mulige måder at justere dit nuværende karrierespor på. Se dem som beskrivelser af retning – ikke som endelige valg.</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid gap-3">
+                      <Button
+                        variant={jobExamplesFeedback === 'yes' ? 'default' : 'outline'}
+                        className="justify-start text-left h-auto py-4 px-4"
+                        onClick={() => setJobExamplesFeedback('yes')}
+                      >
+                        <CheckCircle2 className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'yes' ? '' : 'text-muted-foreground'}`} />
+                        <span>Ja – det her rammer rigtigt</span>
+                      </Button>
+                      <Button
+                        variant={jobExamplesFeedback === 'adjust' ? 'default' : 'outline'}
+                        className="justify-start text-left h-auto py-4 px-4"
+                        onClick={() => setJobExamplesFeedback('adjust')}
+                      >
+                        <RefreshCw className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'adjust' ? '' : 'text-muted-foreground'}`} />
+                        <span>Det er tæt på, men jeg vil gerne justere noget</span>
+                      </Button>
+                      <Button
+                        variant={jobExamplesFeedback === 'no' ? 'default' : 'outline'}
+                        className="justify-start text-left h-auto py-4 px-4"
+                        onClick={() => setJobExamplesFeedback('no')}
+                      >
+                        <AlertCircle className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'no' ? '' : 'text-muted-foreground'}`} />
+                        <span>Nej – det er ikke den retning, jeg har i tankerne</span>
+                      </Button>
+                    </div>
+
+                    <Button 
+                      onClick={() => {
+                        // Handle feedback submission
+                        if (jobExamplesFeedback === 'yes') {
+                          // User confirmed - can proceed to actual job search
+                          alert('Super! Nu kan du fortsætte til jobsøgning.');
+                        } else if (jobExamplesFeedback === 'adjust') {
+                          // User wants to adjust - restart with feedback
+                          alert('Okay, lad os justere. Hvad vil du gerne ændre?');
+                        } else if (jobExamplesFeedback === 'no') {
+                          // User wants different direction
+                          alert('Forstået. Lad os prøve en anden retning.');
+                        }
+                      }}
+                      disabled={!jobExamplesFeedback}
+                      className="w-full"
+                    >
+                      Send svar og fortsæt
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             )}
 

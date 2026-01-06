@@ -125,6 +125,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Auto-detect if user_answers contain job example responses → trigger spejling
+    const hasJobExampleAnswers = user_answers?.some(a => 
+      a.question_id.startsWith('experience_job_') || a.question_id === 'clarity_check'
+    ) ?? false;
+    
+    const shouldTriggerSpejling = request_spejling || hasJobExampleAnswers;
+
+    // Build job_examples_feedback from user_answers if not provided
+    let feedbackForSpejling = job_examples_feedback;
+    if (hasJobExampleAnswers && !job_examples_feedback) {
+      const jobExperienceAnswers = user_answers?.filter(a => a.question_id.startsWith('experience_job_')) || [];
+      feedbackForSpejling = {
+        overall_feedback: 'from_questions',
+        job_examples: jobExperienceAnswers.map((ans, idx) => ({
+          job_id: `job_${idx + 1}`,
+          job_title: `Jobeksempel ${idx + 1}`,
+          experience: ans.answer === 'Det giver mening for mig' ? 'giver_mening' : 
+                     ans.answer === 'Det er delvist rigtigt' ? 'delvist' : 'ikke_noget'
+        }))
+      };
+    }
+
     // Map clarification answers to the expected format
     const clarificationVars = step3_json.clarification_answers 
       ? {
@@ -161,11 +183,11 @@ user_choice: ${user_choice || '(tom)'}`;
       userMessage += `\n\nREQUEST: Brugeren har bekræftet retningen og ønsker nu at se JOBEKSEMPLER. Generér 3 jobeksempler.`;
     }
 
-    if (request_spejling && job_examples_feedback) {
+    if (shouldTriggerSpejling && feedbackForSpejling) {
       userMessage += `\n\nREQUEST: SPEJLING (Step 5B)
 
 Brugeren har set jobeksemplerne og givet følgende feedback:
-${JSON.stringify(job_examples_feedback, null, 2)}
+${JSON.stringify(feedbackForSpejling, null, 2)}
 
 Direction state fra Step 4:
 ${JSON.stringify(inputDirectionState, null, 2)}
@@ -177,7 +199,7 @@ Generér en spejling baseret på brugerens reaktioner.`;
     let systemPrompt = STEP_PROMPTS.KARRIERE_COACH;
     if (request_job_examples) {
       systemPrompt = STEP_PROMPTS.JOB_EKSEMPLER;
-    } else if (request_spejling) {
+    } else if (shouldTriggerSpejling) {
       systemPrompt = STEP_PROMPTS.SPEJLING;
     }
 
@@ -215,7 +237,7 @@ Generér en spejling baseret på brugerens reaktioner.`;
       parsedResponse = JSON.parse(cleanedContent);
       
       // Validate and ensure required fields exist
-      parsedResponse = validateAndNormalizeResponse(parsedResponse, user_choice, request_spejling);
+      parsedResponse = validateAndNormalizeResponse(parsedResponse, user_choice, shouldTriggerSpejling);
       
     } catch (parseErr) {
       console.error('Failed to parse AI response as JSON:', textContent);

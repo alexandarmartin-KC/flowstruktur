@@ -242,6 +242,11 @@ function MulighederPageContent() {
       setCoachResponse(data);
       setDirectionState(data.direction_state);
       
+      // Auto-show spejling if API returns spejling mode
+      if (data.mode === 'spejling' || data.summary_paragraph) {
+        setShowSpejling(true);
+      }
+      
       // Save direction state
       localStorage.setItem(STORAGE_KEYS.DIRECTION_STATE, JSON.stringify(data.direction_state));
       
@@ -292,6 +297,7 @@ function MulighederPageContent() {
     setConversationHistory(allAnswers);
     setUserAnswers({});
     
+    // API will auto-detect job example answers and return spejling
     callCareerCoach(selectedChoice, allAnswers, jobAdText);
   };
 

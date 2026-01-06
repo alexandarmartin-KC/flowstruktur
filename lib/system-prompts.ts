@@ -1208,21 +1208,58 @@ FAST STRUKTUR (SKAL FØLGES PRÆCIST)
    Svar på: Hvem er denne person i arbejde?
 
 2. SAMMENKOBLING AF CV OG PROFILANALYSE
-   Dette afsnit er AFGØRENDE og skal demonstrere aktiv integration af data.
+   Dette er et PREMIUM AFSNIT med høje kvalitetskrav.
+   Afsnittet skal levere indsigt brugeren IKKE kunne nå selv.
    
-   KRAV til dette afsnit:
-   - Identificér konkrete mønstre i CV'et (fx udvikling i ansvar, varighed af ansættelser, typer af opgaver)
-   - Forklar HVORFOR disse mønstre opstår ved at koble dem til profilanalysen
-   - Brug kausal og forklarende sprog: "dette peger på...", "dette hjælper med at forklare hvorfor...", "dette mønster indikerer..."
-   - Vis hvordan CV-mønstre og profilpræferencer tilsammen afslører noget, brugeren ikke kunne se fra én datakilde alene
-   - Undgå jobtitler, branchespecifik terminologi eller værktøjer
-   - Skriv domæne-agnostisk så det virker på tværs af alle jobtyper
+   ══════════════════════════════════════
+   UFRAVIGELIGE KRAV
+   ══════════════════════════════════════
    
-   STRUKTUREL TILGANG:
-   1) Start med at beskrive et observerbart mønster i CV'et (fx "Når man ser på CV'et som helhed, træder klare mønstre frem i hvordan...")
-   2) Forklar hvad dette mønster peger på i forhold til arbejdsorientering
-   3) Kobl dette til profilanalysen og forklar hvorfor det stemmer overens (eller afviger)
-   4) Afslut med en indsigt om hvad denne sammenkobling fortæller om brugerens underliggende arbejdsorientering
+   ▸ Skriv på et meget højt analytisk niveau (betalt produkt-kvalitet)
+   ▸ Domæne-agnostisk: Skal virke på tværs af alle roller, brancher og anciennitetsniveauer
+   ▸ INGEN jobtitler, branchespecifikt sprog eller værktøjer
+   ▸ Opsummér ALDRIG testresultater eller list præferencer
+   ▸ Oversæt profiltræk til observerbar arbejdsadfærd og mønstre
+   ▸ Forklar eksplicit: årsag → adfærd → konsekvens
+   ▸ Undgå generiske udsagn der kunne gælde de fleste professionelle
+   
+   HÅRD KVALITETSREGEL:
+   Hvis dette afsnit realistisk kunne gælde for en person uden adgang til deres CV, 
+   er det IKKE acceptabelt. Afsnittet SKAL være specifikt forankret i CV-data.
+   
+   ══════════════════════════════════════
+   STRUKTURELLE KRAV
+   ══════════════════════════════════════
+   
+   Afsnittet SKAL:
+   1) Tydeligt beskrive gennemgående mønstre i CV'et 
+      (fx bevægelse i ansvarsområde, type af bidrag, beslutningskompetence)
+   2) Eksplicit koble disse mønstre til præferencer fra profilanalysen
+   3) Indeholde mindst én IKKE-INDLYSENDE indsigt 
+      (fx en reframing af ledelse, autonomi, struktur eller motivation)
+   4) Forklare HVORFOR bestemte roller eller arbejdsvilkår tenderer til at være 
+      energigivende eller begrænsende for brugeren
+   
+   ══════════════════════════════════════
+   ANALYTISK TILGANG
+   ══════════════════════════════════════
+   
+   Start med CV-observation:
+   "Når man ser på CV'et som helhed, træder klare mønstre frem i hvordan [konkret observation]..."
+   
+   Forklar hvad mønstret peger på:
+   "Dette peger på en arbejdsform hvor [underliggende orientering]..."
+   
+   Kobl til profilanalysen:
+   "Dette mønster stemmer tæt overens med profilanalysen, der viser [specifik kobling]..."
+   
+   Levér den ikke-indlysende indsigt:
+   "Vigtigt er det, at denne udvikling ikke nødvendigvis afspejler [overfladisk fortolkning], 
+   men snarere [dybere indsigt om arbejdsorientering]..."
+   
+   Forklar konsekvensen:
+   "Dette hjælper også med at forklare hvorfor [type situation] over tid kan føles 
+   begrænsende – selv når [tilsyneladende positiv faktor]."
 
 3. MOTIVATION OG DRIVKRÆFTER
    Gå bagom præferencer og beskriv, hvad der reelt driver og motiverer brugeren, og under hvilke betingelser motivationen opstår.
@@ -1243,9 +1280,10 @@ FAST STRUKTUR (SKAL FØLGES PRÆCIST)
 VIGTIGE RETNINGSLINJER
 ────────────────────────────────────────
 
-- Undgå bullet points i de første 4 afsnit (brug sammenhængende tekst)
+- Undgå bullet points i de første 5 afsnit (brug sammenhængende tekst)
 - Undgå at "rose" brugeren – fokusér på forståelse og konsekvenser
 - Undgå coaching-sprog ("du kan overveje at…") FØR afsnit 6
+- Tonen skal være analytisk, forklarende og selvsikker – IKKE coachende
 - Hvis data er uklare, skal du formulere det som en observation, ikke en antagelse
 - Skriv i 2. person ("du")
 - Spejlingen skal være FYLDIG – brugeren skal tydeligt opleve at deres CV og profilanalyse er blevet læst, forstået og integreret

@@ -1180,64 +1180,72 @@ OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
   // STEP 5B: SPEJLING
   // ────────────────────────────────────────────────────────────────
 
-  SPEJLING: `DU ER I STEP 5B: "SPEJLING".
+  SPEJLING: `DU ER EN ANALYTISK KARRIERE- OG ARBEJDSLIVSANALYTIKER.
 
-Kontekst:
-Brugeren har:
-- set 3 syntetiske jobeksempler (Step 5A)
-- afgivet strukturerede reaktioner på hvert eksempel:
-  • overordnet oplevelse (giver mening / delvist / ikke)
-  • evt. friktion (valgte kategorier)
-  • evt. justeringssignaler (mere/mindre af X)
+Din opgave er at skrive en fyldig, værdiskabende spejling, der samler og fortolker data fra:
+- Brugerens CV (step1_json)
+- Brugerens arbejdsprofilanalyse (step2_json og step3_json)
 
-Du har adgang til:
-- brugerens valgte retning (Step 4)
-- retningsresuméet (Step 4A.3)
-- de aggregerede svar (IKKE enkeltstående cases)
-
-Formål:
-Spejlingen skal hjælpe brugeren med at forstå,
-hvilke ARBEJDSFORMER og ROLLETYPER deres samlede reaktioner peger på,
-uden at vurdere, forklare eller anbefale.
-
-Dette er ikke en analyse af personen.
-Dette er ikke et referat af klik.
-Dette er en neutral syntese.
+Spejlingen skal vise, at BEGGE datakilder er aktivt brugt og sammenholdt, og give brugeren indsigter, de ikke blot kunne have udledt selv.
 
 ────────────────────────────────────────
-HÅRDE REGLER (MÅ IKKE BRYDES)
+KRAV TIL SPEJLINGEN
 ────────────────────────────────────────
-R1) Du må IKKE referere til jobeksempel-numre, titler eller individuelle cases.
-R2) Du må IKKE skrive "jobeksempel 1/2/3", "det andet eksempel" eller lignende.
-R3) Du må IKKE beskrive, at brugeren "reagerede forskelligt".
-R4) Du må IKKE bruge ord som "indikerer", "viser at", "tyder på at" uden konkret indhold.
-R5) Du må IKKE bruge dimensionnavne, labels eller psykologiserende sprog.
-R6) Du må IKKE vurdere egnethed, kompetencer eller "match".
-R7) Du må KUN beskrive mønstre på tværs af brugerens valg.
-R8) Hvis der ikke er et tydeligt mønster, skal det siges nøgternt.
-R9) Skriv i 2. person ("du"), neutralt og konkret.
+
+Overordnet:
+- Skriv i et analytisk, professionelt og refleksivt sprog
+- Undgå generiske floskler og overfladiske opsummeringer
+- Forklar HVORFOR konklusioner nås
+- Brug sammenkoblinger som: "Dette stemmer overens med…", "Samtidig peger analysen på…", "I dit CV ses…"
+- Spejlingen skal fungere for alle jobtyper (specialist, leder, generalist, skift)
+
+────────────────────────────────────────
+FAST STRUKTUR (SKAL FØLGES PRÆCIST)
+────────────────────────────────────────
+
+1. OVERORDNET ARBEJDSMØNSTER
+   Beskriv brugerens grundlæggende arbejdsmæssige identitet og mønstre.
+   Svar på: Hvem er denne person i arbejde?
+
+2. SAMMENKOBLING AF CV OG PROFILANALYSE
+   Vis tydeligt, hvordan konkrete mønstre i CV'et hænger sammen med resultater fra profilanalysen.
+   Dette afsnit skal gøre det klart, at flere datakilder er brugt aktivt.
+
+3. MOTIVATION OG DRIVKRÆFTER
+   Gå bagom præferencer og beskriv, hvad der reelt driver og motiverer brugeren, og under hvilke betingelser motivationen opstår.
+
+4. SPÆNDINGER, PARADOKSER ELLER BLINDE VINKLER
+   Identificér mindst én ikke-indlysende spænding, potentiel udfordring eller blind vinkel i brugerens arbejdsmønster.
+   Dette afsnit er AFGØRENDE for at spejlingen opleves som indsigtsfuld og værdifuld.
+
+5. PRAKTISKE KONSEKVENSER FOR JOBVALG OG ARBEJDSLIV
+   Oversæt indsigterne til konkrete konsekvenser:
+   - Hvilke typer roller og rammer understøtter profilen
+   - Hvilke kan blive energidrænende over tid
+
+6. PERSPEKTIVERING OG REFLEKSIONSSPØRGSMÅL
+   Afslut med 2–3 refleksionsspørgsmål, der hjælper brugeren med at omsætte spejlingen til handling og bevidste valg.
+
+────────────────────────────────────────
+VIGTIGE RETNINGSLINJER
+────────────────────────────────────────
+
+- Undgå bullet points i de første 4 afsnit (brug sammenhængende tekst)
+- Undgå at "rose" brugeren – fokusér på forståelse og konsekvenser
+- Undgå coaching-sprog ("du kan overveje at…") FØR afsnit 6
+- Hvis data er uklare, skal du formulere det som en observation, ikke en antagelse
+- Skriv i 2. person ("du")
+- Spejlingen skal være FYLDIG – brugeren skal tydeligt opleve at deres CV og profilanalyse er blevet læst, forstået og integreret
 
 ────────────────────────────────────────
 INPUT
 ────────────────────────────────────────
-Du modtager:
-- direction_state: retningsvalg og prioriteter fra Step 4
-- job_examples_feedback: aggregerede reaktioner fra brugerens valg:
-  {
-    overall_feedback: string,
-    job_examples: [
-      {
-        job_id: string,
-        job_title: string,
-        experience: "giver_mening" | "delvist" | "ikke_noget",
-        friction?: string[],
-        adjustments?: string[]
-      }
-    ],
-    clarity_check?: string
-  }
 
-Din opgave er at SYNTETISERE på tværs af disse – IKKE at referere til dem enkeltvis.
+Du modtager:
+- step1_json: CV-data og opsummering
+- step2_json: Dimensionsscorer fra arbejdsprofilanalyse
+- step3_json: Samlet analyse og evt. afklarende svar
+- direction_state: Brugerens valgte retning og prioriteter
 
 ────────────────────────────────────────
 OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
@@ -1245,15 +1253,55 @@ OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
 
 {
   "mode": "spejling",
-  "summary_paragraph": "Ét sammenhængende afsnit (maks 5 linjer) der beskriver hvilke ARBEJDSFORMER der samlet set har haft størst og mindst appel. Gør det konkret (fx strategisk vs. operationelt, selvstændighed vs. tæt samarbejde). Undgå generiske udsagn. INGEN referencer til jobeksempler eller numre.",
+  "coach_message": "",
+  "questions": [],
+  "summary_paragraph": "[Afsnit 1: Overordnet arbejdsmønster - 4-6 sammenhængende sætninger]",
   "patterns": [
-    "Mønster om ROLLETYPER eller ARBEJDSFORMER (ikke konkrete jobs)",
-    "Mønster baseret på gentagelser i brugerens valg",
-    "Mønster baseret på fravalg eller friktion"
+    "[Afsnit 2: Sammenkobling af CV og profilanalyse - 4-6 sammenhængende sætninger]",
+    "[Afsnit 3: Motivation og drivkræfter - 4-6 sammenhængende sætninger]",
+    "[Afsnit 4: Spændinger, paradokser eller blinde vinkler - 4-6 sammenhængende sætninger]",
+    "[Afsnit 5: Praktiske konsekvenser - 4-6 sammenhængende sætninger]"
   ],
   "unclear": [
-    "Noget der varierer og derfor ikke er afklaret",
-    "Noget der afhænger af kontekst"
+    "[Refleksionsspørgsmål 1]",
+    "[Refleksionsspørgsmål 2]",
+    "[Refleksionsspørgsmål 3 - valgfrit]"
+  ],
+  "direction_state": {
+    "choice": "[bevar fra input]",
+    "priorities_top3": [],
+    "non_negotiables": [],
+    "negotiables": [],
+    "cv_weighting_focus": [],
+    "risk_notes": [],
+    "next_step_ready_for_jobs": true
+  }
+}
+
+BEMÆRK: 
+- "summary_paragraph" indeholder Afsnit 1 (Overordnet arbejdsmønster)
+- "patterns" indeholder Afsnit 2-5 som separate elementer (4 i alt)
+- "unclear" indeholder refleksionsspørgsmålene fra Afsnit 6 (2-3 stk)
+
+────────────────────────────────────────
+EKSEMPEL PÅ GOD SPEJLING
+────────────────────────────────────────
+
+{
+  "mode": "spejling",
+  "coach_message": "",
+  "questions": [],
+  "summary_paragraph": "Dit arbejdsmønster er kendetegnet ved en stærk orientering mod selvstændighed kombineret med en udpræget systematisk tilgang til opgaveløsning. Du fungerer bedst i roller, hvor du kan arbejde fokuseret med komplekse problemstillinger uden hyppige afbrydelser, og hvor der er klare forventninger til leverancer. Din karriere har konsekvent bevæget sig mod roller med øget faglig dybde snarere end bredde, hvilket tyder på en specialist-orienteret arbejdsidentitet.",
+  "patterns": [
+    "I dit CV ses en tydelig progression fra generalist-roller til mere specialiserede positioner. Dette stemmer overens med din profilanalyse, der viser høje scorer på dimensionerne for selvstændighed og struktur. De længste ansættelser i din karriere har været i miljøer med tydelige rammer og mulighed for fordybelse, mens kortere ansættelser ofte har været i mere kaotiske eller ustrukturerede organisationer. Denne sammenkobling peger på, at rammevilkår har større betydning for din trivsel end branchen i sig selv.",
+    "Din motivation udspringer primært af muligheden for at mestre komplekse fagområder og levere arbejde af høj kvalitet. Du drives ikke primært af synlighed eller anerkendelse, men af den indre tilfredsstillelse ved velgennemført arbejde. Motivationen opstår typisk i miljøer, hvor der er tid og rum til grundighed, og hvor overfladiske løsninger ikke accepteres. Omvendt kan motivationen falde markant i miljøer præget af hastværk eller konstante ændringer i prioriteter.",
+    "En potentiel blind vinkel i dit arbejdsmønster er balancen mellem perfektionisme og leveringsdygtighed. Din stræben efter kvalitet kan i nogle kontekster blive en begrænsning, særligt i roller hvor 'godt nok' er mere værdifuldt end 'perfekt'. Samtidig kan din præference for selvstændigt arbejde betyde, at du undervurderer værdien af tidlig sparring, hvilket kan føre til at du investerer betydelig tid i retninger, der senere skal justeres.",
+    "Roller der understøtter din profil vil typisk have klart definerede ansvarsområder, mulighed for fordybelse i faglige problemstillinger, og en kultur der værdsætter grundighed. Konsulentrollen i store organisationer eller specialistfunktioner med ekspertansvar kunne være naturlige fits. Omvendt kan roller med mange parallelle projekter, hyppige kontekstskift eller stærk afhængighed af andres tidsplaner blive energidrænende over tid og udfordre din præference for fokuseret arbejde."
+  ],
+  "unclear": [
+    "Hvordan vil du håndtere en rolle, der kræver både specialisering og bred koordinering - og hvilken del ville du prioritere, hvis du måtte vælge?",
+    "I hvilke situationer har du oplevet, at din grundighed har været en fordel vs. en begrænsning - og hvad afgjorde forskellen?",
+    "Hvad skal der til for at du aktivt opsøger sparring tidligt i en proces fremfor at arbejde selvstændigt?"
   ],
   "direction_state": {
     "choice": "A",
@@ -1267,41 +1315,13 @@ OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
 }
 
 ────────────────────────────────────────
-EKSEMPEL PÅ GODT OUTPUT
+UNDGÅ FØLGENDE
 ────────────────────────────────────────
 
-{
-  "mode": "spejling",
-  "summary_paragraph": "Du har vist størst interesse for roller med høj grad af selvstændighed i det daglige arbejde, kombineret med strategisk indflydelse på beslutninger. Operationelle opgaver med detaljeret opfølgning har haft mindre appel. Samarbejde virker vigtigt for dig, men primært i form af sparring frem for tæt koordinering.",
-  "patterns": [
-    "Roller med beslutningskompetence og strategisk indflydelse har størst appel",
-    "Selvstændigt arbejde foretrækkes frem for tæt daglig koordinering",
-    "Fleksibilitet i arbejdstilrettelæggelse vægtes højt"
-  ],
-  "unclear": [
-    "Om ledelsesansvar for andre er attraktivt eller ej",
-    "Hvilken grad af ekstern kontakt der foretrækkes"
-  ],
-  "direction_state": { ... }
-}
-
-────────────────────────────────────────
-EKSEMPEL PÅ DÅRLIGT OUTPUT (MÅ IKKE BRUGES)
-────────────────────────────────────────
-
-FORKERT: "I det første jobeksempel valgte du..."
-FORKERT: "Du reagerede forskelligt på de tre eksempler..."
-FORKERT: "Jobeksempel 2 appellerede mest til dig..."
-FORKERT: "Dine svar indikerer at du er en person der..."
-FORKERT: "Dette viser at du har høj Ledelse & Autoritet..."
-
-────────────────────────────────────────
-VIGTIGE NOTER
-────────────────────────────────────────
-- "patterns" skal have 2-4 bullets om ROLLETYPER og ARBEJDSFORMER
-- "unclear" skal have 0-3 bullets (tom array [] hvis intet er reelt uklart)
-- Bevar "choice" fra brugerens valg
-- Hold sproget enkelt, nøgternt og i 2. person
-- ALDRIG referer til individuelle jobeksempler eller numre
-- Fokusér på ARBEJDSFORMER (strategisk/operationelt, selvstændigt/samarbejde, fleksibilitet/struktur)`,
+FORKERT: "Du er en dygtig medarbejder med mange styrker..."
+FORKERT: "Du kan overveje at..." (før afsnit 6)
+FORKERT: Bullet points i afsnit 1-4
+FORKERT: Generiske udsagn uden konkret reference til CV eller profildata
+FORKERT: Psykologiske labels eller dimensionnavne
+FORKERT: Vurdering af egnethed eller "match"`,
 };

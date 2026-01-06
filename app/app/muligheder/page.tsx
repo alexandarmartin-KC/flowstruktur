@@ -854,42 +854,87 @@ function MulighederPageContent() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Eye className="h-5 w-5 text-blue-600" />
-              <CardTitle className="text-lg">Spejling</CardTitle>
+              <CardTitle className="text-lg">Din karrierespejling</CardTitle>
             </div>
+            <CardDescription>
+              En samlet analyse baseret på dit CV og din arbejdsprofilanalyse
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Summary paragraph */}
+          <CardContent className="space-y-8">
+            {/* Afsnit 1: Overordnet arbejdsmønster */}
             {coachResponse.summary_paragraph && (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <p className="text-base leading-relaxed">
-                  {coachResponse.summary_paragraph}
-                </p>
+              <div className="space-y-2">
+                <h4 className="font-semibold text-base">Overordnet arbejdsmønster</h4>
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <p className="text-base leading-relaxed text-muted-foreground">
+                    {coachResponse.summary_paragraph}
+                  </p>
+                </div>
               </div>
             )}
 
-            {/* Patterns - "Det peger på" */}
+            {/* Afsnit 2-5 from patterns array */}
             {coachResponse.patterns && coachResponse.patterns.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Det peger på</h4>
-                <ul className="space-y-2">
-                  {coachResponse.patterns.map((pattern, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">{pattern}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <>
+                {/* Afsnit 2: Sammenkobling af CV og profilanalyse */}
+                {coachResponse.patterns[0] && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-base">Sammenkobling af CV og profilanalyse</h4>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <p className="text-base leading-relaxed text-muted-foreground">
+                        {coachResponse.patterns[0]}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Afsnit 3: Motivation og drivkræfter */}
+                {coachResponse.patterns[1] && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-base">Motivation og drivkræfter</h4>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <p className="text-base leading-relaxed text-muted-foreground">
+                        {coachResponse.patterns[1]}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Afsnit 4: Spændinger, paradokser eller blinde vinkler */}
+                {coachResponse.patterns[2] && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-base">Spændinger og blinde vinkler</h4>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <p className="text-base leading-relaxed text-muted-foreground">
+                        {coachResponse.patterns[2]}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Afsnit 5: Praktiske konsekvenser */}
+                {coachResponse.patterns[3] && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-base">Praktiske konsekvenser for jobvalg</h4>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <p className="text-base leading-relaxed text-muted-foreground">
+                        {coachResponse.patterns[3]}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
-            {/* Unclear - "Det er stadig uklart" */}
+            {/* Afsnit 6: Refleksionsspørgsmål */}
             {coachResponse.unclear && coachResponse.unclear.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Det er stadig uklart</h4>
-                <ul className="space-y-2">
+              <div className="space-y-3 pt-4 border-t">
+                <h4 className="font-semibold text-base">Refleksionsspørgsmål</h4>
+                <p className="text-sm text-muted-foreground">Spørgsmål der kan hjælpe dig med at omsætte denne spejling til handling:</p>
+                <ul className="space-y-3">
                   {coachResponse.unclear.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <HelpCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <li key={idx} className="flex items-start gap-3 bg-muted/50 p-3 rounded-lg">
+                      <HelpCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                       <span className="text-sm">{item}</span>
                     </li>
                   ))}

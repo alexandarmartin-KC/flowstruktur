@@ -905,7 +905,7 @@ function MulighederPageContent() {
                   onClick={() => handleSpejlingAction('search')}
                 >
                   <Search className="mr-3 h-5 w-5 flex-shrink-0" />
-                  <span>Vis konkrete jobopslag, der ligner de eksempler jeg bedst kunne lide</span>
+                  <span>Vis konkrete jobopslag, der ligner de jobtyper jeg bedst kunne se mig selv i</span>
                 </Button>
                 <Button
                   variant={spejlingNextAction === 'adjust' ? 'default' : 'outline'}

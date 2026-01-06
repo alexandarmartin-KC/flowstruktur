@@ -50,6 +50,18 @@ interface CareerCoachRequest {
   job_ad_text_or_url?: string;
   user_answers?: UserAnswer[];
   request_job_examples?: boolean;
+  request_spejling?: boolean;
+  job_examples_feedback?: {
+    overall_feedback: string;
+    job_examples: Array<{
+      job_id: string;
+      job_title: string;
+      experience: string;
+      friction?: string[];
+      adjustments?: string[];
+    }>;
+  };
+  direction_state?: DirectionState;
 }
 
 // Output interfaces
@@ -77,11 +89,15 @@ interface JobExample {
 }
 
 interface CareerCoachResponse {
-  mode: 'ask_to_choose' | 'deepening' | 'job_examples';
+  mode: 'ask_to_choose' | 'deepening' | 'job_examples' | 'spejling';
   coach_message: string;
   questions: CoachQuestion[];
   direction_state: DirectionState;
   job_examples?: JobExample[];
+  // Spejling fields
+  summary_paragraph?: string;
+  patterns?: string[];
+  unclear?: string[];
 }
 
 export async function POST(request: NextRequest) {
@@ -95,7 +111,10 @@ export async function POST(request: NextRequest) {
       user_choice, 
       job_ad_text_or_url,
       user_answers,
-      request_job_examples
+      request_job_examples,
+      request_spejling,
+      job_examples_feedback,
+      direction_state: inputDirectionState
     } = body;
 
     // Validate required inputs
@@ -142,12 +161,32 @@ user_choice: ${user_choice || '(tom)'}`;
       userMessage += `\n\nREQUEST: Brugeren har bekræftet retningen og ønsker nu at se JOBEKSEMPLER. Generér 3 jobeksempler.`;
     }
 
+    if (request_spejling && job_examples_feedback) {
+      userMessage += `\n\nREQUEST: SPEJLING (Step 5B)
+
+Brugeren har set jobeksemplerne og givet følgende feedback:
+${JSON.stringify(job_examples_feedback, null, 2)}
+
+Direction state fra Step 4:
+${JSON.stringify(inputDirectionState, null, 2)}
+
+Generér en spejling baseret på brugerens reaktioner.`;
+    }
+
+    // Determine which system prompt to use
+    let systemPrompt = STEP_PROMPTS.KARRIERE_COACH;
+    if (request_job_examples) {
+      systemPrompt = STEP_PROMPTS.JOB_EKSEMPLER;
+    } else if (request_spejling) {
+      systemPrompt = STEP_PROMPTS.SPEJLING;
+    }
+
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {
           role: 'system',
-          content: request_job_examples ? STEP_PROMPTS.JOB_EKSEMPLER : STEP_PROMPTS.KARRIERE_COACH,
+          content: systemPrompt,
         },
         {
           role: 'user',

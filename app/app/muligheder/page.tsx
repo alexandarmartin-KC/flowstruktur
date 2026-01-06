@@ -16,7 +16,11 @@ import {
   CheckCircle2,
   ArrowRight,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  Eye,
+  Search,
+  Save,
+  HelpCircle
 } from 'lucide-react';
 
 type DirectionChoice = 'A' | 'B' | 'C' | '';
@@ -49,11 +53,15 @@ interface JobExample {
 
 // API response
 interface CareerCoachResponse {
-  mode: 'ask_to_choose' | 'deepening' | 'job_examples';
+  mode: 'ask_to_choose' | 'deepening' | 'job_examples' | 'spejling';
   coach_message: string;
   questions: CoachQuestion[];
   direction_state: DirectionState;
   job_examples?: JobExample[];
+  // Spejling fields
+  summary_paragraph?: string;
+  patterns?: string[];
+  unclear?: string[];
 }
 
 // User answer structure
@@ -86,6 +94,8 @@ function MulighederPageContent() {
   const [conversationHistory, setConversationHistory] = useState<UserAnswer[]>([]);
   const [showJobExamples, setShowJobExamples] = useState(false);
   const [jobExamplesFeedback, setJobExamplesFeedback] = useState<string>('');
+  const [showSpejling, setShowSpejling] = useState(false);
+  const [spejlingNextAction, setSpejlingNextAction] = useState<string>('');
 
   // Load profile data on mount
   useEffect(() => {
@@ -289,6 +299,81 @@ function MulighederPageContent() {
   const handleContinueToJobExamples = () => {
     setShowJobExamples(true);
     callCareerCoach(selectedChoice, conversationHistory, jobAdText, true);
+  };
+
+  // Handle feedback and proceed to spejling
+  const handleJobExamplesFeedbackSubmit = async () => {
+    if (!jobExamplesFeedback) return;
+    
+    setIsLoading(true);
+    setError(null);
+    
+    const stepData = buildStepData();
+    if (!stepData) {
+      setError('Manglende profildata.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Build feedback payload
+    const feedbackPayload = {
+      overall_feedback: jobExamplesFeedback,
+      job_examples: coachResponse?.job_examples?.map((job, idx) => ({
+        job_id: job.id,
+        job_title: job.title,
+        experience: jobExamplesFeedback === 'yes' ? 'giver_mening' : 
+                   jobExamplesFeedback === 'adjust' ? 'delvist' : 'ikke_noget'
+      })) || []
+    };
+
+    try {
+      const response = await fetch('/api/career-coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...stepData,
+          user_choice: selectedChoice || '',
+          request_spejling: true,
+          job_examples_feedback: feedbackPayload,
+          direction_state: directionState,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Fejl ved kald til spejling');
+      }
+
+      const data: CareerCoachResponse = await response.json();
+      setCoachResponse(data);
+      setShowSpejling(true);
+      
+    } catch (e) {
+      console.error('Error calling spejling:', e);
+      setError('Der opstod en fejl. Prøv venligst igen.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle spejling next action
+  const handleSpejlingAction = (action: string) => {
+    setSpejlingNextAction(action);
+    
+    if (action === 'search') {
+      // Navigate to job search with direction context
+      router.push('/app/gemte-jobs');
+    } else if (action === 'adjust') {
+      // Reset to adjust direction
+      setShowSpejling(false);
+      setShowJobExamples(false);
+      setJobExamplesFeedback('');
+      setCoachResponse(null);
+      callCareerCoach(selectedChoice, [], jobAdText);
+    } else if (action === 'save') {
+      // Save and stay
+      localStorage.setItem(STORAGE_KEYS.DIRECTION_STATE, JSON.stringify(directionState));
+      alert('Din afklaring er gemt.');
+    }
   };
 
   // Handle job ad submission for option C
@@ -647,60 +732,142 @@ function MulighederPageContent() {
                 </div>
 
                 {/* Feedback options after job examples */}
-                <Card className="border-primary/50 bg-primary/5">
-                  <CardHeader>
-                    <CardTitle className="text-base">Ud fra dine svar har vi samlet et par mulige måder at justere dit nuværende karrierespor på. Se dem som beskrivelser af retning – ikke som endelige valg.</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid gap-3">
-                      <Button
-                        variant={jobExamplesFeedback === 'yes' ? 'default' : 'outline'}
-                        className="justify-start text-left h-auto py-4 px-4"
-                        onClick={() => setJobExamplesFeedback('yes')}
-                      >
-                        <CheckCircle2 className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'yes' ? '' : 'text-muted-foreground'}`} />
-                        <span>Ja – det her rammer rigtigt</span>
-                      </Button>
-                      <Button
-                        variant={jobExamplesFeedback === 'adjust' ? 'default' : 'outline'}
-                        className="justify-start text-left h-auto py-4 px-4"
-                        onClick={() => setJobExamplesFeedback('adjust')}
-                      >
-                        <RefreshCw className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'adjust' ? '' : 'text-muted-foreground'}`} />
-                        <span>Det er tæt på, men jeg vil gerne justere noget</span>
-                      </Button>
-                      <Button
-                        variant={jobExamplesFeedback === 'no' ? 'default' : 'outline'}
-                        className="justify-start text-left h-auto py-4 px-4"
-                        onClick={() => setJobExamplesFeedback('no')}
-                      >
-                        <AlertCircle className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'no' ? '' : 'text-muted-foreground'}`} />
-                        <span>Nej – det er ikke den retning, jeg har i tankerne</span>
-                      </Button>
-                    </div>
+                {!showSpejling && (
+                  <Card className="border-primary/50 bg-primary/5">
+                    <CardHeader>
+                      <CardTitle className="text-base">Ud fra dine svar har vi samlet et par mulige måder at justere dit nuværende karrierespor på. Se dem som beskrivelser af retning – ikke som endelige valg.</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid gap-3">
+                        <Button
+                          variant={jobExamplesFeedback === 'yes' ? 'default' : 'outline'}
+                          className="justify-start text-left h-auto py-4 px-4"
+                          onClick={() => setJobExamplesFeedback('yes')}
+                        >
+                          <CheckCircle2 className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'yes' ? '' : 'text-muted-foreground'}`} />
+                          <span>Ja – det her rammer rigtigt</span>
+                        </Button>
+                        <Button
+                          variant={jobExamplesFeedback === 'adjust' ? 'default' : 'outline'}
+                          className="justify-start text-left h-auto py-4 px-4"
+                          onClick={() => setJobExamplesFeedback('adjust')}
+                        >
+                          <RefreshCw className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'adjust' ? '' : 'text-muted-foreground'}`} />
+                          <span>Det er tæt på, men jeg vil gerne justere noget</span>
+                        </Button>
+                        <Button
+                          variant={jobExamplesFeedback === 'no' ? 'default' : 'outline'}
+                          className="justify-start text-left h-auto py-4 px-4"
+                          onClick={() => setJobExamplesFeedback('no')}
+                        >
+                          <AlertCircle className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'no' ? '' : 'text-muted-foreground'}`} />
+                          <span>Nej – det er ikke den retning, jeg har i tankerne</span>
+                        </Button>
+                      </div>
 
-                    <Button 
-                      onClick={() => {
-                        // Handle feedback submission
-                        if (jobExamplesFeedback === 'yes') {
-                          // User confirmed - can proceed to actual job search
-                          alert('Super! Nu kan du fortsætte til jobsøgning.');
-                        } else if (jobExamplesFeedback === 'adjust') {
-                          // User wants to adjust - restart with feedback
-                          alert('Okay, lad os justere. Hvad vil du gerne ændre?');
-                        } else if (jobExamplesFeedback === 'no') {
-                          // User wants different direction
-                          alert('Forstået. Lad os prøve en anden retning.');
-                        }
-                      }}
-                      disabled={!jobExamplesFeedback}
-                      className="w-full"
-                    >
-                      Send svar og fortsæt
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
+                      <Button 
+                        onClick={handleJobExamplesFeedbackSubmit}
+                        disabled={!jobExamplesFeedback || isLoading}
+                        className="w-full"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Behandler...
+                          </>
+                        ) : (
+                          <>
+                            Send svar og fortsæt
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Spejling Section - Step 5B */}
+                {showSpejling && coachResponse.mode === 'spejling' && (
+                  <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
+                    <CardHeader>
+                      <div className="flex items-center gap-2">
+                        <Eye className="h-5 w-5 text-blue-600" />
+                        <CardTitle className="text-lg">Spejling</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {/* Summary paragraph */}
+                      {coachResponse.summary_paragraph && (
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                          <p className="text-base leading-relaxed">
+                            {coachResponse.summary_paragraph}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Patterns - "Det peger på" */}
+                      {coachResponse.patterns && coachResponse.patterns.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Det peger på</h4>
+                          <ul className="space-y-2">
+                            {coachResponse.patterns.map((pattern, idx) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <CheckCircle2 className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                <span className="text-sm">{pattern}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Unclear - "Det er stadig uklart" */}
+                      {coachResponse.unclear && coachResponse.unclear.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Det er stadig uklart</h4>
+                          <ul className="space-y-2">
+                            {coachResponse.unclear.map((item, idx) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <HelpCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                                <span className="text-sm">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Next actions - "Hvad vil du gøre nu?" */}
+                      <div className="space-y-3 pt-4 border-t">
+                        <h4 className="font-semibold">Hvad vil du gøre nu?</h4>
+                        <div className="grid gap-3">
+                          <Button
+                            variant={spejlingNextAction === 'search' ? 'default' : 'outline'}
+                            className="justify-start text-left h-auto py-4 px-4"
+                            onClick={() => handleSpejlingAction('search')}
+                          >
+                            <Search className="mr-3 h-5 w-5 flex-shrink-0" />
+                            <span>Vis konkrete jobopslag, der ligner de eksempler jeg bedst kunne lide</span>
+                          </Button>
+                          <Button
+                            variant={spejlingNextAction === 'adjust' ? 'default' : 'outline'}
+                            className="justify-start text-left h-auto py-4 px-4"
+                            onClick={() => handleSpejlingAction('adjust')}
+                          >
+                            <RefreshCw className="mr-3 h-5 w-5 flex-shrink-0" />
+                            <span>Justér retningen og se nye jobeksempler</span>
+                          </Button>
+                          <Button
+                            variant={spejlingNextAction === 'save' ? 'default' : 'outline'}
+                            className="justify-start text-left h-auto py-4 px-4"
+                            onClick={() => handleSpejlingAction('save')}
+                          >
+                            <Save className="mr-3 h-5 w-5 flex-shrink-0" />
+                            <span>Stop her og gem min afklaring</span>
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             )}
 

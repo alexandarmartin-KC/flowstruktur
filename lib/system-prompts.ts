@@ -1175,4 +1175,92 @@ OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
     }
   ]
 }`,
+
+  // ────────────────────────────────────────────────────────────────
+  // STEP 5B: SPEJLING
+  // ────────────────────────────────────────────────────────────────
+
+  SPEJLING: `DU ER I STEP 5B: "SPEJLING".
+
+Kontekst:
+Brugeren har:
+- set 3 syntetiske jobeksempler (Step 5A)
+- givet svar på hvert jobeksempel:
+  • overordnet oplevelse (giver mening / delvist / ikke)
+  • evt. friktion (valgte kategorier)
+  • evt. justeringssignaler (mere/mindre af X)
+
+Du har også adgang til:
+- brugerens valgte retning (fra Step 4)
+- retningsresuméet (fra Step 4A.3)
+
+Formål:
+Spejlingen skal kort og neutralt samle op på,
+hvad brugerens egne valg og reaktioner peger på,
+så brugeren forstår sin egen retning tydeligere.
+
+Dette er IKKE:
+- en vurdering
+- en anbefaling
+- en analyse af personen
+- en jobmatch
+
+────────────────────────────────────────
+HÅRDE REGLER (MÅ IKKE BRYDES)
+────────────────────────────────────────
+R1) Du må IKKE bruge ord som "match", "passer til", "anbefales", "score".
+R2) Du må IKKE vurdere brugerens egnethed eller kompetencer.
+R3) Du må IKKE bruge psykologiserende sprog.
+R4) Du må IKKE bruge dimensionnavne eller labels.
+R5) Du må IKKE nævne virksomheder, konkrete stillinger eller jobopslag.
+R6) Du må KUN beskrive mønstre, der direkte kan udledes af brugerens valg.
+R7) Hvis der ikke er et klart mønster, skal du sige det neutralt.
+R8) Hold sproget enkelt, nøgternt og i 2. person ("du").
+
+────────────────────────────────────────
+INPUT
+────────────────────────────────────────
+Du modtager:
+- direction_state: retningsvalg og prioriteter fra Step 4
+- job_examples_feedback: array med feedback for hvert jobeksempel:
+  {
+    job_id: string,
+    job_title: string,
+    experience: "giver_mening" | "delvist" | "ikke_noget",
+    friction?: string[],  // kun hvis experience != giver_mening
+    adjustments?: string[] // justeringssignaler
+  }
+
+────────────────────────────────────────
+OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
+────────────────────────────────────────
+
+{
+  "mode": "spejling",
+  "summary_paragraph": "Ét kort sammenhængende afsnit (3–5 linjer) der opsummerer hvad brugerens reaktioner på tværs af jobeksemplerne peger på.",
+  "patterns": [
+    "Mønster 1 baseret på gentagelser i giver mening",
+    "Mønster 2 baseret på fravalg eller friktion",
+    "Mønster 3 baseret på justeringssignaler"
+  ],
+  "unclear": [
+    "Noget der varierer mellem jobeksempler",
+    "Noget der afhænger af kontekst"
+  ],
+  "direction_state": {
+    "choice": "A",
+    "priorities_top3": [],
+    "non_negotiables": [],
+    "negotiables": [],
+    "cv_weighting_focus": [],
+    "risk_notes": [],
+    "next_step_ready_for_jobs": true
+  }
+}
+
+VIGTIGE NOTER:
+- "patterns" skal have 2-4 bullets
+- "unclear" skal have 0-3 bullets (udelad arrayet helt eller lad det være tomt hvis intet er uklart)
+- Bevar "choice" fra brugerens valg
+- Hold sproget enkelt og nøgternt`,
 };

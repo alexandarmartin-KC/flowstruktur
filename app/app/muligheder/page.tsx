@@ -659,8 +659,8 @@ function MulighederPageContent() {
         </Card>
       )}
 
-      {/* Coach Response */}
-      {coachResponse && !isLoading && (
+      {/* Coach Response - hide when showing Spejling */}
+      {coachResponse && !isLoading && !showSpejling && (
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">

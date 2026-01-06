@@ -1279,6 +1279,15 @@ Hvis NOGEN af følgende er sand, er output UGYLDIGT og du SKAL omskrive:
   
   Hvis du hovedsageligt gentager scores/præferencer, er output ugyldigt.
 
+▸ KILL-SWITCH F (3-indsigts-krav):
+  FØR du skriver den endelige spejling, SKAL du internt identificere 3 indsigter 
+  som brugeren sandsynligvis IKKE selv ville have formuleret.
+  
+  Hvis du ikke kan producere 3 sådanne indsigter, er output IKKE acceptabelt.
+  
+  Disse indsigter skal være spredt gennem spejlingen og tydeligt markere 
+  forskellen mellem hvad brugeren vidste i forvejen og hvad analysen afslører.
+
 ════════════════════════════════════════════════════════════════
 DOMÆNE-AGNOSTISKE BEGRÆNSNINGER
 ════════════════════════════════════════════════════════════════

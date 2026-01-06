@@ -792,24 +792,54 @@ function MulighederPageContent() {
             {/* Continue button when no questions and not showing job examples */}
             {(!coachResponse.questions || coachResponse.questions.length === 0) && 
              (!coachResponse.job_examples || coachResponse.job_examples.length === 0) && (
-              <div className="border-t pt-6">
-                <Button 
-                  onClick={handleSubmitAnswers}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Behandler...
-                    </>
-                  ) : (
-                    <>
-                      <MessageCircle className="mr-2 h-4 w-4" />
-                      Fortsæt samtalen
-                    </>
-                  )}
-                </Button>
+              <div className="border-t pt-6 space-y-3">
+                {directionState?.next_step_ready_for_jobs ? (
+                  <>
+                    <Button 
+                      onClick={handleContinueToJobExamples}
+                      disabled={isLoading}
+                      className="w-full"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Behandler...
+                        </>
+                      ) : (
+                        <>
+                          Se jobeksempler
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </>
+                      )}
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={handleReset}
+                      className="w-full"
+                    >
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      Start forfra
+                    </Button>
+                  </>
+                ) : (
+                  <Button 
+                    onClick={handleSubmitAnswers}
+                    disabled={isLoading}
+                    className="w-full"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Behandler...
+                      </>
+                    ) : (
+                      <>
+                        <MessageCircle className="mr-2 h-4 w-4" />
+                        Fortsæt samtalen
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             )}
           </CardContent>
@@ -899,8 +929,10 @@ function MulighederPageContent() {
         </Card>
       )}
 
-      {/* Direction State Summary */}
-      {directionState && directionState.choice !== 'UNSET' && !showSpejling && (
+      {/* Direction State Summary - only show when no questions are pending and NOT ready for jobs (to avoid duplicate with main card) */}
+      {directionState && directionState.choice !== 'UNSET' && !showSpejling && 
+       (!coachResponse?.questions || coachResponse.questions.length === 0) && 
+       !directionState.next_step_ready_for_jobs && (
         <Card className={directionState.next_step_ready_for_jobs 
           ? 'border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20'
           : ''

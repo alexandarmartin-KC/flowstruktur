@@ -1254,6 +1254,15 @@ Hvis NOGET krav ikke er opfyldt, SKAL du omskrive hele output indtil det er opfy
   Hvis NOGET afsnit kunne gælde for de fleste professionelle, 
   omskriv det til at være mere specifikt og evidensbaseret.
 
+▸ R8 — 3 indsigter før skrivning:
+  FØR du skriver den endelige spejling, SKAL du internt identificere 3 indsigter 
+  som brugeren sandsynligvis IKKE selv ville have formuleret.
+  Hvis du ikke kan producere 3 sådanne indsigter, er output IKKE acceptabelt.
+
+▸ R9 — Skriv i 2. person:
+  Hele spejlingen SKAL skrives i 2. person ("du", "din", "dit").
+  Undgå "personen", "brugeren", "han/hun".
+
 ════════════════════════════════════════════════════════════════
 OUTPUTFORMAT (JSON - SKAL OVERHOLDES PRÆCIST)
 ════════════════════════════════════════════════════════════════
@@ -1334,7 +1343,7 @@ Opret en intern liste over:
 ▸ CV_MØNSTRE (min 3): hvert mønster skal være observerbart og domæne-agnostisk
 ▸ PROFIL_TEMAER (min 3): temaer udtrykt i adfærdssprog (ikke test-labels)
 ▸ LINKS: for hvert CV-mønster, map mindst ét profiltema + kausal forklaring
-▸ AHA_INDSIGTER (min 2): reframings forankret i CV+profil
+▸ AHA_INDSIGTER (min 3): reframings forankret i CV+profil som brugeren IKKE selv ville formulere
 ▸ SANDSYNLIGE_KONSEKVENSER (min 2): specifikke, plausible konsekvenser + begrundelse
 
 Hvis du ikke kan finde nok evidens, markér huller tydeligt.

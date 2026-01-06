@@ -1208,8 +1208,21 @@ FAST STRUKTUR (SKAL FØLGES PRÆCIST)
    Svar på: Hvem er denne person i arbejde?
 
 2. SAMMENKOBLING AF CV OG PROFILANALYSE
-   Vis tydeligt, hvordan konkrete mønstre i CV'et hænger sammen med resultater fra profilanalysen.
-   Dette afsnit skal gøre det klart, at flere datakilder er brugt aktivt.
+   Dette afsnit er AFGØRENDE og skal demonstrere aktiv integration af data.
+   
+   KRAV til dette afsnit:
+   - Identificér konkrete mønstre i CV'et (fx udvikling i ansvar, varighed af ansættelser, typer af opgaver)
+   - Forklar HVORFOR disse mønstre opstår ved at koble dem til profilanalysen
+   - Brug kausal og forklarende sprog: "dette peger på...", "dette hjælper med at forklare hvorfor...", "dette mønster indikerer..."
+   - Vis hvordan CV-mønstre og profilpræferencer tilsammen afslører noget, brugeren ikke kunne se fra én datakilde alene
+   - Undgå jobtitler, branchespecifik terminologi eller værktøjer
+   - Skriv domæne-agnostisk så det virker på tværs af alle jobtyper
+   
+   STRUKTUREL TILGANG:
+   1) Start med at beskrive et observerbart mønster i CV'et (fx "Når man ser på CV'et som helhed, træder klare mønstre frem i hvordan...")
+   2) Forklar hvad dette mønster peger på i forhold til arbejdsorientering
+   3) Kobl dette til profilanalysen og forklar hvorfor det stemmer overens (eller afviger)
+   4) Afslut med en indsigt om hvad denne sammenkobling fortæller om brugerens underliggende arbejdsorientering
 
 3. MOTIVATION OG DRIVKRÆFTER
    Gå bagom præferencer og beskriv, hvad der reelt driver og motiverer brugeren, og under hvilke betingelser motivationen opstår.
@@ -1293,10 +1306,10 @@ EKSEMPEL PÅ GOD SPEJLING
   "questions": [],
   "summary_paragraph": "Dit arbejdsmønster er kendetegnet ved en stærk orientering mod selvstændighed kombineret med en udpræget systematisk tilgang til opgaveløsning. Du fungerer bedst i roller, hvor du kan arbejde fokuseret med komplekse problemstillinger uden hyppige afbrydelser, og hvor der er klare forventninger til leverancer. Din karriere har konsekvent bevæget sig mod roller med øget faglig dybde snarere end bredde, hvilket tyder på en specialist-orienteret arbejdsidentitet.",
   "patterns": [
-    "I dit CV ses en tydelig progression fra generalist-roller til mere specialiserede positioner. Dette stemmer overens med din profilanalyse, der viser høje scorer på dimensionerne for selvstændighed og struktur. De længste ansættelser i din karriere har været i miljøer med tydelige rammer og mulighed for fordybelse, mens kortere ansættelser ofte har været i mere kaotiske eller ustrukturerede organisationer. Denne sammenkobling peger på, at rammevilkår har større betydning for din trivsel end branchen i sig selv.",
-    "Din motivation udspringer primært af muligheden for at mestre komplekse fagområder og levere arbejde af høj kvalitet. Du drives ikke primært af synlighed eller anerkendelse, men af den indre tilfredsstillelse ved velgennemført arbejde. Motivationen opstår typisk i miljøer, hvor der er tid og rum til grundighed, og hvor overfladiske løsninger ikke accepteres. Omvendt kan motivationen falde markant i miljøer præget af hastværk eller konstante ændringer i prioriteter.",
-    "En potentiel blind vinkel i dit arbejdsmønster er balancen mellem perfektionisme og leveringsdygtighed. Din stræben efter kvalitet kan i nogle kontekster blive en begrænsning, særligt i roller hvor 'godt nok' er mere værdifuldt end 'perfekt'. Samtidig kan din præference for selvstændigt arbejde betyde, at du undervurderer værdien af tidlig sparring, hvilket kan føre til at du investerer betydelig tid i retninger, der senere skal justeres.",
-    "Roller der understøtter din profil vil typisk have klart definerede ansvarsområder, mulighed for fordybelse i faglige problemstillinger, og en kultur der værdsætter grundighed. Konsulentrollen i store organisationer eller specialistfunktioner med ekspertansvar kunne være naturlige fits. Omvendt kan roller med mange parallelle projekter, hyppige kontekstskift eller stærk afhængighed af andres tidsplaner blive energidrænende over tid og udfordre din præference for fokuseret arbejde."
+    "Når man ser på CV'et som helhed, træder klare mønstre frem i hvordan ansvar og opgavetyper har udviklet sig over tid. Der er en gennemgående bevægelse fra mere afgrænsede, udførende opgaver mod roller hvor koordinering, prioritering eller ansvar for helheden spiller en større rolle. Dette peger på en arbejdsform, hvor du ikke blot løser opgaver, men også tager medansvar for hvordan arbejdet struktureres og føres fremad. Dette mønster stemmer tæt overens med profilanalysen, der viser præferencer for overblik, ansvar og håndtering af kompleksitet fremfor stramt definerede opgaver. Sammenholdt peger dette på, at du trives i situationer der kræver navigation mellem flere hensyn og beslutninger med konsekvenser ud over din egen umiddelbare opgave. Denne udvikling afspejler ikke nødvendigvis formelle titler, men snarere en underliggende orientering mod arbejde der kræver overblik, sammenhæng og selvstændig dømmekraft.",
+    "Din motivation udspringer primært af muligheden for at skabe sammenhæng og se resultater af dit arbejde i en større kontekst. Du drives af situationer hvor dine beslutninger har betydning, og hvor du kan påvirke retningen fremfor blot at udføre. Motivationen opstår typisk i miljøer med tillid til din dømmekraft og rum til at handle selvstændigt inden for klare rammer. Omvendt kan motivationen falde i miljøer hvor beslutningskompetence er centraliseret, eller hvor arbejdet føles fragmenteret uden synlig forbindelse til helheden.",
+    "En potentiel blind vinkel i dit arbejdsmønster er balancen mellem overblik og detaljer. Din orientering mod helheden og koordinering kan betyde, at du undervurderer værdien af dybdegående specialisering på enkelte områder. Samtidig kan din præference for ansvar og indflydelse føre til frustration i roller hvor rammerne er givne, selv når selve opgaveindholdet er engagerende. Dette hjælper med at forklare hvorfor nogle kontekster over tid kan føles begrænsende – ikke på grund af arbejdets karakter, men på grund af graden af indflydelse over prioritering og struktur.",
+    "Roller der understøtter din profil vil typisk have en kombination af selvstændigt ansvar og adgang til at påvirke prioriteringer. Du vil sandsynligvis trives bedst i kontekster hvor overblik og koordinering er værdsat, og hvor der er tillid til din evne til at navigere kompleksitet. Omvendt kan roller med meget faste rammer, begrænset beslutningskompetence eller stærk detailstyring blive energidrænende over tid – også selv om opgaverne i sig selv er interessante."
   ],
   "unclear": [
     "Hvordan vil du håndtere en rolle, der kræver både specialisering og bred koordinering - og hvilken del ville du prioritere, hvis du måtte vælge?",

@@ -785,89 +785,6 @@ function MulighederPageContent() {
                     </CardContent>
                   </Card>
                 )}
-
-                {/* Spejling Section - Step 5B */}
-                {showSpejling && coachResponse.mode === 'spejling' && (
-                  <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
-                    <CardHeader>
-                      <div className="flex items-center gap-2">
-                        <Eye className="h-5 w-5 text-blue-600" />
-                        <CardTitle className="text-lg">Spejling</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      {/* Summary paragraph */}
-                      {coachResponse.summary_paragraph && (
-                        <div className="prose prose-sm dark:prose-invert max-w-none">
-                          <p className="text-base leading-relaxed">
-                            {coachResponse.summary_paragraph}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Patterns - "Det peger på" */}
-                      {coachResponse.patterns && coachResponse.patterns.length > 0 && (
-                        <div className="space-y-2">
-                          <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Det peger på</h4>
-                          <ul className="space-y-2">
-                            {coachResponse.patterns.map((pattern, idx) => (
-                              <li key={idx} className="flex items-start gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                                <span className="text-sm">{pattern}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {/* Unclear - "Det er stadig uklart" */}
-                      {coachResponse.unclear && coachResponse.unclear.length > 0 && (
-                        <div className="space-y-2">
-                          <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Det er stadig uklart</h4>
-                          <ul className="space-y-2">
-                            {coachResponse.unclear.map((item, idx) => (
-                              <li key={idx} className="flex items-start gap-2">
-                                <HelpCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                                <span className="text-sm">{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {/* Next actions - "Hvad vil du gøre nu?" */}
-                      <div className="space-y-3 pt-4 border-t">
-                        <h4 className="font-semibold">Hvad vil du gøre nu?</h4>
-                        <div className="grid gap-3">
-                          <Button
-                            variant={spejlingNextAction === 'search' ? 'default' : 'outline'}
-                            className="justify-start text-left h-auto py-4 px-4"
-                            onClick={() => handleSpejlingAction('search')}
-                          >
-                            <Search className="mr-3 h-5 w-5 flex-shrink-0" />
-                            <span>Vis konkrete jobopslag, der ligner de eksempler jeg bedst kunne lide</span>
-                          </Button>
-                          <Button
-                            variant={spejlingNextAction === 'adjust' ? 'default' : 'outline'}
-                            className="justify-start text-left h-auto py-4 px-4"
-                            onClick={() => handleSpejlingAction('adjust')}
-                          >
-                            <RefreshCw className="mr-3 h-5 w-5 flex-shrink-0" />
-                            <span>Justér retningen og se nye jobeksempler</span>
-                          </Button>
-                          <Button
-                            variant={spejlingNextAction === 'save' ? 'default' : 'outline'}
-                            className="justify-start text-left h-auto py-4 px-4"
-                            onClick={() => handleSpejlingAction('save')}
-                          >
-                            <Save className="mr-3 h-5 w-5 flex-shrink-0" />
-                            <span>Stop her og gem min afklaring</span>
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
               </div>
             )}
 
@@ -923,8 +840,91 @@ function MulighederPageContent() {
         </Card>
       )}
 
+      {/* Spejling Section - Step 5B (separate card) */}
+      {showSpejling && coachResponse && (coachResponse.mode === 'spejling' || coachResponse.summary_paragraph) && (
+        <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Eye className="h-5 w-5 text-blue-600" />
+              <CardTitle className="text-lg">Spejling</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Summary paragraph */}
+            {coachResponse.summary_paragraph && (
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <p className="text-base leading-relaxed">
+                  {coachResponse.summary_paragraph}
+                </p>
+              </div>
+            )}
+
+            {/* Patterns - "Det peger på" */}
+            {coachResponse.patterns && coachResponse.patterns.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Det peger på</h4>
+                <ul className="space-y-2">
+                  {coachResponse.patterns.map((pattern, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{pattern}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Unclear - "Det er stadig uklart" */}
+            {coachResponse.unclear && coachResponse.unclear.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Det er stadig uklart</h4>
+                <ul className="space-y-2">
+                  {coachResponse.unclear.map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <HelpCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Next actions - "Hvad vil du gøre nu?" */}
+            <div className="space-y-3 pt-4 border-t">
+              <h4 className="font-semibold">Hvad vil du gøre nu?</h4>
+              <div className="grid gap-3">
+                <Button
+                  variant={spejlingNextAction === 'search' ? 'default' : 'outline'}
+                  className="justify-start text-left h-auto py-4 px-4"
+                  onClick={() => handleSpejlingAction('search')}
+                >
+                  <Search className="mr-3 h-5 w-5 flex-shrink-0" />
+                  <span>Vis konkrete jobopslag, der ligner de eksempler jeg bedst kunne lide</span>
+                </Button>
+                <Button
+                  variant={spejlingNextAction === 'adjust' ? 'default' : 'outline'}
+                  className="justify-start text-left h-auto py-4 px-4"
+                  onClick={() => handleSpejlingAction('adjust')}
+                >
+                  <RefreshCw className="mr-3 h-5 w-5 flex-shrink-0" />
+                  <span>Justér retningen og se nye jobeksempler</span>
+                </Button>
+                <Button
+                  variant={spejlingNextAction === 'save' ? 'default' : 'outline'}
+                  className="justify-start text-left h-auto py-4 px-4"
+                  onClick={() => handleSpejlingAction('save')}
+                >
+                  <Save className="mr-3 h-5 w-5 flex-shrink-0" />
+                  <span>Stop her og gem min afklaring</span>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Direction State Summary */}
-      {directionState && directionState.choice !== 'UNSET' && (
+      {directionState && directionState.choice !== 'UNSET' && !showSpejling && (
         <Card className={directionState.next_step_ready_for_jobs 
           ? 'border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20'
           : ''

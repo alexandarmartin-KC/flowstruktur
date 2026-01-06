@@ -215,7 +215,7 @@ Generér en spejling baseret på brugerens reaktioner.`;
       parsedResponse = JSON.parse(cleanedContent);
       
       // Validate and ensure required fields exist
-      parsedResponse = validateAndNormalizeResponse(parsedResponse, user_choice);
+      parsedResponse = validateAndNormalizeResponse(parsedResponse, user_choice, request_spejling);
       
     } catch (parseErr) {
       console.error('Failed to parse AI response as JSON:', textContent);
@@ -278,11 +278,16 @@ function mapClarificationAnswer(answer: string | undefined, type: string): strin
 // Validate and normalize the response
 function validateAndNormalizeResponse(
   response: CareerCoachResponse, 
-  userChoice?: string
+  userChoice?: string,
+  isSpejling?: boolean
 ): CareerCoachResponse {
   // Ensure mode is set correctly
   if (!response.mode) {
-    response.mode = userChoice ? 'deepening' : 'ask_to_choose';
+    if (isSpejling) {
+      response.mode = 'spejling';
+    } else {
+      response.mode = userChoice ? 'deepening' : 'ask_to_choose';
+    }
   }
   
   // Ensure direction_state exists

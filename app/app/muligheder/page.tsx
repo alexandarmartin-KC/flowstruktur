@@ -97,6 +97,13 @@ function MulighederPageContent() {
   const [showSpejling, setShowSpejling] = useState(false);
   const [spejlingNextAction, setSpejlingNextAction] = useState<string>('');
 
+  // Scroll to top when showing spejling
+  useEffect(() => {
+    if (showSpejling) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [showSpejling]);
+
   // Load profile data on mount
   useEffect(() => {
     const cvAnalysis = localStorage.getItem(STORAGE_KEYS.CV_ANALYSIS);

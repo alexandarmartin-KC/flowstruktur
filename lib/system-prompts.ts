@@ -1398,3 +1398,4 @@ FORKERT: Nye ideer der ikke var i Fase 1 memo
 
 VIGTIGT: Output IKKE memo, udkast eller scores. 
 Output KUN den endelige spejling i JSON-format.`,
+};

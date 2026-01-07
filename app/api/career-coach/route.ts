@@ -204,7 +204,8 @@ Generér en spejling baseret på brugerens reaktioner.`;
     }
 
     // Use higher token limit for spejling since it produces more content
-    const maxTokens = shouldTriggerSpejling ? 4000 : 2000;
+    // Full spejling with all 6 sections + JSON structure needs ~5000-6000 tokens
+    const maxTokens = shouldTriggerSpejling ? 6000 : 2000;
     
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',

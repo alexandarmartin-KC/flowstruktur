@@ -1298,21 +1298,42 @@ Ved brug af KUN CV_TEXT og PROFILE_TEXT, besvar følgende i klare bullet points:
 3. Hvad kræver typisk OPBYGNING i nye kontekster?
    (Hvad overfører IKKE automatisk?)
    
-   VIGTIGT: Dette handler om KONTEKST, ikke om arbejdsform.
-   Hvis brugeren HAR gjort noget (dokumenteret i CV), kan det IKKE stå her.
-   Kun ting der afhænger af det NYE miljø hører til her.
+   ⚠️ KRITISK REGEL - LÆS DENNE FØR DU SKRIVER NOGET:
+   "Kræver opbygning" handler UDELUKKENDE om DEN NYE KONTEKST.
+   Det handler ALDRIG om arbejdsformer.
    
-   EKSEMPLER (kontekst-relateret, ikke arbejdsform):
-   - Kendskab til domænespecifikke krav og standarder uden for kendte rammer
-   - Indsigt i nye organisatoriske beslutningsgange og ansvarsfordelinger
-   - Forståelse af nye interessent- og beslutningsstrukturer
-   - Branchespecifikke compliance-krav og regulering
-   - Tekniske systemer og værktøjer specifikt for nyt domæne
+   FORBUDTE ORD I DENNE SEKTION (må IKKE bruges):
+   ❌ "implementering"
+   ❌ "vedligeholdelse"
+   ❌ "procedurer"
+   ❌ "arbejdsgange"
+   ❌ "koordinering"
+   ❌ "ledelse"
+   ❌ "processer"
+   ❌ "supervision"
+   ❌ "oplæring"
+   ❌ ALLE ord der beskriver hvad brugeren HAR GJORT
+   
+   KUN TILLADTE EMNER (handler om DET NYE STED):
+   ✅ Domænespecifikke krav og standarder
+   ✅ Organisatoriske beslutnings- og ansvarsstrukturer
+   ✅ Interessent- og magtforhold i nyt miljø
+   ✅ Branchespecifikke compliance-krav
+   ✅ Tekniske systemer SPECIFIKT for nyt domæne
+   ✅ Kultur og normer i nyt miljø
 
-4. OVERLAP-TJEK (OBLIGATORISK):
-   Gennemgå punkt 2 og punkt 3.
-   Hvis NOGET fra punkt 3 ligner noget fra punkt 1 eller 2 → FJERN DET fra punkt 3.
-   "Kræver opbygning" må ALDRIG indeholde arbejdsformer der er dokumenteret i CV'et.
+4. OVERLAP-TJEK (OBLIGATORISK - SPRING IKKE OVER):
+   LÆS punkt 1 og 2 højt for dig selv.
+   LÆS punkt 3 højt for dig selv.
+   
+   Spørg: "Er der NOGET ord eller begreb der optræder begge steder?"
+   Hvis JA → SLET DET FRA PUNKT 3.
+   
+   Spørg: "Beskriver punkt 3 en ARBEJDSFORM eller en KONTEKST?"
+   Hvis ARBEJDSFORM → SLET DET OG SKRIV NOGET ANDET.
+   
+   HUSK: Brugeren HAR GJORT det der står i punkt 1.
+   Det KAN IKKE samtidig "kræve opbygning".
 
 Regler for memo:
 - Vær konkret.
@@ -1327,7 +1348,15 @@ Skriv IKKE transferoversigten endnu.
 FASE 2 – TRANSFEROVERSIGT
 ════════════════════════════════════════════════════════════════
 
+⚠️ FØR DU SKRIVER: Tjek dit memo én gang til.
+Hvis "kræver opbygning" indeholder NOGET der ligner "observerede mønstre" → RET DET NU.
+
 Nu skriv den endelige **transferoversigt** på dansk.
+
+VIGTIG PÅMINDELSE:
+- "Overførbare" skal have MINDST 2-3 punkter (alt der er dokumenteret i CV'et)
+- "Kræver opbygning" skal KUN handle om den nye kontekst/domæne
+- INGEN overlap mellem sektionerne
 
 KRITISK:
 - Du må KUN bruge transfer-memo som kildemateriale.

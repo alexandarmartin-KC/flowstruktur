@@ -1298,42 +1298,43 @@ Ved brug af KUN CV_TEXT og PROFILE_TEXT, besvar følgende i klare bullet points:
 3. Hvad kræver typisk OPBYGNING i nye kontekster?
    (Hvad overfører IKKE automatisk?)
    
-   ⚠️ KRITISK REGEL - LÆS DENNE FØR DU SKRIVER NOGET:
+   ⚠️ UNIVERSEL REGEL (gælder ALLE CV'er, ALLE brancher):
+   
    "Kræver opbygning" handler UDELUKKENDE om DEN NYE KONTEKST.
-   Det handler ALDRIG om arbejdsformer.
+   Det handler ALDRIG om arbejdsformer brugeren allerede mestrer.
    
-   FORBUDTE ORD I DENNE SEKTION (må IKKE bruges):
-   ❌ "implementering"
-   ❌ "vedligeholdelse"
-   ❌ "procedurer"
-   ❌ "arbejdsgange"
-   ❌ "koordinering"
-   ❌ "ledelse"
-   ❌ "processer"
-   ❌ "supervision"
-   ❌ "oplæring"
-   ❌ ALLE ord der beskriver hvad brugeren HAR GJORT
+   SIMPEL TEST: Hvis brugeren HAR GJORT det (jf. punkt 1) → det OVERFØRER.
+   Kun det der afhænger af DET NYE STED hører til her.
    
-   KUN TILLADTE EMNER (handler om DET NYE STED):
-   ✅ Domænespecifikke krav og standarder
-   ✅ Organisatoriske beslutnings- og ansvarsstrukturer
-   ✅ Interessent- og magtforhold i nyt miljø
-   ✅ Branchespecifikke compliance-krav
-   ✅ Tekniske systemer SPECIFIKT for nyt domæne
-   ✅ Kultur og normer i nyt miljø
+   TILLADT I DENNE SEKTION (kontekst-afhængigt):
+   - Kendskab til domænespecifikke krav og standarder i det nye felt
+   - Indsigt i nye organisatoriske beslutnings- og ansvarsstrukturer
+   - Forståelse af interessent- og magtforhold i nyt miljø
+   - Branchespecifikke compliance-krav og regulering
+   - Tekniske systemer, værktøjer eller metoder specifikt for nyt domæne
+   - Kultur, normer og uskrevne regler i nyt miljø
+   
+   FORBUDT I DENNE SEKTION (arbejdsformer brugeren HAR):
+   - Alt der er nævnt eller beskrevet i punkt 1 (observerede mønstre)
+   - Alt der er nævnt i punkt 2 (overførbare arbejdsformer)
+   - Enhver arbejdsform, proces eller metode brugeren har dokumenteret erfaring med
 
 4. OVERLAP-TJEK (OBLIGATORISK - SPRING IKKE OVER):
-   LÆS punkt 1 og 2 højt for dig selv.
-   LÆS punkt 3 højt for dig selv.
    
-   Spørg: "Er der NOGET ord eller begreb der optræder begge steder?"
-   Hvis JA → SLET DET FRA PUNKT 3.
+   TRIN A: Læs punkt 1 og punkt 2 igennem. Lav en mental liste over alle 
+           arbejdsformer, processer og metoder brugeren HAR GJORT.
    
-   Spørg: "Beskriver punkt 3 en ARBEJDSFORM eller en KONTEKST?"
-   Hvis ARBEJDSFORM → SLET DET OG SKRIV NOGET ANDET.
+   TRIN B: Læs punkt 3 igennem. For HVERT punkt, spørg:
+           "Har brugeren allerede gjort dette?" 
+           Hvis JA → SLET DET FRA PUNKT 3.
    
-   HUSK: Brugeren HAR GJORT det der står i punkt 1.
-   Det KAN IKKE samtidig "kræve opbygning".
+   TRIN C: For hvert punkt i punkt 3, spørg:
+           "Beskriver dette en ARBEJDSFORM eller en NY KONTEKST?"
+           Hvis ARBEJDSFORM → SLET DET.
+           Kun kontekst-afhængige ting må stå tilbage.
+   
+   PRINCIP: CV'et er fakta. Transfer er logik. 
+   Hvis CV'et dokumenterer X, kan X ikke "kræve opbygning".
 
 Regler for memo:
 - Vær konkret.

@@ -1295,14 +1295,24 @@ Ved brug af KUN CV_TEXT og PROFILE_TEXT, besvar følgende i klare bullet points:
    - Samspil mellem operationelt arbejde og overordnet ansvar
    - Kombination af teknisk indsigt og ledelsesansvar
 
-3. Hvilke ARBEJDSFORMER kræver typisk opbygning i nye kontekster?
+3. Hvad kræver typisk OPBYGNING i nye kontekster?
    (Hvad overfører IKKE automatisk?)
    
-   EKSEMPLER:
-   - Domænespecifik viden uden for kendte rammer
-   - Kendskab til nye tekniske systemer og standarder
+   VIGTIGT: Dette handler om KONTEKST, ikke om arbejdsform.
+   Hvis brugeren HAR gjort noget (dokumenteret i CV), kan det IKKE stå her.
+   Kun ting der afhænger af det NYE miljø hører til her.
+   
+   EKSEMPLER (kontekst-relateret, ikke arbejdsform):
+   - Kendskab til domænespecifikke krav og standarder uden for kendte rammer
+   - Indsigt i nye organisatoriske beslutningsgange og ansvarsfordelinger
    - Forståelse af nye interessent- og beslutningsstrukturer
-   - Branchespecifikke compliance-krav
+   - Branchespecifikke compliance-krav og regulering
+   - Tekniske systemer og værktøjer specifikt for nyt domæne
+
+4. OVERLAP-TJEK (OBLIGATORISK):
+   Gennemgå punkt 2 og punkt 3.
+   Hvis NOGET fra punkt 3 ligner noget fra punkt 1 eller 2 → FJERN DET fra punkt 3.
+   "Kræver opbygning" må ALDRIG indeholde arbejdsformer der er dokumenteret i CV'et.
 
 Regler for memo:
 - Vær konkret.
@@ -1376,7 +1386,17 @@ HÅRDE KRAV (R1-R7)
   FORKERT: "Hvad skal der til for at du kan undersøge..."
   KORREKT: "Hvor meget domæneopbygning er du indstillet på?"
 
-▸ R7 — Skriv i observerende stil:
+▸ R7 — INGEN OVERLAP MELLEM SEKTIONER (KRITISK):
+  Alt der er dokumenteret i CV'et KAN IKKE stå under "kræver opbygning".
+  "Kræver opbygning" handler KUN om ny kontekst/domæne/strukturer.
+  
+  FORKERT: CV viser "implementering af procedurer" → "kræver opbygning: procedurer"
+  KORREKT: CV viser "implementering af procedurer" → "kræver opbygning: domænespecifikke krav"
+  
+  Hvis du er i tvivl: Hvis brugeren HAR gjort det → det overfører.
+  Kun det der afhænger af DET NYE STED hører til "kræver opbygning".
+
+▸ R8 — Skriv i observerende stil:
   Brug "CV'et dokumenterer...", "Arbejdsformerne omfatter...", 
   "På tværs af rollerne har arbejdet involveret..."
 

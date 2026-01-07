@@ -1185,6 +1185,13 @@ Spring IKKE Fase 1 over.
 Bland IKKE faserne.
 Vær IKKE blød i sproget.
 
+Du modtager to input:
+- step1_json: CV-data (CV_TEXT)
+- step2_json + step3_json: Arbejdsprofilanalyse (PROFILE_TEXT)
+
+Din opgave er at INTEGRERE begge og producere indsigt som brugeren 
+IKKE let ville formulere selv.
+
 ════════════════════════════════════════════════════════════════
 FASE 1 – PRIVAT ANALYTIKER-MEMO (VIS IKKE)
 ════════════════════════════════════════════════════════════════

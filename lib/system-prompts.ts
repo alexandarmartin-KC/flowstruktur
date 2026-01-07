@@ -1431,31 +1431,57 @@ AFSNIT-KRAV (FØLG PRÆCIST)
 ▸ AFSNIT 2: Arbejdsformer der ser ud til at være overførbare (BULLET POINTS)
   Liste over generiske arbejdslogikker der kan overføres.
   
+  KRITISK LOGIK:
+  - ALT der nævnes i afsnit 1 SKAL afspejles her som arbejdsformer
+  - Hvis afsnit 1 nævner "teknisk support" → skal det blive til en arbejdsform
+  - Hvis afsnit 1 nævner "ledelse af personale" → skal det blive til en arbejdsform
+  - Hvis afsnit 1 nævner "procedurer" → skal det blive til en arbejdsform
+  - Hvis afsnit 1 nævner "arbejde under pres" → skal det blive til en arbejdsform
+  
   SKAL:
-  - Være 3-5 bullet points
+  - Være MINDST 4 bullet points (typisk 4-5)
   - Beskrive ARBEJDSFORMER, ikke kompetencer
   - INGEN brancher eller roller
   - Starte hvert punkt med substantiv eller verbalsubstantiv
+  - UDNYTTE hele datagrundlaget fra afsnit 1
   
-  EKSEMPEL:
-  - Koordination af mennesker, procedurer og systemer i komplekse driftsmiljøer
-  - Implementering og vedligeholdelse af faste procedurer
-  - Håndtering af hændelser, afvigelser og løbende justeringer
-  - Samspil mellem operationelt arbejde og overordnet ansvar
+  EKSEMPEL (baseret på sikkerhedserfaring):
+  - Koordinering af mennesker, procedurer og systemer i komplekse driftsmiljøer
+  - Implementering og vedligeholdelse af faste arbejdsgange
+  - Håndtering af hændelser og afvigelser under tidspres
+  - Samspil mellem operationelle opgaver og overordnet ansvar
 
 ▸ AFSNIT 3: Arbejdsformer der typisk kræver opbygning (BULLET POINTS)
-  Liste over hvad der IKKE automatisk overfører.
+  Liste over hvad der IKKE automatisk overfører til nye kontekster.
+  
+  KRITISK LOGIK:
+  - Dette handler om KONTEKST, ikke evne
+  - ALDRIG inkludér noget der ER dokumenteret i CV'et
+  - Kun domænespecifikke ting der skal læres på ny
+  - Hvis noget nævnes i afsnit 1 som dokumenteret erfaring, 
+    MÅ det IKKE stå her som "kræver opbygning"
+  
+  TYPISKE KORREKTE PUNKTER:
+  - Domænespecifik viden uden for kendte rammer
+  - Kendskab til nye tekniske standarder og værktøjer
+  - Forståelse af nye organisatoriske og beslutningsmæssige strukturer
+  - Branchespecifikke compliance-krav
+  
+  TYPISKE FORKERTE PUNKTER (MÅ IKKE BRUGES):
+  - "Implementering af procedurer" (hvis CV dokumenterer dette)
+  - "Ledelse af personale" (hvis CV dokumenterer dette)
+  - "Håndtering af hændelser" (hvis CV dokumenterer dette)
   
   SKAL:
   - Være 2-4 bullet points
-  - Beskrive hvad der er kontekstafhængigt
-  - INGEN brancher eller roller
+  - KUN handle om kontekstafhængig viden
+  - ALDRIG modsige hvad der er dokumenteret i afsnit 1
   - Neutral tone (ikke negativt)
   
   EKSEMPEL:
   - Domænespecifik viden uden for kendte rammer
-  - Kendskab til nye tekniske systemer og standarder
-  - Forståelse af nye interessent- og beslutningsstrukturer
+  - Kendskab til nye tekniske standarder og værktøjer
+  - Forståelse af nye organisatoriske og beslutningsmæssige strukturer
 
 ▸ AFSNIT 4: Åbne afklaringer (PRÆCIS 2 spørgsmål)
   Åbne spørgsmål der hjælper brugeren videre.
@@ -1476,6 +1502,7 @@ KVALITETSPORT (INTERNT)
 
 Før endelig output, spørg INTERNT:
 
+TJEK 1 - FORBUDTE ELEMENTER:
 "Indeholder output:
 1) Brancher eller rolletyper? → OMSKRIV
 2) Vurderinger ('passer til', 'trives i')? → OMSKRIV
@@ -1483,6 +1510,22 @@ Før endelig output, spørg INTERNT:
 4) Personlighedsfortolkning? → OMSKRIV"
 
 Hvis JA til nogen → OMSKRIV.
+
+TJEK 2 - LOGISK KONSISTENS:
+"Er der noget i 'kræver opbygning' der også er nævnt i afsnit 1 
+som dokumenteret erfaring?"
+
+Hvis JA → FJERN det fra 'kræver opbygning' – det er en logisk fejl.
+
+TJEK 3 - DÆKNING:
+"Afspejler 'overførbare arbejdsformer' ALT der nævnes i afsnit 1?"
+
+Hvis NEJ → TILFØJ de manglende arbejdsformer.
+
+TJEK 4 - MINIMUMSANTAL:
+"Har 'overførbare arbejdsformer' mindst 4 bullets?"
+
+Hvis NEJ → TILFØJ flere baseret på afsnit 1.
 
 ════════════════════════════════════════════════════════════════
 UNDGÅ FØLGENDE

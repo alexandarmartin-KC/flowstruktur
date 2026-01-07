@@ -1206,18 +1206,32 @@ Ved brug af KUN CV_TEXT og PROFILE_TEXT, besvar følgende spørgsmål i klare bu
 
 1. Hvad er de 3 mest konsistente adfærdsmønstre på tværs af denne persons karriere?
    (Mønstre SKAL være observerbare i CV'et, ikke fortolkninger.)
+   
+   EKSEMPLER PÅ ACCEPTABLE MØNSTRE (domæne-agnostiske):
+   - Bevægelse fra udførende → koordinerende roller
+   - Gentaget ansvar for "at få tingene til at fungere"
+   - Gentagende ejerskab uden formel mandat
+   - Gentagne proces-/system-forbedringer
+   - Agerer som buffer mellem mennesker, systemer og beslutninger
+   - Bevægelse i omfang/ansvar over tid
+   - Gentaget tværgående stakeholder-arbejde
+   - Mønster af at tage over når andre fejler eller er fraværende
+   - Gentagen kombination af teknisk forståelse + menneskelig koordinering
 
 2. Hvor tager denne person gentagne gange ansvar uden at have klart mandat eller autoritet?
+   (Identificér tomrum personen typisk fylder ud uopfordret.)
 
 3. Hvilken professionel frustration vil sandsynligvis gentage sig for denne person hvis intet ændres?
-   (Forklar mekanikken, ikke følelserne.)
+   (Forklar MEKANIKKEN: hvad er ubalancen, ikke følelsen.)
 
 4. Hvad TROR personen problemet er i deres karriere – og hvad er det dybere, reelle problem?
+   (Overfladisk opfattelse vs. underliggende dynamik.)
 
 5. Hvilken styrke bliver oftest til en belastning for denne person?
-   (Forklar hvordan og i hvilke situationer.)
+   (Forklar hvordan og i hvilke situationer styrken vender.)
 
-6. Hvordan vil andre mennesker sandsynligvis misforstå denne person på arbejdet, baseret på deres adfærd?
+6. Hvordan vil kolleger eller ledere sandsynligvis MISFORTOLKE denne persons adfærd?
+   (Hvad ser andre vs. hvad er den reelle intention.)
 
 Regler for memo:
 - Vær bramfri.
@@ -1338,33 +1352,89 @@ BEMÆRK:
 - Ingen ekstra overskrifter
 
 ════════════════════════════════════════════════════════════════
-AFSNIT-KRAV
+AFSNIT-KRAV (FØLG PRÆCIST)
 ════════════════════════════════════════════════════════════════
 
 ▸ AFSNIT 1: Overordnet arbejdsmønster (8-12 linjer)
-  - Beskriv brugerens arbejdsidentitet som et mønster
-  - SKAL inkludere én karrierebevægelse ("over tid bevæger du dig fra… til…")
+  Beskriv brugerens arbejdsidentitet som et MØNSTER, ikke en liste af jobs.
+  
+  SKAL indeholde:
+  - Én tydelig karrierebevægelse ("over tid bevæger du dig fra… mod…")
+  - Hvad denne bevægelse afslører om personens arbejdsmæssige identitet
+  - Hvordan andre typisk orienterer sig mod denne person (uformelt)
+  
+  TONE-EKSEMPEL (tilpas til brugerens data):
+  "Dit arbejdsmæssige mønster er kendetegnet ved en gradvis bevægelse fra [X] 
+  mod roller med større ansvar for [Y]. Du bliver den, der både forstår detaljen 
+  og helheden – og som andre orienterer sig imod, når der opstår [Z]."
 
 ▸ AFSNIT 2: Sammenkobling af CV og profilanalyse (14-20 linjer) — VIGTIGST
-  - SKAL vise 3+ CV-mønstre koblet til profiltemaer
-  - SKAL bruge kausale konnektorer
-  - SKAL inkludere mindst 1 ikke-indlysende indsigt
+  Dette afsnit er KERNEN. Her skal CV og profil INTEGRERES, ikke beskrives parallelt.
+  
+  SKAL indeholde:
+  - Mindst 3 observerbare CV-mønstre (ikke jobtitler, men adfærdsmønstre)
+  - For HVERT mønster: kobling til profiltema med kausal forklaring
+  - Mindst 1 IKKE-INDLYSENDE indsigt (reframing af noget brugeren troede de forstod)
+  
+  KÆDE-STRUKTUR (obligatorisk):
+  CV-mønster → profil-tendens → konkret adfærd → sandsynlig konsekvens
+  
+  EKSEMPEL PÅ IKKE-INDLYSENDE INDSIGT (tilpas til brugerens data):
+  "En central, men ikke umiddelbart indlysende indsigt er, at din orientering 
+  mod [X] primært handler om [Y – noget dybere]. Du søger ikke [overfladisk tolkning], 
+  men [dybere behov]. Det forklarer, hvorfor [konkret konsekvens]."
+  
+  BRUG KAUSALE KONNEKTORER:
+  "det peger på…", "det hænger sammen med…", "det kan forklare hvorfor…",
+  "konsekvensen er ofte…", "over tid betyder det, at…"
 
 ▸ AFSNIT 3: Motivation og drivkræfter (8-12 linjer)
-  - Forklar hvad der skaber energi og under hvilke betingelser
-  - SKAL referere til både CV og profil
+  Forklar HVAD der skaber energi og UNDER HVILKE BETINGELSER.
+  
+  SKAL indeholde:
+  - Konkrete situationstyper der motiverer (ikke abstrakte værdier)
+  - Reference til både CV-evidens ("det ses i…") og profil ("det stemmer med…")
+  - Hvad der omvendt dræner motivation (med mekanisk forklaring)
+  
+  UNDGÅ: "Du motiveres af udfordringer" (for generisk)
+  FORETRÆKKE: "Du finder energi i roller hvor der er beslutningstæthed – 
+  hvor der skal træffes valg, prioriteres og balanceres mellem hensyn."
 
 ▸ AFSNIT 4: Spændinger og blinde vinkler (8-12 linjer)
-  - SKAL inkludere "styrke → mulig skyggeside" format
-  - SKAL oversætte til konkret scenarie
-  - SKAL inkludere mindst 1 sandsynlig konsekvens
+  Dette afsnit skal være KONFRONTERENDE men respektfuldt.
+  
+  SKAL indeholde:
+  - Én central spænding i arbejdsmønsteret
+  - "Styrke → skyggeside" format med konkret scenarie
+  - Hvad dette mønster har KOSTET brugeren (retrospektivt)
+  - Hvordan andre sandsynligvis MISFORSTÅR brugeren
+  
+  EKSEMPEL-STRUKTUR (tilpas til brugerens data):
+  "En gennemgående spænding er balancen mellem [styrke] og [konsekvens]. 
+  Du har en tendens til at [adfærd], hvilket gør dig [positiv effekt] – 
+  men det rummer også en væsentlig blind vinkel: [konkret risiko].
+  
+  Over tid kan det føre til [konkret konsekvens] – ikke fordi [overfladisk årsag], 
+  men fordi [dybere mekanik]."
 
 ▸ AFSNIT 5: Praktiske konsekvenser for jobvalg (8-12 linjer)
-  - Beskriv rollekarakteristika der passer vs. dræner (ingen jobtitler)
-  - SKAL inkludere 2 fit-betingelser og 2 risiko-betingelser
+  Oversæt analysen til KONKRETE rolle-karakteristika (IKKE jobtitler).
+  
+  SKAL indeholde:
+  - 2 FIT-betingelser: "Du vil sandsynligvis trives i roller hvor…"
+  - 2 RISIKO-betingelser: "Der er risiko ved roller hvor…"
+  - Én sandsynlig konsekvens hvis risiko-roller vælges
+  
+  UNDGÅ: "Du bør søge lederstillinger" (for specifikt)
+  FORETRÆKKE: "Du vil trives i roller hvor ansvar og indflydelse er tydeligt 
+  koblet sammen, og hvor der er plads til at påvirke rammer og prioriteringer."
 
 ▸ AFSNIT 6: Refleksionsspørgsmål (præcis 3 bullets)
-  - Specifikke og handlingsorienterede
+  Specifikke, handlingsorienterede spørgsmål der tvinger eftertanke.
+  
+  SKAL være:
+  - Forankret i analysens indsigter
+  - Svære at besvare overfladisk
   - KUN dette afsnit må have bullet points
 
 ════════════════════════════════════════════════════════════════

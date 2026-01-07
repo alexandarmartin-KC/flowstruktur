@@ -1237,13 +1237,19 @@ FASE 2 – KARRIERESPEJLING
 
 Nu skriv den endelige **karrierespejling** på dansk.
 
-VIGTIGT:
-- Du må KUN bruge indsigter fra analytiker-memo som din kilde.
-- Du må IKKE introducere nye ideer.
+KRITISK:
+- Du må KUN bruge analytiker-memo som kildemateriale.
+- Du må IKKE introducere nye ideer eller blødgøre konklusioner.
 - Hvis noget ikke er i memo, kan det IKKE fremgå i refleksionen.
 
-Dette er en BETALT, PREMIUM karrierespejling.
-Den skal føles indsigtsfuld, konfronterende og præcis — ikke generisk eller høflig.
+Dette er en BETALT, PREMIUM refleksion.
+
+TONE:
+- Analytisk, rolig, præcis.
+- Forklar årsag → adfærd → konsekvens.
+- Ingen testrapport-sprog.
+
+Output KUN den endelige refleksion.
 
 ════════════════════════════════════════════════════════════════
 HÅRDE KRAV (R1-R9)

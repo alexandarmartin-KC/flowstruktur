@@ -861,17 +861,17 @@ function MulighederPageContent() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Eye className="h-5 w-5 text-blue-600" />
-              <CardTitle className="text-lg">Din karrierespejling</CardTitle>
+              <CardTitle className="text-lg">Din transferoversigt</CardTitle>
             </div>
             <CardDescription>
-              En samlet analyse baseret på dit CV og din arbejdsprofilanalyse
+              Hvad din erfaring kan bruges til i nye sammenhænge – baseret på dit CV og dine valg
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
-            {/* Afsnit 1: Overordnet arbejdsmønster */}
+            {/* Afsnit 1: Bærende arbejdsmønstre */}
             {coachResponse.summary_paragraph && (
               <div className="space-y-2">
-                <h4 className="font-semibold text-base">Overordnet arbejdsmønster</h4>
+                <h4 className="font-semibold text-base">Bærende arbejdsmønstre</h4>
                 <div className="prose prose-sm dark:prose-invert max-w-none">
                   <p className="text-base leading-relaxed text-muted-foreground">
                     {coachResponse.summary_paragraph}
@@ -883,10 +883,10 @@ function MulighederPageContent() {
             {/* Afsnit 2-5 from patterns array */}
             {coachResponse.patterns && coachResponse.patterns.length > 0 && (
               <>
-                {/* Afsnit 2: Sammenkobling af CV og profilanalyse */}
+                {/* Afsnit 2: Hvad overfører til nye sammenhænge */}
                 {coachResponse.patterns[0] && (
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-base">Sammenkobling af CV og profilanalyse</h4>
+                    <h4 className="font-semibold text-base">Hvad overfører til nye sammenhænge</h4>
                     <div className="prose prose-sm dark:prose-invert max-w-none">
                       <p className="text-base leading-relaxed text-muted-foreground">
                         {coachResponse.patterns[0]}
@@ -895,10 +895,10 @@ function MulighederPageContent() {
                   </div>
                 )}
 
-                {/* Afsnit 3: Motivation og drivkræfter */}
+                {/* Afsnit 3: Hvad kræver opbygning eller afklaring */}
                 {coachResponse.patterns[1] && (
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-base">Motivation og drivkræfter</h4>
+                    <h4 className="font-semibold text-base">Hvad kræver opbygning eller afklaring</h4>
                     <div className="prose prose-sm dark:prose-invert max-w-none">
                       <p className="text-base leading-relaxed text-muted-foreground">
                         {coachResponse.patterns[1]}
@@ -907,10 +907,10 @@ function MulighederPageContent() {
                   </div>
                 )}
 
-                {/* Afsnit 4: Spændinger, paradokser eller blinde vinkler */}
+                {/* Afsnit 4: Arbejdsmiljøer der passer / skaber friktion */}
                 {coachResponse.patterns[2] && (
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-base">Spændinger og blinde vinkler</h4>
+                    <h4 className="font-semibold text-base">Arbejdsmiljøer der passer / skaber friktion</h4>
                     <div className="prose prose-sm dark:prose-invert max-w-none">
                       <p className="text-base leading-relaxed text-muted-foreground">
                         {coachResponse.patterns[2]}
@@ -919,10 +919,10 @@ function MulighederPageContent() {
                   </div>
                 )}
 
-                {/* Afsnit 5: Praktiske konsekvenser */}
+                {/* Afsnit 5: Konkrete næste skridt */}
                 {coachResponse.patterns[3] && (
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-base">Praktiske konsekvenser for jobvalg</h4>
+                    <h4 className="font-semibold text-base">Konkrete næste skridt</h4>
                     <div className="prose prose-sm dark:prose-invert max-w-none">
                       <p className="text-base leading-relaxed text-muted-foreground">
                         {coachResponse.patterns[3]}
@@ -933,11 +933,11 @@ function MulighederPageContent() {
               </>
             )}
 
-            {/* Afsnit 6: Refleksionsspørgsmål */}
+            {/* Afsnit 6: Afklaringsspørgsmål */}
             {coachResponse.unclear && coachResponse.unclear.length > 0 && (
               <div className="space-y-3 pt-4 border-t">
-                <h4 className="font-semibold text-base">Refleksionsspørgsmål</h4>
-                <p className="text-sm text-muted-foreground">Spørgsmål der kan hjælpe dig med at omsætte denne spejling til handling:</p>
+                <h4 className="font-semibold text-base">Afklaringsspørgsmål</h4>
+                <p className="text-sm text-muted-foreground">Spørgsmål der kan hjælpe dig med at komme videre:</p>
                 <ul className="space-y-3">
                   {coachResponse.unclear.map((item, idx) => (
                     <li key={idx} className="flex items-start gap-3 bg-muted/50 p-3 rounded-lg">

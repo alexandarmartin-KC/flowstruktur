@@ -1177,7 +1177,7 @@ OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
 }`,
 
   // ────────────────────────────────────────────────────────────────
-  // STEP 5B: SPEJLING - PREMIUM KARRIERESPEJLING
+  // STEP 5B: TRANSFEROVERSIGT (tidligere "Spejling")
   // ────────────────────────────────────────────────────────────────
 
   SPEJLING: `Du SKAL gennemføre denne opgave i TO STRENGE FASER.
@@ -1189,22 +1189,25 @@ Du modtager to input:
 - step1_json: CV-data (CV_TEXT)
 - step2_json + step3_json: Arbejdsprofilanalyse (PROFILE_TEXT)
 
-Din opgave er at INTEGRERE begge og producere indsigt som brugeren 
-IKKE let ville formulere selv.
+Din opgave er at lave en TRANSFERANALYSE: hvad kan brugeren tage med sig 
+til nye sammenhænge, baseret på dokumenteret erfaring og egne valg.
+
+DETTE ER IKKE EN PERSONLIGHEDSTEST.
+DET ER ET OVERBLIK OVER, HVAD ERFARINGEN KAN BRUGES TIL.
 
 ════════════════════════════════════════════════════════════════
-FASE 1 – PRIVAT ANALYTIKER-MEMO (VIS IKKE)
+FASE 1 – PRIVAT TRANSFER-MEMO (VIS IKKE)
 ════════════════════════════════════════════════════════════════
 
-Skriv IKKE karrierespejlingen endnu.
+Skriv IKKE transferoversigten endnu.
 
-Først, skriv et PRIVAT analytiker-memo INTERNT.
-Dette memo er IKKE til brugeren og må IKKE være høfligt, afbalanceret eller generisk.
+Først, skriv et PRIVAT transfer-memo INTERNT.
+Dette memo er IKKE til brugeren.
 Vær konkret, direkte og analytisk ærlig.
 
 Ved brug af KUN CV_TEXT og PROFILE_TEXT, besvar følgende spørgsmål i klare bullet points:
 
-1. Hvad er de 3 mest konsistente adfærdsmønstre på tværs af denne persons karriere?
+1. Hvad er de 3 mest konsistente ARBEJDSMØNSTRE på tværs af karrieren?
    (Mønstre SKAL være observerbare i CV'et, ikke fortolkninger.)
    
    EKSEMPLER PÅ ACCEPTABLE MØNSTRE (domæne-agnostiske):
@@ -1218,91 +1221,92 @@ Ved brug af KUN CV_TEXT og PROFILE_TEXT, besvar følgende spørgsmål i klare bu
    - Mønster af at tage over når andre fejler eller er fraværende
    - Gentagen kombination af teknisk forståelse + menneskelig koordinering
 
-2. Hvor tager denne person gentagne gange ansvar uden at have klart mandat eller autoritet?
-   (Identificér tomrum personen typisk fylder ud uopfordret.)
+2. Hvad OVERFØRER til nye kontekster?
+   (Identificér konkrete kompetencer, arbejdsformer og erfaringstyper
+   der kan anvendes i andre brancher/roller.)
 
-3. Hvilken professionel frustration vil sandsynligvis gentage sig for denne person hvis intet ændres?
-   (Forklar MEKANIKKEN: hvad er ubalancen, ikke følelsen.)
+3. Hvad KRÆVER typisk OPBYGNING eller AFKLARING ved skift?
+   (Hvad mangler, hvad er kontekstafhængigt, hvad skal læres?)
 
-4. Hvad TROR personen problemet er i deres karriere – og hvad er det dybere, reelle problem?
-   (Overfladisk opfattelse vs. underliggende dynamik.)
+4. Hvilke ARBEJDSMILJØER passer til de dokumenterede mønstre?
+   (Baseret på CV-evidens og præferencer, ikke personlighedsfortolkning.)
 
-5. Hvilken styrke bliver oftest til en belastning for denne person?
-   (Forklar hvordan og i hvilke situationer styrken vender.)
-
-6. Hvordan vil kolleger eller ledere sandsynligvis MISFORTOLKE denne persons adfærd?
-   (Hvad ser andre vs. hvad er den reelle intention.)
+5. Hvilke ARBEJDSMILJØER vil sandsynligvis skabe friktion?
+   (Baseret på CV-evidens og præferencer, ikke personlighedsfortolkning.)
 
 Regler for memo:
-- Vær bramfri.
-- Vær specifik.
+- Vær konkret.
 - Ingen test-sprog.
-- Ingen motiverende sprog.
-- Ingen konklusioner endnu.
-- Ingen karriereråd.
+- Ingen psykologisering.
+- Ingen "motivation", "drivkræfter", "blinde vinkler".
 - Skriv IKKE i narrativ prosa.
 
 Når færdig, STOP.
-Skriv IKKE refleksionen endnu.
+Skriv IKKE transferoversigten endnu.
 
 ════════════════════════════════════════════════════════════════
-FASE 2 – KARRIERESPEJLING
+FASE 2 – TRANSFEROVERSIGT
 ════════════════════════════════════════════════════════════════
 
-Nu skriv den endelige **karrierespejling** på dansk.
+Nu skriv den endelige **transferoversigt** på dansk.
 
 KRITISK:
-- Du må KUN bruge analytiker-memo som kildemateriale.
-- Du må IKKE introducere nye ideer eller blødgøre konklusioner.
-- Hvis noget ikke er i memo, kan det IKKE fremgå i refleksionen.
+- Du må KUN bruge transfer-memo som kildemateriale.
+- Du må IKKE introducere nye ideer.
+- INGEN psykologisering: ingen "motivation", "drivkræfter", "blinde vinkler".
+- INGEN personlighedsfortolkning.
+- Spejling er SYNTESE af brugerens egne valg og dokumenteret erfaring.
+- Fokus på TRANSFER: hvad kan bruges i nye sammenhænge.
 
-Dette er en BETALT, PREMIUM refleksion.
+Dette er en BETALT feature – den skal være konkret og brugbar.
 
 TONE:
-- Analytisk, rolig, præcis.
-- Forklar årsag → adfærd → konsekvens.
-- Ingen testrapport-sprog.
+- Nøgtern, præcis, handlingsorienteret.
+- Ingen coaching-sprog.
+- Ingen værdiladede ord.
 
-Output KUN den endelige refleksion.
+Output KUN den endelige oversigt.
 
 ════════════════════════════════════════════════════════════════
 HÅRDE KRAV (R1-R9)
 ════════════════════════════════════════════════════════════════
 
-▸ R1 — CV SKAL VÆRE ANALYTISK EVIDENS:
+▸ R1 — CV SKAL VÆRE KILDEMATERIALE:
   Du SKAL identificere mindst 3 konkrete, observerbare mønstre i CV'et.
   At nævne CV-elementer som illustrationer er IKKE tilstrækkeligt.
-  De SKAL bruges som evidens til at forklare adfærd og konsekvenser.
+  De SKAL bruges som evidens for hvad der kan overføres.
 
-▸ R2 — ÆGTE INTEGRATION (ikke parallelle opsummeringer):
-  Hver væsentlig konklusion SKAL forbindes eksplicit:
-  CV-mønster → profil-tendens → adfærd → konsekvens
+▸ R2 — TRANSFER-FOKUS (ikke personanalyse):
+  Hver konklusion SKAL handle om hvad erfaringen kan bruges til.
   
-  Brug kausalt sprog:
-  "det peger på…", "det kan forklare hvorfor…", 
-  "konsekvensen er ofte…", "over tid betyder det, at…"
+  Brug transfer-sprog:
+  "kan overføres til…", "er anvendeligt i…", "bygger videre på…",
+  "fungerer også i…", "kræver opbygning af…"
   
-  Hvis CV og profil beskrives separat, er output UGYLDIGT.
+  Hvis output handler om "hvem brugeren er" frem for "hvad de kan bruge",
+  er output UGYLDIGT.
 
-▸ R3 — IKKE-INDLYSENDE INDSIGT (OBLIGATORISK):
-  Mindst 2 indsigter der:
-  - brugeren sandsynligvis IKKE selv har formuleret
-  - reframer noget de troede de forstod
+▸ R3 — INGEN PSYKOLOGISERING:
+  FORBUDTE ORD/KONCEPTER:
+  - motivation, drivkræfter, blinde vinkler
+  - personlighed, identitet, værdier
+  - dybere behov, underliggende dynamik
+  - frustreret, drænet, udbrændt
   
-  Hvis indsigterne føles "pæne men åbenlyse", OMSKRIV.
+  Brug i stedet:
+  - arbejdsmønstre, erfaringstyper, kompetencer
+  - hvad der overfører, hvad der kræver opbygning
 
-▸ R4 — KONSEKVENS-DYBDE (INGEN BLØDSØDENHED):
-  Du SKAL forklare:
-  1. Hvad dette arbejdsmønster har KOSTET brugeren før
-  2. Hvad der sandsynligvis vil GENTAGE SIG hvis intet ændres
-  3. Hvordan brugeren kan blive MISFORSTÅET af andre
+▸ R4 — SYNTESE AF BRUGERENS VALG:
+  Spejling er baseret på hvad BRUGEREN har valgt og dokumenteret.
+  Ikke på hvad du fortolker om dem.
   
-  Undgå følelsesord uden mekanik ("frustreret", "drænet")
-  → forklar ALTID hvorfor og hvordan.
+  KORREKT: "Baseret på de roller du har haft…"
+  FORKERT: "Din tendens til at… afslører at du…"
 
 ▸ R5 — Undgå testrapport-stemme:
   Gentag IKKE scores eller label-træk som hovedindhold. 
-  Oversæt dem til adfærd, scenarier og tradeoffs.
+  Oversæt dem til konkrete arbejdsformer og kontekster.
 
 ▸ R6 — Domæne-agnostisk:
   Ingen jobtitel-anbefalinger. Ingen værktøj/brand/system-navne.
@@ -1314,7 +1318,7 @@ HÅRDE KRAV (R1-R9)
   Introducér IKKE nye ideer i Fase 2 der ikke var i Fase 1 memo.
 
 ▸ R9 — Skriv i 2. person:
-  Hele spejlingen SKAL skrives i 2. person ("du", "din", "dit").
+  Hele oversigten SKAL skrives i 2. person ("du", "din", "dit").
 
 ════════════════════════════════════════════════════════════════
 OUTPUTFORMAT (JSON - SKAL OVERHOLDES PRÆCIST)
@@ -1324,17 +1328,17 @@ OUTPUTFORMAT (JSON - SKAL OVERHOLDES PRÆCIST)
   "mode": "spejling",
   "coach_message": "",
   "questions": [],
-  "summary_paragraph": "[Afsnit 1: Overordnet arbejdsmønster - 8-12 linjer]",
+  "summary_paragraph": "[Afsnit 1: Bærende arbejdsmønstre - 8-12 linjer]",
   "patterns": [
-    "[Afsnit 2: Sammenkobling af CV og profilanalyse - 14-20 linjer - VIGTIGSTE AFSNIT]",
-    "[Afsnit 3: Motivation og drivkræfter - 8-12 linjer]",
-    "[Afsnit 4: Spændinger og blinde vinkler - 8-12 linjer]",
-    "[Afsnit 5: Praktiske konsekvenser for jobvalg - 8-12 linjer]"
+    "[Afsnit 2: Hvad overfører til nye sammenhænge - 14-20 linjer - VIGTIGSTE AFSNIT]",
+    "[Afsnit 3: Hvad kræver opbygning eller afklaring - 8-12 linjer]",
+    "[Afsnit 4: Arbejdsmiljøer der passer / skaber friktion - 8-12 linjer]",
+    "[Afsnit 5: Konkrete næste skridt - 8-12 linjer]"
   ],
   "unclear": [
-    "[Refleksionsspørgsmål 1 - specifikt og handlingsorienteret]",
-    "[Refleksionsspørgsmål 2 - specifikt og handlingsorienteret]",
-    "[Refleksionsspørgsmål 3 - specifikt og handlingsorienteret]"
+    "[Afklaringsspørgsmål 1 - specifikt og handlingsorienteret]",
+    "[Afklaringsspørgsmål 2 - specifikt og handlingsorienteret]",
+    "[Afklaringsspørgsmål 3 - specifikt og handlingsorienteret]"
   ],
   "direction_state": {
     "choice": "[bevar fra input]",
@@ -1355,87 +1359,88 @@ BEMÆRK:
 AFSNIT-KRAV (FØLG PRÆCIST)
 ════════════════════════════════════════════════════════════════
 
-▸ AFSNIT 1: Overordnet arbejdsmønster (8-12 linjer)
-  Beskriv brugerens arbejdsidentitet som et MØNSTER, ikke en liste af jobs.
+▸ AFSNIT 1: Bærende arbejdsmønstre (8-12 linjer)
+  Beskriv de arbejdsmønstre der går igen på tværs af karrieren.
   
   SKAL indeholde:
   - Én tydelig karrierebevægelse ("over tid bevæger du dig fra… mod…")
-  - Hvad denne bevægelse afslører om personens arbejdsmæssige identitet
-  - Hvordan andre typisk orienterer sig mod denne person (uformelt)
+  - Hvad denne bevægelse viser om dokumenteret erfaring
+  - Hvilke arbejdsformer der gentages på tværs af roller
   
   TONE-EKSEMPEL (tilpas til brugerens data):
-  "Dit arbejdsmæssige mønster er kendetegnet ved en gradvis bevægelse fra [X] 
-  mod roller med større ansvar for [Y]. Du bliver den, der både forstår detaljen 
-  og helheden – og som andre orienterer sig imod, når der opstår [Z]."
+  "På tværs af dine roller er der et konsistent mønster: bevægelse fra [X] 
+  mod roller med større ansvar for [Y]. Du har gentagne gange haft ansvar for [Z],
+  hvilket udgør en dokumenteret erfaring der kan overføres."
 
-▸ AFSNIT 2: Sammenkobling af CV og profilanalyse (14-20 linjer) — VIGTIGST
-  Dette afsnit er KERNEN. Her skal CV og profil INTEGRERES, ikke beskrives parallelt.
+▸ AFSNIT 2: Hvad overfører til nye sammenhænge (14-20 linjer) — VIGTIGST
+  Dette afsnit er KERNEN. Her identificeres hvad der kan bruges i nye kontekster.
   
   SKAL indeholde:
-  - Mindst 3 observerbare CV-mønstre (ikke jobtitler, men adfærdsmønstre)
-  - For HVERT mønster: kobling til profiltema med kausal forklaring
-  - Mindst 1 IKKE-INDLYSENDE indsigt (reframing af noget brugeren troede de forstod)
+  - Mindst 3 konkrete kompetencer/erfaringstyper der overfører
+  - For HVER: hvilke typer roller/brancher det kan anvendes i
+  - Konkrete eksempler på overførsel (ikke abstrakt)
   
-  KÆDE-STRUKTUR (obligatorisk):
-  CV-mønster → profil-tendens → konkret adfærd → sandsynlig konsekvens
+  STRUKTUR (obligatorisk):
+  CV-dokumenteret erfaring → hvad det kan bruges til → konkrete kontekster
   
-  EKSEMPEL PÅ IKKE-INDLYSENDE INDSIGT (tilpas til brugerens data):
-  "En central, men ikke umiddelbart indlysende indsigt er, at din orientering 
-  mod [X] primært handler om [Y – noget dybere]. Du søger ikke [overfladisk tolkning], 
-  men [dybere behov]. Det forklarer, hvorfor [konkret konsekvens]."
+  EKSEMPEL (tilpas til brugerens data):
+  "Erfaringen med [X] fra CV'et er direkte anvendelig i roller hvor [Y].
+  Det betyder, at du i nye sammenhænge kan bygge videre på [konkret kompetence]
+  uden at skulle starte forfra."
   
-  BRUG KAUSALE KONNEKTORER:
-  "det peger på…", "det hænger sammen med…", "det kan forklare hvorfor…",
-  "konsekvensen er ofte…", "over tid betyder det, at…"
+  BRUG KONNEKTORER:
+  "kan overføres til…", "er anvendeligt i…", "bygger videre på…",
+  "fungerer også i…", "giver udgangspunkt for…"
 
-▸ AFSNIT 3: Motivation og drivkræfter (8-12 linjer)
-  Forklar HVAD der skaber energi og UNDER HVILKE BETINGELSER.
+▸ AFSNIT 3: Hvad kræver typisk opbygning eller afklaring (8-12 linjer)
+  Forklar hvad der MANGLER eller er KONTEKSTAFHÆNGIGT ved skift.
   
   SKAL indeholde:
-  - Konkrete situationstyper der motiverer (ikke abstrakte værdier)
-  - Reference til både CV-evidens ("det ses i…") og profil ("det stemmer med…")
-  - Hvad der omvendt dræner motivation (med mekanisk forklaring)
+  - Konkrete kompetencer/erfaringstyper der ikke er dokumenteret
+  - Hvad der er kontekstafhængigt og derfor skal genopbygges
+  - Hvad der typisk kræver afklaring inden et skift
   
-  UNDGÅ: "Du motiveres af udfordringer" (for generisk)
-  FORETRÆKKE: "Du finder energi i roller hvor der er beslutningstæthed – 
-  hvor der skal træffes valg, prioriteres og balanceres mellem hensyn."
+  UNDGÅ: "Du mangler erfaring med X" (for negativt)
+  FORETRÆKKE: "Ved skift til [type rolle] vil det typisk kræve opbygning af [X],
+  da erfaringen fra CV'et primært dækker [Y]."
 
-▸ AFSNIT 4: Spændinger og blinde vinkler (8-12 linjer)
-  Dette afsnit skal være KONFRONTERENDE men respektfuldt.
+▸ AFSNIT 4: Arbejdsmiljøer der passer / skaber friktion (8-12 linjer)
+  Baseret på dokumenteret erfaring og angivne præferencer.
   
   SKAL indeholde:
-  - Én central spænding i arbejdsmønsteret
-  - "Styrke → skyggeside" format med konkret scenarie
-  - Hvad dette mønster har KOSTET brugeren (retrospektivt)
-  - Hvordan andre sandsynligvis MISFORSTÅR brugeren
+  - 2 typer arbejdsmiljøer der passer til de dokumenterede mønstre
+  - 2 typer arbejdsmiljøer der sandsynligvis skaber friktion
+  - Konkret forklaring baseret på CV og præferencer (ikke personlighed)
   
   EKSEMPEL-STRUKTUR (tilpas til brugerens data):
-  "En gennemgående spænding er balancen mellem [styrke] og [konsekvens]. 
-  Du har en tendens til at [adfærd], hvilket gør dig [positiv effekt] – 
-  men det rummer også en væsentlig blind vinkel: [konkret risiko].
-  
-  Over tid kan det føre til [konkret konsekvens] – ikke fordi [overfladisk årsag], 
-  men fordi [dybere mekanik]."
+  "Baseret på CV'et og de angivne præferencer passer arbejdsmiljøer hvor [X]
+  og hvor [Y]. Omvendt vil miljøer med [Z] sandsynligvis skabe friktion,
+  da erfaringen primært er fra [dokumenteret kontekst]."
 
-▸ AFSNIT 5: Praktiske konsekvenser for jobvalg (8-12 linjer)
-  Oversæt analysen til KONKRETE rolle-karakteristika (IKKE jobtitler).
+▸ AFSNIT 5: Konkrete næste skridt (8-12 linjer)
+  Oversæt analysen til KONKRETE handlingsmuligheder.
   
   SKAL indeholde:
-  - 2 FIT-betingelser: "Du vil sandsynligvis trives i roller hvor…"
-  - 2 RISIKO-betingelser: "Der er risiko ved roller hvor…"
-  - Én sandsynlig konsekvens hvis risiko-roller vælges
+  - 2-3 typer roller der bygger på dokumenteret erfaring
+  - Hvad der skal undersøges/afklares før et skift
+  - Konkret udgangspunkt for videre udforskning
   
   UNDGÅ: "Du bør søge lederstillinger" (for specifikt)
-  FORETRÆKKE: "Du vil trives i roller hvor ansvar og indflydelse er tydeligt 
-  koblet sammen, og hvor der er plads til at påvirke rammer og prioriteringer."
+  FORETRÆKKE: "Med udgangspunkt i erfaringen med [X] kan roller med [Y]
+  være relevante at undersøge, særligt i [type kontekst]."
 
-▸ AFSNIT 6: Refleksionsspørgsmål (præcis 3 bullets)
-  Specifikke, handlingsorienterede spørgsmål der tvinger eftertanke.
+▸ AFSNIT 6: Afklaringsspørgsmål (præcis 3 bullets)
+  Specifikke, handlingsorienterede spørgsmål der hjælper brugeren videre.
   
   SKAL være:
-  - Forankret i analysens indsigter
-  - Svære at besvare overfladisk
+  - Fokuseret på afklaring af næste skridt
+  - Konkrete og lette at handle på
   - KUN dette afsnit må have bullet points
+  
+  EKSEMPLER:
+  - "Hvilke af de nævnte arbejdsmiljøer kender du bedst fra din nuværende branche?"
+  - "Er der erfaringstyper du gerne vil bygge videre på, eller noget du vil væk fra?"
+  - "Hvad skal der til for at du kan undersøge de nævnte rolletyper nærmere?"
 
 ════════════════════════════════════════════════════════════════
 KVALITETSPORT (INTERNT)
@@ -1443,17 +1448,19 @@ KVALITETSPORT (INTERNT)
 
 Før endelig output, spørg INTERNT:
 
-"Hvis brugeren læser dette, vil de tydeligt genkende mindst ét 
-gentagende karrieremønster de har FØLT men aldrig FORMULERET?"
+"Ved brugeren nu tydeligt:
+1) Hvad der kan overføres til nye sammenhænge?
+2) Hvad der kræver opbygning?
+3) Hvilke arbejdsmiljøer der passer?"
 
 Hvis svaret er NEJ → OMSKRIV.
 
-Scorer den endelige spejling 0-10 INTERNT:
-▸ 3.0 Evidens & specificitet (CV-mønstre synlige, ikke generisk)
-▸ 2.5 Integration (klare links CV ↔ profil med kausal sprog)
-▸ 2.0 Aha-indsigter (reframings, velforklaret, forankret)
-▸ 1.5 Konsekvenser (konkrete, plausible, nyttige)
-▸ 1.0 Praktisk anvendelighed (jobvalg-implikationer er klare)
+Scorer den endelige oversigt 0-10 INTERNT:
+▸ 3.0 Transfer-klarhed (hvad kan bruges hvor)
+▸ 2.5 Specifik til denne bruger (ikke generisk)
+▸ 2.0 Konkrete næste skridt
+▸ 1.5 Baseret på dokumenteret erfaring
+▸ 1.0 Ingen psykologisering
 
 Bestået tærskel: ≥ 8.5
 Hvis score < 8.5, omskriv op til 4 gange.
@@ -1471,12 +1478,13 @@ UNDGÅ FØLGENDE
 ════════════════════════════════════════════════════════════════
 
 FORKERT: "Du er en dygtig medarbejder med mange styrker..."
-FORKERT: "Du kan overveje at..." (før afsnit 6)
+FORKERT: "Du motiveres af..." / "Dine drivkræfter er..."
+FORKERT: "Din blinde vinkel er..." / "Du har en tendens til..."
 FORKERT: Bullet points i afsnit 1-5
 FORKERT: Generiske udsagn der kunne gælde de fleste professionelle
-FORKERT: Psykologiske labels eller dimensionnavne fra tests som hovedindhold
+FORKERT: Psykologiske labels eller dimensionnavne fra tests
 FORKERT: Jobtitler som anbefalinger
-FORKERT: Gentagelse af testscores uden oversættelse til adfærd
+FORKERT: Personlighedsfortolkning
 FORKERT: Nye ideer der ikke var i Fase 1 memo
 
 VIGTIGT: Output IKKE memo, udkast eller scores. 

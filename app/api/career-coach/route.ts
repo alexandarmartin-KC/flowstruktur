@@ -203,6 +203,9 @@ Generér en spejling baseret på brugerens reaktioner.`;
       systemPrompt = STEP_PROMPTS.SPEJLING;
     }
 
+    // Use higher token limit for spejling since it produces more content
+    const maxTokens = shouldTriggerSpejling ? 4000 : 2000;
+    
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
@@ -215,8 +218,9 @@ Generér en spejling baseret på brugerens reaktioner.`;
           content: userMessage,
         },
       ],
-      max_tokens: 2000,
+      max_tokens: maxTokens,
       temperature: 0.5,
+      response_format: shouldTriggerSpejling ? { type: 'json_object' } : undefined,
     });
 
     const textContent = response.choices[0]?.message?.content;
@@ -241,6 +245,42 @@ Generér en spejling baseret på brugerens reaktioner.`;
       
     } catch (parseErr) {
       console.error('Failed to parse AI response as JSON:', textContent);
+      console.error('Parse error:', parseErr);
+      
+      // For spejling mode, try to extract any useful content
+      if (shouldTriggerSpejling) {
+        // Try to find JSON within the response
+        const jsonMatch = textContent.match(/\{[\s\S]*"mode"\s*:\s*"spejling"[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            parsedResponse = JSON.parse(jsonMatch[0]);
+            parsedResponse = validateAndNormalizeResponse(parsedResponse, user_choice, shouldTriggerSpejling);
+            return NextResponse.json(parsedResponse);
+          } catch (e) {
+            console.error('Secondary JSON parse also failed');
+          }
+        }
+        
+        // Return a more helpful error for spejling
+        return NextResponse.json({
+          mode: 'spejling',
+          coach_message: '',
+          questions: [],
+          summary_paragraph: 'Der opstod en teknisk fejl under generering af spejlingen. AI-svaret kunne ikke parses korrekt. Prøv venligst igen.',
+          patterns: [],
+          unclear: [],
+          direction_state: {
+            choice: 'UNSET',
+            priorities_top3: [],
+            non_negotiables: [],
+            negotiables: [],
+            cv_weighting_focus: [],
+            risk_notes: [],
+            next_step_ready_for_jobs: true,
+          }
+        });
+      }
+      
       // Return a fallback response
       return NextResponse.json({
         mode: 'ask_to_choose',

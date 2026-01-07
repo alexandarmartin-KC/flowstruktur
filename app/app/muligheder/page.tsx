@@ -864,14 +864,14 @@ function MulighederPageContent() {
               <CardTitle className="text-lg">Din transferoversigt</CardTitle>
             </div>
             <CardDescription>
-              Hvad din erfaring kan bruges til i nye sammenhænge – baseret på dit CV og dine valg
+              Hvad der kan overføres som arbejdsform til nye kontekster
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
-            {/* Afsnit 1: Bærende arbejdsmønstre */}
+            {/* Afsnit 1: Observerede arbejdsmønstre */}
             {coachResponse.summary_paragraph && (
               <div className="space-y-2">
-                <h4 className="font-semibold text-base">Bærende arbejdsmønstre</h4>
+                <h4 className="font-semibold text-base">Observerede arbejdsmønstre</h4>
                 <div className="prose prose-sm dark:prose-invert max-w-none">
                   <p className="text-base leading-relaxed text-muted-foreground">
                     {coachResponse.summary_paragraph}
@@ -880,14 +880,14 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* Afsnit 2-5 from patterns array */}
+            {/* Afsnit 2 og 3 from patterns array */}
             {coachResponse.patterns && coachResponse.patterns.length > 0 && (
               <>
-                {/* Afsnit 2: Hvad overfører til nye sammenhænge */}
+                {/* Afsnit 2: Arbejdsformer der ser ud til at være overførbare */}
                 {coachResponse.patterns[0] && (
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-base">Hvad overfører til nye sammenhænge</h4>
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <h4 className="font-semibold text-base">Arbejdsformer der ser ud til at være overførbare</h4>
+                    <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
                       <p className="text-base leading-relaxed text-muted-foreground">
                         {coachResponse.patterns[0]}
                       </p>
@@ -895,37 +895,13 @@ function MulighederPageContent() {
                   </div>
                 )}
 
-                {/* Afsnit 3: Hvad kræver opbygning eller afklaring */}
+                {/* Afsnit 3: Arbejdsformer der typisk kræver opbygning */}
                 {coachResponse.patterns[1] && (
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-base">Hvad kræver opbygning eller afklaring</h4>
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <h4 className="font-semibold text-base">Arbejdsformer der typisk kræver opbygning i nye kontekster</h4>
+                    <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
                       <p className="text-base leading-relaxed text-muted-foreground">
                         {coachResponse.patterns[1]}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Afsnit 4: Arbejdsmiljøer der passer / skaber friktion */}
-                {coachResponse.patterns[2] && (
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-base">Arbejdsmiljøer der passer / skaber friktion</h4>
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <p className="text-base leading-relaxed text-muted-foreground">
-                        {coachResponse.patterns[2]}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Afsnit 5: Konkrete næste skridt */}
-                {coachResponse.patterns[3] && (
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-base">Konkrete næste skridt</h4>
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <p className="text-base leading-relaxed text-muted-foreground">
-                        {coachResponse.patterns[3]}
                       </p>
                     </div>
                   </div>
@@ -933,11 +909,10 @@ function MulighederPageContent() {
               </>
             )}
 
-            {/* Afsnit 6: Afklaringsspørgsmål */}
+            {/* Åbne afklaringer */}
             {coachResponse.unclear && coachResponse.unclear.length > 0 && (
               <div className="space-y-3 pt-4 border-t">
-                <h4 className="font-semibold text-base">Afklaringsspørgsmål</h4>
-                <p className="text-sm text-muted-foreground">Spørgsmål der kan hjælpe dig med at komme videre:</p>
+                <h4 className="font-semibold text-base">Åbne afklaringer</h4>
                 <ul className="space-y-3">
                   {coachResponse.unclear.map((item, idx) => (
                     <li key={idx} className="flex items-start gap-3 bg-muted/50 p-3 rounded-lg">

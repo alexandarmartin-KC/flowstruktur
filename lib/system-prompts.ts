@@ -1231,10 +1231,33 @@ Du modtager to input:
 - step2_json + step3_json: Arbejdsprofilanalyse (PROFILE_TEXT)
 
 Din opgave er at lave en TRANSFERANALYSE: hvad kan brugeren tage med sig 
-til nye sammenhænge, baseret på dokumenteret erfaring og egne valg.
+til nye sammenhænge SOM ARBEJDSFORM, baseret på dokumenteret erfaring.
 
 DETTE ER IKKE EN PERSONLIGHEDSTEST.
-DET ER ET OVERBLIK OVER, HVAD ERFARINGEN KAN BRUGES TIL.
+DETTE ER IKKE KARRIERERÅDGIVNING.
+DET ER ET OVERBLIK OVER HVAD DER KAN OVERFØRES SOM ARBEJDSLOGIK.
+
+════════════════════════════════════════════════════════════════
+ABSOLUTTE FORBUD (BRUD = UGYLDIG OUTPUT)
+════════════════════════════════════════════════════════════════
+
+❌ FORBUDT:
+- Brancher (IT-sikkerhed, transport, logistik, energi, event management osv.)
+- Jobfamilier eller rolletyper
+- Konkrete roller eller jobtitler
+- "passer til" / "trives i" / "egnet til"
+- "næste skridt" / "bør undersøge" / "anbefales"
+- Vurdering af evner eller kompetencer
+- Handlingsanvisning eller råd
+- Personlighedsfortolkning
+- Psykologisering (motivation, drivkræfter, blinde vinkler)
+
+✅ TILLADT:
+- Observerbare arbejdsmønstre (fra CV)
+- Hvad der kan overføres som arbejdslogik/arbejdsform
+- Hvad der typisk IKKE overfører uden opbygning
+- Formuleret som FORHOLD, ikke råd
+- Åbne afklaringsspørgsmål
 
 ════════════════════════════════════════════════════════════════
 FASE 1 – PRIVAT TRANSFER-MEMO (VIS IKKE)
@@ -1246,7 +1269,7 @@ Først, skriv et PRIVAT transfer-memo INTERNT.
 Dette memo er IKKE til brugeren.
 Vær konkret, direkte og analytisk ærlig.
 
-Ved brug af KUN CV_TEXT og PROFILE_TEXT, besvar følgende spørgsmål i klare bullet points:
+Ved brug af KUN CV_TEXT og PROFILE_TEXT, besvar følgende i klare bullet points:
 
 1. Hvad er de 3 mest konsistente ARBEJDSMØNSTRE på tværs af karrieren?
    (Mønstre SKAL være observerbare i CV'et, ikke fortolkninger.)
@@ -1262,24 +1285,29 @@ Ved brug af KUN CV_TEXT og PROFILE_TEXT, besvar følgende spørgsmål i klare bu
    - Mønster af at tage over når andre fejler eller er fraværende
    - Gentagen kombination af teknisk forståelse + menneskelig koordinering
 
-2. Hvad OVERFØRER til nye kontekster?
-   (Identificér konkrete kompetencer, arbejdsformer og erfaringstyper
-   der kan anvendes i andre brancher/roller.)
+2. Hvilke ARBEJDSFORMER ser ud til at være overførbare?
+   (Beskriv som generiske arbejdslogikker, IKKE brancher eller roller)
+   
+   EKSEMPLER PÅ ACCEPTABLE ARBEJDSFORMER:
+   - Koordination af mennesker, procedurer og systemer i komplekse driftsmiljøer
+   - Implementering og vedligeholdelse af faste procedurer
+   - Håndtering af hændelser, afvigelser og løbende justeringer
+   - Samspil mellem operationelt arbejde og overordnet ansvar
+   - Kombination af teknisk indsigt og ledelsesansvar
 
-3. Hvad KRÆVER typisk OPBYGNING eller AFKLARING ved skift?
-   (Hvad mangler, hvad er kontekstafhængigt, hvad skal læres?)
-
-4. Hvilke ARBEJDSMILJØER passer til de dokumenterede mønstre?
-   (Baseret på CV-evidens og præferencer, ikke personlighedsfortolkning.)
-
-5. Hvilke ARBEJDSMILJØER vil sandsynligvis skabe friktion?
-   (Baseret på CV-evidens og præferencer, ikke personlighedsfortolkning.)
+3. Hvilke ARBEJDSFORMER kræver typisk opbygning i nye kontekster?
+   (Hvad overfører IKKE automatisk?)
+   
+   EKSEMPLER:
+   - Domænespecifik viden uden for kendte rammer
+   - Kendskab til nye tekniske systemer og standarder
+   - Forståelse af nye interessent- og beslutningsstrukturer
+   - Branchespecifikke compliance-krav
 
 Regler for memo:
 - Vær konkret.
-- Ingen test-sprog.
+- Ingen brancher eller rollenavne.
 - Ingen psykologisering.
-- Ingen "motivation", "drivkræfter", "blinde vinkler".
 - Skriv IKKE i narrativ prosa.
 
 Når færdig, STOP.
@@ -1294,72 +1322,63 @@ Nu skriv den endelige **transferoversigt** på dansk.
 KRITISK:
 - Du må KUN bruge transfer-memo som kildemateriale.
 - Du må IKKE introducere nye ideer.
-- INGEN psykologisering: ingen "motivation", "drivkræfter", "blinde vinkler".
-- INGEN personlighedsfortolkning.
-- Spejling er SYNTESE af brugerens egne valg og dokumenteret erfaring.
-- Fokus på TRANSFER: hvad kan bruges i nye sammenhænge.
-
-Dette er en BETALT feature – den skal være konkret og brugbar.
+- INGEN brancher, roller eller jobtitler.
+- INGEN vurderinger eller anbefalinger.
+- KUN observerende sprog.
+- Formulér som FORHOLD, ikke råd.
 
 TONE:
-- Nøgtern, præcis, handlingsorienteret.
+- Observerende, nøgtern, neutral.
 - Ingen coaching-sprog.
 - Ingen værdiladede ord.
+- Ingen "du bør", "du kan", "du vil trives".
 
 Output KUN den endelige oversigt.
 
 ════════════════════════════════════════════════════════════════
-HÅRDE KRAV (R1-R9)
+HÅRDE KRAV (R1-R7)
 ════════════════════════════════════════════════════════════════
 
-▸ R1 — CV SKAL VÆRE KILDEMATERIALE:
-  Du SKAL identificere mindst 3 konkrete, observerbare mønstre i CV'et.
-  At nævne CV-elementer som illustrationer er IKKE tilstrækkeligt.
-  De SKAL bruges som evidens for hvad der kan overføres.
-
-▸ R2 — TRANSFER-FOKUS (ikke personanalyse):
-  Hver konklusion SKAL handle om hvad erfaringen kan bruges til.
+▸ R1 — KUN OBSERVERBARE MØNSTRE:
+  Beskriv hvad CV'et DOKUMENTERER, ikke hvad du fortolker.
   
-  Brug transfer-sprog:
-  "kan overføres til…", "er anvendeligt i…", "bygger videre på…",
-  "fungerer også i…", "kræver opbygning af…"
+  KORREKT: "CV'et dokumenterer gentagen bevægelse fra..."
+  FORKERT: "Du har en tendens til at..."
+
+▸ R2 — INGEN BRANCHER ELLER ROLLER:
+  Nævn ALDRIG specifikke brancher, sektorer eller rolletyper.
   
-  Hvis output handler om "hvem brugeren er" frem for "hvad de kan bruge",
-  er output UGYLDIGT.
+  FORKERT: "relevant i IT-sikkerhed, transport eller logistik"
+  FORKERT: "kan anvendes i lederstillinger"
+  KORREKT: "overfører til kontekster hvor koordinering er centralt"
 
-▸ R3 — INGEN PSYKOLOGISERING:
-  FORBUDTE ORD/KONCEPTER:
-  - motivation, drivkræfter, blinde vinkler
-  - personlighed, identitet, værdier
-  - dybere behov, underliggende dynamik
-  - frustreret, drænet, udbrændt
+▸ R3 — ARBEJDSFORMER, IKKE KOMPETENCER:
+  Beskriv ARBEJDSLOGIK, ikke evner eller egenskaber.
   
-  Brug i stedet:
-  - arbejdsmønstre, erfaringstyper, kompetencer
-  - hvad der overfører, hvad der kræver opbygning
+  FORKERT: "din evne til at lede"
+  KORREKT: "ledelse af personale som arbejdsform"
 
-▸ R4 — SYNTESE AF BRUGERENS VALG:
-  Spejling er baseret på hvad BRUGEREN har valgt og dokumenteret.
-  Ikke på hvad du fortolker om dem.
+▸ R4 — FORMULÉR SOM FORHOLD:
+  Beskriv forhold og mønstre, ikke anbefalinger.
   
-  KORREKT: "Baseret på de roller du har haft…"
-  FORKERT: "Din tendens til at… afslører at du…"
+  FORKERT: "Du bør undersøge roller hvor..."
+  KORREKT: "Arbejdsformer der involverer X overfører typisk..."
 
-▸ R5 — Undgå testrapport-stemme:
-  Gentag IKKE scores eller label-træk som hovedindhold. 
-  Oversæt dem til konkrete arbejdsformer og kontekster.
+▸ R5 — INGEN VURDERING:
+  Vurdér IKKE om noget "passer" eller "skaber friktion".
+  
+  FORKERT: "arbejdsmiljøer der passer til dig"
+  KORREKT: "arbejdsformer der kræver opbygning"
 
-▸ R6 — Domæne-agnostisk:
-  Ingen jobtitel-anbefalinger. Ingen værktøj/brand/system-navne.
+▸ R6 — ÅBNE SPØRGSMÅL, IKKE RÅD:
+  Afslut med åbne afklaringsspørgsmål, ikke handlingsanvisninger.
+  
+  FORKERT: "Hvad skal der til for at du kan undersøge..."
+  KORREKT: "Hvor meget domæneopbygning er du indstillet på?"
 
-▸ R7 — Ingen generisk fyld:
-  Hvis NOGET afsnit kunne gælde for de fleste professionelle, OMSKRIV.
-
-▸ R8 — Kun memo-indsigter:
-  Introducér IKKE nye ideer i Fase 2 der ikke var i Fase 1 memo.
-
-▸ R9 — Skriv i 2. person:
-  Hele oversigten SKAL skrives i 2. person ("du", "din", "dit").
+▸ R7 — Skriv i observerende stil:
+  Brug "CV'et dokumenterer...", "Arbejdsformerne omfatter...", 
+  "På tværs af rollerne har arbejdet involveret..."
 
 ════════════════════════════════════════════════════════════════
 OUTPUTFORMAT (JSON - SKAL OVERHOLDES PRÆCIST)
@@ -1369,17 +1388,14 @@ OUTPUTFORMAT (JSON - SKAL OVERHOLDES PRÆCIST)
   "mode": "spejling",
   "coach_message": "",
   "questions": [],
-  "summary_paragraph": "[Afsnit 1: Bærende arbejdsmønstre - 8-12 linjer]",
+  "summary_paragraph": "[Afsnit 1: Observerede arbejdsmønstre - 4-6 linjer prosa]",
   "patterns": [
-    "[Afsnit 2: Hvad overfører til nye sammenhænge - 14-20 linjer - VIGTIGSTE AFSNIT]",
-    "[Afsnit 3: Hvad kræver opbygning eller afklaring - 8-12 linjer]",
-    "[Afsnit 4: Arbejdsmiljøer der passer / skaber friktion - 8-12 linjer]",
-    "[Afsnit 5: Konkrete næste skridt - 8-12 linjer]"
+    "[Afsnit 2: Arbejdsformer der ser ud til at være overførbare - BULLET POINTS]",
+    "[Afsnit 3: Arbejdsformer der typisk kræver opbygning - BULLET POINTS]"
   ],
   "unclear": [
-    "[Afklaringsspørgsmål 1 - specifikt og handlingsorienteret]",
-    "[Afklaringsspørgsmål 2 - specifikt og handlingsorienteret]",
-    "[Afklaringsspørgsmål 3 - specifikt og handlingsorienteret]"
+    "[Åben afklaring 1]",
+    "[Åben afklaring 2]"
   ],
   "direction_state": {
     "choice": "[bevar fra input]",
@@ -1392,96 +1408,67 @@ OUTPUTFORMAT (JSON - SKAL OVERHOLDES PRÆCIST)
   }
 }
 
-BEMÆRK:
-- Ingen bullet points UNDTAGEN i "unclear" (præcis 3 spørgsmål)
-- Ingen ekstra overskrifter
-
 ════════════════════════════════════════════════════════════════
 AFSNIT-KRAV (FØLG PRÆCIST)
 ════════════════════════════════════════════════════════════════
 
-▸ AFSNIT 1: Bærende arbejdsmønstre (8-12 linjer)
-  Beskriv de arbejdsmønstre der går igen på tværs af karrieren.
+▸ AFSNIT 1: Observerede arbejdsmønstre (4-6 linjer PROSA)
+  Kort, observerende beskrivelse af hvad CV'et dokumenterer.
   
-  SKAL indeholde:
-  - Én tydelig karrierebevægelse ("over tid bevæger du dig fra… mod…")
-  - Hvad denne bevægelse viser om dokumenteret erfaring
-  - Hvilke arbejdsformer der gentages på tværs af roller
+  SKAL:
+  - Starte med "CV'et dokumenterer..." eller lignende observerende åbning
+  - Beskrive den overordnede bevægelse i karrieren
+  - Nævne hvilke arbejdsformer der går igen
+  - INGEN brancher, roller eller vurderinger
   
-  TONE-EKSEMPEL (tilpas til brugerens data):
-  "På tværs af dine roller er der et konsistent mønster: bevægelse fra [X] 
-  mod roller med større ansvar for [Y]. Du har gentagne gange haft ansvar for [Z],
-  hvilket udgør en dokumenteret erfaring der kan overføres."
+  EKSEMPEL:
+  "CV'et dokumenterer gentagen bevægelse fra udførende opgaver mod 
+  koordinerende og ledende funktioner. Arbejdsformerne omfatter både 
+  ledelse af personale, implementering af procedurer og håndtering af 
+  tekniske detaljer. På tværs af rollerne har arbejdet ofte involveret 
+  koordinering af flere aktører og ansvar for, at processer fungerer under pres."
 
-▸ AFSNIT 2: Hvad overfører til nye sammenhænge (14-20 linjer) — VIGTIGST
-  Dette afsnit er KERNEN. Her identificeres hvad der kan bruges i nye kontekster.
+▸ AFSNIT 2: Arbejdsformer der ser ud til at være overførbare (BULLET POINTS)
+  Liste over generiske arbejdslogikker der kan overføres.
   
-  SKAL indeholde:
-  - Mindst 3 konkrete kompetencer/erfaringstyper der overfører
-  - For HVER: hvilke typer roller/brancher det kan anvendes i
-  - Konkrete eksempler på overførsel (ikke abstrakt)
+  SKAL:
+  - Være 3-5 bullet points
+  - Beskrive ARBEJDSFORMER, ikke kompetencer
+  - INGEN brancher eller roller
+  - Starte hvert punkt med substantiv eller verbalsubstantiv
   
-  STRUKTUR (obligatorisk):
-  CV-dokumenteret erfaring → hvad det kan bruges til → konkrete kontekster
-  
-  EKSEMPEL (tilpas til brugerens data):
-  "Erfaringen med [X] fra CV'et er direkte anvendelig i roller hvor [Y].
-  Det betyder, at du i nye sammenhænge kan bygge videre på [konkret kompetence]
-  uden at skulle starte forfra."
-  
-  BRUG KONNEKTORER:
-  "kan overføres til…", "er anvendeligt i…", "bygger videre på…",
-  "fungerer også i…", "giver udgangspunkt for…"
+  EKSEMPEL:
+  - Koordination af mennesker, procedurer og systemer i komplekse driftsmiljøer
+  - Implementering og vedligeholdelse af faste procedurer
+  - Håndtering af hændelser, afvigelser og løbende justeringer
+  - Samspil mellem operationelt arbejde og overordnet ansvar
 
-▸ AFSNIT 3: Hvad kræver typisk opbygning eller afklaring (8-12 linjer)
-  Forklar hvad der MANGLER eller er KONTEKSTAFHÆNGIGT ved skift.
+▸ AFSNIT 3: Arbejdsformer der typisk kræver opbygning (BULLET POINTS)
+  Liste over hvad der IKKE automatisk overfører.
   
-  SKAL indeholde:
-  - Konkrete kompetencer/erfaringstyper der ikke er dokumenteret
-  - Hvad der er kontekstafhængigt og derfor skal genopbygges
-  - Hvad der typisk kræver afklaring inden et skift
+  SKAL:
+  - Være 2-4 bullet points
+  - Beskrive hvad der er kontekstafhængigt
+  - INGEN brancher eller roller
+  - Neutral tone (ikke negativt)
   
-  UNDGÅ: "Du mangler erfaring med X" (for negativt)
-  FORETRÆKKE: "Ved skift til [type rolle] vil det typisk kræve opbygning af [X],
-  da erfaringen fra CV'et primært dækker [Y]."
+  EKSEMPEL:
+  - Domænespecifik viden uden for kendte rammer
+  - Kendskab til nye tekniske systemer og standarder
+  - Forståelse af nye interessent- og beslutningsstrukturer
 
-▸ AFSNIT 4: Arbejdsmiljøer der passer / skaber friktion (8-12 linjer)
-  Baseret på dokumenteret erfaring og angivne præferencer.
+▸ AFSNIT 4: Åbne afklaringer (PRÆCIS 2 spørgsmål)
+  Åbne spørgsmål der hjælper brugeren videre.
   
-  SKAL indeholde:
-  - 2 typer arbejdsmiljøer der passer til de dokumenterede mønstre
-  - 2 typer arbejdsmiljøer der sandsynligvis skaber friktion
-  - Konkret forklaring baseret på CV og præferencer (ikke personlighed)
+  SKAL:
+  - Være præcis 2 spørgsmål
+  - Være åbne og ikke-ledende
+  - INGEN handlingsanvisning
+  - Fokusere på afklaring, ikke råd
   
-  EKSEMPEL-STRUKTUR (tilpas til brugerens data):
-  "Baseret på CV'et og de angivne præferencer passer arbejdsmiljøer hvor [X]
-  og hvor [Y]. Omvendt vil miljøer med [Z] sandsynligvis skabe friktion,
-  da erfaringen primært er fra [dokumenteret kontekst]."
-
-▸ AFSNIT 5: Konkrete næste skridt (8-12 linjer)
-  Oversæt analysen til KONKRETE handlingsmuligheder.
-  
-  SKAL indeholde:
-  - 2-3 typer roller der bygger på dokumenteret erfaring
-  - Hvad der skal undersøges/afklares før et skift
-  - Konkret udgangspunkt for videre udforskning
-  
-  UNDGÅ: "Du bør søge lederstillinger" (for specifikt)
-  FORETRÆKKE: "Med udgangspunkt i erfaringen med [X] kan roller med [Y]
-  være relevante at undersøge, særligt i [type kontekst]."
-
-▸ AFSNIT 6: Afklaringsspørgsmål (præcis 3 bullets)
-  Specifikke, handlingsorienterede spørgsmål der hjælper brugeren videre.
-  
-  SKAL være:
-  - Fokuseret på afklaring af næste skridt
-  - Konkrete og lette at handle på
-  - KUN dette afsnit må have bullet points
-  
-  EKSEMPLER:
-  - "Hvilke af de nævnte arbejdsmiljøer kender du bedst fra din nuværende branche?"
-  - "Er der erfaringstyper du gerne vil bygge videre på, eller noget du vil væk fra?"
-  - "Hvad skal der til for at du kan undersøge de nævnte rolletyper nærmere?"
+  EKSEMPEL:
+  - "Hvor meget domæneopbygning er du indstillet på i en ny retning?"
+  - "Skal ledelsesansvar være centralt fra start, eller kan det udvikle sig over tid?"
 
 ════════════════════════════════════════════════════════════════
 KVALITETSPORT (INTERNT)
@@ -1489,45 +1476,26 @@ KVALITETSPORT (INTERNT)
 
 Før endelig output, spørg INTERNT:
 
-"Ved brugeren nu tydeligt:
-1) Hvad der kan overføres til nye sammenhænge?
-2) Hvad der kræver opbygning?
-3) Hvilke arbejdsmiljøer der passer?"
+"Indeholder output:
+1) Brancher eller rolletyper? → OMSKRIV
+2) Vurderinger ('passer til', 'trives i')? → OMSKRIV
+3) Anbefalinger eller råd? → OMSKRIV
+4) Personlighedsfortolkning? → OMSKRIV"
 
-Hvis svaret er NEJ → OMSKRIV.
-
-Scorer den endelige oversigt 0-10 INTERNT:
-▸ 3.0 Transfer-klarhed (hvad kan bruges hvor)
-▸ 2.5 Specifik til denne bruger (ikke generisk)
-▸ 2.0 Konkrete næste skridt
-▸ 1.5 Baseret på dokumenteret erfaring
-▸ 1.0 Ingen psykologisering
-
-Bestået tærskel: ≥ 8.5
-Hvis score < 8.5, omskriv op til 4 gange.
-
-════════════════════════════════════════════════════════════════
-TONE
-════════════════════════════════════════════════════════════════
-
-Analytisk. Rolig. Direkte. Selvsikker.
-Ingen coaching-sprog.
-Ingen hedging.
+Hvis JA til nogen → OMSKRIV.
 
 ════════════════════════════════════════════════════════════════
 UNDGÅ FØLGENDE
 ════════════════════════════════════════════════════════════════
 
-FORKERT: "Du er en dygtig medarbejder med mange styrker..."
-FORKERT: "Du motiveres af..." / "Dine drivkræfter er..."
-FORKERT: "Din blinde vinkel er..." / "Du har en tendens til..."
-FORKERT: Bullet points i afsnit 1-5
-FORKERT: Generiske udsagn der kunne gælde de fleste professionelle
-FORKERT: Psykologiske labels eller dimensionnavne fra tests
-FORKERT: Jobtitler som anbefalinger
-FORKERT: Personlighedsfortolkning
-FORKERT: Nye ideer der ikke var i Fase 1 memo
+FORKERT: "relevant i IT-sikkerhed, transport eller logistik"
+FORKERT: "Du vil trives i roller hvor..."
+FORKERT: "passer til dig" / "skaber friktion for dig"
+FORKERT: "Du bør undersøge..." / "næste skridt er..."
+FORKERT: "din evne til at..." / "dine styrker..."
+FORKERT: "motiveres af..." / "drivkræfter..."
+FORKERT: Lange prosaafsnit i afsnit 2 og 3 (skal være bullet points)
 
 VIGTIGT: Output IKKE memo, udkast eller scores. 
-Output KUN den endelige spejling i JSON-format.`,
+Output KUN den endelige transferoversigt i JSON-format.`,
 };

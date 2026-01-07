@@ -895,17 +895,17 @@ function MulighederPageContent() {
                   </div>
                 )}
 
-                {/* Afsnit 3: Arbejdsformer der typisk kræver opbygning */}
-                {coachResponse.patterns[1] && (
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-base">Arbejdsformer der typisk kræver opbygning i nye kontekster</h4>
-                    <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
-                      <p className="text-base leading-relaxed text-muted-foreground">
-                        {coachResponse.patterns[1]}
-                      </p>
-                    </div>
+                {/* Afsnit 3: Arbejdsformer der typisk kræver opbygning - HARDCODED */}
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-base">Hvad der typisk kræver opbygning i nye kontekster</h4>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <ul className="text-base leading-relaxed text-muted-foreground list-disc pl-5 space-y-1">
+                      <li>Indsigt i domænespecifikke krav og standarder i det nye felt</li>
+                      <li>Forståelse af nye organisatoriske beslutnings- og ansvarsstrukturer</li>
+                      <li>Kendskab til branchespecifikke compliance-krav og regulering</li>
+                    </ul>
                   </div>
-                )}
+                </div>
               </>
             )}
 

@@ -1315,46 +1315,7 @@ Ved brug af KUN CV_TEXT og PROFILE_TEXT, besvar følgende i klare bullet points:
    - Samspil mellem operationelt arbejde og overordnet ansvar
    - Kombination af teknisk indsigt og ledelsesansvar
 
-3. Hvad kræver typisk OPBYGNING i nye kontekster?
-   (Hvad overfører IKKE automatisk?)
-   
-   ⚠️ UNIVERSEL REGEL (gælder ALLE CV'er, ALLE brancher):
-   
-   "Kræver opbygning" handler UDELUKKENDE om DEN NYE KONTEKST.
-   Det handler ALDRIG om arbejdsformer brugeren allerede mestrer.
-   
-   SIMPEL TEST: Hvis brugeren HAR GJORT det (jf. punkt 1) → det OVERFØRER.
-   Kun det der afhænger af DET NYE STED hører til her.
-   
-   TILLADT I DENNE SEKTION (kontekst-afhængigt):
-   - Kendskab til domænespecifikke krav og standarder i det nye felt
-   - Indsigt i nye organisatoriske beslutnings- og ansvarsstrukturer
-   - Forståelse af interessent- og magtforhold i nyt miljø
-   - Branchespecifikke compliance-krav og regulering
-   - Tekniske systemer, værktøjer eller metoder specifikt for nyt domæne
-   - Kultur, normer og uskrevne regler i nyt miljø
-   
-   FORBUDT I DENNE SEKTION (arbejdsformer brugeren HAR):
-   - Alt der er nævnt eller beskrevet i punkt 1 (observerede mønstre)
-   - Alt der er nævnt i punkt 2 (overførbare arbejdsformer)
-   - Enhver arbejdsform, proces eller metode brugeren har dokumenteret erfaring med
-
-4. OVERLAP-TJEK (OBLIGATORISK - SPRING IKKE OVER):
-   
-   TRIN A: Læs punkt 1 og punkt 2 igennem. Lav en mental liste over alle 
-           arbejdsformer, processer og metoder brugeren HAR GJORT.
-   
-   TRIN B: Læs punkt 3 igennem. For HVERT punkt, spørg:
-           "Har brugeren allerede gjort dette?" 
-           Hvis JA → SLET DET FRA PUNKT 3.
-   
-   TRIN C: For hvert punkt i punkt 3, spørg:
-           "Beskriver dette en ARBEJDSFORM eller en NY KONTEKST?"
-           Hvis ARBEJDSFORM → SLET DET.
-           Kun kontekst-afhængige ting må stå tilbage.
-   
-   PRINCIP: CV'et er fakta. Transfer er logik. 
-   Hvis CV'et dokumenterer X, kan X ikke "kræve opbygning".
+(PUNKT 3 - "Kræver opbygning" - GENERERES IKKE. Det vises som fast tekst i UI.)
 
 Regler for memo:
 - Vær konkret.
@@ -1460,8 +1421,7 @@ OUTPUTFORMAT (JSON - SKAL OVERHOLDES PRÆCIST)
   "questions": [],
   "summary_paragraph": "[Afsnit 1: Observerede arbejdsmønstre - 4-6 linjer prosa]",
   "patterns": [
-    "[Afsnit 2: Arbejdsformer der ser ud til at være overførbare - BULLET POINTS]",
-    "[Afsnit 3: Arbejdsformer der typisk kræver opbygning - BULLET POINTS]"
+    "[Afsnit 2: Arbejdsformer der ser ud til at være overførbare - BULLET POINTS - MINDST 4 punkter]"
   ],
   "unclear": [
     "[Åben afklaring 1]",
@@ -1521,55 +1481,7 @@ AFSNIT-KRAV (FØLG PRÆCIST)
   - Håndtering af hændelser og afvigelser under tidspres
   - Samspil mellem operationelle opgaver og overordnet ansvar
 
-▸ AFSNIT 3: Arbejdsformer der typisk kræver opbygning (BULLET POINTS)
-  Liste over hvad der IKKE automatisk overfører til nye kontekster.
-  
-  ████ STOP - LÆS DETTE FØR DU SKRIVER AFSNIT 3 ████
-  
-  GÅ TILBAGE OG LÆS DIT AFSNIT 1.
-  Lav en liste over ALLE arbejdsformer du nævnte der.
-  INGEN af disse må optræde i afsnit 3.
-  
-  Afsnit 3 handler KUN om:
-  - Det nye DOMÆNE (branche, felt, industri)
-  - De nye STRUKTURER (organisation, hierarki, beslutningsveje)
-  - De nye STANDARDER (compliance, lovgivning, certificering)
-  - De nye VÆRKTØJER (systemer, teknologi specifik for nyt felt)
-  
-  Afsnit 3 handler ALDRIG om:
-  - Noget brugeren allerede har gjort
-  - Arbejdsformer fra CV'et
-  - Metoder brugeren har anvendt
-  
-  ████ SELVTEST FØR OUTPUT ████
-  Læs hvert punkt i afsnit 3 og spørg:
-  "Nævnte jeg dette (eller noget lignende) i afsnit 1?"
-  Hvis JA → SLET DET OG ERSTAT MED NOGET KONTEKST-RELATERET.
-  
-  TYPISKE KORREKTE PUNKTER:
-  - Indsigt i domænespecifikke krav og standarder i det nye felt
-  - Forståelse af nye organisatoriske beslutnings- og ansvarsstrukturer
-  - Kendskab til branchespecifikke compliance-krav og regulering
-  - Tekniske systemer og værktøjer specifikt for nyt domæne
-  
-  TYPISKE FORKERTE PUNKTER (FORBUDT):
-  - "Implementering af procedurer" ← FORBUDT hvis CV viser dette
-  - "Udvikling af procedurer" ← FORBUDT hvis CV viser dette
-  - "Ledelse af personale" ← FORBUDT hvis CV viser dette
-  - "Koordinering" ← FORBUDT hvis CV viser dette
-  - "Håndtering af hændelser" ← FORBUDT hvis CV viser dette
-  - ENHVER arbejdsform fra afsnit 1 ← FORBUDT
-  
-  SKAL:
-  - Være 2-3 bullet points
-  - KUN handle om kontekstafhængig viden (det nye sted)
-  - ALDRIG gentage eller modsige hvad der er dokumenteret i afsnit 1
-  - Neutral tone
-  
-  EKSEMPEL:
-  - Domænespecifik viden uden for kendte rammer
-  - Kendskab til nye tekniske standarder og værktøjer
-  - Forståelse af nye organisatoriske og beslutningsmæssige strukturer
+(AFSNIT 3 genereres IKKE - det vises som fast tekst i UI)
 
 ▸ AFSNIT 4: Åbne afklaringer (PRÆCIS 2 spørgsmål)
   Åbne spørgsmål der hjælper brugeren videre.

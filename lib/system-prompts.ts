@@ -1221,7 +1221,27 @@ OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
   // STEP 5B: TRANSFEROVERSIGT (tidligere "Spejling")
   // ────────────────────────────────────────────────────────────────
 
-  SPEJLING: `Du SKAL gennemføre denne opgave i TO STRENGE FASER.
+  SPEJLING: `
+████████████████████████████████████████████████████████████████
+█  KRITISK REGEL #1 - LÆS DENNE FØR ALT ANDET                  █
+████████████████████████████████████████████████████████████████
+
+Alt, der optræder i "Observerede arbejdsmønstre", må ALDRIG optræde i "Kræver opbygning".
+"Kræver opbygning" må kun beskrive kontekst, domæne eller omgivelser – ikke selve arbejdsformen.
+
+EKSEMPEL PÅ FORBUDT OUTPUT:
+  Observerede: "udvikling og implementering af procedurer"
+  Kræver opbygning: "Udvikling og implementering af procedurer" ← FORBUDT (samme ting)
+
+EKSEMPEL PÅ KORREKT OUTPUT:
+  Observerede: "udvikling og implementering af procedurer"
+  Kræver opbygning: "Kendskab til domænespecifikke krav i det nye felt" ← KORREKT (ny kontekst)
+
+Hvis du bryder denne regel, er HELE outputtet ugyldigt.
+
+████████████████████████████████████████████████████████████████
+
+Du SKAL gennemføre denne opgave i TO STRENGE FASER.
 Spring IKKE Fase 1 over.
 Bland IKKE faserne.
 Vær IKKE blød i sproget.
@@ -1504,29 +1524,47 @@ AFSNIT-KRAV (FØLG PRÆCIST)
 ▸ AFSNIT 3: Arbejdsformer der typisk kræver opbygning (BULLET POINTS)
   Liste over hvad der IKKE automatisk overfører til nye kontekster.
   
-  KRITISK LOGIK:
-  - Dette handler om KONTEKST, ikke evne
-  - ALDRIG inkludér noget der ER dokumenteret i CV'et
-  - Kun domænespecifikke ting der skal læres på ny
-  - Hvis noget nævnes i afsnit 1 som dokumenteret erfaring, 
-    MÅ det IKKE stå her som "kræver opbygning"
+  ████ STOP - LÆS DETTE FØR DU SKRIVER AFSNIT 3 ████
+  
+  GÅ TILBAGE OG LÆS DIT AFSNIT 1.
+  Lav en liste over ALLE arbejdsformer du nævnte der.
+  INGEN af disse må optræde i afsnit 3.
+  
+  Afsnit 3 handler KUN om:
+  - Det nye DOMÆNE (branche, felt, industri)
+  - De nye STRUKTURER (organisation, hierarki, beslutningsveje)
+  - De nye STANDARDER (compliance, lovgivning, certificering)
+  - De nye VÆRKTØJER (systemer, teknologi specifik for nyt felt)
+  
+  Afsnit 3 handler ALDRIG om:
+  - Noget brugeren allerede har gjort
+  - Arbejdsformer fra CV'et
+  - Metoder brugeren har anvendt
+  
+  ████ SELVTEST FØR OUTPUT ████
+  Læs hvert punkt i afsnit 3 og spørg:
+  "Nævnte jeg dette (eller noget lignende) i afsnit 1?"
+  Hvis JA → SLET DET OG ERSTAT MED NOGET KONTEKST-RELATERET.
   
   TYPISKE KORREKTE PUNKTER:
-  - Domænespecifik viden uden for kendte rammer
-  - Kendskab til nye tekniske standarder og værktøjer
-  - Forståelse af nye organisatoriske og beslutningsmæssige strukturer
-  - Branchespecifikke compliance-krav
+  - Indsigt i domænespecifikke krav og standarder i det nye felt
+  - Forståelse af nye organisatoriske beslutnings- og ansvarsstrukturer
+  - Kendskab til branchespecifikke compliance-krav og regulering
+  - Tekniske systemer og værktøjer specifikt for nyt domæne
   
-  TYPISKE FORKERTE PUNKTER (MÅ IKKE BRUGES):
-  - "Implementering af procedurer" (hvis CV dokumenterer dette)
-  - "Ledelse af personale" (hvis CV dokumenterer dette)
-  - "Håndtering af hændelser" (hvis CV dokumenterer dette)
+  TYPISKE FORKERTE PUNKTER (FORBUDT):
+  - "Implementering af procedurer" ← FORBUDT hvis CV viser dette
+  - "Udvikling af procedurer" ← FORBUDT hvis CV viser dette
+  - "Ledelse af personale" ← FORBUDT hvis CV viser dette
+  - "Koordinering" ← FORBUDT hvis CV viser dette
+  - "Håndtering af hændelser" ← FORBUDT hvis CV viser dette
+  - ENHVER arbejdsform fra afsnit 1 ← FORBUDT
   
   SKAL:
-  - Være 2-4 bullet points
-  - KUN handle om kontekstafhængig viden
-  - ALDRIG modsige hvad der er dokumenteret i afsnit 1
-  - Neutral tone (ikke negativt)
+  - Være 2-3 bullet points
+  - KUN handle om kontekstafhængig viden (det nye sted)
+  - ALDRIG gentage eller modsige hvad der er dokumenteret i afsnit 1
+  - Neutral tone
   
   EKSEMPEL:
   - Domænespecifik viden uden for kendte rammer

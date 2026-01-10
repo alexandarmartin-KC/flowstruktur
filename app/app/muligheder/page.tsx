@@ -367,67 +367,73 @@ function MulighederPageContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Handle feedback - fetch coaching questions (not spejling yet)
-  const handleJobExamplesFeedbackSubmit = async () => {
+  // Get post-feedback questions based on feedback type
+  const getPostFeedbackQuestions = (feedback: string): CoachQuestion[] => {
+    if (feedback === 'yes') {
+      return [
+        {
+          id: 'what_appeals',
+          type: 'short_text',
+          prompt: 'Hvad var det specifikt ved eksemplerne, der tiltalte dig?'
+        },
+        {
+          id: 'clarity_check',
+          type: 'single_choice',
+          prompt: 'Føler du, at du nu har et klarere billede af, hvilken type rolle du vil gå videre med?',
+          options: ['Ja, det er blevet tydeligere', 'Delvist', 'Nej, jeg er stadig i tvivl']
+        }
+      ];
+    } else if (feedback === 'adjust') {
+      return [
+        {
+          id: 'what_was_close',
+          type: 'short_text',
+          prompt: 'Hvad var tæt på at ramme rigtigt i eksemplerne?'
+        },
+        {
+          id: 'what_to_change',
+          type: 'short_text',
+          prompt: 'Hvad skulle være anderledes for at det passede bedre til dig?'
+        },
+        {
+          id: 'clarity_check',
+          type: 'single_choice',
+          prompt: 'Føler du, at du nu har et klarere billede af, hvilken type rolle du vil gå videre med?',
+          options: ['Ja, det er blevet tydeligere', 'Delvist', 'Nej, jeg er stadig i tvivl']
+        }
+      ];
+    } else {
+      // feedback === 'no'
+      return [
+        {
+          id: 'what_was_wrong',
+          type: 'short_text',
+          prompt: 'Hvad var det ved eksemplerne, der ikke passede til dig?'
+        },
+        {
+          id: 'what_would_fit',
+          type: 'short_text',
+          prompt: 'Kan du beskrive, hvad du i stedet leder efter?'
+        },
+        {
+          id: 'clarity_check',
+          type: 'single_choice',
+          prompt: 'Føler du, at du nu har et klarere billede af, hvilken type rolle du vil gå videre med?',
+          options: ['Ja, det er blevet tydeligere', 'Delvist', 'Nej, jeg er stadig i tvivl']
+        }
+      ];
+    }
+  };
+
+  // Handle feedback - show coaching questions immediately (no API call)
+  const handleJobExamplesFeedbackSubmit = () => {
     if (!jobExamplesFeedback) return;
     
-    setIsLoading(true);
-    setError(null);
     setFeedbackSubmitted(true);
     
-    const stepData = buildStepData();
-    if (!stepData) {
-      setError('Manglende profildata.');
-      setIsLoading(false);
-      return;
-    }
-
-    // Build feedback payload
-    const feedbackPayload = {
-      overall_feedback: jobExamplesFeedback,
-      job_examples: coachResponse?.job_examples?.map((job, idx) => ({
-        job_id: job.id,
-        job_title: job.title,
-        experience: jobExamplesFeedback === 'yes' ? 'giver_mening' : 
-                   jobExamplesFeedback === 'adjust' ? 'delvist' : 'ikke_noget'
-      })) || []
-    };
-
-    try {
-      // First, fetch coaching questions based on feedback (NOT spejling)
-      const response = await fetch('/api/career-coach', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...stepData,
-          user_choice: selectedChoice || '',
-          job_examples_feedback: feedbackPayload,
-          direction_state: directionState,
-          request_post_feedback_questions: true,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Fejl ved hentning af spørgsmål');
-      }
-
-      const data: CareerCoachResponse = await response.json();
-      console.log('Post feedback questions response:', data);
-      
-      // Store the coaching questions to show below job examples
-      if (data.questions && data.questions.length > 0) {
-        setPostJobExamplesQuestions(data.questions);
-      } else {
-        // If no questions returned, go directly to spejling
-        await fetchSpejling(feedbackPayload);
-      }
-      
-    } catch (e) {
-      console.error('Error fetching post-feedback questions:', e);
-      setError('Der opstod en fejl. Prøv venligst igen.');
-    } finally {
-      setIsLoading(false);
-    }
+    // Get predefined questions based on feedback type
+    const questions = getPostFeedbackQuestions(jobExamplesFeedback);
+    setPostJobExamplesQuestions(questions);
   };
 
   // Handle answering post-job-examples questions

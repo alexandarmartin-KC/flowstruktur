@@ -905,7 +905,15 @@ function MulighederPageContent() {
               (coachResponse.job_examples && coachResponse.job_examples.length > 0)) && (
               <div className="border-t pt-6">
                 <Button 
-                  onClick={handleJobExamplesFeedbackSubmit}
+                  onClick={() => {
+                    // If we have job examples, use the feedback submit handler
+                    // Otherwise just submit the question answers
+                    if ((coachResponse.job_examples?.length ?? 0) > 0) {
+                      handleJobExamplesFeedbackSubmit();
+                    } else {
+                      handleSubmitAnswers();
+                    }
+                  }}
                   disabled={
                     isLoading || 
                     ((coachResponse.job_examples?.length ?? 0) > 0 && !jobExamplesFeedback) ||

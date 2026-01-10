@@ -825,7 +825,7 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* Job Examples */}
+            {/* Job Examples - shown FIRST */}
             {coachResponse.job_examples && coachResponse.job_examples.length > 0 && (
               <div className="space-y-6 border-t pt-6">
                 <div className="space-y-4">
@@ -854,7 +854,7 @@ function MulighederPageContent() {
                 {!showSpejling && (
                   <Card className="border-primary/50 bg-primary/5">
                     <CardHeader>
-                      <CardTitle className="text-base">Ud fra dine svar har vi samlet et par mulige måder at justere dit nuværende karrierespor på. Se dem som beskrivelser af retning – ikke som endelige valg.</CardTitle>
+                      <CardTitle className="text-base">Hvad synes du om disse eksempler?</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="grid gap-3">
@@ -883,38 +883,34 @@ function MulighederPageContent() {
                           <span>Nej – det er ikke den retning, jeg har i tankerne</span>
                         </Button>
                       </div>
-
-                      <Button 
-                        onClick={handleJobExamplesFeedbackSubmit}
-                        disabled={!jobExamplesFeedback || isLoading}
-                        className="w-full"
-                      >
-                        {isLoading ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Behandler...
-                          </>
-                        ) : (
-                          <>
-                            Send svar og fortsæt
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </>
-                        )}
-                      </Button>
                     </CardContent>
                   </Card>
                 )}
               </div>
             )}
 
-            {/* Questions */}
+            {/* Coaching Questions - shown BELOW job examples */}
             {coachResponse.questions && coachResponse.questions.length > 0 && (
               <div className="space-y-6 border-t pt-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <HelpCircle className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">Afklarende spørgsmål</h3>
+                </div>
                 {coachResponse.questions.map(renderQuestion)}
-                
+              </div>
+            )}
+
+            {/* Submit button - only show when we have something to submit */}
+            {((coachResponse.questions && coachResponse.questions.length > 0) || 
+              (coachResponse.job_examples && coachResponse.job_examples.length > 0)) && (
+              <div className="border-t pt-6">
                 <Button 
-                  onClick={handleSubmitAnswers}
-                  disabled={!allQuestionsAnswered || isLoading}
+                  onClick={handleJobExamplesFeedbackSubmit}
+                  disabled={
+                    isLoading || 
+                    (coachResponse.job_examples?.length > 0 && !jobExamplesFeedback) ||
+                    (coachResponse.questions?.length > 0 && !allQuestionsAnswered)
+                  }
                   className="w-full"
                 >
                   {isLoading ? (
@@ -924,11 +920,17 @@ function MulighederPageContent() {
                     </>
                   ) : (
                     <>
-                      Send svar og fortsæt
+                      Send svar og se din analyse
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </>
                   )}
                 </Button>
+                {((coachResponse.job_examples?.length > 0 && !jobExamplesFeedback) ||
+                  (coachResponse.questions?.length > 0 && !allQuestionsAnswered)) && (
+                  <p className="text-sm text-muted-foreground text-center mt-2">
+                    Besvar alle spørgsmål ovenfor for at fortsætte
+                  </p>
+                )}
               </div>
             )}
 

@@ -22,13 +22,19 @@ interface Lag2Request {
   step1_cv_abstract: string;
   // Workstyle scores
   step2_workstyle: Record<string, unknown>;
+  // Optional: User's answers to clarifying questions (for hypothesis update)
+  user_answers?: { [questionId: string]: string };
+  // Optional: Previous hypothesis (for refinement)
+  previous_hypothesis?: string;
+  // Mode: 'initial' for first call, 'refine' for updating based on answers
+  mode?: 'initial' | 'refine';
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: Lag2Request = await request.json();
     
-    const { transfer_summary, step1_cv_abstract, step2_workstyle } = body;
+    const { transfer_summary, step1_cv_abstract, step2_workstyle, user_answers, previous_hypothesis, mode = 'initial' } = body;
 
     if (!transfer_summary || !step1_cv_abstract) {
       return NextResponse.json(
@@ -40,7 +46,7 @@ export async function POST(request: NextRequest) {
     const client = getOpenAI();
 
     // Build context for the LLM
-    const userContext = `
+    let userContext = `
 BRUGERENS KONTEKST:
 
 === TRANSFEROVERSIGT (LAG 1) ===
@@ -56,6 +62,27 @@ ${step1_cv_abstract}
 === ARBEJDSPROFIL (opsummering) ===
 ${JSON.stringify(step2_workstyle, null, 2)}
 `;
+
+    // If refining, add user's answers to the context
+    if (mode === 'refine' && user_answers && Object.keys(user_answers).length > 0) {
+      userContext += `
+
+=== BRUGERENS SVAR PÅ AFKLARENDE SPØRGSMÅL ===
+${Object.entries(user_answers).map(([qId, answer]) => `${qId}: ${answer}`).join('\n\n')}
+
+=== TIDLIGERE HYPOTESE ===
+${previous_hypothesis || 'Ingen tidligere hypotese'}
+
+INSTRUKTION: Brugeren har nu besvaret de afklarende spørgsmål. 
+Baseret på disse svar skal du:
+1. Beholde sektion 1 (kontekst) og sektion 4 (valg) som de var
+2. Generere NYE, mere præcise afklarende spørgsmål baseret på svarene (sektion 2)
+3. OPDATERE hypotesen (sektion 3) så den afspejler brugerens svar mere præcist
+4. Hypotesen skal være mere specifik nu, da du har mere information
+
+Husk: Du må stadig IKKE foreslå jobtitler, brancher eller roller.
+`;
+    }
 
     const response = await client.chat.completions.create({
       model: 'gpt-4o',

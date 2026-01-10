@@ -475,7 +475,7 @@ function MulighederPageContent() {
   };
 
   // Handle Lag 2 choice selection
-  const handleLag2Choice = (choiceId: string) => {
+  const handleLag2Choice = async (choiceId: string) => {
     setLag2SelectedChoice(choiceId);
     
     if (choiceId === 'adjust') {
@@ -485,14 +485,72 @@ function MulighederPageContent() {
       setLag2Answers({});
       setShowSpejling(true);
     } else if (choiceId === 'explore') {
+      // Save the clarification context for job examples
+      const clarificationContext = {
+        answers: lag2Answers,
+        hypothesis: lag2Response?.section_3_hypothesis?.hypothesis || '',
+      };
+      localStorage.setItem('flowstruktur_lag2_clarification', JSON.stringify(clarificationContext));
+      
       // Go to job examples based on hypothesis
       setShowLag2(false);
       setShowJobExamples(true);
-      // Could trigger job examples API here with hypothesis context
     } else if (choiceId === 'stop') {
       // Save and stop
       localStorage.setItem(STORAGE_KEYS.DIRECTION_STATE, JSON.stringify(directionState));
       alert('Din afklaring er gemt. Du kan vende tilbage når som helst.');
+    }
+  };
+
+  // Refine hypothesis based on user's answers
+  const handleRefineHypothesis = async () => {
+    if (!lag2Response || Object.keys(lag2Answers).length === 0) {
+      setError('Besvar venligst mindst ét spørgsmål før du opdaterer hypotesen.');
+      return;
+    }
+
+    setIsLoadingLag2(true);
+    setError(null);
+
+    const stepData = buildStepData();
+    if (!stepData) {
+      setError('Manglende profildata.');
+      setIsLoadingLag2(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/job-directions-clarification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          transfer_summary: {
+            summary_paragraph: coachResponse?.summary_paragraph || '',
+            patterns: coachResponse?.patterns || [],
+          },
+          step1_cv_abstract: stepData.step1_json?.cv_summary || '',
+          step2_workstyle: stepData.step2_json || {},
+          user_answers: lag2Answers,
+          previous_hypothesis: lag2Response.section_3_hypothesis?.hypothesis || '',
+          mode: 'refine',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Fejl ved opdatering af hypotese');
+      }
+
+      const data: Lag2Response = await response.json();
+      setLag2Response(data);
+      // Keep existing answers but clear selection
+      setLag2SelectedChoice('');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (e) {
+      console.error('Error refining hypothesis:', e);
+      setError('Der opstod en fejl. Prøv venligst igen.');
+    } finally {
+      setIsLoadingLag2(false);
     }
   };
 
@@ -1116,6 +1174,31 @@ function MulighederPageContent() {
                     />
                   </div>
                 ))}
+              </div>
+              
+              {/* Opdater hypotese knap */}
+              <div className="pt-4">
+                <Button
+                  onClick={handleRefineHypothesis}
+                  disabled={isLoadingLag2 || Object.values(lag2Answers).every(a => !a.trim())}
+                  className="w-full"
+                  variant="secondary"
+                >
+                  {isLoadingLag2 ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Opdaterer hypotese...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      Opdater hypotese baseret på mine svar
+                    </>
+                  )}
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Hypotesen nedenfor vil blive præciseret ud fra dine svar
+                </p>
               </div>
             </div>
 

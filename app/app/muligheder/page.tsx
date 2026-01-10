@@ -294,6 +294,23 @@ function MulighederPageContent() {
     }
   }, [buildStepData]);
 
+  // Auto-fetch job examples when ready (removes need for extra click)
+  useEffect(() => {
+    if (
+      directionState?.next_step_ready_for_jobs &&
+      coachResponse &&
+      !coachResponse.job_examples?.length &&
+      !coachResponse.questions?.length &&
+      !showJobExamples &&
+      !showSpejling &&
+      !isLoading
+    ) {
+      setShowJobExamples(true);
+      callCareerCoach(selectedChoice, conversationHistory, jobAdText, true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [directionState?.next_step_ready_for_jobs, coachResponse, showJobExamples, showSpejling, isLoading, selectedChoice, conversationHistory, jobAdText, callCareerCoach]);
+
   // Handle choice selection
   const handleChoiceSelect = (choice: DirectionChoice) => {
     setSelectedChoice(choice);
@@ -921,23 +938,13 @@ function MulighederPageContent() {
               <div className="border-t pt-6 space-y-3">
                 {directionState?.next_step_ready_for_jobs ? (
                   <>
-                    <Button 
-                      onClick={handleContinueToJobExamples}
-                      disabled={isLoading}
-                      className="w-full"
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Behandler...
-                        </>
-                      ) : (
-                        <>
-                          Se jobeksempler
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </>
-                      )}
-                    </Button>
+                    {/* Job examples are auto-loaded - show loading or reset option */}
+                    {isLoading ? (
+                      <div className="flex items-center justify-center py-4">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <span className="text-muted-foreground">Henter jobeksempler...</span>
+                      </div>
+                    ) : null}
                     <Button 
                       variant="outline"
                       onClick={handleReset}
@@ -1257,19 +1264,12 @@ function MulighederPageContent() {
             {/* Actions */}
             <div className="flex flex-wrap gap-3 pt-4 border-t">
               {directionState.next_step_ready_for_jobs ? (
-                <Button onClick={handleContinueToJobExamples} disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Behandler...
-                    </>
-                  ) : (
-                    <>
-                      Se jobeksempler
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
+                isLoading ? (
+                  <div className="flex items-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <span className="text-muted-foreground">Henter jobeksempler...</span>
+                  </div>
+                ) : null
               ) : (
                 <p className="text-sm text-muted-foreground">
                   Besvar flere spørgsmål for at få jobforslag

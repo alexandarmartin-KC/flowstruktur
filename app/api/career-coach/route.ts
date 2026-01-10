@@ -230,6 +230,11 @@ Generér en spejling baseret på brugerens reaktioner.`;
       throw new Error('Ingen tekstrespons fra AI');
     }
 
+    // Debug logging for spejling
+    if (shouldTriggerSpejling) {
+      console.log('Spejling response raw:', textContent.substring(0, 500));
+    }
+
     // Parse the JSON response
     let parsedResponse: CareerCoachResponse;
     try {
@@ -241,6 +246,15 @@ Generér en spejling baseret på brugerens reaktioner.`;
         .trim();
       
       parsedResponse = JSON.parse(cleanedContent);
+      
+      // Debug logging for spejling parsed response
+      if (shouldTriggerSpejling) {
+        console.log('Spejling parsed - mode:', parsedResponse.mode);
+        console.log('Spejling parsed - summary_paragraph:', parsedResponse.summary_paragraph?.substring(0, 100));
+        console.log('Spejling parsed - patterns length:', parsedResponse.patterns?.length);
+        console.log('Spejling parsed - unclear length:', parsedResponse.unclear?.length);
+        console.log('Spejling parsed - next_step_explanation:', parsedResponse.next_step_explanation?.substring(0, 100));
+      }
       
       // Validate and ensure required fields exist
       parsedResponse = validateAndNormalizeResponse(parsedResponse, user_choice, shouldTriggerSpejling);
@@ -271,6 +285,7 @@ Generér en spejling baseret på brugerens reaktioner.`;
           summary_paragraph: 'Der opstod en teknisk fejl under generering af spejlingen. AI-svaret kunne ikke parses korrekt. Prøv venligst igen.',
           patterns: [],
           unclear: [],
+          next_step_explanation: '',
           direction_state: {
             choice: 'UNSET',
             priorities_top3: [],

@@ -388,6 +388,12 @@ function MulighederPageContent() {
       }
 
       const data: CareerCoachResponse = await response.json();
+      console.log('Spejling response:', data);
+      console.log('Spejling mode:', data.mode);
+      console.log('Spejling summary_paragraph:', data.summary_paragraph);
+      console.log('Spejling patterns:', data.patterns);
+      console.log('Spejling unclear:', data.unclear);
+      console.log('Spejling next_step_explanation:', data.next_step_explanation);
       setCoachResponse(data);
       setShowSpejling(true);
       

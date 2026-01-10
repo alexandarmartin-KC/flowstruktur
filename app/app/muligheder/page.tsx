@@ -908,8 +908,8 @@ function MulighederPageContent() {
                   onClick={handleJobExamplesFeedbackSubmit}
                   disabled={
                     isLoading || 
-                    (coachResponse.job_examples?.length > 0 && !jobExamplesFeedback) ||
-                    (coachResponse.questions?.length > 0 && !allQuestionsAnswered)
+                    ((coachResponse.job_examples?.length ?? 0) > 0 && !jobExamplesFeedback) ||
+                    ((coachResponse.questions?.length ?? 0) > 0 && !allQuestionsAnswered)
                   }
                   className="w-full"
                 >
@@ -925,8 +925,8 @@ function MulighederPageContent() {
                     </>
                   )}
                 </Button>
-                {((coachResponse.job_examples?.length > 0 && !jobExamplesFeedback) ||
-                  (coachResponse.questions?.length > 0 && !allQuestionsAnswered)) && (
+                {(((coachResponse.job_examples?.length ?? 0) > 0 && !jobExamplesFeedback) ||
+                  ((coachResponse.questions?.length ?? 0) > 0 && !allQuestionsAnswered)) && (
                   <p className="text-sm text-muted-foreground text-center mt-2">
                     Besvar alle spørgsmål ovenfor for at fortsætte
                   </p>

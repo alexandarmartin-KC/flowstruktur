@@ -135,7 +135,9 @@ export async function POST(request: NextRequest) {
       a.question_id.startsWith('experience_job_') || a.question_id === 'clarity_check'
     ) ?? false;
     
-    const shouldTriggerSpejling = request_spejling || hasJobExampleAnswers;
+    // Only trigger spejling if explicitly requested OR has job example answers
+    // AND we're NOT requesting post-feedback questions
+    const shouldTriggerSpejling = (request_spejling || hasJobExampleAnswers) && !request_post_feedback_questions;
 
     // Build job_examples_feedback from user_answers if not provided
     let feedbackForSpejling = job_examples_feedback;

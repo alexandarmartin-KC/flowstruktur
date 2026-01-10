@@ -64,6 +64,33 @@ interface CareerCoachResponse {
   unclear?: string[];
 }
 
+// Lag 2 response structure
+interface Lag2Question {
+  id: string;
+  text: string;
+}
+
+interface Lag2Response {
+  mode: 'ny_retning_lag2';
+  section_1_context: {
+    title: string;
+    content: string;
+  };
+  section_2_questions: {
+    title: string;
+    questions: Lag2Question[];
+  };
+  section_3_hypothesis: {
+    title: string;
+    disclaimer: string;
+    hypothesis: string;
+  };
+  section_4_choices: {
+    title: string;
+    options: { id: string; label: string }[];
+  };
+}
+
 // User answer structure
 interface UserAnswer {
   question_id: string;
@@ -96,6 +123,13 @@ function MulighederPageContent() {
   const [jobExamplesFeedback, setJobExamplesFeedback] = useState<string>('');
   const [showSpejling, setShowSpejling] = useState(false);
   const [spejlingNextAction, setSpejlingNextAction] = useState<string>('');
+  
+  // Lag 2 state
+  const [showLag2, setShowLag2] = useState(false);
+  const [lag2Response, setLag2Response] = useState<Lag2Response | null>(null);
+  const [lag2Answers, setLag2Answers] = useState<{ [questionId: string]: string }>({});
+  const [lag2SelectedChoice, setLag2SelectedChoice] = useState<string>('');
+  const [isLoadingLag2, setIsLoadingLag2] = useState(false);
 
   // Scroll to top when showing spejling
   useEffect(() => {
@@ -388,6 +422,77 @@ function MulighederPageContent() {
       // Save and stay
       localStorage.setItem(STORAGE_KEYS.DIRECTION_STATE, JSON.stringify(directionState));
       alert('Din afklaring er gemt.');
+    } else if (action === 'clarify') {
+      // Go to Lag 2 - Coachende afklaring
+      handleStartLag2();
+    }
+  };
+
+  // Start Lag 2 - Coachende afklaring
+  const handleStartLag2 = async () => {
+    if (!coachResponse) return;
+    
+    setIsLoadingLag2(true);
+    setError(null);
+    
+    const stepData = buildStepData();
+    if (!stepData) {
+      setError('Manglende profildata.');
+      setIsLoadingLag2(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/job-directions-clarification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          transfer_summary: {
+            summary_paragraph: coachResponse.summary_paragraph || '',
+            patterns: coachResponse.patterns || [],
+          },
+          step1_cv_abstract: stepData.step1_json?.cv_summary || '',
+          step2_workstyle: stepData.step2_json || {},
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Fejl ved kald til afklaring');
+      }
+
+      const data: Lag2Response = await response.json();
+      setLag2Response(data);
+      setShowLag2(true);
+      setShowSpejling(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+    } catch (e) {
+      console.error('Error calling Lag 2:', e);
+      setError('Der opstod en fejl. Prøv venligst igen.');
+    } finally {
+      setIsLoadingLag2(false);
+    }
+  };
+
+  // Handle Lag 2 choice selection
+  const handleLag2Choice = (choiceId: string) => {
+    setLag2SelectedChoice(choiceId);
+    
+    if (choiceId === 'adjust') {
+      // Reset and go back to adjust
+      setShowLag2(false);
+      setLag2Response(null);
+      setLag2Answers({});
+      setShowSpejling(true);
+    } else if (choiceId === 'explore') {
+      // Go to job examples based on hypothesis
+      setShowLag2(false);
+      setShowJobExamples(true);
+      // Could trigger job examples API here with hypothesis context
+    } else if (choiceId === 'stop') {
+      // Save and stop
+      localStorage.setItem(STORAGE_KEYS.DIRECTION_STATE, JSON.stringify(directionState));
+      alert('Din afklaring er gemt. Du kan vende tilbage når som helst.');
     }
   };
 
@@ -929,6 +1034,16 @@ function MulighederPageContent() {
               <h4 className="font-semibold">Hvad vil du gøre nu?</h4>
               <div className="grid gap-3">
                 <Button
+                  variant={spejlingNextAction === 'clarify' ? 'default' : 'outline'}
+                  className="justify-start text-left h-auto py-4 px-4"
+                  onClick={() => handleSpejlingAction('clarify')}
+                  disabled={isLoadingLag2}
+                >
+                  <MessageCircle className="mr-3 h-5 w-5 flex-shrink-0" />
+                  <span>Afklar min retning yderligere med coachende spørgsmål</span>
+                  {isLoadingLag2 && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                </Button>
+                <Button
                   variant={spejlingNextAction === 'search' ? 'default' : 'outline'}
                   className="justify-start text-left h-auto py-4 px-4"
                   onClick={() => handleSpejlingAction('search')}
@@ -958,8 +1073,90 @@ function MulighederPageContent() {
         </Card>
       )}
 
+      {/* LAG 2: Coachende afklaring */}
+      {showLag2 && lag2Response && (
+        <Card className="border-purple-200 bg-purple-50/50 dark:border-purple-900 dark:bg-purple-950/20">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <MessageCircle className="h-5 w-5 text-purple-600" />
+              <CardTitle className="text-lg">Coachende afklaring</CardTitle>
+            </div>
+            <CardDescription>
+              Strukturerede spørgsmål til at afklare din retning
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            {/* Sektion 1: Hvad der er på spil */}
+            <div className="space-y-2">
+              <h4 className="font-semibold text-base">{lag2Response.section_1_context.title}</h4>
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <p className="text-base leading-relaxed text-muted-foreground">
+                  {lag2Response.section_1_context.content}
+                </p>
+              </div>
+            </div>
+
+            {/* Sektion 2: Afklarende spørgsmål */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-base">{lag2Response.section_2_questions.title}</h4>
+              <div className="space-y-6">
+                {lag2Response.section_2_questions.questions.map((question, idx) => (
+                  <div key={question.id} className="space-y-2">
+                    <Label className="text-sm font-medium">
+                      {idx + 1}. {question.text}
+                    </Label>
+                    <Textarea
+                      placeholder="Skriv dit svar her..."
+                      value={lag2Answers[question.id] || ''}
+                      onChange={(e) => setLag2Answers(prev => ({
+                        ...prev,
+                        [question.id]: e.target.value
+                      }))}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Sektion 3: Midlertidig retningshypotese */}
+            <div className="space-y-3 pt-4 border-t">
+              <h4 className="font-semibold text-base">{lag2Response.section_3_hypothesis.title}</h4>
+              <div className="bg-muted/50 p-4 rounded-lg space-y-3">
+                <p className="text-xs text-muted-foreground italic">
+                  {lag2Response.section_3_hypothesis.disclaimer}
+                </p>
+                <p className="text-base leading-relaxed">
+                  {lag2Response.section_3_hypothesis.hypothesis}
+                </p>
+              </div>
+            </div>
+
+            {/* Sektion 4: Næste valg */}
+            <div className="space-y-3 pt-4 border-t">
+              <h4 className="font-semibold">{lag2Response.section_4_choices.title}</h4>
+              <div className="grid gap-3">
+                {lag2Response.section_4_choices.options.map((option) => (
+                  <Button
+                    key={option.id}
+                    variant={lag2SelectedChoice === option.id ? 'default' : 'outline'}
+                    className="justify-start text-left h-auto py-4 px-4"
+                    onClick={() => handleLag2Choice(option.id)}
+                  >
+                    {option.id === 'adjust' && <RefreshCw className="mr-3 h-5 w-5 flex-shrink-0" />}
+                    {option.id === 'explore' && <Search className="mr-3 h-5 w-5 flex-shrink-0" />}
+                    {option.id === 'stop' && <Save className="mr-3 h-5 w-5 flex-shrink-0" />}
+                    <span>{option.label}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Direction State Summary - only show when no questions are pending, NOT ready for jobs, and NOT showing job examples */}
-      {directionState && directionState.choice !== 'UNSET' && !showSpejling && !showJobExamples &&
+      {directionState && directionState.choice !== 'UNSET' && !showSpejling && !showJobExamples && !showLag2 &&
        (!coachResponse?.questions || coachResponse.questions.length === 0) && 
        !directionState.next_step_ready_for_jobs && (
         <Card className={directionState.next_step_ready_for_jobs 

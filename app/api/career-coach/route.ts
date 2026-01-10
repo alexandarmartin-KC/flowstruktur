@@ -98,6 +98,7 @@ interface CareerCoachResponse {
   summary_paragraph?: string;
   patterns?: string[];
   unclear?: string[];
+  next_step_explanation?: string;
 }
 
 export async function POST(request: NextRequest) {

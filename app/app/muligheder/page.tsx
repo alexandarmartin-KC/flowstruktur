@@ -62,9 +62,10 @@ interface CareerCoachResponse {
   summary_paragraph?: string;
   patterns?: string[];
   unclear?: string[];
+  next_step_explanation?: string;
 }
 
-// Lag 2 response structure
+// Lag 2 response structure (brugersprog version)
 interface Lag2Question {
   id: string;
   text: string;
@@ -72,20 +73,14 @@ interface Lag2Question {
 
 interface Lag2Response {
   mode: 'ny_retning_lag2';
-  section_1_context: {
-    title: string;
+  intro: {
     content: string;
   };
-  section_2_questions: {
-    title: string;
-    questions: Lag2Question[];
+  questions: Lag2Question[];
+  outro: {
+    content: string;
   };
-  section_3_hypothesis: {
-    title: string;
-    disclaimer: string;
-    hypothesis: string;
-  };
-  section_4_choices: {
+  choices: {
     title: string;
     options: { id: string; label: string }[];
   };
@@ -484,73 +479,21 @@ function MulighederPageContent() {
       setLag2Response(null);
       setLag2Answers({});
       setShowSpejling(true);
-    } else if (choiceId === 'explore') {
-      // Save the clarification context for job examples
+    } else if (choiceId === 'submit' || choiceId === 'explore') {
+      // Save the clarification answers for next step
       const clarificationContext = {
         answers: lag2Answers,
-        hypothesis: lag2Response?.section_3_hypothesis?.hypothesis || '',
       };
       localStorage.setItem('flowstruktur_lag2_clarification', JSON.stringify(clarificationContext));
       
-      // Go to job examples based on hypothesis
+      // Go to next step (Lag 3 - spejling af svar)
       setShowLag2(false);
+      // TODO: Implement Lag 3 - for now go to job examples
       setShowJobExamples(true);
     } else if (choiceId === 'stop') {
       // Save and stop
       localStorage.setItem(STORAGE_KEYS.DIRECTION_STATE, JSON.stringify(directionState));
       alert('Din afklaring er gemt. Du kan vende tilbage når som helst.');
-    }
-  };
-
-  // Refine hypothesis based on user's answers
-  const handleRefineHypothesis = async () => {
-    if (!lag2Response || Object.keys(lag2Answers).length === 0) {
-      setError('Besvar venligst mindst ét spørgsmål før du opdaterer hypotesen.');
-      return;
-    }
-
-    setIsLoadingLag2(true);
-    setError(null);
-
-    const stepData = buildStepData();
-    if (!stepData) {
-      setError('Manglende profildata.');
-      setIsLoadingLag2(false);
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/job-directions-clarification', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          transfer_summary: {
-            summary_paragraph: coachResponse?.summary_paragraph || '',
-            patterns: coachResponse?.patterns || [],
-          },
-          step1_cv_abstract: stepData.step1_json?.cv_summary || '',
-          step2_workstyle: stepData.step2_json || {},
-          user_answers: lag2Answers,
-          previous_hypothesis: lag2Response.section_3_hypothesis?.hypothesis || '',
-          mode: 'refine',
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Fejl ved opdatering af hypotese');
-      }
-
-      const data: Lag2Response = await response.json();
-      setLag2Response(data);
-      // Keep existing answers but clear selection
-      setLag2SelectedChoice('');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    } catch (e) {
-      console.error('Error refining hypothesis:', e);
-      setError('Der opstod en fejl. Prøv venligst igen.');
-    } finally {
-      setIsLoadingLag2(false);
     }
   };
 
@@ -865,10 +808,15 @@ function MulighederPageContent() {
                 <div className="space-y-4">
                   {coachResponse.job_examples.map((job, index) => (
                     <Card key={job.id} className="bg-muted/30">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-base font-medium">
-                          {index + 1}. {job.title}
-                        </CardTitle>
+                      <CardHeader className="pb-3">
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-muted-foreground">
+                            Jobeksempel {index + 1}
+                          </p>
+                          <CardTitle className="text-base font-semibold">
+                            {job.title}
+                          </CardTitle>
+                        </div>
                       </CardHeader>
                       <CardContent>
                         <p className="text-sm text-muted-foreground whitespace-pre-wrap">
@@ -1024,17 +972,17 @@ function MulighederPageContent() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Eye className="h-5 w-5 text-blue-600" />
-              <CardTitle className="text-lg">Din transferoversigt</CardTitle>
+              <CardTitle className="text-lg">Din spejlingsopsummering</CardTitle>
             </div>
             <CardDescription>
-              Hvad der kan overføres som arbejdsform til nye kontekster
+              Et klart ståsted for dine videre karriereovervejelser
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
-            {/* Afsnit 1: Observerede arbejdsmønstre */}
+            {/* Afsnit 1: Kerneindsigt */}
             {coachResponse.summary_paragraph && (
               <div className="space-y-2">
-                <h4 className="font-semibold text-base">Observerede arbejdsmønstre</h4>
+                <h4 className="font-semibold text-base">Kerneindsigt</h4>
                 <div className="prose prose-sm dark:prose-invert max-w-none">
                   <p className="text-base leading-relaxed text-muted-foreground">
                     {coachResponse.summary_paragraph}
@@ -1043,47 +991,45 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* Afsnit 2 og 3 from patterns array */}
+            {/* Afsnit 2: Hvad det peger mod */}
             {coachResponse.patterns && coachResponse.patterns.length > 0 && (
-              <>
-                {/* Afsnit 2: Arbejdsformer der ser ud til at være overførbare */}
-                {coachResponse.patterns[0] && (
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-base">Arbejdsformer der ser ud til at være overførbare</h4>
-                    <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
-                      <p className="text-base leading-relaxed text-muted-foreground">
-                        {coachResponse.patterns[0]}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Afsnit 3: Arbejdsformer der typisk kræver opbygning - HARDCODED */}
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-base">Hvad der typisk kræver opbygning i nye kontekster</h4>
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <ul className="text-base leading-relaxed text-muted-foreground list-disc pl-5 space-y-1">
-                      <li>Indsigt i domænespecifikke krav og standarder i det nye felt</li>
-                      <li>Forståelse af nye organisatoriske beslutnings- og ansvarsstrukturer</li>
-                      <li>Kendskab til branchespecifikke compliance-krav og regulering</li>
-                    </ul>
-                  </div>
-                </div>
-              </>
+              <div className="space-y-2">
+                <h4 className="font-semibold text-base">Hvad det peger mod</h4>
+                <ul className="space-y-2">
+                  {coachResponse.patterns.map((pattern, idx) => (
+                    <li key={idx} className="flex items-start gap-3 bg-green-50 dark:bg-green-950/20 p-3 rounded-lg">
+                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{pattern}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
 
-            {/* Åbne afklaringer */}
+            {/* Afsnit 3: Hvad der sandsynligvis skaber friktion */}
             {coachResponse.unclear && coachResponse.unclear.length > 0 && (
-              <div className="space-y-3 pt-4 border-t">
-                <h4 className="font-semibold text-base">Åbne afklaringer</h4>
-                <ul className="space-y-3">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-base">Hvad der sandsynligvis skaber friktion</h4>
+                <ul className="space-y-2">
                   {coachResponse.unclear.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-3 bg-muted/50 p-3 rounded-lg">
-                      <HelpCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <li key={idx} className="flex items-start gap-3 bg-amber-50 dark:bg-amber-950/20 p-3 rounded-lg">
+                      <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                       <span className="text-sm">{item}</span>
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {/* Afsnit 4: Hvad det betyder for næste skridt */}
+            {coachResponse.next_step_explanation && (
+              <div className="space-y-2 pt-4 border-t">
+                <h4 className="font-semibold text-base">Hvad det betyder for næste skridt</h4>
+                <div className="prose prose-sm dark:prose-invert max-w-none bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {coachResponse.next_step_explanation}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -1131,103 +1077,67 @@ function MulighederPageContent() {
         </Card>
       )}
 
-      {/* LAG 2: Coachende afklaring */}
+      {/* LAG 2: Coachende afklaring (brugersprog) */}
       {showLag2 && lag2Response && (
         <Card className="border-purple-200 bg-purple-50/50 dark:border-purple-900 dark:bg-purple-950/20">
           <CardHeader>
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-purple-600" />
-              <CardTitle className="text-lg">Coachende afklaring</CardTitle>
+              <CardTitle className="text-lg">Afklarende spørgsmål</CardTitle>
             </div>
-            <CardDescription>
-              Strukturerede spørgsmål til at afklare din retning
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
-            {/* Sektion 1: Hvad der er på spil */}
-            <div className="space-y-2">
-              <h4 className="font-semibold text-base">{lag2Response.section_1_context.title}</h4>
+            {/* Intro */}
+            {lag2Response.intro && (
               <div className="prose prose-sm dark:prose-invert max-w-none">
                 <p className="text-base leading-relaxed text-muted-foreground">
-                  {lag2Response.section_1_context.content}
+                  {lag2Response.intro.content}
                 </p>
               </div>
+            )}
+
+            {/* Spørgsmål */}
+            <div className="space-y-6">
+              {lag2Response.questions?.map((question, idx) => (
+                <div key={question.id} className="space-y-2">
+                  <Label className="text-sm font-medium leading-relaxed">
+                    {idx + 1}. {question.text}
+                  </Label>
+                  <Textarea
+                    placeholder="Skriv dit svar her..."
+                    value={lag2Answers[question.id] || ''}
+                    onChange={(e) => setLag2Answers(prev => ({
+                      ...prev,
+                      [question.id]: e.target.value
+                    }))}
+                    className="min-h-[100px]"
+                  />
+                </div>
+              ))}
             </div>
 
-            {/* Sektion 2: Afklarende spørgsmål */}
-            <div className="space-y-4">
-              <h4 className="font-semibold text-base">{lag2Response.section_2_questions.title}</h4>
-              <div className="space-y-6">
-                {lag2Response.section_2_questions.questions.map((question, idx) => (
-                  <div key={question.id} className="space-y-2">
-                    <Label className="text-sm font-medium">
-                      {idx + 1}. {question.text}
-                    </Label>
-                    <Textarea
-                      placeholder="Skriv dit svar her..."
-                      value={lag2Answers[question.id] || ''}
-                      onChange={(e) => setLag2Answers(prev => ({
-                        ...prev,
-                        [question.id]: e.target.value
-                      }))}
-                      className="min-h-[80px]"
-                    />
-                  </div>
-                ))}
-              </div>
-              
-              {/* Opdater hypotese knap */}
-              <div className="pt-4">
-                <Button
-                  onClick={handleRefineHypothesis}
-                  disabled={isLoadingLag2 || Object.values(lag2Answers).every(a => !a.trim())}
-                  className="w-full"
-                  variant="secondary"
-                >
-                  {isLoadingLag2 ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Opdaterer hypotese...
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw className="mr-2 h-4 w-4" />
-                      Opdater hypotese baseret på mine svar
-                    </>
-                  )}
-                </Button>
-                <p className="text-xs text-muted-foreground mt-2 text-center">
-                  Hypotesen nedenfor vil blive præciseret ud fra dine svar
+            {/* Outro */}
+            {lag2Response.outro && (
+              <div className="bg-muted/30 p-4 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  {lag2Response.outro.content}
                 </p>
               </div>
-            </div>
+            )}
 
-            {/* Sektion 3: Midlertidig retningshypotese */}
+            {/* Valg */}
             <div className="space-y-3 pt-4 border-t">
-              <h4 className="font-semibold text-base">{lag2Response.section_3_hypothesis.title}</h4>
-              <div className="bg-muted/50 p-4 rounded-lg space-y-3">
-                <p className="text-xs text-muted-foreground italic">
-                  {lag2Response.section_3_hypothesis.disclaimer}
-                </p>
-                <p className="text-base leading-relaxed">
-                  {lag2Response.section_3_hypothesis.hypothesis}
-                </p>
-              </div>
-            </div>
-
-            {/* Sektion 4: Næste valg */}
-            <div className="space-y-3 pt-4 border-t">
-              <h4 className="font-semibold">{lag2Response.section_4_choices.title}</h4>
+              <h4 className="font-semibold">{lag2Response.choices?.title || 'Hvad vil du gøre nu?'}</h4>
               <div className="grid gap-3">
-                {lag2Response.section_4_choices.options.map((option) => (
+                {lag2Response.choices?.options?.map((option) => (
                   <Button
                     key={option.id}
                     variant={lag2SelectedChoice === option.id ? 'default' : 'outline'}
                     className="justify-start text-left h-auto py-4 px-4"
                     onClick={() => handleLag2Choice(option.id)}
+                    disabled={option.id === 'submit' && Object.values(lag2Answers).every(a => !a?.trim())}
                   >
-                    {option.id === 'adjust' && <RefreshCw className="mr-3 h-5 w-5 flex-shrink-0" />}
-                    {option.id === 'explore' && <Search className="mr-3 h-5 w-5 flex-shrink-0" />}
+                    {option.id === 'submit' && <ArrowRight className="mr-3 h-5 w-5 flex-shrink-0" />}
                     {option.id === 'stop' && <Save className="mr-3 h-5 w-5 flex-shrink-0" />}
                     <span>{option.label}</span>
                   </Button>

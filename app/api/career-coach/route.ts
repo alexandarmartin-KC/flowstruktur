@@ -51,6 +51,8 @@ interface CareerCoachRequest {
   user_answers?: UserAnswer[];
   request_job_examples?: boolean;
   request_spejling?: boolean;
+  request_post_feedback_questions?: boolean;
+  post_feedback_answers?: UserAnswer[];
   job_examples_feedback?: {
     overall_feedback: string;
     job_examples: Array<{
@@ -114,6 +116,8 @@ export async function POST(request: NextRequest) {
       user_answers,
       request_job_examples,
       request_spejling,
+      request_post_feedback_questions,
+      post_feedback_answers,
       job_examples_feedback,
       direction_state: inputDirectionState
     } = body;
@@ -184,16 +188,41 @@ user_choice: ${user_choice || '(tom)'}`;
       userMessage += `\n\nREQUEST: Brugeren har bekræftet retningen og ønsker nu at se JOBEKSEMPLER. Generér 3 jobeksempler.`;
     }
 
+    // Handle post-feedback questions request
+    if (request_post_feedback_questions && job_examples_feedback) {
+      userMessage += `\n\nREQUEST: POST-FEEDBACK SPØRGSMÅL
+
+Brugeren har set jobeksemplerne og givet følgende feedback:
+${JSON.stringify(job_examples_feedback, null, 2)}
+
+Direction state fra Step 4:
+${JSON.stringify(inputDirectionState, null, 2)}
+
+Generér 2-3 afklarende coaching spørgsmål baseret på brugerens feedback på jobeksemplerne. 
+Spørgsmålene skal hjælpe med at forstå:
+- Hvad der specifikt tiltalte eller ikke tiltalte ved eksemplerne
+- Hvilke elementer der er vigtigst for brugeren
+- Om der er særlige bekymringer eller ønsker der skal adresseres
+
+Returnér mode: "deepening" med questions array.`;
+    }
+
     if (shouldTriggerSpejling && feedbackForSpejling) {
+      // Include post_feedback_answers if available
+      let postFeedbackContext = '';
+      if (post_feedback_answers && post_feedback_answers.length > 0) {
+        postFeedbackContext = `\n\nBrugerens svar på opfølgende spørgsmål:\n${JSON.stringify(post_feedback_answers, null, 2)}`;
+      }
+      
       userMessage += `\n\nREQUEST: SPEJLING (Step 5B)
 
 Brugeren har set jobeksemplerne og givet følgende feedback:
 ${JSON.stringify(feedbackForSpejling, null, 2)}
 
 Direction state fra Step 4:
-${JSON.stringify(inputDirectionState, null, 2)}
+${JSON.stringify(inputDirectionState, null, 2)}${postFeedbackContext}
 
-Generér en spejling baseret på brugerens reaktioner.`;
+Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
     }
 
     // Determine which system prompt to use

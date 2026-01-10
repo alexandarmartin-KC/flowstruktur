@@ -119,6 +119,11 @@ function MulighederPageContent() {
   const [showSpejling, setShowSpejling] = useState(false);
   const [spejlingNextAction, setSpejlingNextAction] = useState<string>('');
   
+  // Post job examples coaching questions state
+  const [postJobExamplesQuestions, setPostJobExamplesQuestions] = useState<CoachQuestion[]>([]);
+  const [postJobExamplesAnswers, setPostJobExamplesAnswers] = useState<{ [questionId: string]: string | string[] }>({});
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  
   // Lag 2 state
   const [showLag2, setShowLag2] = useState(false);
   const [lag2Response, setLag2Response] = useState<Lag2Response | null>(null);
@@ -362,12 +367,13 @@ function MulighederPageContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Handle feedback and proceed to spejling
+  // Handle feedback - fetch coaching questions (not spejling yet)
   const handleJobExamplesFeedbackSubmit = async () => {
     if (!jobExamplesFeedback) return;
     
     setIsLoading(true);
     setError(null);
+    setFeedbackSubmitted(true);
     
     const stepData = buildStepData();
     if (!stepData) {
@@ -388,6 +394,78 @@ function MulighederPageContent() {
     };
 
     try {
+      // First, fetch coaching questions based on feedback (NOT spejling)
+      const response = await fetch('/api/career-coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...stepData,
+          user_choice: selectedChoice || '',
+          job_examples_feedback: feedbackPayload,
+          direction_state: directionState,
+          request_post_feedback_questions: true,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Fejl ved hentning af spørgsmål');
+      }
+
+      const data: CareerCoachResponse = await response.json();
+      console.log('Post feedback questions response:', data);
+      
+      // Store the coaching questions to show below job examples
+      if (data.questions && data.questions.length > 0) {
+        setPostJobExamplesQuestions(data.questions);
+      } else {
+        // If no questions returned, go directly to spejling
+        await fetchSpejling(feedbackPayload);
+      }
+      
+    } catch (e) {
+      console.error('Error fetching post-feedback questions:', e);
+      setError('Der opstod en fejl. Prøv venligst igen.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle answering post-job-examples questions
+  const handlePostJobExamplesAnswer = (questionId: string, answer: string | string[]) => {
+    setPostJobExamplesAnswers(prev => ({
+      ...prev,
+      [questionId]: answer
+    }));
+  };
+
+  // Check if all post-job-examples questions are answered
+  const allPostJobExamplesQuestionsAnswered = postJobExamplesQuestions.every(q => {
+    const answer = postJobExamplesAnswers[q.id];
+    if (q.type === 'multi_choice') {
+      return Array.isArray(answer) && answer.length > 0;
+    }
+    return answer && (typeof answer === 'string' ? answer.trim() !== '' : true);
+  });
+
+  // Fetch spejling (analysis) with all collected data
+  const fetchSpejling = async (feedbackPayload: any) => {
+    setIsLoading(true);
+    setError(null);
+    
+    const stepData = buildStepData();
+    if (!stepData) {
+      setError('Manglende profildata.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Combine all answers
+    const postFeedbackAnswers: UserAnswer[] = Object.entries(postJobExamplesAnswers).map(([question_id, answer]) => ({
+      question_id,
+      answer
+    }));
+
+    try {
       const response = await fetch('/api/career-coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -396,6 +474,7 @@ function MulighederPageContent() {
           user_choice: selectedChoice || '',
           request_spejling: true,
           job_examples_feedback: feedbackPayload,
+          post_feedback_answers: postFeedbackAnswers,
           direction_state: directionState,
         }),
       });
@@ -406,11 +485,6 @@ function MulighederPageContent() {
 
       const data: CareerCoachResponse = await response.json();
       console.log('Spejling response:', data);
-      console.log('Spejling mode:', data.mode);
-      console.log('Spejling summary_paragraph:', data.summary_paragraph);
-      console.log('Spejling patterns:', data.patterns);
-      console.log('Spejling unclear:', data.unclear);
-      console.log('Spejling next_step_explanation:', data.next_step_explanation);
       setCoachResponse(data);
       setShowSpejling(true);
       
@@ -420,6 +494,23 @@ function MulighederPageContent() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Submit post-job-examples answers and proceed to spejling
+  const handlePostJobExamplesSubmit = async () => {
+    if (!allPostJobExamplesQuestionsAnswered) return;
+    
+    const feedbackPayload = {
+      overall_feedback: jobExamplesFeedback,
+      job_examples: coachResponse?.job_examples?.map((job, idx) => ({
+        job_id: job.id,
+        job_title: job.title,
+        experience: jobExamplesFeedback === 'yes' ? 'giver_mening' : 
+                   jobExamplesFeedback === 'adjust' ? 'delvist' : 'ikke_noget'
+      })) || []
+    };
+    
+    await fetchSpejling(feedbackPayload);
   };
 
   // Handle spejling next action
@@ -434,6 +525,9 @@ function MulighederPageContent() {
       setShowSpejling(false);
       setShowJobExamples(false);
       setJobExamplesFeedback('');
+      setPostJobExamplesQuestions([]);
+      setPostJobExamplesAnswers({});
+      setFeedbackSubmitted(false);
       setCoachResponse(null);
       callCareerCoach(selectedChoice, [], jobAdText);
     } else if (action === 'save') {
@@ -539,6 +633,12 @@ function MulighederPageContent() {
     setUserAnswers({});
     setDirectionState(null);
     setConversationHistory([]);
+    setShowJobExamples(false);
+    setJobExamplesFeedback('');
+    setShowSpejling(false);
+    setPostJobExamplesQuestions([]);
+    setPostJobExamplesAnswers({});
+    setFeedbackSubmitted(false);
     localStorage.removeItem(STORAGE_KEYS.DIRECTION_STATE);
     router.push('/app/muligheder', { scroll: false });
   };
@@ -850,8 +950,8 @@ function MulighederPageContent() {
                   ))}
                 </div>
 
-                {/* Feedback options after job examples */}
-                {!showSpejling && (
+                {/* Feedback options after job examples - only show if not submitted yet */}
+                {!showSpejling && !feedbackSubmitted && (
                   <Card className="border-primary/50 bg-primary/5">
                     <CardHeader>
                       <CardTitle className="text-base">Hvad synes du om disse eksempler?</CardTitle>
@@ -883,14 +983,152 @@ function MulighederPageContent() {
                           <span>Nej – det er ikke den retning, jeg har i tankerne</span>
                         </Button>
                       </div>
+                      
+                      {/* Submit feedback button */}
+                      {jobExamplesFeedback && (
+                        <Button 
+                          onClick={handleJobExamplesFeedbackSubmit}
+                          disabled={isLoading}
+                          className="w-full mt-4"
+                        >
+                          {isLoading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Henter spørgsmål...
+                            </>
+                          ) : (
+                            <>
+                              Fortsæt
+                              <ArrowRight className="ml-2 h-4 w-4" />
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Show selected feedback after submission */}
+                {feedbackSubmitted && !showSpejling && (
+                  <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <span className="text-sm">
+                      Dit svar: {jobExamplesFeedback === 'yes' ? 'Det her rammer rigtigt' : 
+                                jobExamplesFeedback === 'adjust' ? 'Det er tæt på, men jeg vil gerne justere' : 
+                                'Det er ikke den retning, jeg har i tankerne'}
+                    </span>
+                  </div>
+                )}
+
+                {/* Post-job-examples coaching questions */}
+                {feedbackSubmitted && postJobExamplesQuestions.length > 0 && !showSpejling && (
+                  <Card className="border-primary/50 bg-primary/5 mt-6">
+                    <CardHeader>
+                      <div className="flex items-center gap-2">
+                        <HelpCircle className="h-5 w-5 text-primary" />
+                        <CardTitle className="text-base">Afklarende spørgsmål</CardTitle>
+                      </div>
+                      <CardDescription>
+                        Besvar disse spørgsmål for at få en mere præcis analyse
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {postJobExamplesQuestions.map((question) => {
+                        const currentAnswer = postJobExamplesAnswers[question.id];
+
+                        if (question.type === 'single_choice' && question.options) {
+                          return (
+                            <div key={question.id} className="space-y-3">
+                              <Label className="text-base font-medium">{question.prompt}</Label>
+                              <div className="grid gap-2">
+                                {question.options.map((option, idx) => (
+                                  <Button
+                                    key={idx}
+                                    variant={currentAnswer === option ? 'default' : 'outline'}
+                                    className="justify-start text-left h-auto py-3 px-4"
+                                    onClick={() => handlePostJobExamplesAnswer(question.id, option)}
+                                  >
+                                    {option}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        if (question.type === 'multi_choice' && question.options) {
+                          const selectedOptions = (currentAnswer as string[]) || [];
+                          return (
+                            <div key={question.id} className="space-y-3">
+                              <Label className="text-base font-medium">{question.prompt}</Label>
+                              <p className="text-sm text-muted-foreground">Vælg alle der passer</p>
+                              <div className="grid gap-2">
+                                {question.options.map((option, idx) => (
+                                  <Button
+                                    key={idx}
+                                    variant={selectedOptions.includes(option) ? 'default' : 'outline'}
+                                    className="justify-start text-left h-auto py-3 px-4"
+                                    onClick={() => {
+                                      const newSelection = selectedOptions.includes(option)
+                                        ? selectedOptions.filter(o => o !== option)
+                                        : [...selectedOptions, option];
+                                      handlePostJobExamplesAnswer(question.id, newSelection);
+                                    }}
+                                  >
+                                    {option}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        // short_text
+                        return (
+                          <div key={question.id} className="space-y-3">
+                            <Label className="text-base font-medium">{question.prompt}</Label>
+                            <Textarea
+                              value={(currentAnswer as string) || ''}
+                              onChange={(e) => handlePostJobExamplesAnswer(question.id, e.target.value)}
+                              placeholder="Skriv dit svar her..."
+                              rows={3}
+                            />
+                          </div>
+                        );
+                      })}
+
+                      {/* Submit button for post-job-examples questions */}
+                      <Button 
+                        onClick={handlePostJobExamplesSubmit}
+                        disabled={isLoading || !allPostJobExamplesQuestionsAnswered}
+                        className="w-full mt-4"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Behandler...
+                          </>
+                        ) : (
+                          <>
+                            Send svar og se din analyse
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                      {!allPostJobExamplesQuestionsAnswered && (
+                        <p className="text-sm text-muted-foreground text-center">
+                          Besvar alle spørgsmål ovenfor for at fortsætte
+                        </p>
+                      )}
                     </CardContent>
                   </Card>
                 )}
               </div>
             )}
 
-            {/* Coaching Questions - shown BELOW job examples */}
-            {coachResponse.questions && coachResponse.questions.length > 0 && (
+            {/* Coaching Questions - shown when NO job examples (early flow questions) */}
+            {coachResponse.questions && coachResponse.questions.length > 0 && 
+             (!coachResponse.job_examples || coachResponse.job_examples.length === 0) && (
               <div className="space-y-6 border-t pt-6">
                 <div className="flex items-center gap-2 mb-4">
                   <HelpCircle className="h-5 w-5 text-primary" />
@@ -900,25 +1138,13 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* Submit button - only show when we have something to submit */}
-            {((coachResponse.questions && coachResponse.questions.length > 0) || 
-              (coachResponse.job_examples && coachResponse.job_examples.length > 0)) && (
+            {/* Submit button - only show when we have questions (without job examples) */}
+            {coachResponse.questions && coachResponse.questions.length > 0 && 
+             (!coachResponse.job_examples || coachResponse.job_examples.length === 0) && (
               <div className="border-t pt-6">
                 <Button 
-                  onClick={() => {
-                    // If we have job examples, use the feedback submit handler
-                    // Otherwise just submit the question answers
-                    if ((coachResponse.job_examples?.length ?? 0) > 0) {
-                      handleJobExamplesFeedbackSubmit();
-                    } else {
-                      handleSubmitAnswers();
-                    }
-                  }}
-                  disabled={
-                    isLoading || 
-                    ((coachResponse.job_examples?.length ?? 0) > 0 && !jobExamplesFeedback) ||
-                    ((coachResponse.questions?.length ?? 0) > 0 && !allQuestionsAnswered)
-                  }
+                  onClick={handleSubmitAnswers}
+                  disabled={isLoading || !allQuestionsAnswered}
                   className="w-full"
                 >
                   {isLoading ? (
@@ -933,8 +1159,7 @@ function MulighederPageContent() {
                     </>
                   )}
                 </Button>
-                {(((coachResponse.job_examples?.length ?? 0) > 0 && !jobExamplesFeedback) ||
-                  ((coachResponse.questions?.length ?? 0) > 0 && !allQuestionsAnswered)) && (
+                {!allQuestionsAnswered && (
                   <p className="text-sm text-muted-foreground text-center mt-2">
                     Besvar alle spørgsmål ovenfor for at fortsætte
                   </p>

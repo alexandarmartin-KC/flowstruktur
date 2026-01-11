@@ -58,7 +58,17 @@ interface CareerCoachResponse {
   questions: CoachQuestion[];
   direction_state: DirectionState;
   job_examples?: JobExample[];
-  // Spejling fields
+  // New comprehensive analysis fields (5 sections)
+  section1_arbejdsmoenster?: string;
+  section2_drivkraft?: string;
+  section3_spaendingsfelt?: string;
+  section4_navigation?: {
+    skal_vaere_til_stede: string[];
+    advarselstegn: string[];
+    nice_to_have: string[];
+  };
+  section5_hypotese?: string;
+  // Legacy fields (for backwards compatibility)
   summary_paragraph?: string;
   patterns?: string[];
   unclear?: string[];
@@ -1138,33 +1148,133 @@ function MulighederPageContent() {
         </Card>
       )}
 
-      {/* Spejling Section - Step 5B (separate card) */}
-      {showSpejling && coachResponse && (coachResponse.mode === 'spejling' || coachResponse.summary_paragraph) && (
+      {/* Comprehensive Career Analysis - Step 5B (separate card) */}
+      {showSpejling && coachResponse && (coachResponse.mode === 'spejling' || coachResponse.section1_arbejdsmoenster || coachResponse.summary_paragraph) && (
         <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
           <CardHeader>
             <div className="flex items-center gap-2">
               <Eye className="h-5 w-5 text-blue-600" />
-              <CardTitle className="text-lg">Din spejlingsopsummering</CardTitle>
+              <CardTitle className="text-lg">Din karriereanalyse</CardTitle>
             </div>
             <CardDescription>
-              Et klart ståsted for dine videre karriereovervejelser
+              En samlet forståelse baseret på alt hvad du har delt
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
-            {/* Afsnit 1: Kerneindsigt */}
-            {coachResponse.summary_paragraph && (
-              <div className="space-y-2">
-                <h4 className="font-semibold text-base">Kerneindsigt</h4>
-                <div className="prose prose-sm dark:prose-invert max-w-none">
-                  <p className="text-base leading-relaxed text-muted-foreground">
-                    {coachResponse.summary_paragraph}
+            
+            {/* Section 1: Dit grundlæggende arbejdsmønster */}
+            {(coachResponse.section1_arbejdsmoenster || coachResponse.summary_paragraph) && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold px-2 py-1 rounded">1</span>
+                  Dit grundlæggende arbejdsmønster
+                </h4>
+                <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                  <p className="text-base leading-relaxed text-foreground">
+                    {coachResponse.section1_arbejdsmoenster || coachResponse.summary_paragraph}
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Afsnit 2: Hvad det peger mod */}
-            {coachResponse.patterns && coachResponse.patterns.length > 0 && (
+            {/* Section 2: Din reelle drivkraft */}
+            {coachResponse.section2_drivkraft && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold px-2 py-1 rounded">2</span>
+                  Din reelle drivkraft
+                </h4>
+                <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                  <p className="text-base leading-relaxed text-foreground">
+                    {coachResponse.section2_drivkraft}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Section 3: Dit centrale spændingsfelt */}
+            {coachResponse.section3_spaendingsfelt && (
+              <div className="space-y-3 bg-amber-50/50 dark:bg-amber-950/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 text-xs font-bold px-2 py-1 rounded">3</span>
+                  Dit centrale spændingsfelt
+                </h4>
+                <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                  <p className="text-base leading-relaxed text-foreground">
+                    {coachResponse.section3_spaendingsfelt}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Section 4: Hvad du med fordel kan navigere efter */}
+            {coachResponse.section4_navigation && (
+              <div className="space-y-4">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold px-2 py-1 rounded">4</span>
+                  Hvad du med fordel kan navigere efter
+                </h4>
+                
+                <div className="pl-8 space-y-4">
+                  {/* Skal være til stede */}
+                  {coachResponse.section4_navigation.skal_vaere_til_stede?.length > 0 && (
+                    <div className="space-y-2">
+                      <h5 className="text-sm font-medium text-green-700 dark:text-green-400 flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4" />
+                        Skal være til stede
+                      </h5>
+                      <ul className="space-y-1.5">
+                        {coachResponse.section4_navigation.skal_vaere_til_stede.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm bg-green-50 dark:bg-green-950/30 p-2.5 rounded">
+                            <span className="text-green-600 mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Advarselstegn */}
+                  {coachResponse.section4_navigation.advarselstegn?.length > 0 && (
+                    <div className="space-y-2">
+                      <h5 className="text-sm font-medium text-red-700 dark:text-red-400 flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4" />
+                        Advarselstegn
+                      </h5>
+                      <ul className="space-y-1.5">
+                        {coachResponse.section4_navigation.advarselstegn.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm bg-red-50 dark:bg-red-950/30 p-2.5 rounded">
+                            <span className="text-red-600 mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Nice to have */}
+                  {coachResponse.section4_navigation.nice_to_have?.length > 0 && (
+                    <div className="space-y-2">
+                      <h5 className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                        <span className="text-lg">○</span>
+                        Nice to have
+                      </h5>
+                      <ul className="space-y-1.5">
+                        {coachResponse.section4_navigation.nice_to_have.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm bg-gray-50 dark:bg-gray-950/30 p-2.5 rounded">
+                            <span className="text-gray-500 mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Fallback: Legacy patterns/unclear if new sections not available */}
+            {!coachResponse.section4_navigation && coachResponse.patterns && coachResponse.patterns.length > 0 && (
               <div className="space-y-2">
                 <h4 className="font-semibold text-base">Hvad det peger mod</h4>
                 <ul className="space-y-2">
@@ -1178,8 +1288,7 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* Afsnit 3: Hvad der sandsynligvis skaber friktion */}
-            {coachResponse.unclear && coachResponse.unclear.length > 0 && (
+            {!coachResponse.section4_navigation && coachResponse.unclear && coachResponse.unclear.length > 0 && (
               <div className="space-y-2">
                 <h4 className="font-semibold text-base">Hvad der sandsynligvis skaber friktion</h4>
                 <ul className="space-y-2">
@@ -1193,56 +1302,56 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* Afsnit 4: Hvad det betyder for næste skridt */}
-            {coachResponse.next_step_explanation && (
-              <div className="space-y-2 pt-4 border-t">
-                <h4 className="font-semibold text-base">Hvad det betyder for næste skridt</h4>
-                <div className="prose prose-sm dark:prose-invert max-w-none bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {coachResponse.next_step_explanation}
+            {/* Section 5: Din arbejdshypotese fremadrettet */}
+            {(coachResponse.section5_hypotese || coachResponse.next_step_explanation) && (
+              <div className="space-y-3 bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold px-2 py-1 rounded">5</span>
+                  Din arbejdshypotese fremadrettet
+                </h4>
+                <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                  <p className="text-base leading-relaxed text-foreground italic">
+                    {coachResponse.section5_hypotese || coachResponse.next_step_explanation}
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Next actions - "Hvad vil du gøre nu?" */}
-            <div className="space-y-3 pt-4 border-t">
-              <h4 className="font-semibold">Hvad vil du gøre nu?</h4>
-              <div className="grid gap-3">
-                <Button
-                  variant={spejlingNextAction === 'clarify' ? 'default' : 'outline'}
-                  className="justify-start text-left h-auto py-4 px-4"
-                  onClick={() => handleSpejlingAction('clarify')}
-                  disabled={isLoadingLag2}
-                >
-                  <MessageCircle className="mr-3 h-5 w-5 flex-shrink-0" />
-                  <span>Afklar min retning yderligere med coachende spørgsmål</span>
-                  {isLoadingLag2 && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-                </Button>
-                <Button
-                  variant={spejlingNextAction === 'search' ? 'default' : 'outline'}
-                  className="justify-start text-left h-auto py-4 px-4"
-                  onClick={() => handleSpejlingAction('search')}
-                >
-                  <Search className="mr-3 h-5 w-5 flex-shrink-0" />
-                  <span>Vis konkrete jobopslag, der ligner de jobtyper jeg bedst kunne se mig selv i</span>
-                </Button>
-                <Button
-                  variant={spejlingNextAction === 'adjust' ? 'default' : 'outline'}
-                  className="justify-start text-left h-auto py-4 px-4"
-                  onClick={() => handleSpejlingAction('adjust')}
-                >
-                  <RefreshCw className="mr-3 h-5 w-5 flex-shrink-0" />
-                  <span>Justér retningen og se nye jobeksempler</span>
-                </Button>
-                <Button
-                  variant={spejlingNextAction === 'save' ? 'default' : 'outline'}
-                  className="justify-start text-left h-auto py-4 px-4"
-                  onClick={() => handleSpejlingAction('save')}
-                >
-                  <Save className="mr-3 h-5 w-5 flex-shrink-0" />
-                  <span>Stop her og gem min afklaring</span>
-                </Button>
+            {/* Divider before actions */}
+            <div className="border-t pt-6 mt-8">
+              <p className="text-sm text-muted-foreground text-center mb-6">
+                Denne analyse er dit arbejdende ståsted – brug den som filter når du vurderer muligheder.
+              </p>
+              
+              {/* Next actions */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-center">Hvad vil du gøre nu?</h4>
+                <div className="grid gap-3">
+                  <Button
+                    variant={spejlingNextAction === 'search' ? 'default' : 'outline'}
+                    className="justify-start text-left h-auto py-4 px-4"
+                    onClick={() => handleSpejlingAction('search')}
+                  >
+                    <Search className="mr-3 h-5 w-5 flex-shrink-0" />
+                    <span>Se konkrete jobopslag der matcher min retning</span>
+                  </Button>
+                  <Button
+                    variant={spejlingNextAction === 'adjust' ? 'default' : 'outline'}
+                    className="justify-start text-left h-auto py-4 px-4"
+                    onClick={() => handleSpejlingAction('adjust')}
+                  >
+                    <RefreshCw className="mr-3 h-5 w-5 flex-shrink-0" />
+                    <span>Justér retningen og se nye jobeksempler</span>
+                  </Button>
+                  <Button
+                    variant={spejlingNextAction === 'save' ? 'default' : 'outline'}
+                    className="justify-start text-left h-auto py-4 px-4"
+                    onClick={() => handleSpejlingAction('save')}
+                  >
+                    <Save className="mr-3 h-5 w-5 flex-shrink-0" />
+                    <span>Gem min analyse og afslut</span>
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>

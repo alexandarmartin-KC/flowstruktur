@@ -747,22 +747,19 @@ Du er i Step 4B: "NY RETNING".
 Brugeren ønsker at undersøge et nyt eller anderledes karrierespor.
 Formålet er afgrænsning og risikostyring.
 
-KRITISK: Der er KUN 3 spørgsmål. Stil ALLE 3 spørgsmål i SAMME svar.
-EFTER alle 3 spørgsmål er besvaret, sæt next_step_ready_for_jobs = true.
+VIGTIG KONTEKST FRA UI:
+Brugeren har ALLEREDE valgt "hvor langt de vil skifte" i UI'et:
+- Hvis user_choice = "A" → de valgte "Tæt på nuværende" (beslægtet branche)
+- Hvis user_choice = "B" → de valgte "Helt væk fra nuværende" (ny branche)
+
+Du skal IKKE spørge om "grad af ændring" igen – det er allerede afklaret.
+
+KRITISK: Der er KUN 2 spørgsmål. Stil BEGGE spørgsmål i SAMME svar.
+EFTER begge spørgsmål er besvaret, sæt next_step_ready_for_jobs = true.
 
 Stil følgende spørgsmål i ÉN omgang:
 
-SPØRGSMÅL 1 – GRAD AF ÆNDRING
-"Hvor forskelligt må et nyt spor være fra det, du kommer fra?"
-
-(type: "single_choice")
-Svarmuligheder:
-- Tæt beslægtet
-- Delvist anderledes
-- Meget anderledes
-- Ved ikke endnu
-
-SPØRGSMÅL 2 – HVAD SKAL BEVARES
+SPØRGSMÅL 1 – HVAD SKAL BEVARES
 "Hvad er vigtigst for dig at tage med fra dit nuværende arbejdsliv?"
 
 (type: "multi_choice" – vælg op til 2)
@@ -774,7 +771,7 @@ Svarmuligheder:
 - Arbejdstempo
 - Noget andet
 
-SPØRGSMÅL 3 – FØRSTE SKRIDT
+SPØRGSMÅL 2 – FØRSTE SKRIDT
 "Hvis du overvejer at skifte spor, hvad vil du helst gøre først?"
 
 (type: "single_choice")
@@ -784,14 +781,14 @@ Svarmuligheder:
 - Se konkrete eksempler på job
 - Vente og samle mere viden
 
-AFSLUTNING (NÅR ALLE 3 SPØRGSMÅL ER BESVARET)
+AFSLUTNING (NÅR BEGGE SPØRGSMÅL ER BESVARET)
 ────────────────────────────────────────
-Når user_answers indeholder svar på alle 3 spørgsmål:
+Når user_answers indeholder svar på begge spørgsmål:
 1. Sæt next_step_ready_for_jobs = true
 2. Sæt questions = [] (tom array)
 3. Lav et FLYDENDE RETNINGSRESUMÉ i coach_message som:
    - Starter med "Ud fra dine svar..."
-   - Sammenfatter brugerens ønskede grad af ændring
+   - Nævner at de har valgt at udforske [tæt på/helt væk fra] nuværende spor (baseret på user_choice)
    - Nævner hvad de vil bevare
    - Nævner deres foretrukne første skridt
    - Er 1-3 korte afsnit i sammenhængende prosa
@@ -800,7 +797,7 @@ Når user_answers indeholder svar på alle 3 spørgsmål:
 EKSEMPEL PÅ KORREKT AFSLUTNING:
 {
   "mode": "deepening",
-  "coach_message": "Ud fra dine svar peger din udforskning mod et delvist anderledes karrierespor, hvor du gerne vil bevare fleksibilitet og ansvar fra din nuværende arbejdsform. Du foretrækker at se konkrete eksempler på job som første skridt, frem for at tale med folk eller prøve noget af i mindre skala. Næste trin viser konkrete jobeksempler inden for den retning, du har skitseret.",
+  "coach_message": "Ud fra dine svar peger din udforskning mod et helt anderledes karrierespor, hvor du gerne vil bevare fleksibilitet og ansvar fra din nuværende arbejdsform. Du foretrækker at se konkrete eksempler på job som første skridt, frem for at tale med folk eller prøve noget af i mindre skala. Næste trin viser konkrete jobeksempler inden for den retning, du har skitseret.",
   "questions": [],
   "direction_state": {
     "choice": "B",

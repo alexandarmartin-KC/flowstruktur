@@ -20,9 +20,16 @@ import {
   Eye,
   Search,
   Save,
-  HelpCircle
+  HelpCircle,
+  Briefcase,
+  ExternalLink
 } from 'lucide-react';
 
+// Main choice: stay, switch, or use URL
+type MainChoice = 'stay' | 'switch' | 'url' | '';
+// Sub-choice for 'switch': close to current or far from current
+type SwitchSubChoice = 'close' | 'far' | '';
+// Legacy DirectionChoice mapping: A = close, B = far
 type DirectionChoice = 'A' | 'B' | 'C' | '';
 
 // Coach question types
@@ -115,6 +122,8 @@ function MulighederPageContent() {
   const searchParams = useSearchParams();
   
   // State
+  const [mainChoice, setMainChoice] = useState<MainChoice>('');
+  const [switchSubChoice, setSwitchSubChoice] = useState<SwitchSubChoice>('');
   const [selectedChoice, setSelectedChoice] = useState<DirectionChoice>('');
   const [jobAdText, setJobAdText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -325,7 +334,51 @@ function MulighederPageContent() {
     }
   }, [directionState?.next_step_ready_for_jobs, coachResponse, showJobExamples, showSpejling, isLoading, selectedChoice, conversationHistory, jobAdText, callCareerCoach]);
 
-  // Handle choice selection
+  // Handle main choice selection (stay/switch/url)
+  const handleMainChoiceSelect = (choice: MainChoice) => {
+    setMainChoice(choice);
+    setSwitchSubChoice('');
+    setSelectedChoice('');
+    setUserAnswers({});
+    setConversationHistory([]);
+    setCoachResponse(null);
+    setShowSpejling(false);
+    setShowJobExamples(false);
+    
+    // If "stay" is selected, directly call API with choice 'A' (same logic as before)
+    if (choice === 'stay') {
+      const apiChoice: DirectionChoice = 'A';
+      setSelectedChoice(apiChoice);
+      
+      // Update URL
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('choice', apiChoice);
+      router.push(`/app/muligheder?${params.toString()}`, { scroll: false });
+      
+      callCareerCoach(apiChoice);
+    }
+    // If "switch" is selected, wait for sub-choice
+    // If "url" is selected, show URL input field (handled in UI)
+  };
+
+  // Handle switch sub-choice selection (close/far)
+  const handleSwitchSubChoiceSelect = (subChoice: SwitchSubChoice) => {
+    setSwitchSubChoice(subChoice);
+    
+    // Map sub-choice to API choice: close = A, far = B
+    const apiChoice: DirectionChoice = subChoice === 'close' ? 'A' : 'B';
+    setSelectedChoice(apiChoice);
+    
+    // Update URL
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('choice', apiChoice);
+    router.push(`/app/muligheder?${params.toString()}`, { scroll: false });
+    
+    // Call API
+    callCareerCoach(apiChoice);
+  };
+
+  // Legacy handler (kept for compatibility)
   const handleChoiceSelect = (choice: DirectionChoice) => {
     setSelectedChoice(choice);
     setUserAnswers({});
@@ -666,6 +719,8 @@ function MulighederPageContent() {
 
   // Reset and start over
   const handleReset = () => {
+    setMainChoice('');
+    setSwitchSubChoice('');
     setSelectedChoice('');
     setJobAdText('');
     setCoachResponse(null);
@@ -805,48 +860,162 @@ function MulighederPageContent() {
         </p>
       </div>
 
-      {/* Direction Choice Cards - 2 options */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {/* Card A: Stay Close */}
+      {/* Main Choice Cards - 3 options */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {/* Card 1: Stay in current career path */}
         <Card
           className={`cursor-pointer transition-all ${
-            selectedChoice === 'A'
+            mainChoice === 'stay'
               ? 'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2'
               : 'hover:border-primary/50 hover:bg-accent/50'
           }`}
-          onClick={() => handleChoiceSelect('A')}
+          onClick={() => handleMainChoiceSelect('stay')}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              <CardTitle className="text-base">Tæt på nuværende</CardTitle>
+              <Briefcase className="h-5 w-5 text-primary" />
+              <CardTitle className="text-base">Bliv i nuværende spor</CardTitle>
             </div>
             <CardDescription className="text-sm">
-              Bliv i samme branche og byg videre på din erfaring
+              Justér inden for din nuværende branche
             </CardDescription>
           </CardHeader>
         </Card>
 
-        {/* Card B: Completely Different */}
+        {/* Card 2: Switch career path */}
         <Card
           className={`cursor-pointer transition-all ${
-            selectedChoice === 'B'
+            mainChoice === 'switch'
               ? 'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2'
               : 'hover:border-primary/50 hover:bg-accent/50'
           }`}
-          onClick={() => handleChoiceSelect('B')}
+          onClick={() => handleMainChoiceSelect('switch')}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <Compass className="h-5 w-5 text-primary" />
-              <CardTitle className="text-base">Helt anderledes</CardTitle>
+              <CardTitle className="text-base">Skift karrierespor</CardTitle>
             </div>
             <CardDescription className="text-sm">
-              Skift væk fra nuværende branche
+              Udforsk nye retninger
+            </CardDescription>
+          </CardHeader>
+        </Card>
+
+        {/* Card 3: URL from job ad */}
+        <Card
+          className={`cursor-pointer transition-all ${
+            mainChoice === 'url'
+              ? 'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2'
+              : 'hover:border-primary/50 hover:bg-accent/50'
+          }`}
+          onClick={() => handleMainChoiceSelect('url')}
+        >
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <ExternalLink className="h-5 w-5 text-primary" />
+              <CardTitle className="text-base">Indsæt job-URL</CardTitle>
+            </div>
+            <CardDescription className="text-sm">
+              Brug et jobopslag du selv har fundet
             </CardDescription>
           </CardHeader>
         </Card>
       </div>
+
+      {/* Sub-choice for "switch" - shown only when switch is selected */}
+      {mainChoice === 'switch' && (
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground">Hvor langt vil du skifte?</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Close to current */}
+            <Card
+              className={`cursor-pointer transition-all ${
+                switchSubChoice === 'close'
+                  ? 'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2'
+                  : 'hover:border-primary/50 hover:bg-accent/50'
+              }`}
+              onClick={() => handleSwitchSubChoiceSelect('close')}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-base">Tæt på nuværende</CardTitle>
+                </div>
+                <CardDescription className="text-sm">
+                  Beslægtet branche eller rolle
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            {/* Far from current */}
+            <Card
+              className={`cursor-pointer transition-all ${
+                switchSubChoice === 'far'
+                  ? 'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2'
+                  : 'hover:border-primary/50 hover:bg-accent/50'
+              }`}
+              onClick={() => handleSwitchSubChoiceSelect('far')}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Search className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-base">Helt væk fra nuværende</CardTitle>
+                </div>
+                <CardDescription className="text-sm">
+                  Ny branche eller helt anden retning
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* URL input - shown only when url is selected */}
+      {mainChoice === 'url' && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Indsæt jobopslag</CardTitle>
+            <CardDescription>
+              Indsæt URL til et jobopslag du gerne vil have analyseret
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="job-url">Job URL eller tekst</Label>
+              <Textarea
+                id="job-url"
+                placeholder="Indsæt URL eller kopier jobbeskrivelsen her..."
+                value={jobAdText}
+                onChange={(e) => setJobAdText(e.target.value)}
+                rows={4}
+              />
+            </div>
+            <Button
+              onClick={() => {
+                if (jobAdText.trim()) {
+                  setSelectedChoice('C');
+                  callCareerCoach('C', [], jobAdText);
+                }
+              }}
+              disabled={!jobAdText.trim() || isLoading}
+              className="w-full"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Analyserer...
+                </>
+              ) : (
+                <>
+                  Analysér jobopslag
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Error message */}
       {error && (
@@ -1449,8 +1618,12 @@ function MulighederPageContent() {
                 <div>
                   <Label className="text-sm text-muted-foreground">Valgt retning</Label>
                   <p className="font-medium">
-                    {directionState.choice === 'A' && 'Tæt på nuværende (samme branche)'}
-                    {directionState.choice === 'B' && 'Helt anderledes (ny branche)'}
+                    {mainChoice === 'stay' && 'Bliv i nuværende karrierespor'}
+                    {mainChoice === 'switch' && switchSubChoice === 'close' && 'Skift karrierespor – tæt på nuværende'}
+                    {mainChoice === 'switch' && switchSubChoice === 'far' && 'Skift karrierespor – helt væk fra nuværende'}
+                    {mainChoice === 'url' && 'Analyse af specifikt jobopslag'}
+                    {!mainChoice && directionState.choice === 'A' && 'Tæt på nuværende (samme branche)'}
+                    {!mainChoice && directionState.choice === 'B' && 'Helt anderledes (ny branche)'}
                   </p>
                 </div>
 

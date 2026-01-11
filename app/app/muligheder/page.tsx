@@ -367,76 +367,40 @@ function MulighederPageContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Get post-feedback questions based on feedback type
-  const getPostFeedbackQuestions = (feedback: string): CoachQuestion[] => {
-    if (feedback === 'yes') {
-      return [
-        {
-          id: 'what_appeals',
-          type: 'short_text',
-          prompt: 'Hvad var det specifikt ved eksemplerne, der tiltalte dig?'
-        },
-        {
-          id: 'clarity_check',
-          type: 'single_choice',
-          prompt: 'Føler du, at du nu har et klarere billede af, hvilken type rolle du vil gå videre med?',
-          options: ['Ja, det er blevet tydeligere', 'Delvist', 'Nej, jeg er stadig i tvivl']
-        }
-      ];
-    } else if (feedback === 'adjust') {
-      return [
-        {
-          id: 'what_was_close',
-          type: 'short_text',
-          prompt: 'Hvad var tæt på at ramme rigtigt i eksemplerne?'
-        },
-        {
-          id: 'what_to_change',
-          type: 'short_text',
-          prompt: 'Hvad skulle være anderledes for at det passede bedre til dig?'
-        },
-        {
-          id: 'clarity_check',
-          type: 'single_choice',
-          prompt: 'Føler du, at du nu har et klarere billede af, hvilken type rolle du vil gå videre med?',
-          options: ['Ja, det er blevet tydeligere', 'Delvist', 'Nej, jeg er stadig i tvivl']
-        }
-      ];
-    } else {
-      // feedback === 'no'
-      return [
-        {
-          id: 'what_was_wrong',
-          type: 'short_text',
-          prompt: 'Hvad var det ved eksemplerne, der ikke passede til dig?'
-        },
-        {
-          id: 'what_would_fit',
-          type: 'short_text',
-          prompt: 'Kan du beskrive, hvad du i stedet leder efter?'
-        },
-        {
-          id: 'clarity_check',
-          type: 'single_choice',
-          prompt: 'Føler du, at du nu har et klarere billede af, hvilken type rolle du vil gå videre med?',
-          options: ['Ja, det er blevet tydeligere', 'Delvist', 'Nej, jeg er stadig i tvivl']
-        }
-      ];
+  // Static coaching questions (always shown below job examples)
+  const coachingQuestions: CoachQuestion[] = [
+    {
+      id: 'what_appeals',
+      type: 'short_text',
+      prompt: 'Hvad er vigtigst for dig, når du kigger på disse typer jobs?'
+    },
+    {
+      id: 'concerns',
+      type: 'short_text', 
+      prompt: 'Er der noget ved disse jobtyper, der bekymrer dig eller virker usikkert?'
+    },
+    {
+      id: 'next_step',
+      type: 'single_choice',
+      prompt: 'Hvis du overvejer at skifte spor, hvad vil du helst gøre først?',
+      options: [
+        'Prøve noget af i mindre omfang',
+        'Tale med nogen, der arbejder med det',
+        'Se konkrete eksempler på job',
+        'Vente og samle mere viden'
+      ]
     }
+  ];
+
+  // Handle answering job example feedback
+  const handleJobExampleFeedback = (jobId: string, feedback: string) => {
+    setPostJobExamplesAnswers(prev => ({
+      ...prev,
+      [`feedback_${jobId}`]: feedback
+    }));
   };
 
-  // Handle feedback - show coaching questions immediately (no API call)
-  const handleJobExamplesFeedbackSubmit = () => {
-    if (!jobExamplesFeedback) return;
-    
-    setFeedbackSubmitted(true);
-    
-    // Get predefined questions based on feedback type
-    const questions = getPostFeedbackQuestions(jobExamplesFeedback);
-    setPostJobExamplesQuestions(questions);
-  };
-
-  // Handle answering post-job-examples questions
+  // Handle answering coaching questions
   const handlePostJobExamplesAnswer = (questionId: string, answer: string | string[]) => {
     setPostJobExamplesAnswers(prev => ({
       ...prev,
@@ -444,14 +408,25 @@ function MulighederPageContent() {
     }));
   };
 
-  // Check if all post-job-examples questions are answered
-  const allPostJobExamplesQuestionsAnswered = postJobExamplesQuestions.every(q => {
-    const answer = postJobExamplesAnswers[q.id];
-    if (q.type === 'multi_choice') {
-      return Array.isArray(answer) && answer.length > 0;
-    }
-    return answer && (typeof answer === 'string' ? answer.trim() !== '' : true);
-  });
+  // Check if all questions are answered (job feedback + coaching questions)
+  const allQuestionsComplete = () => {
+    // Check job example feedback
+    const jobExamples = coachResponse?.job_examples || [];
+    const allJobFeedbackAnswered = jobExamples.every(job => 
+      postJobExamplesAnswers[`feedback_${job.id}`]
+    );
+    
+    // Check coaching questions
+    const allCoachingAnswered = coachingQuestions.every(q => {
+      const answer = postJobExamplesAnswers[q.id];
+      if (q.type === 'multi_choice') {
+        return Array.isArray(answer) && answer.length > 0;
+      }
+      return answer && (typeof answer === 'string' ? answer.trim() !== '' : true);
+    });
+    
+    return allJobFeedbackAnswered && allCoachingAnswered;
+  };
 
   // Fetch spejling (analysis) with all collected data
   const fetchSpejling = async (feedbackPayload: any) => {
@@ -502,17 +477,17 @@ function MulighederPageContent() {
     }
   };
 
-  // Submit post-job-examples answers and proceed to spejling
+  // Submit all answers and proceed to spejling
   const handlePostJobExamplesSubmit = async () => {
-    if (!allPostJobExamplesQuestionsAnswered) return;
+    if (!allQuestionsComplete()) return;
     
+    // Build feedback from individual job responses
     const feedbackPayload = {
-      overall_feedback: jobExamplesFeedback,
-      job_examples: coachResponse?.job_examples?.map((job, idx) => ({
+      overall_feedback: 'from_individual',
+      job_examples: coachResponse?.job_examples?.map((job) => ({
         job_id: job.id,
         job_title: job.title,
-        experience: jobExamplesFeedback === 'yes' ? 'giver_mening' : 
-                   jobExamplesFeedback === 'adjust' ? 'delvist' : 'ikke_noget'
+        experience: postJobExamplesAnswers[`feedback_${job.id}`] || 'unknown'
       })) || []
     };
     
@@ -931,203 +906,146 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* Job Examples - shown FIRST */}
-            {coachResponse.job_examples && coachResponse.job_examples.length > 0 && (
+            {/* SECTION 1: Job Examples with individual feedback */}
+            {coachResponse.job_examples && coachResponse.job_examples.length > 0 && !showSpejling && (
               <div className="space-y-6 border-t pt-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Search className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">Jobeksempler</h3>
+                </div>
+                
                 <div className="space-y-4">
-                  {coachResponse.job_examples.map((job, index) => (
-                    <Card key={job.id} className="bg-muted/30">
-                      <CardHeader className="pb-3">
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium text-muted-foreground">
-                            Jobeksempel {index + 1}
+                  {coachResponse.job_examples.map((job, index) => {
+                    const feedbackKey = `feedback_${job.id}`;
+                    const currentFeedback = postJobExamplesAnswers[feedbackKey] as string | undefined;
+                    
+                    return (
+                      <Card key={job.id} className="bg-muted/30">
+                        <CardHeader className="pb-3">
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground">
+                              Jobeksempel {index + 1}
+                            </p>
+                            <CardTitle className="text-base font-semibold">
+                              {job.title}
+                            </CardTitle>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                            {job.description}
                           </p>
-                          <CardTitle className="text-base font-semibold">
-                            {job.title}
-                          </CardTitle>
+                          
+                          {/* Feedback for this specific job */}
+                          <div className="pt-3 border-t">
+                            <p className="text-sm font-medium mb-2">Hvad synes du om dette eksempel?</p>
+                            <div className="grid gap-2">
+                              <Button
+                                variant={currentFeedback === 'giver_mening' ? 'default' : 'outline'}
+                                size="sm"
+                                className="justify-start text-left h-auto py-2 px-3"
+                                onClick={() => handleJobExampleFeedback(job.id, 'giver_mening')}
+                              >
+                                <CheckCircle2 className={`mr-2 h-4 w-4 flex-shrink-0 ${currentFeedback === 'giver_mening' ? '' : 'text-muted-foreground'}`} />
+                                <span>Det giver mening for mig</span>
+                              </Button>
+                              <Button
+                                variant={currentFeedback === 'delvist' ? 'default' : 'outline'}
+                                size="sm"
+                                className="justify-start text-left h-auto py-2 px-3"
+                                onClick={() => handleJobExampleFeedback(job.id, 'delvist')}
+                              >
+                                <RefreshCw className={`mr-2 h-4 w-4 flex-shrink-0 ${currentFeedback === 'delvist' ? '' : 'text-muted-foreground'}`} />
+                                <span>Det er delvist rigtigt</span>
+                              </Button>
+                              <Button
+                                variant={currentFeedback === 'ikke_noget' ? 'default' : 'outline'}
+                                size="sm"
+                                className="justify-start text-left h-auto py-2 px-3"
+                                onClick={() => handleJobExampleFeedback(job.id, 'ikke_noget')}
+                              >
+                                <AlertCircle className={`mr-2 h-4 w-4 flex-shrink-0 ${currentFeedback === 'ikke_noget' ? '' : 'text-muted-foreground'}`} />
+                                <span>Det er ikke noget for mig</span>
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* SECTION 2: Coaching Questions (always shown below job examples) */}
+            {coachResponse.job_examples && coachResponse.job_examples.length > 0 && !showSpejling && (
+              <div className="space-y-6 border-t pt-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <HelpCircle className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">Afklarende spørgsmål</h3>
+                </div>
+                
+                <div className="space-y-6">
+                  {coachingQuestions.map((question) => {
+                    const currentAnswer = postJobExamplesAnswers[question.id];
+
+                    if (question.type === 'single_choice' && question.options) {
+                      return (
+                        <div key={question.id} className="space-y-3">
+                          <Label className="text-base font-medium">{question.prompt}</Label>
+                          <div className="grid gap-2">
+                            {question.options.map((option, idx) => (
+                              <Button
+                                key={idx}
+                                variant={currentAnswer === option ? 'default' : 'outline'}
+                                className="justify-start text-left h-auto py-3 px-4"
+                                onClick={() => handlePostJobExamplesAnswer(question.id, option)}
+                              >
+                                {option}
+                              </Button>
+                            ))}
+                          </div>
                         </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                          {job.description}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
+                      );
+                    }
+
+                    // short_text
+                    return (
+                      <div key={question.id} className="space-y-3">
+                        <Label className="text-base font-medium">{question.prompt}</Label>
+                        <Textarea
+                          value={(currentAnswer as string) || ''}
+                          onChange={(e) => handlePostJobExamplesAnswer(question.id, e.target.value)}
+                          placeholder="Skriv dit svar her..."
+                          rows={3}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
 
-                {/* Feedback options after job examples - only show if not submitted yet */}
-                {!showSpejling && !feedbackSubmitted && (
-                  <Card className="border-primary/50 bg-primary/5">
-                    <CardHeader>
-                      <CardTitle className="text-base">Hvad synes du om disse eksempler?</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid gap-3">
-                        <Button
-                          variant={jobExamplesFeedback === 'yes' ? 'default' : 'outline'}
-                          className="justify-start text-left h-auto py-4 px-4"
-                          onClick={() => setJobExamplesFeedback('yes')}
-                        >
-                          <CheckCircle2 className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'yes' ? '' : 'text-muted-foreground'}`} />
-                          <span>Ja – det her rammer rigtigt</span>
-                        </Button>
-                        <Button
-                          variant={jobExamplesFeedback === 'adjust' ? 'default' : 'outline'}
-                          className="justify-start text-left h-auto py-4 px-4"
-                          onClick={() => setJobExamplesFeedback('adjust')}
-                        >
-                          <RefreshCw className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'adjust' ? '' : 'text-muted-foreground'}`} />
-                          <span>Det er tæt på, men jeg vil gerne justere noget</span>
-                        </Button>
-                        <Button
-                          variant={jobExamplesFeedback === 'no' ? 'default' : 'outline'}
-                          className="justify-start text-left h-auto py-4 px-4"
-                          onClick={() => setJobExamplesFeedback('no')}
-                        >
-                          <AlertCircle className={`mr-3 h-5 w-5 flex-shrink-0 ${jobExamplesFeedback === 'no' ? '' : 'text-muted-foreground'}`} />
-                          <span>Nej – det er ikke den retning, jeg har i tankerne</span>
-                        </Button>
-                      </div>
-                      
-                      {/* Submit feedback button */}
-                      {jobExamplesFeedback && (
-                        <Button 
-                          onClick={handleJobExamplesFeedbackSubmit}
-                          disabled={isLoading}
-                          className="w-full mt-4"
-                        >
-                          {isLoading ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Henter spørgsmål...
-                            </>
-                          ) : (
-                            <>
-                              Fortsæt
-                              <ArrowRight className="ml-2 h-4 w-4" />
-                            </>
-                          )}
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Show selected feedback after submission */}
-                {feedbackSubmitted && !showSpejling && (
-                  <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <span className="text-sm">
-                      Dit svar: {jobExamplesFeedback === 'yes' ? 'Det her rammer rigtigt' : 
-                                jobExamplesFeedback === 'adjust' ? 'Det er tæt på, men jeg vil gerne justere' : 
-                                'Det er ikke den retning, jeg har i tankerne'}
-                    </span>
-                  </div>
-                )}
-
-                {/* Post-job-examples coaching questions */}
-                {feedbackSubmitted && postJobExamplesQuestions.length > 0 && !showSpejling && (
-                  <Card className="border-primary/50 bg-primary/5 mt-6">
-                    <CardHeader>
-                      <div className="flex items-center gap-2">
-                        <HelpCircle className="h-5 w-5 text-primary" />
-                        <CardTitle className="text-base">Afklarende spørgsmål</CardTitle>
-                      </div>
-                      <CardDescription>
-                        Besvar disse spørgsmål for at få en mere præcis analyse
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      {postJobExamplesQuestions.map((question) => {
-                        const currentAnswer = postJobExamplesAnswers[question.id];
-
-                        if (question.type === 'single_choice' && question.options) {
-                          return (
-                            <div key={question.id} className="space-y-3">
-                              <Label className="text-base font-medium">{question.prompt}</Label>
-                              <div className="grid gap-2">
-                                {question.options.map((option, idx) => (
-                                  <Button
-                                    key={idx}
-                                    variant={currentAnswer === option ? 'default' : 'outline'}
-                                    className="justify-start text-left h-auto py-3 px-4"
-                                    onClick={() => handlePostJobExamplesAnswer(question.id, option)}
-                                  >
-                                    {option}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        }
-
-                        if (question.type === 'multi_choice' && question.options) {
-                          const selectedOptions = (currentAnswer as string[]) || [];
-                          return (
-                            <div key={question.id} className="space-y-3">
-                              <Label className="text-base font-medium">{question.prompt}</Label>
-                              <p className="text-sm text-muted-foreground">Vælg alle der passer</p>
-                              <div className="grid gap-2">
-                                {question.options.map((option, idx) => (
-                                  <Button
-                                    key={idx}
-                                    variant={selectedOptions.includes(option) ? 'default' : 'outline'}
-                                    className="justify-start text-left h-auto py-3 px-4"
-                                    onClick={() => {
-                                      const newSelection = selectedOptions.includes(option)
-                                        ? selectedOptions.filter(o => o !== option)
-                                        : [...selectedOptions, option];
-                                      handlePostJobExamplesAnswer(question.id, newSelection);
-                                    }}
-                                  >
-                                    {option}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        }
-
-                        // short_text
-                        return (
-                          <div key={question.id} className="space-y-3">
-                            <Label className="text-base font-medium">{question.prompt}</Label>
-                            <Textarea
-                              value={(currentAnswer as string) || ''}
-                              onChange={(e) => handlePostJobExamplesAnswer(question.id, e.target.value)}
-                              placeholder="Skriv dit svar her..."
-                              rows={3}
-                            />
-                          </div>
-                        );
-                      })}
-
-                      {/* Submit button for post-job-examples questions */}
-                      <Button 
-                        onClick={handlePostJobExamplesSubmit}
-                        disabled={isLoading || !allPostJobExamplesQuestionsAnswered}
-                        className="w-full mt-4"
-                      >
-                        {isLoading ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Behandler...
-                          </>
-                        ) : (
-                          <>
-                            Send svar og se din analyse
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </>
-                        )}
-                      </Button>
-                      {!allPostJobExamplesQuestionsAnswered && (
-                        <p className="text-sm text-muted-foreground text-center">
-                          Besvar alle spørgsmål ovenfor for at fortsætte
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
+                {/* Submit button */}
+                <Button 
+                  onClick={handlePostJobExamplesSubmit}
+                  disabled={isLoading || !allQuestionsComplete()}
+                  className="w-full mt-4"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Behandler...
+                    </>
+                  ) : (
+                    <>
+                      Send svar og se din analyse
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+                {!allQuestionsComplete() && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    Besvar alle spørgsmål ovenfor for at fortsætte
+                  </p>
                 )}
               </div>
             )}

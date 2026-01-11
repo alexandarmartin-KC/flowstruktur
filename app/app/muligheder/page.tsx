@@ -269,7 +269,8 @@ function MulighederPageContent() {
     choice: DirectionChoice,
     answers: UserAnswer[] = [],
     jobAd?: string,
-    requestJobExamples: boolean = false
+    requestJobExamples: boolean = false,
+    switchDist?: SwitchSubChoice
   ) => {
     setIsLoading(true);
     setError(null);
@@ -288,6 +289,7 @@ function MulighederPageContent() {
         body: JSON.stringify({
           ...stepData,
           user_choice: choice || '',
+          switch_distance: switchDist || switchSubChoice || undefined,
           user_answers: answers.length > 0 ? answers : undefined,
           request_job_examples: requestJobExamples,
         }),
@@ -365,17 +367,19 @@ function MulighederPageContent() {
   const handleSwitchSubChoiceSelect = (subChoice: SwitchSubChoice) => {
     setSwitchSubChoice(subChoice);
     
-    // Map sub-choice to API choice: close = A, far = B
-    const apiChoice: DirectionChoice = subChoice === 'close' ? 'A' : 'B';
+    // "Skift karrierespor" always uses API choice 'B' (NY RETNING flow)
+    // The sub-choice (close/far) is passed as extra context
+    const apiChoice: DirectionChoice = 'B';
     setSelectedChoice(apiChoice);
     
-    // Update URL
+    // Update URL with sub-choice info
     const params = new URLSearchParams(searchParams.toString());
     params.set('choice', apiChoice);
+    params.set('distance', subChoice); // 'close' or 'far'
     router.push(`/app/muligheder?${params.toString()}`, { scroll: false });
     
-    // Call API
-    callCareerCoach(apiChoice);
+    // Call API with choice B and sub-choice context
+    callCareerCoach(apiChoice, [], undefined, false, subChoice);
   };
 
   // Legacy handler (kept for compatibility)

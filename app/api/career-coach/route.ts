@@ -47,6 +47,7 @@ interface CareerCoachRequest {
   step2_json: Step2Data;
   step3_json: Step3Data;
   user_choice?: 'A' | 'B' | 'C' | '';
+  switch_distance?: 'close' | 'far'; // For "Skift karrierespor": tæt på eller helt væk
   job_ad_text_or_url?: string;
   user_answers?: UserAnswer[];
   request_job_examples?: boolean;
@@ -111,7 +112,8 @@ export async function POST(request: NextRequest) {
       step1_json, 
       step2_json, 
       step3_json, 
-      user_choice, 
+      user_choice,
+      switch_distance,
       job_ad_text_or_url,
       user_answers,
       request_job_examples,
@@ -178,6 +180,14 @@ ${JSON.stringify({
 
 user_choice: ${user_choice || '(tom)'}`;
 
+    // Add switch_distance context for "Skift karrierespor" flow
+    if (user_choice === 'B' && switch_distance) {
+      const distanceDescription = switch_distance === 'close' 
+        ? 'TÆT PÅ NUVÆRENDE - Brugeren vil skifte til en beslægtet branche eller rolle'
+        : 'HELT VÆK FRA NUVÆRENDE - Brugeren vil skifte til en helt ny branche eller retning';
+      userMessage += `\nswitch_distance: ${switch_distance}\nBeskrivelse: ${distanceDescription}`;
+    }
+
     if (user_choice === 'C' && job_ad_text_or_url) {
       userMessage += `\n\njob_ad_text_or_url:\n${job_ad_text_or_url}`;
     }
@@ -187,23 +197,28 @@ user_choice: ${user_choice || '(tom)'}`;
     }
 
     if (request_job_examples) {
-      const choiceDescriptions: Record<string, string> = {
-        'A': 'TÆT PÅ NUVÆRENDE - Brugeren vil blive i samme branche og bygge videre på eksisterende erfaring. Jobeksemplerne skal være inden for samme felt/branche med lignende arbejdsform.',
-        'B': 'HELT ANDERLEDES - Brugeren vil skifte væk fra nuværende branche. Jobeksemplerne skal vise roller i andre brancher eller med væsentligt anderledes arbejdsform, hvor brugerens kernekompetencer stadig er relevante.'
-      };
-      
-      const choiceDescription = choiceDescriptions[user_choice || ''] || 'Ukendt valg';
+      // For job examples, use switch_distance to determine job types
+      let choiceDescription: string;
+      if (user_choice === 'A') {
+        choiceDescription = 'BLIV I NUVÆRENDE SPOR - Brugeren vil blive i samme branche og bygge videre på eksisterende erfaring. Jobeksemplerne skal være inden for samme felt/branche med lignende arbejdsform.';
+      } else if (user_choice === 'B' && switch_distance === 'close') {
+        choiceDescription = 'SKIFT KARRIERESPOR (TÆT PÅ) - Brugeren vil skifte til en beslægtet branche eller rolle. Jobeksemplerne skal være i relaterede felter hvor brugerens kompetencer kan overføres.';
+      } else if (user_choice === 'B' && switch_distance === 'far') {
+        choiceDescription = 'SKIFT KARRIERESPOR (HELT VÆK) - Brugeren vil skifte til en helt ny branche. Jobeksemplerne skal vise roller i andre brancher med væsentligt anderledes arbejdsform, hvor brugerens kernekompetencer stadig er relevante.';
+      } else {
+        choiceDescription = 'Ukendt valg';
+      }
       
       userMessage += `\n\nREQUEST: JOBEKSEMPLER
 
-Brugerens RETNINGSVALG: ${user_choice}
+Brugerens RETNINGSVALG: ${user_choice}${switch_distance ? ` (${switch_distance})` : ''}
 ${choiceDescription}
 
 Direction state med brugerens præferencer:
 ${JSON.stringify(inputDirectionState, null, 2)}
 
-Generér 3 jobeksempler der matcher dette retningsvalg. 
-VIGTIGT: Jobeksemplerne SKAL afspejle om brugeren søger tæt på (A) eller helt anderledes (B) i forhold til deres nuværende erfaring.`;
+Generér 4 jobeksempler der matcher dette retningsvalg. 
+VIGTIGT: Jobeksemplerne SKAL afspejle brugerens valgte retning.`;
     }
 
     // Handle post-feedback questions request

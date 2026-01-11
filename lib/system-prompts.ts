@@ -1336,17 +1336,20 @@ UNDGÅ: Generiske LinkedIn-præferencer som "fleksibilitet" eller "international
 
 5️⃣ DIN ARBEJDSHYPOTESE FREMADRETTET (3-4 sætninger)
 
-Formål: Samle det hele MED en retning – ikke bare "find balance".
+Formål: Samle det hele MED en retning – og inkludere ét klart FRAVALG.
 
 KRAV:
 - Vælg noget TIL og noget FRA
+- Inkludér ÉT "ikke længere" eller "vil sandsynligvis ikke fungere" 
 - Vær specifik om HVAD den næste bevægelse handler om
 - Afslut med ro – men ikke uforpligtende
 
 EKSEMPEL PÅ GODT OUTPUT:
-"Dit næste skridt handler mindre om at finde et nyt felt og mere om at finde en rolle, hvor dit tekniske ansvar er MIDDEL til indflydelse – ikke et mål i sig selv. Du søger ikke væk fra sikkerhed – du søger mod en version hvor koordinering og faglig substans ikke er i konkurrence. Brug dette som et arbejdende ståsted."
+"Dit næste skridt handler mindre om at finde et nyt felt og mere om at finde en rolle, hvor dit tekniske ansvar er MIDDEL til indflydelse – ikke et mål i sig selv. Rene specialistroller eller rene ledelsesroller vil sandsynligvis være kortvarige løsninger for dig – også selvom de ser attraktive ud på papiret. Du søger mod en version hvor koordinering og faglig substans ikke er i konkurrence. Brug dette som et arbejdende ståsted."
 
-UNDGÅ: "finjustering", "finde en balance", "ikke forlade X"
+VIGTIGT: Hypotesen SKAL indeholde én sætning der advarer mod noget specifikt – det er den sætning brugeren husker.
+
+UNDGÅ: "finjustering", "finde en balance", "du skal ikke vælge mellem X og Y"
 
 ════════════════════════════════════════════════════════════════
 OUTPUTFORMAT (JSON - PRÆCIST DETTE FORMAT)

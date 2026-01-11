@@ -372,29 +372,8 @@ function MulighederPageContent() {
   };
 
   // Static coaching questions (always shown below job examples)
-  const coachingQuestions: CoachQuestion[] = [
-    {
-      id: 'what_appeals',
-      type: 'short_text',
-      prompt: 'Hvad er vigtigst for dig, når du kigger på disse typer jobs?'
-    },
-    {
-      id: 'concerns',
-      type: 'short_text', 
-      prompt: 'Er der noget ved disse jobtyper, der bekymrer dig eller virker usikkert?'
-    },
-    {
-      id: 'next_step',
-      type: 'single_choice',
-      prompt: 'Hvis du overvejer at skifte spor, hvad vil du helst gøre først?',
-      options: [
-        'Prøve noget af i mindre omfang',
-        'Tale med nogen, der arbejder med det',
-        'Se konkrete eksempler på job',
-        'Vente og samle mere viden'
-      ]
-    }
-  ];
+  // No static coaching questions - only job example feedback is needed
+  const coachingQuestions: CoachQuestion[] = [];
 
   // Handle answering job example feedback
   const handleJobExampleFeedback = (jobId: string, feedback: string) => {
@@ -414,22 +393,13 @@ function MulighederPageContent() {
 
   // Check if all questions are answered (job feedback + coaching questions)
   const allQuestionsComplete = () => {
-    // Check job example feedback
+    // Check job example feedback only (no coaching questions)
     const jobExamples = coachResponse?.job_examples || [];
     const allJobFeedbackAnswered = jobExamples.every(job => 
       postJobExamplesAnswers[`feedback_${job.id}`]
     );
     
-    // Check coaching questions
-    const allCoachingAnswered = coachingQuestions.every(q => {
-      const answer = postJobExamplesAnswers[q.id];
-      if (q.type === 'multi_choice') {
-        return Array.isArray(answer) && answer.length > 0;
-      }
-      return answer && (typeof answer === 'string' ? answer.trim() !== '' : true);
-    });
-    
-    return allJobFeedbackAnswered && allCoachingAnswered;
+    return allJobFeedbackAnswered;
   };
 
   // Fetch spejling (analysis) with all collected data
@@ -925,58 +895,13 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* SECTION 2: Coaching Questions (always shown below job examples) */}
+            {/* Submit button for job examples feedback */}
             {coachResponse.job_examples && coachResponse.job_examples.length > 0 && !showSpejling && (
-              <div className="space-y-6 border-t pt-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <HelpCircle className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Afklarende spørgsmål</h3>
-                </div>
-                
-                <div className="space-y-6">
-                  {coachingQuestions.map((question) => {
-                    const currentAnswer = postJobExamplesAnswers[question.id];
-
-                    if (question.type === 'single_choice' && question.options) {
-                      return (
-                        <div key={question.id} className="space-y-3">
-                          <Label className="text-base font-medium">{question.prompt}</Label>
-                          <div className="grid gap-2">
-                            {question.options.map((option, idx) => (
-                              <Button
-                                key={idx}
-                                variant={currentAnswer === option ? 'default' : 'outline'}
-                                className="justify-start text-left h-auto py-3 px-4"
-                                onClick={() => handlePostJobExamplesAnswer(question.id, option)}
-                              >
-                                {option}
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    }
-
-                    // short_text
-                    return (
-                      <div key={question.id} className="space-y-3">
-                        <Label className="text-base font-medium">{question.prompt}</Label>
-                        <Textarea
-                          value={(currentAnswer as string) || ''}
-                          onChange={(e) => handlePostJobExamplesAnswer(question.id, e.target.value)}
-                          placeholder="Skriv dit svar her..."
-                          rows={3}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Submit button */}
+              <div className="border-t pt-6">
                 <Button 
                   onClick={handlePostJobExamplesSubmit}
                   disabled={isLoading || !allQuestionsComplete()}
-                  className="w-full mt-4"
+                  className="w-full"
                 >
                   {isLoading ? (
                     <>
@@ -991,8 +916,8 @@ function MulighederPageContent() {
                   )}
                 </Button>
                 {!allQuestionsComplete() && (
-                  <p className="text-sm text-muted-foreground text-center">
-                    Besvar alle spørgsmål ovenfor for at fortsætte
+                  <p className="text-sm text-muted-foreground text-center mt-2">
+                    Giv feedback på alle jobeksempler ovenfor for at fortsætte
                   </p>
                 )}
               </div>

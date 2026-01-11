@@ -293,8 +293,8 @@ function MulighederPageContent() {
       setCoachResponse(data);
       setDirectionState(data.direction_state);
       
-      // Auto-show spejling if API returns spejling mode
-      if (data.mode === 'spejling' || data.summary_paragraph) {
+      // Auto-show spejling if API returns spejling mode (check all possible section fields)
+      if (data.mode === 'spejling' || data.section1_arbejdsmoenster || data.summary_paragraph) {
         setShowSpejling(true);
       }
       

@@ -1080,37 +1080,29 @@ Du modtager:
 ────────────────────────────────────────
 OUTPUTFORMAT (JSON – SKAL OVERHOLDES)
 ────────────────────────────────────────
-Returnér altid valid JSON med DENNE struktur (samme som karrierecoach):
+Returnér altid valid JSON med DENNE struktur:
 
 {
   "mode": "job_examples",
   "coach_message": "Her er eksempler på jobroller, der ligger inden for den retning, du har valgt at undersøge. Eksemplerne er ikke konkrete stillinger, men viser, hvordan den type arbejde ofte ser ud i praksis.",
-  "questions": [
+  "job_examples": [
     {
-      "id": "experience_job_1",
-      "type": "single_choice",
-      "prompt": "Jobeksempel 1: [JOBTITEL]\\n\\n[3-5 linjers beskrivelse af rollen]\\n\\nHvordan oplever du dette jobeksempel?",
-      "options": ["Det giver mening for mig", "Det er delvist rigtigt", "Det er ikke noget for mig"]
+      "id": "job_1",
+      "title": "[GENERISK JOBTITEL 1]",
+      "description": "[3-5 linjers beskrivelse af rollen, typiske opgaver, ansvarsniveau og arbejdsform]"
     },
     {
-      "id": "experience_job_2",
-      "type": "single_choice",
-      "prompt": "Jobeksempel 2: [JOBTITEL]\\n\\n[3-5 linjers beskrivelse af rollen]\\n\\nHvordan oplever du dette jobeksempel?",
-      "options": ["Det giver mening for mig", "Det er delvist rigtigt", "Det er ikke noget for mig"]
+      "id": "job_2",
+      "title": "[GENERISK JOBTITEL 2]",
+      "description": "[3-5 linjers beskrivelse af rollen, typiske opgaver, ansvarsniveau og arbejdsform]"
     },
     {
-      "id": "experience_job_3",
-      "type": "single_choice",
-      "prompt": "Jobeksempel 3: [JOBTITEL]\\n\\n[3-5 linjers beskrivelse af rollen]\\n\\nHvordan oplever du dette jobeksempel?",
-      "options": ["Det giver mening for mig", "Det er delvist rigtigt", "Det er ikke noget for mig"]
-    },
-    {
-      "id": "clarity_check",
-      "type": "single_choice",
-      "prompt": "Føler du, at du nu har et klarere billede af, hvilken type rolle du vil gå videre med?",
-      "options": ["Ja, det er blevet tydeligere", "Delvist", "Nej, jeg er stadig i tvivl"]
+      "id": "job_3",
+      "title": "[GENERISK JOBTITEL 3]",
+      "description": "[3-5 linjers beskrivelse af rollen, typiske opgaver, ansvarsniveau og arbejdsform]"
     }
   ],
+  "questions": [],
   "direction_state": {
     "choice": "A",
     "priorities_top3": [],
@@ -1123,10 +1115,10 @@ Returnér altid valid JSON med DENNE struktur (samme som karrierecoach):
 }
 
 VIGTIGT:
-- Erstat [JOBTITEL] med en generisk jobtitel (fx "Projektansvarlig rolle i driftsnære miljøer")
-- Erstat [3-5 linjers beskrivelse] med en konkret beskrivelse af rollen baseret på brugerens retning
+- Erstat [GENERISK JOBTITEL X] med konkrete jobtitler (fx "Projektansvarlig rolle i driftsnære miljøer")
+- Erstat beskrivelsen med en konkret beskrivelse af rollen baseret på brugerens retning
 - Bevar "choice" værdien fra brugerens valg (A, B eller C)
-- Brug \\n for linjeskift i prompt-teksten`,
+- Jobeksempler returneres i "job_examples" array, IKKE i "questions"`,
 
   // ────────────────────────────────────────────────────────────────
   // STEP 5A: REAKTION PÅ JOBEKSEMPEL

@@ -1270,6 +1270,11 @@ SKRIVESTIL
 DE 5 SEKTIONER
 ════════════════════════════════════════════════════════════════
 
+VIGTIGT: Eksemplerne nedenfor viser PRINCIPPET – ikke indholdet. 
+Du skal identificere den SPECIFIKKE brugers mønstre ud fra DERES data.
+Spændinger kan være mange ting: dybde vs. bredde, struktur vs. frihed, 
+specialisering vs. generalisering, udførelse vs. ledelse, sikkerhed vs. udfordring, osv.
+
 1️⃣ DIT GRUNDLÆGGENDE ARBEJDSMØNSTER (4-6 sætninger)
 
 Formål: Vis at du har forstået hvad brugeren FAKTISK gør over tid.
@@ -1278,9 +1283,18 @@ KRAV:
 - Identificér ikke bare variation – men HVILKEN RETNING variationen peger
 - Beskriv bevægelsen: fra hvad → mod hvad
 - Vær specifik om hvad der gentager sig
+- Find det UNIKKE ved denne brugers karrierebevægelse
 
-EKSEMPEL PÅ GODT OUTPUT:
-"Variationerne i dine roller er ikke tilfældige. De følger et mønster, hvor du gradvist bevæger dig væk fra ren udførelse og tættere på ansvar for sammenhæng og retning. Det du gentagne gange vender tilbage til, er ikke det tekniske i sig selv – men muligheden for at bestemme hvordan det tekniske bruges."
+EKSEMPLER PÅ GODT OUTPUT (forskellige typer brugere):
+
+Type A (specialisering → bredde):
+"Du bevæger dig gradvist væk fra dybe specialistroller og mod positioner med bredere ansvar. Det der gentager sig, er ikke selve fagområdet – men ønsket om at se helheden og påvirke flere dele af organisationen."
+
+Type B (udførelse → strategi):
+"Dit arbejdsmønster viser en bevægelse fra operationelle roller mod mere strategiske positioner. Du søger ikke væk fra det konkrete – men mod roller hvor det konkrete har konsekvens for noget større."
+
+Type C (struktur → autonomi):
+"Gennem dine skift ser man en bevægelse væk fra stærkt strukturerede miljøer og mod roller med større selvbestemmelse. Det er ikke kaos du søger – men frihed til at definere hvordan arbejdet udføres."
 
 UNDGÅ: "kombination af X og Y", "variation i roller", "fleksibilitet"
 
@@ -1292,9 +1306,18 @@ KRAV:
 - Beskriv ikke bare hvad der motiverer – men hvad der DRÆNER energi når det mangler
 - Inkludér FRIKTION: Hvad sker der når brugeren kun har X? Kun har Y?
 - Brug "når... så..." konstruktioner
+- Find den SPECIFIKKE drivkraft for denne bruger
 
-EKSEMPEL PÅ GODT OUTPUT:
-"Det centrale er ikke opgaverne i sig selv, men graden af kontrol over rammerne. Når du kun udfører uden indflydelse, mister du engagement – uanset hvor interessant indholdet er. Når du kun koordinerer uden faglig substans, mister du tilfredshed. Dit engagement kræver BEGGE – men med vægt på indflydelse."
+EKSEMPLER PÅ GODT OUTPUT (forskellige typer):
+
+Type A:
+"Det centrale er ikke anerkendelse, men oplevelsen af at skabe reel forandring. Når du kun vedligeholder uden at forbedre, mister du energi – uanset løn og titel."
+
+Type B:
+"Din drivkraft handler om meningsfuldhed i det konkrete. Når arbejdet føles abstrakt eller fjernt fra virkeligheden, falder dit engagement markant."
+
+Type C:
+"Det afgørende er autonomi over metode. Når processen er låst, dræner det dig – selv hvis resultatet er godt. Når du har frihed til HOW, stiger dit engagement – selv ved svære opgaver."
 
 UNDGÅ: "du er motiveret af", "muligheden for at kombinere"
 
@@ -1306,9 +1329,18 @@ KRAV:
 - Beskriv den INDRE KONFLIKT – ikke som noget der skal "løses" eller "balanceres"
 - Inkludér KONSEKVENSER af begge sider af spændingen
 - Brug direkte sprog: "Når du bliver for X, mister du Y"
+- Identificér den SPECIFIKKE spænding for denne bruger
 
-EKSEMPEL PÅ GODT OUTPUT:
-"Der er en vedvarende spænding mellem at dykke ned og at bevare overblik. Når du bliver for teknisk, mister du indflydelse og overblik. Når du bliver for koordinerende, mister du faglig tilfredshed og troværdighed. Det er denne dobbelthed, der gør dit næste skridt svært – ikke usikkerhed om evner."
+EKSEMPLER PÅ GODT OUTPUT (forskellige typer spændinger):
+
+Spænding: Sikkerhed vs. udfordring:
+"Du står i en spænding mellem behovet for stabilitet og trangen til at blive udfordret. Når jobbet bliver for sikkert, keder du dig. Når det bliver for usikkert, mister du ro. Det er ikke fejhed eller rastløshed – det er en reel dobbelthed."
+
+Spænding: Dybde vs. bredde:
+"Der er en vedvarende spænding mellem at specialisere dig og at bevare bredde. Når du går for dybt, føler du dig fanget. Når du går for bredt, mister du faglig identitet. Denne dobbelthed forklarer mange af dine skift."
+
+Spænding: Autonomi vs. tilhørsforhold:
+"Du ønsker både frihed og fællesskab – og de to trækker ofte i hver sin retning. Når friheden er for stor, føler du dig isoleret. Når tilhørsforholdet kræver for meget konformitet, føler du dig kvalt."
 
 UNDGÅ: "balancegang", "finde din egen måde", "usikkerhed"
 
@@ -1320,19 +1352,25 @@ KRAV:
 - Skal være TIL STEDE: 2-3 punkter der er DEAL-BREAKERS hvis de mangler
 - ADVARSELSTEGN: 2-3 ting der signalerer at noget vil gå galt
 - NICE TO HAVE: 1-2 ting der er bonus men ikke afgørende
+- Punkterne skal være SPECIFIKKE for denne bruger – ikke generiske
 
 VIGTIGT: Forklar kort HVORFOR hvert punkt er vigtigt – ikke bare hvad.
 
-EKSEMPEL:
-Skal være til stede:
-- "Mulighed for at påvirke retning og prioriteringer – uden det falder dit engagement, uanset indhold"
-- "En blanding af fagligt arbejde og koordinering – ren ledelse uden substans dræner dig"
+EKSEMPLER (forskellige typer):
 
-Advarselstegn:
-- "Roller hvor du kun udfører andres beslutninger"
-- "Miljøer hvor faglig dybde ikke værdsættes"
+Type A (søger indflydelse):
+- Skal være til stede: "Mulighed for at påvirke retning – uden det falder dit engagement, uanset indhold"
+- Advarselstegn: "Roller hvor du kun udfører andres beslutninger uden input"
 
-UNDGÅ: Generiske LinkedIn-præferencer som "fleksibilitet" eller "internationalt miljø" uden forklaring
+Type B (søger mening):
+- Skal være til stede: "Synlig forbindelse mellem dit arbejde og en større effekt – uden det mister arbejdet mening for dig"
+- Advarselstegn: "Miljøer hvor resultater er abstrakte eller fjerne"
+
+Type C (søger autonomi):
+- Skal være til stede: "Frihed til at bestemme HOW – uden det føler du dig kvalt, selv ved interessante opgaver"
+- Advarselstegn: "Stærkt processtyrende miljøer med lidt råderum"
+
+UNDGÅ: Generiske præferencer som "fleksibilitet", "godt arbejdsmiljø" eller "udviklingsmuligheder" uden forklaring
 
 5️⃣ DIN ARBEJDSHYPOTESE FREMADRETTET (3-4 sætninger)
 
@@ -1343,9 +1381,18 @@ KRAV:
 - Inkludér ÉT "ikke længere" eller "vil sandsynligvis ikke fungere" 
 - Vær specifik om HVAD den næste bevægelse handler om
 - Afslut med ro – men ikke uforpligtende
+- Fravalget skal matche den SPECIFIKKE brugers spændingsfelt
 
-EKSEMPEL PÅ GODT OUTPUT:
-"Dit næste skridt handler mindre om at finde et nyt felt og mere om at finde en rolle, hvor dit tekniske ansvar er MIDDEL til indflydelse – ikke et mål i sig selv. Rene specialistroller eller rene ledelsesroller vil sandsynligvis være kortvarige løsninger for dig – også selvom de ser attraktive ud på papiret. Du søger mod en version hvor koordinering og faglig substans ikke er i konkurrence. Brug dette som et arbejdende ståsted."
+EKSEMPLER PÅ GODT OUTPUT (forskellige typer):
+
+Type A:
+"Dit næste skridt handler om at finde en rolle hvor din ekspertise er MIDDEL til indflydelse – ikke et mål i sig selv. Rene specialistroller uden strategisk komponent vil sandsynligvis være kortvarige for dig. Du søger mod en version hvor faglighed og påvirkning ikke er i konkurrence."
+
+Type B:
+"Du søger ikke bare et nyt job, men en rolle hvor forbindelsen til resultatet er synlig. Stillinger med mange lag mellem dig og effekten vil sandsynligvis dræne dig over tid – også selvom de ser prestigefyldte ud."
+
+Type C:
+"Dit næste skridt handler mindre om indhold og mere om rammer. Meget processtyrende miljøer vil sandsynligvis ikke fungere for dig i længden – uanset hvor interessant opgaven er. Brug dette som filter, ikke som facit."
 
 VIGTIGT: Hypotesen SKAL indeholde én sætning der advarer mod noget specifikt – det er den sætning brugeren husker.
 

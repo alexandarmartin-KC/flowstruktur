@@ -371,9 +371,83 @@ function MulighederPageContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Static coaching questions (always shown below job examples)
-  // No static coaching questions - only job example feedback is needed
-  const coachingQuestions: CoachQuestion[] = [];
+  // Semi-dynamic coaching questions based on job feedback patterns
+  // Questions are selected from a controlled catalog based on user's responses
+  const getCoachingQuestionsBasedOnFeedback = (): CoachQuestion[] => {
+    const jobExamples = coachResponse?.job_examples || [];
+    if (jobExamples.length === 0) return [];
+
+    // Count feedback types
+    const feedbackCounts = {
+      giver_mening: 0,
+      delvist: 0,
+      ikke_noget: 0
+    };
+    
+    jobExamples.forEach(job => {
+      const feedback = postJobExamplesAnswers[`feedback_${job.id}`] as string;
+      if (feedback && feedbackCounts.hasOwnProperty(feedback)) {
+        feedbackCounts[feedback as keyof typeof feedbackCounts]++;
+      }
+    });
+
+    const questions: CoachQuestion[] = [];
+    const totalAnswered = feedbackCounts.giver_mening + feedbackCounts.delvist + feedbackCounts.ikke_noget;
+    
+    // Only show questions when all job examples have feedback
+    if (totalAnswered < jobExamples.length) return [];
+
+    // Pattern 1: Mostly "giver mening" → Need boundary/clarification questions
+    if (feedbackCounts.giver_mening >= 2) {
+      questions.push({
+        id: 'what_must_be_true',
+        type: 'short_text',
+        prompt: 'Du reagerede positivt på flere af eksemplerne. Hvad skal være til stede i en rolle, for at den føles rigtig – og hvad kunne du undvære?'
+      });
+    }
+
+    // Pattern 2: Has "delvist" → Need tension/ambivalence questions  
+    if (feedbackCounts.delvist >= 1) {
+      questions.push({
+        id: 'what_pulls_back',
+        type: 'short_text',
+        prompt: 'Ved de eksempler hvor du var i tvivl – hvad var det der tiltalte dig, og hvad skabte tøven?'
+      });
+    }
+
+    // Pattern 3: Has "ikke noget" → Need friction/boundary questions
+    if (feedbackCounts.ikke_noget >= 1) {
+      questions.push({
+        id: 'what_doesnt_fit',
+        type: 'short_text',
+        prompt: 'Ved de eksempler der ikke passede – hvad var det konkret, der gjorde at de ikke føltes rigtige?'
+      });
+    }
+
+    // Pattern 4: Mixed reactions → Need priority question
+    if (feedbackCounts.giver_mening >= 1 && feedbackCounts.ikke_noget >= 1) {
+      questions.push({
+        id: 'priority_element',
+        type: 'short_text',
+        prompt: 'Når du sammenligner de roller du kunne se dig selv i med dem du afviste – hvad er den vigtigste forskel?'
+      });
+    }
+
+    // Fallback: If somehow no pattern matched, ask a general clarifying question
+    if (questions.length === 0) {
+      questions.push({
+        id: 'general_reflection',
+        type: 'short_text',
+        prompt: 'Hvad tager du med fra disse eksempler? Er der noget der overraskede dig?'
+      });
+    }
+
+    // Limit to max 2 questions to avoid feeling like interrogation
+    return questions.slice(0, 2);
+  };
+
+  // Get dynamic coaching questions
+  const coachingQuestions = getCoachingQuestionsBasedOnFeedback();
 
   // Handle answering job example feedback
   const handleJobExampleFeedback = (jobId: string, feedback: string) => {
@@ -393,13 +467,23 @@ function MulighederPageContent() {
 
   // Check if all questions are answered (job feedback + coaching questions)
   const allQuestionsComplete = () => {
-    // Check job example feedback only (no coaching questions)
+    // Check job example feedback
     const jobExamples = coachResponse?.job_examples || [];
     const allJobFeedbackAnswered = jobExamples.every(job => 
       postJobExamplesAnswers[`feedback_${job.id}`]
     );
     
-    return allJobFeedbackAnswered;
+    // If not all jobs answered, return false (coaching questions not shown yet)
+    if (!allJobFeedbackAnswered) return false;
+    
+    // Check coaching questions (now dynamic based on feedback)
+    const dynamicQuestions = getCoachingQuestionsBasedOnFeedback();
+    const allCoachingAnswered = dynamicQuestions.every(q => {
+      const answer = postJobExamplesAnswers[q.id];
+      return answer && (typeof answer === 'string' ? answer.trim() !== '' : true);
+    });
+    
+    return allCoachingAnswered;
   };
 
   // Fetch spejling (analysis) with all collected data
@@ -895,6 +979,41 @@ function MulighederPageContent() {
               </div>
             )}
 
+            {/* Dynamic Coaching Questions - shown AFTER all job examples have feedback */}
+            {coachResponse.job_examples && coachResponse.job_examples.length > 0 && !showSpejling && (() => {
+              const allJobsHaveFeedback = coachResponse.job_examples!.every(job => 
+                postJobExamplesAnswers[`feedback_${job.id}`]
+              );
+              const dynamicQuestions = getCoachingQuestionsBasedOnFeedback();
+              
+              if (allJobsHaveFeedback && dynamicQuestions.length > 0) {
+                return (
+                  <div className="space-y-6 border-t pt-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <HelpCircle className="h-5 w-5 text-primary" />
+                      <h3 className="font-semibold">Afklarende spørgsmål</h3>
+                      <p className="text-sm text-muted-foreground ml-2">Baseret på dine svar</p>
+                    </div>
+                    {dynamicQuestions.map((q: CoachQuestion) => (
+                      <div key={q.id} className="space-y-2">
+                        <Label htmlFor={q.id} className="text-base font-medium">
+                          {q.prompt}
+                        </Label>
+                        <Textarea
+                          id={q.id}
+                          placeholder="Skriv dit svar her..."
+                          value={(postJobExamplesAnswers[q.id] as string) || ''}
+                          onChange={(e) => handlePostJobExamplesAnswer(q.id, e.target.value)}
+                          className="min-h-[100px]"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
             {/* Submit button for job examples feedback */}
             {coachResponse.job_examples && coachResponse.job_examples.length > 0 && !showSpejling && (
               <div className="border-t pt-6">
@@ -917,7 +1036,15 @@ function MulighederPageContent() {
                 </Button>
                 {!allQuestionsComplete() && (
                   <p className="text-sm text-muted-foreground text-center mt-2">
-                    Giv feedback på alle jobeksempler ovenfor for at fortsætte
+                    {(() => {
+                      const allJobsHaveFeedback = coachResponse.job_examples!.every(job => 
+                        postJobExamplesAnswers[`feedback_${job.id}`]
+                      );
+                      if (!allJobsHaveFeedback) {
+                        return "Giv feedback på alle jobeksempler ovenfor for at fortsætte";
+                      }
+                      return "Besvar spørgsmålene ovenfor for at fortsætte";
+                    })()}
                   </p>
                 )}
               </div>

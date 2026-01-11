@@ -965,26 +965,20 @@ Brugeren har:
 KRITISK: RETNINGSVALGET BESTEMMER JOBEKSEMPLERNE
 ════════════════════════════════════════════════════════════════
 
-Brugeren har valgt én af tre retninger. Dit output SKAL matche dette valg.
+Brugeren har valgt én af to retninger. Dit output SKAL matche dette valg.
 Brug brugerens CV og arbejdsprofil til at finde DERES specifikke felt/branche.
 
-VALG A - TÆT PÅ:
+VALG A - TÆT PÅ NUVÆRENDE:
 - Jobeksempler inden for SAMME felt/branche som brugerens erfaring
 - Lignende ansvarsniveau og arbejdsform
 - Fokus på at udnytte eksisterende kompetencer direkte
 - PRINCIP: Brugeren ville kunne søge disse jobs uden at skulle forklare et skift
 
-VALG B - LIDT ANDERLEDES:
-- Jobeksempler der BYGGER VIDERE på erfaring men med ny vinkel
-- Kan være tilstødende brancher, nyt ansvarsniveau, eller ny arbejdsform
-- Eksisterende kompetencer bruges på NYE MÅDER
-- PRINCIP: Brugeren skal kunne forklare skiftet med én sætning
-
-VALG C - MEGET ANDERLEDES:
+VALG B - HELT ANDERLEDES:
 - Jobeksempler i ANDRE brancher eller med VÆSENTLIGT anderledes arbejdsform
 - Fokus på transfererbare kompetencer, ikke direkte erfaring
 - Kan være helt nye områder hvor brugerens kernekompetencer stadig er relevante
-- PRINCIP: Brugeren skal kunne forklare skiftet, men det kræver en længere historie
+- PRINCIP: Det kræver en historie at forklare skiftet – men kompetencerne er stadig relevante
 
 VIGTIGT: Eksemplerne skal baseres på DENNE brugers CV og profil - ikke generiske eksempler.
 

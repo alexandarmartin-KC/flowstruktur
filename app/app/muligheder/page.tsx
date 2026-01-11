@@ -174,7 +174,7 @@ function MulighederPageContent() {
   // Initialize from query params
   useEffect(() => {
     const choice = searchParams.get('choice');
-    if (choice === 'A' || choice === 'B' || choice === 'C') {
+    if (choice === 'A' || choice === 'B') {
       setSelectedChoice(choice);
     }
   }, [searchParams]);
@@ -279,7 +279,6 @@ function MulighederPageContent() {
         body: JSON.stringify({
           ...stepData,
           user_choice: choice || '',
-          job_ad_text_or_url: choice === 'C' ? jobAd : undefined,
           user_answers: answers.length > 0 ? answers : undefined,
           request_job_examples: requestJobExamples,
         }),
@@ -337,13 +336,8 @@ function MulighederPageContent() {
     params.set('choice', choice);
     router.push(`/app/muligheder?${params.toString()}`, { scroll: false });
     
-    // Call API with the new choice
-    if (choice === 'C') {
-      // For option C, wait for job ad input
-      setCoachResponse(null);
-    } else {
-      callCareerCoach(choice);
-    }
+    // Call API with the new choice (A or B)
+    callCareerCoach(choice);
   };
 
   // Handle answering a question
@@ -757,9 +751,9 @@ function MulighederPageContent() {
         </p>
       </div>
 
-      {/* Direction Choice Cards - always visible */}
-      <div className="grid gap-4 md:grid-cols-3">
-        {/* Card A: Related Direction */}
+      {/* Direction Choice Cards - 2 options */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Card A: Stay Close */}
         <Card
           className={`cursor-pointer transition-all ${
             selectedChoice === 'A'
@@ -771,15 +765,15 @@ function MulighederPageContent() {
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-primary" />
-              <CardTitle className="text-base">Beslægtet retning</CardTitle>
+              <CardTitle className="text-base">Tæt på nuværende</CardTitle>
             </div>
             <CardDescription className="text-sm">
-              Byg videre på din dokumenterede erfaring
+              Bliv i samme branche og byg videre på din erfaring
             </CardDescription>
           </CardHeader>
         </Card>
 
-        {/* Card B: New Direction */}
+        {/* Card B: Completely Different */}
         <Card
           className={`cursor-pointer transition-all ${
             selectedChoice === 'B'
@@ -791,70 +785,14 @@ function MulighederPageContent() {
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <Compass className="h-5 w-5 text-primary" />
-              <CardTitle className="text-base">Ny retning</CardTitle>
+              <CardTitle className="text-base">Helt anderledes</CardTitle>
             </div>
             <CardDescription className="text-sm">
-              Skift eller udvid din arbejdsform
-            </CardDescription>
-          </CardHeader>
-        </Card>
-
-        {/* Card C: Specific Job Ad */}
-        <Card
-          className={`cursor-pointer transition-all ${
-            selectedChoice === 'C'
-              ? 'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2'
-              : 'hover:border-primary/50 hover:bg-accent/50'
-          }`}
-          onClick={() => handleChoiceSelect('C')}
-        >
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
-              <Link2 className="h-5 w-5 text-primary" />
-              <CardTitle className="text-base">Konkret jobannonce</CardTitle>
-            </div>
-            <CardDescription className="text-sm">
-              Sammenlign med et specifikt opslag
+              Skift væk fra nuværende branche
             </CardDescription>
           </CardHeader>
         </Card>
       </div>
-
-      {/* Option C: Job Ad Input */}
-      {selectedChoice === 'C' && !coachResponse && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Indsæt jobannonce</CardTitle>
-            <CardDescription>
-              Kopiér teksten fra jobannoncen eller indsæt et link
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Textarea
-              value={jobAdText}
-              onChange={(e) => setJobAdText(e.target.value)}
-              placeholder="Indsæt jobannoncentekst eller URL her..."
-              rows={6}
-            />
-            <Button 
-              onClick={handleJobAdSubmit} 
-              disabled={!jobAdText.trim() || isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyserer...
-                </>
-              ) : (
-                <>
-                  Fortsæt med denne annonce
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Error message */}
       {error && (
@@ -1459,9 +1397,8 @@ function MulighederPageContent() {
                 <div>
                   <Label className="text-sm text-muted-foreground">Valgt retning</Label>
                   <p className="font-medium">
-                    {directionState.choice === 'A' && 'Beslægtet retning (byg videre på erfaring)'}
-                    {directionState.choice === 'B' && 'Ny retning (skift/udvid arbejdsform)'}
-                    {directionState.choice === 'C' && 'Konkret jobannonce'}
+                    {directionState.choice === 'A' && 'Tæt på nuværende (samme branche)'}
+                    {directionState.choice === 'B' && 'Helt anderledes (ny branche)'}
                   </p>
                 </div>
 

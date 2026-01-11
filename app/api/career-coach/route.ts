@@ -188,9 +188,8 @@ user_choice: ${user_choice || '(tom)'}`;
 
     if (request_job_examples) {
       const choiceDescriptions: Record<string, string> = {
-        'A': 'TÆT PÅ - Brugeren vil undersøge jobmuligheder, der ligner det de allerede har gjort. Jobeksemplerne skal være inden for samme felt/branche med lignende ansvarsniveau.',
-        'B': 'LIDT ANDERLEDES - Brugeren vil undersøge jobmuligheder, der bygger videre på deres erfaring men med en ny vinkel. Jobeksemplerne skal vise roller hvor eksisterende kompetencer bruges på nye måder eller i tilstødende områder.',
-        'C': 'MEGET ANDERLEDES - Brugeren vil undersøge jobmuligheder, der er markant forskellige fra deres tidligere erfaring. Jobeksemplerne skal vise roller i andre brancher eller med væsentligt anderledes arbejdsform.'
+        'A': 'TÆT PÅ NUVÆRENDE - Brugeren vil blive i samme branche og bygge videre på eksisterende erfaring. Jobeksemplerne skal være inden for samme felt/branche med lignende arbejdsform.',
+        'B': 'HELT ANDERLEDES - Brugeren vil skifte væk fra nuværende branche. Jobeksemplerne skal vise roller i andre brancher eller med væsentligt anderledes arbejdsform, hvor brugerens kernekompetencer stadig er relevante.'
       };
       
       const choiceDescription = choiceDescriptions[user_choice || ''] || 'Ukendt valg';
@@ -204,7 +203,7 @@ Direction state med brugerens præferencer:
 ${JSON.stringify(inputDirectionState, null, 2)}
 
 Generér 3 jobeksempler der matcher dette retningsvalg. 
-VIGTIGT: Jobeksemplerne SKAL afspejle om brugeren søger tæt på (A), lidt anderledes (B) eller meget anderledes (C) i forhold til deres nuværende erfaring.`;
+VIGTIGT: Jobeksemplerne SKAL afspejle om brugeren søger tæt på (A) eller helt anderledes (B) i forhold til deres nuværende erfaring.`;
     }
 
     // Handle post-feedback questions request

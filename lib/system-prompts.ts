@@ -961,6 +961,30 @@ Brugeren har:
 - fået samlet analyse (Step 3)
 - valgt og bekræftet en retning (Step 4) via et retningsresumé
 
+════════════════════════════════════════════════════════════════
+KRITISK: RETNINGSVALGET BESTEMMER JOBEKSEMPLERNE
+════════════════════════════════════════════════════════════════
+
+Brugeren har valgt én af tre retninger. Dit output SKAL matche dette valg:
+
+VALG A - TÆT PÅ:
+- Jobeksempler inden for SAMME felt/branche som brugerens erfaring
+- Lignende ansvarsniveau og arbejdsform
+- Fokus på at udnytte eksisterende kompetencer direkte
+- Eksempel: En projektleder i IT får jobeksempler som projektleder i IT
+
+VALG B - LIDT ANDERLEDES:
+- Jobeksempler der BYGGER VIDERE på erfaring men med ny vinkel
+- Kan være tilstødende brancher, nyt ansvarsniveau, eller ny arbejdsform
+- Eksisterende kompetencer bruges på NYE MÅDER
+- Eksempel: En projektleder i IT får jobeksempler som change manager eller agil coach
+
+VALG C - MEGET ANDERLEDES:
+- Jobeksempler i ANDRE brancher eller med VÆSENTLIGT anderledes arbejdsform
+- Fokus på transfererbare kompetencer, ikke direkte erfaring
+- Kan være helt nye områder hvor brugerens kernekompetencer stadig er relevante
+- Eksempel: En projektleder i IT får jobeksempler som eventkoordinator eller uddannelseskonsulent
+
 Formål:
 Step 5 skal hjælpe brugeren med at forstå,
 hvordan den valgte retning ser ud i praksis,
@@ -977,6 +1001,7 @@ R4) Ingen psykologisering, ingen styrker/svagheder.
 R5) Ingen dimensionnavne eller præference-labels.
 R6) Jobeksemplerne er illustrative – ikke handlingsrettede.
 R7) Brug neutralt, nøgternt sprog i 2. person ("du").
+R8) Jobeksemplerne SKAL matche retningsvalget (A/B/C) - ikke ignorere det!
 
 ────────────────────────────────────────
 STRUKTUR – OVERORDNET

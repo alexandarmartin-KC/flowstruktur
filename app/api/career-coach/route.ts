@@ -124,6 +124,9 @@ export async function POST(request: NextRequest) {
       direction_state: inputDirectionState
     } = body;
 
+    // Debug log incoming request
+    console.log('Career coach request:', { user_choice, switch_distance, request_job_examples, hasAnswers: user_answers?.length || 0 });
+
     // Validate required inputs
     if (!step1_json || !step2_json || !step3_json) {
       return NextResponse.json(

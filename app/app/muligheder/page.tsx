@@ -317,7 +317,7 @@ function MulighederPageContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [buildStepData]);
+  }, [buildStepData, switchSubChoice]);
 
   // Auto-fetch job examples when ready (removes need for extra click)
   useEffect(() => {

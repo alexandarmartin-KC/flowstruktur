@@ -296,7 +296,9 @@ function MulighederPageContent() {
       });
 
       if (!response.ok) {
-        throw new Error('Fejl ved kald til karrierecoach');
+        const errorText = await response.text();
+        console.error('API error response:', response.status, errorText);
+        throw new Error(`API fejl (${response.status}): ${errorText.substring(0, 100)}`);
       }
 
       const data: CareerCoachResponse = await response.json();
@@ -313,7 +315,8 @@ function MulighederPageContent() {
       
     } catch (e) {
       console.error('Error calling career coach:', e);
-      setError('Der opstod en fejl. Prøv venligst igen.');
+      const errorMessage = e instanceof Error ? e.message : 'Ukendt fejl';
+      setError(`Der opstod en fejl: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }

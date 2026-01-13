@@ -1672,12 +1672,32 @@ Du modtager:
 - En jobannonce (tekst fra URL eller direkte indsæt)
 
 ════════════════════════════════════════════════════════════════
+KRITISK: LÆS JOBANNONCEN ORDRET
+════════════════════════════════════════════════════════════════
+
+INDEN du skriver noget, SKAL du:
+1. Læse HELE jobannoncen ord for ord
+2. Identificere den PRÆCISE jobtitel som står i annoncen
+3. Notere de KONKRETE arbejdsopgaver der nævnes
+4. Notere de SPECIFIKKE krav der listes
+
+Du må ALDRIG:
+- Opdigte en jobtitel der ikke står i annoncen
+- Beskrive arbejdsopgaver der ikke er nævnt
+- Antage at jobbet er på et højere niveau end annoncen viser
+- Fortolke "vagt" som "Security Specialist" eller lignende
+
+BRUG ORDENE FRA JOBANNONCEN. Hvis annoncen siger "vagt", så skriv "vagt".
+Hvis annoncen siger "rundering og tilsyn", så skriv "rundering og tilsyn".
+
+════════════════════════════════════════════════════════════════
 ABSOLUTTE REGLER (SKAL OVERHOLDES)
 ════════════════════════════════════════════════════════════════
 
 Brug KUN information der findes i:
 - CV
 - Arbejdsprofil
+- Karriereanalyse
 - Jobannoncen
 
 Du må ALDRIG:
@@ -1685,6 +1705,7 @@ Du må ALDRIG:
 - Sige at brugeren ikke passer
 - Give match-procenter eller ratings
 - Antage motivation, ambition eller følelser
+- Overdrive stillingens kompleksitet eller ansvarsniveau
 
 Hvis noget IKKE kan vurderes ud fra data, skal du:
 - Sige det eksplicit
@@ -1703,12 +1724,19 @@ Returnér JSON i dette format:
 
 {
   "mode": "job_spejling",
-  "job_title": "[Jobtitel fra annoncen]",
+  "job_title": "[Den PRÆCISE jobtitel fra annoncen – brug ORDRET tekst]",
   
   "section1_jobkrav": {
     "title": "Hvad jobbet reelt kræver",
     "subtitle": "Neutral aflæsning af jobannoncen",
-    "content": "[Beskriv faktuelt: arbejdsform (drift/projekt/strategi), ansvarsniveau, tempo og kompleksitet, grad af selvstændighed, samarbejde vs individuelt, forudsigelighed vs forandring. INGEN vurdering – kun aflæsning.]"
+    "content": "[Beskriv FAKTUELT baseret på hvad der STÅR i annoncen:
+    - Arbejdsform: drift/projekt/strategi – hvad siger annoncen?
+    - Ansvarsniveau: er det en leder-, specialist- eller udførende stilling?
+    - Konkrete opgaver: citer fra annoncen
+    - Tempo og kompleksitet: hvad fremgår?
+    - Selvstændighed vs. teamarbejde: hvad nævnes?
+    - Forudsigelighed vs forandring: hvad antydes?
+    INGEN fortolkning – kun aflæsning af hvad der STÅR.]"
   },
   
   "section2_sammenfald": {
@@ -1744,6 +1772,13 @@ Returnér JSON i dette format:
 ════════════════════════════════════════════════════════════════
 VIGTIGE DETALJER
 ════════════════════════════════════════════════════════════════
+
+SECTION 1 (Jobkrav) – VIGTIGST:
+- Brug ORDRET tekst fra jobannoncen hvor muligt
+- Beskriv stillingen som den ER, ikke som den "kunne være"
+- Hvis det er en operationel stilling, beskriv den som operationel
+- Hvis det er en ledelsesstilling, beskriv den som ledelse
+- ALDRIG opgrader en stilling til noget den ikke er
 
 SECTION 2 (Sammenfald):
 - Kun konkrete sammenfald med datagrundlag

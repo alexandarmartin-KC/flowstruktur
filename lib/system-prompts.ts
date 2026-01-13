@@ -1790,10 +1790,19 @@ SECTION 3 (Opmærksomhed):
 - Brug: "kan være et område at undersøge" / "adskiller sig fra"
 - IKKE: "du vil have svært ved" / "dette passer ikke"
 
-SECTION 4 (Uafklaret):
+SECTION 4 (Uafklaret) – KRITISK FORMULERING:
 - ALTID mindst 2-3 punkter
-- Vær ærlig om hvad jobannoncen IKKE fortæller
-- Vær ærlig om hvad CV/profil IKKE kan besvare
+- Fokus er på hvad JOBANNONCEN ikke fortæller – IKKE på brugerens mangler
+- Brugeren har erfaringer og præferencer – det uafklarede er hvordan JOBBET praktiserer disse ting
+
+KORREKT formulering (brug denne struktur):
+✓ "Selvom du har erfaring med X, er det uklart hvordan Y praktiseres i denne rolle."
+✓ "Dit CV viser erfaring med X, men jobannoncen specificerer ikke hvordan X håndteres her."
+✓ "Dine præferencer peger mod X, men det fremgår ikke af annoncen om rollen tilbyder dette."
+
+FORKERT formulering (UNDGÅ):
+✗ "Det kan ikke vurderes ud fra dit CV eller dine svar" (lyder som om brugeren mangler noget)
+✗ "Det er uklart hvordan X opleves" (for vagt – præcisér at det er JOBBET der er uklart)
 
 SECTION 5 (Refleksion):
 - Max 3 spørgsmål

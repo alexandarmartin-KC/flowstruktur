@@ -102,14 +102,20 @@ interface CareerCoachResponse {
   patterns?: string[];
   unclear?: string[];
   next_step_explanation?: string;
-  // Job spejling fields
+  // Job spejling fields (new structure)
   job_title?: string;
-  section1_jobkrav?: { title: string; subtitle: string; content: string };
+  section1_overordnet?: { title: string; content: string };
+  section2_jobbet?: { title: string; content: string; points: string[] };
+  section3_match?: { title: string; content: string; points: string[] };
+  section4_centrale?: { title: string; content: string };
+  section5_krav?: { title: string; content: string; points: string[] };
+  closing_statement?: string;
+  // Legacy job spejling fields (backwards compatibility)
+  section1_jobkrav?: { title: string; subtitle?: string; content: string };
   section2_sammenfald?: { title: string; content: string; points: string[] };
   section3_opmaerksomhed?: { title: string; content: string; points: string[] };
   section4_uafklaret?: { title: string; content: string; points: string[] };
   section5_refleksion?: { title: string; questions: string[] };
-  closing_statement?: string;
 }
 
 export async function POST(request: NextRequest) {

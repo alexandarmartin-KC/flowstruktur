@@ -15,6 +15,7 @@ import {
   MessageCircle, 
   CheckCircle2,
   ArrowRight,
+  ArrowLeft,
   RefreshCw,
   AlertCircle,
   Eye,
@@ -60,7 +61,7 @@ interface JobExample {
 
 // API response
 interface CareerCoachResponse {
-  mode: 'ask_to_choose' | 'deepening' | 'job_examples' | 'spejling';
+  mode: 'ask_to_choose' | 'deepening' | 'job_examples' | 'spejling' | 'job_spejling';
   coach_message: string;
   questions: CoachQuestion[];
   direction_state: DirectionState;
@@ -80,6 +81,14 @@ interface CareerCoachResponse {
   patterns?: string[];
   unclear?: string[];
   next_step_explanation?: string;
+  // Job spejling fields (when analyzing user's own job ad)
+  job_title?: string;
+  section1_jobkrav?: { title: string; subtitle: string; content: string };
+  section2_sammenfald?: { title: string; content: string; points: string[] };
+  section3_opmaerksomhed?: { title: string; content: string; points: string[] };
+  section4_uafklaret?: { title: string; content: string; points: string[] };
+  section5_refleksion?: { title: string; questions: string[] };
+  closing_statement?: string;
 }
 
 // Lag 2 response structure (brugersprog version)
@@ -137,6 +146,7 @@ function MulighederPageContent() {
   const [jobExamplesFeedback, setJobExamplesFeedback] = useState<string>('');
   const [showSpejling, setShowSpejling] = useState(false);
   const [spejlingNextAction, setSpejlingNextAction] = useState<string>('');
+  const [showJobSpejling, setShowJobSpejling] = useState(false);
   
   // Post job examples coaching questions state
   const [postJobExamplesQuestions, setPostJobExamplesQuestions] = useState<CoachQuestion[]>([]);
@@ -292,6 +302,7 @@ function MulighederPageContent() {
           switch_distance: switchDist || switchSubChoice || undefined,
           user_answers: answers.length > 0 ? answers : undefined,
           request_job_examples: requestJobExamples,
+          job_ad_text_or_url: jobAd || undefined,
         }),
       });
 
@@ -308,6 +319,11 @@ function MulighederPageContent() {
       // Auto-show spejling if API returns spejling mode (check all possible section fields)
       if (data.mode === 'spejling' || data.section1_arbejdsmoenster || data.summary_paragraph) {
         setShowSpejling(true);
+      }
+      
+      // Auto-show job spejling if API returns job_spejling mode
+      if (data.mode === 'job_spejling' || data.section1_jobkrav) {
+        setShowJobSpejling(true);
       }
       
       // Save direction state
@@ -1518,6 +1534,188 @@ function MulighederPageContent() {
                     <span>Gem min analyse og afslut</span>
                   </Button>
                 </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* JOB SPEJLING: Spejling af valgt job – set i lyset af din samlede profil */}
+      {showJobSpejling && coachResponse && (coachResponse.mode === 'job_spejling' || coachResponse.section1_jobkrav) && (
+        <Card className="border-indigo-200 bg-indigo-50/50 dark:border-indigo-900 dark:bg-indigo-950/20">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-5 w-5 text-indigo-600" />
+              <CardTitle className="text-lg">Spejling af valgt job</CardTitle>
+            </div>
+            <CardDescription className="text-sm text-muted-foreground">
+              Set i lyset af din samlede profil
+            </CardDescription>
+            {coachResponse.job_title && (
+              <p className="text-base font-medium mt-2">
+                {coachResponse.job_title}
+              </p>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-8">
+            
+            {/* Section 1: Hvad jobbet reelt kræver */}
+            {coachResponse.section1_jobkrav && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded">1</span>
+                  {coachResponse.section1_jobkrav.title}
+                </h4>
+                {coachResponse.section1_jobkrav.subtitle && (
+                  <p className="text-sm text-muted-foreground pl-8">{coachResponse.section1_jobkrav.subtitle}</p>
+                )}
+                <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                  <p className="text-base leading-relaxed text-foreground">
+                    {coachResponse.section1_jobkrav.content}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Section 2: Tydelige sammenfald */}
+            {coachResponse.section2_sammenfald && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold px-2 py-1 rounded">2</span>
+                  {coachResponse.section2_sammenfald.title}
+                </h4>
+                {coachResponse.section2_sammenfald.content && (
+                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {coachResponse.section2_sammenfald.content}
+                    </p>
+                  </div>
+                )}
+                {coachResponse.section2_sammenfald.points && coachResponse.section2_sammenfald.points.length > 0 && (
+                  <ul className="space-y-2 pl-8">
+                    {coachResponse.section2_sammenfald.points.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm bg-green-50 dark:bg-green-950/30 p-2.5 rounded">
+                        <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* Section 3: Opmærksomhedspunkter */}
+            {coachResponse.section3_opmaerksomhed && (
+              <div className="space-y-3 bg-amber-50/50 dark:bg-amber-950/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 text-xs font-bold px-2 py-1 rounded">3</span>
+                  {coachResponse.section3_opmaerksomhed.title}
+                </h4>
+                {coachResponse.section3_opmaerksomhed.content && (
+                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {coachResponse.section3_opmaerksomhed.content}
+                    </p>
+                  </div>
+                )}
+                {coachResponse.section3_opmaerksomhed.points && coachResponse.section3_opmaerksomhed.points.length > 0 && (
+                  <ul className="space-y-2 pl-8">
+                    {coachResponse.section3_opmaerksomhed.points.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm">
+                        <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* Section 4: Hvad der ikke kan vurderes (OBLIGATORISK) */}
+            {coachResponse.section4_uafklaret && (
+              <div className="space-y-3 bg-gray-50 dark:bg-gray-950/20 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2 py-1 rounded">4</span>
+                  {coachResponse.section4_uafklaret.title}
+                </h4>
+                {coachResponse.section4_uafklaret.content && (
+                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {coachResponse.section4_uafklaret.content}
+                    </p>
+                  </div>
+                )}
+                {coachResponse.section4_uafklaret.points && coachResponse.section4_uafklaret.points.length > 0 && (
+                  <ul className="space-y-2 pl-8">
+                    {coachResponse.section4_uafklaret.points.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm">
+                        <span className="text-gray-500 mt-0.5">?</span>
+                        <span className="italic text-muted-foreground">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* Section 5: Afklarende refleksion */}
+            {coachResponse.section5_refleksion && (
+              <div className="space-y-3 bg-indigo-50 dark:bg-indigo-950/20 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded">5</span>
+                  {coachResponse.section5_refleksion.title}
+                </h4>
+                {coachResponse.section5_refleksion.questions && coachResponse.section5_refleksion.questions.length > 0 && (
+                  <ul className="space-y-3 pl-8">
+                    {coachResponse.section5_refleksion.questions.map((question, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm">
+                        <MessageCircle className="h-4 w-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                        <span className="font-medium">{question}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* Closing statement */}
+            {coachResponse.closing_statement && (
+              <div className="border-t pt-6 mt-8">
+                <p className="text-sm text-muted-foreground text-center italic">
+                  {coachResponse.closing_statement}
+                </p>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="pt-4 border-t">
+              <div className="grid gap-3">
+                <Button
+                  variant="outline"
+                  className="justify-start text-left h-auto py-4 px-4"
+                  onClick={() => {
+                    setShowJobSpejling(false);
+                    setJobAdText('');
+                    setMainChoice('url');
+                  }}
+                >
+                  <RefreshCw className="mr-3 h-5 w-5 flex-shrink-0" />
+                  <span>Analysér en anden jobannonce</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="justify-start text-left h-auto py-4 px-4"
+                  onClick={() => {
+                    setShowJobSpejling(false);
+                    setMainChoice('');
+                    setSwitchSubChoice('');
+                    setSelectedChoice('');
+                    setJobAdText('');
+                  }}
+                >
+                  <ArrowLeft className="mr-3 h-5 w-5 flex-shrink-0" />
+                  <span>Gå tilbage til retningsvalg</span>
+                </Button>
               </div>
             </div>
           </CardContent>

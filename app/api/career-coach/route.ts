@@ -92,7 +92,7 @@ interface JobExample {
 }
 
 interface CareerCoachResponse {
-  mode: 'ask_to_choose' | 'deepening' | 'job_examples' | 'spejling';
+  mode: 'ask_to_choose' | 'deepening' | 'job_examples' | 'spejling' | 'job_spejling';
   coach_message: string;
   questions: CoachQuestion[];
   direction_state: DirectionState;
@@ -102,6 +102,14 @@ interface CareerCoachResponse {
   patterns?: string[];
   unclear?: string[];
   next_step_explanation?: string;
+  // Job spejling fields
+  job_title?: string;
+  section1_jobkrav?: { title: string; subtitle: string; content: string };
+  section2_sammenfald?: { title: string; content: string; points: string[] };
+  section3_opmaerksomhed?: { title: string; content: string; points: string[] };
+  section4_uafklaret?: { title: string; content: string; points: string[] };
+  section5_refleksion?: { title: string; questions: string[] };
+  closing_statement?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -168,8 +176,32 @@ export async function POST(request: NextRequest) {
         }
       : null;
 
+    // Check early if this is job spejling (choice C with job ad)
+    // Job spejling uses step1 (CV), step2 (work profile), and step3 (career analysis)
+    const isJobSpejlingRequest = user_choice === 'C' && job_ad_text_or_url;
+
     // Build the user message
-    let userMessage = `step1_json:
+    let userMessage: string;
+    
+    if (isJobSpejlingRequest) {
+      // For job spejling, include CV (step1), work profile (step2), and career analysis (step3)
+      userMessage = `step1_json (Brugerens CV):
+${JSON.stringify(step1_json, null, 2)}
+
+step2_json (Brugerens arbejdsprofil / 40 spørgsmål + scores):
+${JSON.stringify(step2_json, null, 2)}
+
+step3_json (Brugerens samlede karriereanalyse):
+${JSON.stringify(step3_json, null, 2)}
+
+user_choice: C
+
+JOBANNONCE TIL ANALYSE:
+${job_ad_text_or_url}
+
+Analysér denne jobannonce mod brugerens samlede profil (CV, arbejdsprofil og karriereanalyse). Returnér en struktureret spejling som JSON.`;
+    } else {
+      userMessage = `step1_json:
 ${JSON.stringify(step1_json, null, 2)}
 
 step2_json:
@@ -182,8 +214,7 @@ ${JSON.stringify({
 }, null, 2)}
 
 user_choice: ${user_choice || '(tom)'}`;
-
-    // Add switch_distance context for "Skift karrierespor" flow
+    }    // Add switch_distance context for "Skift karrierespor" flow
     if (user_choice === 'B' && switch_distance) {
       const distanceDescription = switch_distance === 'close' 
         ? 'TÆT PÅ NUVÆRENDE - Brugeren vil skifte til en beslægtet branche eller rolle'
@@ -262,8 +293,11 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
     }
 
     // Determine which system prompt to use
+    // isJobSpejlingRequest was defined earlier for message building
     let systemPrompt = STEP_PROMPTS.KARRIERE_COACH;
-    if (request_job_examples) {
+    if (isJobSpejlingRequest) {
+      systemPrompt = STEP_PROMPTS.JOB_SPEJLING;
+    } else if (request_job_examples) {
       systemPrompt = STEP_PROMPTS.JOB_EKSEMPLER;
     } else if (shouldTriggerSpejling) {
       systemPrompt = STEP_PROMPTS.SPEJLING;
@@ -271,7 +305,8 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
 
     // Use higher token limit for spejling since it produces more content
     // Full spejling with all 6 sections + JSON structure needs ~5000-6000 tokens
-    const maxTokens = shouldTriggerSpejling ? 6000 : 2000;
+    // Job spejling also needs higher tokens for 5 detailed sections
+    const maxTokens = (shouldTriggerSpejling || isJobSpejlingRequest) ? 6000 : 2000;
     
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
@@ -287,7 +322,7 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
       ],
       max_tokens: maxTokens,
       temperature: 0.5,
-      response_format: shouldTriggerSpejling ? { type: 'json_object' } : undefined,
+      response_format: (shouldTriggerSpejling || isJobSpejlingRequest) ? { type: 'json_object' } : undefined,
     });
 
     const textContent = response.choices[0]?.message?.content;
@@ -295,9 +330,12 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
       throw new Error('Ingen tekstrespons fra AI');
     }
 
-    // Debug logging for spejling
+    // Debug logging for spejling and job spejling
     if (shouldTriggerSpejling) {
       console.log('Spejling response raw:', textContent.substring(0, 500));
+    }
+    if (isJobSpejlingRequest) {
+      console.log('Job Spejling response raw:', textContent.substring(0, 500));
     }
 
     // Parse the JSON response

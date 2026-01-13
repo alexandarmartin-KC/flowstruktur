@@ -184,8 +184,27 @@ export async function POST(request: NextRequest) {
     let userMessage: string;
     
     if (isJobSpejlingRequest) {
-      // For job spejling, include CV (step1), work profile (step2), and career analysis (step3)
-      userMessage = `step1_json (Brugerens CV):
+      // CRITICAL: Put job ad FIRST so model reads it before getting biased by CV/profile
+      // The model tends to ignore the job ad if CV comes first
+      userMessage = `═══════════════════════════════════════════════════════════════
+JOBANNONCE DER SKAL ANALYSERES (LÆS DENNE FØRST!)
+═══════════════════════════════════════════════════════════════
+
+${job_ad_text_or_url}
+
+═══════════════════════════════════════════════════════════════
+VIGTIG INSTRUKTION
+═══════════════════════════════════════════════════════════════
+
+Du SKAL bruge den PRÆCISE jobtitel og de KONKRETE arbejdsopgaver fra jobannoncen ovenfor.
+Hvis jobannoncen siger "vagt" - så er jobtitlen "Vagt", IKKE "Security Manager" eller lignende.
+Beskriv jobbet SOM DET STÅR I ANNONCEN - ikke som du tror det "burde" være.
+
+═══════════════════════════════════════════════════════════════
+BRUGERENS PROFIL (til sammenligning)
+═══════════════════════════════════════════════════════════════
+
+step1_json (Brugerens CV):
 ${JSON.stringify(step1_json, null, 2)}
 
 step2_json (Brugerens arbejdsprofil / 40 spørgsmål + scores):
@@ -194,12 +213,13 @@ ${JSON.stringify(step2_json, null, 2)}
 step3_json (Brugerens samlede karriereanalyse):
 ${JSON.stringify(step3_json, null, 2)}
 
-user_choice: C
+═══════════════════════════════════════════════════════════════
+DIN OPGAVE
+═══════════════════════════════════════════════════════════════
 
-JOBANNONCE TIL ANALYSE:
-${job_ad_text_or_url}
-
-Analysér denne jobannonce mod brugerens samlede profil (CV, arbejdsprofil og karriereanalyse). Returnér en struktureret spejling som JSON.`;
+Analysér jobannoncen (øverst) mod brugerens profil. 
+HUSK: Jobtitlen og arbejdsopgaverne skal komme DIREKTE fra jobannoncen - ikke fra brugerens CV.
+Returnér en struktureret spejling som JSON.`;
     } else {
       userMessage = `step1_json:
 ${JSON.stringify(step1_json, null, 2)}
@@ -308,6 +328,10 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
     // Job spejling also needs higher tokens for 5 detailed sections
     const maxTokens = (shouldTriggerSpejling || isJobSpejlingRequest) ? 6000 : 2000;
     
+    // Use lower temperature for job spejling to ensure model follows instructions precisely
+    // Higher temperature causes the model to "creatively interpret" job ads incorrectly
+    const temperature = isJobSpejlingRequest ? 0.1 : 0.5;
+    
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
@@ -321,7 +345,7 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
         },
       ],
       max_tokens: maxTokens,
-      temperature: 0.5,
+      temperature: temperature,
       response_format: (shouldTriggerSpejling || isJobSpejlingRequest) ? { type: 'json_object' } : undefined,
     });
 

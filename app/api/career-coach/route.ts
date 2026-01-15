@@ -494,17 +494,19 @@ async function extractJobTitleFromAd(jobAdText: string): Promise<string> {
           content: `Du er en præcis tekst-ekstraktor. Din ENESTE opgave er at finde den EKSAKTE jobtitel fra en jobannonce.
 
 REGLER:
-- Returner KUN jobtitlen - ingen forklaring
-- Brug den PRÆCISE titel som står i annoncen
-- Hvis der står "Campus Security Manager" - returner "Campus Security Manager"
-- Hvis der står "Vagt" - returner "Vagt"
-- Tag titlen fra overskriften eller "stillingsbetegnelse" feltet
-- ALDRIG opfind eller oversæt titlen
+- Returner KUN jobtitlen på ENGELSK hvis annoncen er på engelsk
+- Brug den PRÆCISE titel som står i annoncen - ALDRIG oversæt
+- Jobtitlen er typisk i starten af annoncen, ofte i første linje eller efter "Role:", "Position:", "Job title:" etc.
+- Kig efter mønstre som "Step into the role of [JOBTITEL]" eller "[JOBTITEL] - Company"
+- Hvis annoncen siger "Campus Security Manager" - returner "Campus Security Manager"
+- Hvis annoncen siger "Security Officer" - returner "Security Officer" 
+- ALDRIG returner "Vagt" medmindre det EKSAKT står i teksten
+- ALDRIG oversæt titlen til dansk
 - Returner max 10 ord`
         },
         {
           role: 'user',
-          content: `Find jobtitlen i denne annonce:\n\n${jobAdText.substring(0, 3000)}`
+          content: `Find jobtitlen i denne jobannonce. Returner KUN titlen, ingen forklaring:\n\n${jobAdText.substring(0, 3000)}`
         }
       ],
       max_tokens: 50,

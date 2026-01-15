@@ -185,29 +185,45 @@ export async function POST(request: NextRequest) {
     // Check early if this is job spejling (choice C with job ad)
     // Job spejling uses step1 (CV), step2 (work profile), and step3 (career analysis)
     const isJobSpejlingRequest = user_choice === 'C' && job_ad_text_or_url;
+    
+    // Pre-extract job title if this is a job spejling request
+    let extractedJobTitle = '';
+    if (isJobSpejlingRequest && job_ad_text_or_url) {
+      extractedJobTitle = await extractJobTitleFromAd(job_ad_text_or_url);
+      console.log('Pre-extracted job title for spejling:', extractedJobTitle);
+    }
 
     // Build the user message
     let userMessage: string;
     
     if (isJobSpejlingRequest) {
-      // CRITICAL: Put job ad FIRST so model reads it before getting biased by CV/profile
-      // The model tends to ignore the job ad if CV comes first
+      // CRITICAL: Pre-extracted job title is now MANDATORY
+      // This prevents the model from using CV titles instead of the actual job ad title
+      const titleInstruction = extractedJobTitle 
+        ? `\n\n⚠️ OBLIGATORISK JOBTITEL: "${extractedJobTitle}"\nDu SKAL bruge PRÆCIS denne titel i job_title feltet. Ingen undtagelser.\n`
+        : '';
+      
       userMessage = `═══════════════════════════════════════════════════════════════
-JOBANNONCE DER SKAL ANALYSERES (LÆS DENNE FØRST!)
+JOBANNONCE DER SKAL ANALYSERES
 ═══════════════════════════════════════════════════════════════
-
+${titleInstruction}
 ${job_ad_text_or_url}
 
 ═══════════════════════════════════════════════════════════════
-VIGTIG INSTRUKTION
+KRITISK INSTRUKTION
 ═══════════════════════════════════════════════════════════════
-
-Du SKAL bruge den PRÆCISE jobtitel og de KONKRETE arbejdsopgaver fra jobannoncen ovenfor.
-Hvis jobannoncen siger "vagt" - så er jobtitlen "Vagt", IKKE "Security Manager" eller lignende.
+${extractedJobTitle ? `
+JOBTITLEN ER ALLEREDE IDENTIFICERET: "${extractedJobTitle}"
+Brug PRÆCIS denne titel i dit JSON output under "job_title".
+Du må IKKE ændre den eller bruge en titel fra brugerens CV.
+` : `
+Læs jobannoncen ovenfor og find den EKSAKTE jobtitel.
+Brug ALDRIG en titel fra brugerens CV - kun fra annoncen.
+`}
 Beskriv jobbet SOM DET STÅR I ANNONCEN - ikke som du tror det "burde" være.
 
 ═══════════════════════════════════════════════════════════════
-BRUGERENS PROFIL (til sammenligning)
+BRUGERENS PROFIL (til sammenligning - IKKE til jobtitel)
 ═══════════════════════════════════════════════════════════════
 
 step1_json (Brugerens CV):
@@ -223,8 +239,8 @@ ${JSON.stringify(step3_json, null, 2)}
 DIN OPGAVE
 ═══════════════════════════════════════════════════════════════
 
-Analysér jobannoncen (øverst) mod brugerens profil. 
-HUSK: Jobtitlen og arbejdsopgaverne skal komme DIREKTE fra jobannoncen - ikke fra brugerens CV.
+Analysér jobannoncen mod brugerens profil.
+${extractedJobTitle ? `HUSK: job_title SKAL være "${extractedJobTitle}" - ingen undtagelser.` : 'HUSK: Jobtitlen skal komme fra jobannoncen, IKKE fra CV.'}
 Returnér en struktureret spejling som JSON.`;
     } else {
       userMessage = `step1_json:
@@ -392,6 +408,15 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
       // Validate and ensure required fields exist
       parsedResponse = validateAndNormalizeResponse(parsedResponse, user_choice, shouldTriggerSpejling);
       
+      // CRITICAL: Override job_title if we pre-extracted it
+      // This ensures the model can't substitute a CV title for the actual job ad title
+      if (isJobSpejlingRequest && extractedJobTitle && parsedResponse.mode === 'job_spejling') {
+        if (parsedResponse.job_title !== extractedJobTitle) {
+          console.log(`Job title mismatch detected! Model returned "${parsedResponse.job_title}" but job ad says "${extractedJobTitle}". Correcting...`);
+          parsedResponse.job_title = extractedJobTitle;
+        }
+      }
+      
     } catch (parseErr) {
       console.error('Failed to parse AI response as JSON:', textContent);
       console.error('Parse error:', parseErr);
@@ -455,6 +480,46 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
       { error: err instanceof Error ? err.message : 'Kunne ikke generere karrierecoach-svar' },
       { status: 500 }
     );
+  }
+}
+
+// Helper function to extract job title from job ad using focused GPT call
+async function extractJobTitleFromAd(jobAdText: string): Promise<string> {
+  try {
+    const response = await getOpenAI().chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: `Du er en præcis tekst-ekstraktor. Din ENESTE opgave er at finde den EKSAKTE jobtitel fra en jobannonce.
+
+REGLER:
+- Returner KUN jobtitlen - ingen forklaring
+- Brug den PRÆCISE titel som står i annoncen
+- Hvis der står "Campus Security Manager" - returner "Campus Security Manager"
+- Hvis der står "Vagt" - returner "Vagt"
+- Tag titlen fra overskriften eller "stillingsbetegnelse" feltet
+- ALDRIG opfind eller oversæt titlen
+- Returner max 10 ord`
+        },
+        {
+          role: 'user',
+          content: `Find jobtitlen i denne annonce:\n\n${jobAdText.substring(0, 3000)}`
+        }
+      ],
+      max_tokens: 50,
+      temperature: 0
+    });
+    
+    const title = response.choices[0]?.message?.content?.trim();
+    if (title && title.length > 0 && title.length < 100) {
+      console.log('Extracted job title:', title);
+      return title;
+    }
+    return '';
+  } catch (err) {
+    console.error('Error extracting job title:', err);
+    return '';
   }
 }
 

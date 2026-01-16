@@ -118,8 +118,8 @@ interface CareerCoachResponse {
   // NY sektion 5: Dit beslutningsspejl
   section5_beslutning?: {
     title: string;
-    giver_mening_hvis: string;
-    skaber_friktion_hvis: string;
+    giver_mening_hvis: string | string[];
+    skaber_friktion_hvis: string | string[];
   };
   // NY sektion 6: Beslutningsopsummering
   section6_beslutningsopsummering?: {

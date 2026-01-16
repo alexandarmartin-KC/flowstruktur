@@ -99,8 +99,8 @@ interface CareerCoachResponse {
   // NY sektion 5: Dit beslutningsspejl
   section5_beslutning?: {
     title: string;
-    giver_mening_hvis: string;
-    skaber_friktion_hvis: string;
+    giver_mening_hvis: string | string[];
+    skaber_friktion_hvis: string | string[];
   };
   // NY sektion 6: Beslutningsopsummering ("Skal jeg søge?")
   section6_beslutningsopsummering?: {
@@ -1758,7 +1758,15 @@ function MulighederPageContent() {
                       <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="text-sm font-medium text-green-700 dark:text-green-400">Dette job giver mening for dig, hvis...</p>
-                        <p className="text-sm text-muted-foreground mt-1">{coachResponse.section5_beslutning.giver_mening_hvis}</p>
+                        {Array.isArray(coachResponse.section5_beslutning.giver_mening_hvis) ? (
+                          <ul className="text-sm text-muted-foreground mt-1 space-y-1">
+                            {coachResponse.section5_beslutning.giver_mening_hvis.map((item, idx) => (
+                              <li key={idx}>{item}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-sm text-muted-foreground mt-1">{coachResponse.section5_beslutning.giver_mening_hvis}</p>
+                        )}
                       </div>
                     </div>
                   )}
@@ -1767,7 +1775,15 @@ function MulighederPageContent() {
                       <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Jobbet kan skabe friktion, hvis...</p>
-                        <p className="text-sm text-muted-foreground mt-1">{coachResponse.section5_beslutning.skaber_friktion_hvis}</p>
+                        {Array.isArray(coachResponse.section5_beslutning.skaber_friktion_hvis) ? (
+                          <ul className="text-sm text-muted-foreground mt-1 space-y-1">
+                            {coachResponse.section5_beslutning.skaber_friktion_hvis.map((item, idx) => (
+                              <li key={idx}>{item}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-sm text-muted-foreground mt-1">{coachResponse.section5_beslutning.skaber_friktion_hvis}</p>
+                        )}
                       </div>
                     </div>
                   )}

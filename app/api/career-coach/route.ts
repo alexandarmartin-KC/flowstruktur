@@ -251,11 +251,11 @@ ${extractedJobTitle ? `
 
 1. I dit JSON output SKAL job_title være: "${extractedJobTitle}"
 2. HELE din analyse SKAL handle om stillingen "${extractedJobTitle}"
-3. section1_overordnet SKAL beskrive "${extractedJobTitle}" stillingen
-4. section2_jobbet SKAL beskrive hvad "${extractedJobTitle}" rollen indebærer
+3. section1_jobkrav SKAL beskrive hvad "${extractedJobTitle}" stillingen kræver baseret på ANNONCEN
+4. section2_match SKAL beskrive match mellem "${extractedJobTitle}" og brugerens profil
 5. IGNORER fuldstændigt brugerens nuværende jobtitel fra CV
 
-ALLE sektioner skal analysere JOBANNONCEN, IKKE brugerens CV-titel.
+ALLE sektioner skal analysere JOBANNONCEN "${extractedJobTitle}", IKKE brugerens CV-titel.
 ` : `
 Læs jobannoncen ovenfor og find den EKSAKTE jobtitel fra annoncen.
 Brug ALDRIG en titel fra brugerens CV.
@@ -286,7 +286,7 @@ Lav en job-spejling der sammenligner "${extractedJobTitle || 'jobbet fra annonce
 ${extractedJobTitle ? `
 
 PÅMINDELSE: job_title = "${extractedJobTitle}" - INGEN UNDTAGELSER
-PÅMINDELSE: section1_overordnet handler om "${extractedJobTitle}"
+PÅMINDELSE: section1_jobkrav handler om "${extractedJobTitle}" - hvad jobbet KRÆVER
 PÅMINDELSE: ALDRIG brug brugerens CV-titel i analysen
 ` : ''}
 Returnér JSON med mode: "job_spejling".`;
@@ -462,22 +462,23 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
         // Log the full response for debugging
         console.log('Job Spejling - extracted title:', extractedJobTitle);
         console.log('Job Spejling - model job_title:', parsedResponse.job_title);
-        console.log('Job Spejling - section1 content preview:', parsedResponse.section1_overordnet?.content?.substring(0, 200));
+        console.log('Job Spejling - section1_jobkrav content preview:', parsedResponse.section1_jobkrav?.content?.substring(0, 200));
         
         if (parsedResponse.job_title !== extractedJobTitle) {
           console.log(`Job title mismatch detected! Model returned "${parsedResponse.job_title}" but job ad says "${extractedJobTitle}". Correcting...`);
           parsedResponse.job_title = extractedJobTitle;
         }
         
-        // Also check if section1_overordnet mentions a wrong job title
+        // Also check if section1_jobkrav mentions a wrong job title
         // This catches cases where the model uses CV title in the analysis content
-        if (parsedResponse.section1_overordnet?.content) {
-          const content = parsedResponse.section1_overordnet.content.toLowerCase();
+        const section1Content = parsedResponse.section1_jobkrav?.content || parsedResponse.section1_overordnet?.content;
+        if (section1Content) {
+          const content = section1Content.toLowerCase();
           const correctTitle = extractedJobTitle.toLowerCase();
           
           // Log warning if content doesn't mention the correct job title
           if (!content.includes(correctTitle) && !content.includes(correctTitle.split(' ')[0])) {
-            console.warn(`WARNING: section1_overordnet may not be about the correct job. Expected to mention "${extractedJobTitle}"`);
+            console.warn(`WARNING: section1 may not be about the correct job. Expected to mention "${extractedJobTitle}"`);
           }
         }
       }

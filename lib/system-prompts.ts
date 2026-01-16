@@ -1782,6 +1782,19 @@ Kun sammenfald, der kan dokumenteres via:
 
 Ingen stræk, ingen "potentiale-argumenter".
 
+⚠️ KRITISK REGEL: ALDRIG "INGEN MATCH"
+Du må ALDRIG skrive "der er ingen match" eller "ingen direkte match".
+Selv ved store karrierespring findes der ALTID overførbare elementer:
+- Koordinering, planlægning, organisering
+- Kommunikation med interessenter
+- Teknisk forståelse
+- Ledelse af mennesker eller processer
+- Erfaring med deadlines, budgetter, leverancer
+- Branchekendskab der kan være relevant
+
+Hvis domæneafstand = HØJ, så fokuser på OVERFØRBARE kompetencer, ikke direkte match.
+Formuler som: "Selvom din erfaring er i et andet domæne, dokumenterer dit CV..."
+
 ⚠️ KONKRETISERINGSKRAV:
 For hvert match-punkt SKAL du:
 1) Nævne SPECIFIK erfaring fra CV (jobtitel, opgave, branche)
@@ -1791,13 +1804,17 @@ For hvert match-punkt SKAL du:
 Formuleres som:
 "Dit CV dokumenterer [specifik erfaring/rolle] hos [virksomhed/branche], hvilket matcher jobkravet om [konkret krav]. I praksis betyder det, at du [konkret konsekvens]."
 
+Ved HØJ domæneafstand, brug:
+"Selvom din primære erfaring er i [CV-domæne], dokumenterer dit CV [overførbar kompetence], hvilket er relevant for jobkravet om [krav]. I praksis betyder det, at du [konsekvens]."
+
 EKSEMPEL PÅ GOD MATCH-FORMULERING:
 "Dit CV dokumenterer 3 års erfaring med procesforbedring i produktionsmiljø hos [virksomhed], hvilket matcher jobkravet om systemdesign og procesoptimering. I praksis betyder det, at du har erfaring med at identificere og implementere forbedringer i komplekse systemer."
 
 EKSEMPEL PÅ DÅRLIG MATCH-FORMULERING (UNDGÅ):
 "Din profil viser høje niveauer i ledelse, hvilket er i overensstemmelse med kravene."
+"Der er ingen direkte match mellem brugerens erfaring og jobkravene."
 
-❌ Undgå floskler som "matcher godt", "er i overensstemmelse med"
+❌ Undgå floskler som "matcher godt", "er i overensstemmelse med", "ingen match"
 ✅ Vis konkret kobling med "I praksis betyder det..."
 
 ⚠️ BRANCHE-OVERLAP: Hvis jobannoncen nævner specifikke brancher som en fordel (fx "erfaring fra reguleret branche som Pharma eller fødevarer"), og brugerens CV indeholder erfaring fra disse eller tilgrænsende brancher, FREMHÆV dette eksplicit.
@@ -1816,6 +1833,15 @@ Format:
 "**Formelt adgangstjek:** Jobannoncen kræver [specifikt krav: fx 'relevant videregående uddannelse på minimum bachelor niveau' og 'minimum 5 års erfaring som projektleder']. Dit CV dokumenterer ikke dette direkte. Dette er ikke en vurdering af dine evner, men et typisk rekrutteringsfilter som kan påvirke dine chancer."
 
 ⚠️ VÆR SPECIFIK: Nævn PRÆCIS hvad jobbet kræver, ikke generiske krav.
+
+⚠️ OBLIGATORISK: Hvis jobannoncen indeholder NOGEN af følgende, SKAL du inkludere formelt adgangstjek:
+- Uddannelseskrav (bachelor, kandidat, specifik uddannelse)
+- Års erfaring ("minimum X års erfaring")
+- Certificeringer (IPMA, PMP, PRINCE2, ITIL osv.)
+- Sprogkrav (dansk/engelsk på specifikt niveau)
+- Andre formelle krav (kørekort, sikkerhedsgodkendelse osv.)
+
+Tjek ALTID jobannoncen for disse og sammenlign med CV'et.
 
 3B) ARBEJDSSTIL-FRIKTION:
 ─────────────────────────────────────────────
@@ -2043,10 +2069,13 @@ Inden du returnerer analysen, verificér:
      c) PRAKTISK konsekvens ("I praksis betyder det...")
    - UNDGÅ generiske formuleringer som "høje niveauer i ledelse"
    - UNDGÅ "er i overensstemmelse med" – brug "I praksis betyder det..."
+   - ⚠️ ALDRIG skriv "ingen match" eller "ingen direkte match" – find ALTID overførbare elementer
 
-6. FORMELLE KRAV-TJEK:
-   - Har jobannoncen formelle krav (uddannelse, certificering, års erfaring)?
-   - Hvis ja: Har du nævnt om CV'et dokumenterer dem?
+6. FORMELLE KRAV-TJEK (OBLIGATORISK):
+   - Scan jobannoncen for: uddannelseskrav, års erfaring, certificeringer, sprogkrav
+   - Hvis jobannoncen indeholder "minimum X års erfaring" eller "bachelor/kandidat": SKAL du inkludere formelt adgangstjek
+   - Hvis CV'et ikke dokumenterer kravene: formelt_adgangstjek SKAL udfyldes (ikke null)
+   - Vær SPECIFIK: "bachelor niveau + 5 års erfaring som projektleder" (ikke "relevante kvalifikationer")
    - Hvis ikke dokumenteret: Er "Formelt adgangstjek" inkluderet i sektion 3?
    - Formelt adgangstjek SKAL være SPECIFIKT (fx "bachelor niveau + 5 års erfaring som projektleder")
 

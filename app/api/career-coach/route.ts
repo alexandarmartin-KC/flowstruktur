@@ -197,51 +197,76 @@ export async function POST(request: NextRequest) {
     let userMessage: string;
     
     if (isJobSpejlingRequest) {
-      // CRITICAL: Pre-extracted job title is now MANDATORY
-      // This prevents the model from using CV titles instead of the actual job ad title
-      const titleInstruction = extractedJobTitle 
-        ? `\n\n⚠️ OBLIGATORISK JOBTITEL: "${extractedJobTitle}"\nDu SKAL bruge PRÆCIS denne titel i job_title feltet. Ingen undtagelser.\n`
-        : '';
+      // CRITICAL: Structure message to prevent model confusion
+      // 1. Job ad FIRST with extracted title prominently displayed
+      // 2. Clear separation between job ad and user profile
+      // 3. User profile LAST to prevent title contamination
       
-      userMessage = `═══════════════════════════════════════════════════════════════
-JOBANNONCE DER SKAL ANALYSERES
-═══════════════════════════════════════════════════════════════
-${titleInstruction}
-${job_ad_text_or_url}
+      userMessage = `════════════════════════════════════════════════════════════════════════
+████ JOBANNONCE - DU ANALYSERER DETTE JOB ████
+════════════════════════════════════════════════════════════════════════
 
-═══════════════════════════════════════════════════════════════
-KRITISK INSTRUKTION
-═══════════════════════════════════════════════════════════════
 ${extractedJobTitle ? `
-JOBTITLEN ER ALLEREDE IDENTIFICERET: "${extractedJobTitle}"
-Brug PRÆCIS denne titel i dit JSON output under "job_title".
-Du må IKKE ændre den eller bruge en titel fra brugerens CV.
+████████████████████████████████████████████████████████████████████████
+   JOBTITEL FRA ANNONCEN: "${extractedJobTitle}"
+████████████████████████████████████████████████████████████████████████
+
+DENNE TITEL ER ALLEREDE VERIFICERET. DU SKAL BRUGE PRÆCIS DENNE TITEL.
+ALT ANALYSE SKAL HANDLE OM DETTE JOB: "${extractedJobTitle}"
+
+` : ''}
+JOBANNONCENS FULDE TEKST:
+---
+${job_ad_text_or_url}
+---
+
+════════════════════════════════════════════════════════════════════════
+████ INSTRUKTION ████
+════════════════════════════════════════════════════════════════════════
+
+${extractedJobTitle ? `
+⚠️ KRITISK: JOBTITLEN ER "${extractedJobTitle}"
+
+1. I dit JSON output SKAL job_title være: "${extractedJobTitle}"
+2. HELE din analyse SKAL handle om stillingen "${extractedJobTitle}"
+3. section1_overordnet SKAL beskrive "${extractedJobTitle}" stillingen
+4. section2_jobbet SKAL beskrive hvad "${extractedJobTitle}" rollen indebærer
+5. IGNORER fuldstændigt brugerens nuværende jobtitel fra CV
+
+ALLE sektioner skal analysere JOBANNONCEN, IKKE brugerens CV-titel.
 ` : `
-Læs jobannoncen ovenfor og find den EKSAKTE jobtitel.
-Brug ALDRIG en titel fra brugerens CV - kun fra annoncen.
+Læs jobannoncen ovenfor og find den EKSAKTE jobtitel fra annoncen.
+Brug ALDRIG en titel fra brugerens CV.
 `}
-Beskriv jobbet SOM DET STÅR I ANNONCEN - ikke som du tror det "burde" være.
 
-═══════════════════════════════════════════════════════════════
-BRUGERENS PROFIL (til sammenligning - IKKE til jobtitel)
-═══════════════════════════════════════════════════════════════
+════════════════════════════════════════════════════════════════════════
+████ BRUGERENS BAGGRUND (KUN TIL SAMMENLIGNING) ████
+════════════════════════════════════════════════════════════════════════
 
-step1_json (Brugerens CV):
+BEMÆRK: Nedenfor er brugerens profil. Brug KUN til at sammenligne med jobbet.
+JOBTITLEN KOMMER FRA ANNONCEN OVENFOR - ALDRIG fra dataen nedenfor.
+
+Brugerens CV (step1_json):
 ${JSON.stringify(step1_json, null, 2)}
 
-step2_json (Brugerens arbejdsprofil / 40 spørgsmål + scores):
+Brugerens arbejdsprofil (step2_json):
 ${JSON.stringify(step2_json, null, 2)}
 
-step3_json (Brugerens samlede karriereanalyse):
+Brugerens karriereanalyse (step3_json):
 ${JSON.stringify(step3_json, null, 2)}
 
-═══════════════════════════════════════════════════════════════
-DIN OPGAVE
-═══════════════════════════════════════════════════════════════
+════════════════════════════════════════════════════════════════════════
+████ DIN OPGAVE ████
+════════════════════════════════════════════════════════════════════════
 
-Analysér jobannoncen mod brugerens profil.
-${extractedJobTitle ? `HUSK: job_title SKAL være "${extractedJobTitle}" - ingen undtagelser.` : 'HUSK: Jobtitlen skal komme fra jobannoncen, IKKE fra CV.'}
-Returnér en struktureret spejling som JSON.`;
+Lav en job-spejling der sammenligner "${extractedJobTitle || 'jobbet fra annoncen'}" med brugerens profil.
+${extractedJobTitle ? `
+
+PÅMINDELSE: job_title = "${extractedJobTitle}" - INGEN UNDTAGELSER
+PÅMINDELSE: section1_overordnet handler om "${extractedJobTitle}"
+PÅMINDELSE: ALDRIG brug brugerens CV-titel i analysen
+` : ''}
+Returnér JSON med mode: "job_spejling".`;
     } else {
       userMessage = `step1_json:
 ${JSON.stringify(step1_json, null, 2)}
@@ -411,9 +436,26 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
       // CRITICAL: Override job_title if we pre-extracted it
       // This ensures the model can't substitute a CV title for the actual job ad title
       if (isJobSpejlingRequest && extractedJobTitle && parsedResponse.mode === 'job_spejling') {
+        // Log the full response for debugging
+        console.log('Job Spejling - extracted title:', extractedJobTitle);
+        console.log('Job Spejling - model job_title:', parsedResponse.job_title);
+        console.log('Job Spejling - section1 content preview:', parsedResponse.section1_overordnet?.content?.substring(0, 200));
+        
         if (parsedResponse.job_title !== extractedJobTitle) {
           console.log(`Job title mismatch detected! Model returned "${parsedResponse.job_title}" but job ad says "${extractedJobTitle}". Correcting...`);
           parsedResponse.job_title = extractedJobTitle;
+        }
+        
+        // Also check if section1_overordnet mentions a wrong job title
+        // This catches cases where the model uses CV title in the analysis content
+        if (parsedResponse.section1_overordnet?.content) {
+          const content = parsedResponse.section1_overordnet.content.toLowerCase();
+          const correctTitle = extractedJobTitle.toLowerCase();
+          
+          // Log warning if content doesn't mention the correct job title
+          if (!content.includes(correctTitle) && !content.includes(correctTitle.split(' ')[0])) {
+            console.warn(`WARNING: section1_overordnet may not be about the correct job. Expected to mention "${extractedJobTitle}"`);
+          }
         }
       }
       

@@ -136,7 +136,6 @@ interface CareerCoachResponse {
       mindre_af: string[];
     };
     kontrolspoergsmaal?: string;
-    naeste_skridt?: string[];
   };
   closing_statement?: string;
   // Legacy job spejling fields (backwards compatibility with old coach structure)

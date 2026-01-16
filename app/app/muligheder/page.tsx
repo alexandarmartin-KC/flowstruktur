@@ -117,7 +117,6 @@ interface CareerCoachResponse {
       mindre_af: string[];
     };
     kontrolspoergsmaal?: string;
-    naeste_skridt?: string[];
   };
   closing_statement?: string;
   // Legacy (backwards compatibility)
@@ -2015,23 +2014,6 @@ function MulighederPageContent() {
                     <p className="text-base italic text-slate-700 dark:text-slate-300">
                       &ldquo;{coachResponse.section6_beslutningsopsummering.kontrolspoergsmaal}&rdquo;
                     </p>
-                  </div>
-                )}
-
-                {/* Næste skridt */}
-                {!coachResponse.section6_beslutningsopsummering.excluded && coachResponse.section6_beslutningsopsummering.naeste_skridt && coachResponse.section6_beslutningsopsummering.naeste_skridt.length > 0 && (
-                  <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <h4 className="font-semibold text-sm text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">
-                      Mulige næste skridt
-                    </h4>
-                    <div className="grid gap-2">
-                      {coachResponse.section6_beslutningsopsummering.naeste_skridt.map((step, idx) => (
-                        <div key={idx} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600">
-                          <span className="text-slate-400 font-medium">{idx + 1}.</span>
-                          <span className="text-sm text-slate-700 dark:text-slate-300">{step}</span>
-                        </div>
-                      ))}
-                    </div>
                   </div>
                 )}
               </div>

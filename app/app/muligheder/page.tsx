@@ -96,6 +96,17 @@ interface CareerCoachResponse {
     title?: string;
     content?: string;
   };
+  // NY sektion 3B: Overgangsstrategi (kun hvis karrierespring er inkluderet)
+  section3b_overgangsstrategi?: {
+    included: boolean;
+    title?: string;
+    intro?: string;
+    strategies?: Array<{
+      title: string;
+      description: string;
+    }>;
+    closing?: string;
+  };
   // NY sektion 4: Hvad dette job vil betyde (Mere af/Mindre af)
   section4_konsekvens?: { 
     title: string; 
@@ -1723,6 +1734,41 @@ function MulighederPageContent() {
                     {coachResponse.section3a_karrierespring.content}
                   </p>
                 </div>
+              </div>
+            )}
+
+            {/* Section 3B: Overgangsstrategi (kun hvis karrierespring er inkluderet) */}
+            {coachResponse.section3b_overgangsstrategi?.included && coachResponse.section3b_overgangsstrategi.strategies && (
+              <div className="space-y-4 bg-emerald-50/50 dark:bg-emerald-950/20 p-4 rounded-lg border border-emerald-300 dark:border-emerald-700">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 text-xs font-bold px-2 py-1 rounded">→</span>
+                  {coachResponse.section3b_overgangsstrategi.title || 'Overgangsstrategi – hvis du vil gøre springet realistisk'}
+                </h4>
+                
+                {coachResponse.section3b_overgangsstrategi.intro && (
+                  <p className="text-sm text-muted-foreground pl-8">
+                    {coachResponse.section3b_overgangsstrategi.intro}
+                  </p>
+                )}
+                
+                <div className="space-y-3 pl-8">
+                  {coachResponse.section3b_overgangsstrategi.strategies.map((strategy, idx) => (
+                    <div key={idx} className="bg-white dark:bg-gray-800 p-3 rounded-md border border-emerald-200 dark:border-emerald-800">
+                      <h5 className="font-medium text-sm text-emerald-800 dark:text-emerald-200 mb-1">
+                        {idx + 1}. {strategy.title}
+                      </h5>
+                      <p className="text-sm text-muted-foreground">
+                        {strategy.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                
+                {coachResponse.section3b_overgangsstrategi.closing && (
+                  <p className="text-sm text-emerald-800 dark:text-emerald-200 pl-8 italic">
+                    {coachResponse.section3b_overgangsstrategi.closing}
+                  </p>
+                )}
               </div>
             )}
 

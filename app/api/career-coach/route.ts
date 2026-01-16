@@ -114,6 +114,17 @@ interface CareerCoachResponse {
     title?: string;
     content?: string;
   };
+  // NY sektion 3B: Overgangsstrategi (kun hvis karrierespring er inkluderet)
+  section3b_overgangsstrategi?: {
+    included: boolean;
+    title?: string;
+    intro?: string;
+    strategies?: Array<{
+      title: string;
+      description: string;
+    }>;
+    closing?: string;
+  };
   section4_krav?: { title: string; content: string; points?: string[] };
   // NY sektion 4: Hvad dette job vil betyde (Mere af/Mindre af)
   section4_konsekvens?: { 

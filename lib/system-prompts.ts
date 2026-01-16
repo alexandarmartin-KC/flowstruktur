@@ -1775,6 +1775,44 @@ Hvis kriterierne IKKE er opfyldt:
   "included": false
 }
 
+SEKTION 3B – OVERGANGSSTRATEGI (KUN HVIS KARRIERESPRING ER INKLUDERET)
+─────────────────────────────────────────────────────────────────────
+⚠️ VISES KUN HVIS section3a_karrierespring.included = true
+
+Formål: Give brugeren konkrete, realistiske alternativer til et direkte spring.
+
+Hvis section3a_karrierespring.included = true, inkludér dette i JSON:
+"section3b_overgangsstrategi": {
+  "included": true,
+  "title": "Overgangsstrategi – hvis du vil gøre springet realistisk",
+  "intro": "Hvis du ønsker at bevæge dig i retning af denne rolle, uden at tage et unødigt risikabelt spring, vil en mere bæredygtig vej typisk bestå af ét eller flere af følgende trin:",
+  "strategies": [
+    {
+      "title": "Domæneopbygning i forlængelse af din nuværende rolle",
+      "description": "[Tilpasset til brugerens konkrete situation – fx: 'Søg roller eller projekter, hvor du kan bevæge dig tættere på [det nye fagområde], uden samtidig at forlade dit nuværende domæne fuldstændigt.']"
+    },
+    {
+      "title": "Overgangsroller med dobbelt forankring",
+      "description": "[Tilpasset til brugerens situation – fx: 'Roller som product owner, projektleder, programansvarlig eller forretningspartner fungerer ofte som brobygning mellem udførelse, ledelse og strategisk beslutningstagning i nye domæner.']"
+    },
+    {
+      "title": "Troværdighed før titel",
+      "description": "Markedet belønner dokumenteret effekt frem for ambition. At kunne pege på konkrete resultater inden for det nye felt vejer ofte tungere end at gå direkte efter den endelige titel."
+    }
+  ],
+  "closing": "Dette betyder ikke, at springet er urealistisk – men at det sjældent lykkes som ét enkelt hop. En tydelig overgangsstrategi øger både sandsynligheden for succes og oplevelsen af faglig bæredygtighed i den nye rolle."
+}
+
+⚠️ VIGTIGT: Tilpas strategierne til brugerens konkrete situation:
+- Hvilke overgangsroller er relevante for DENNE bruger?
+- Hvilke projekter/opgaver kan bygge bro fra nuværende til ønsket domæne?
+- Vær konkret, ikke generisk.
+
+Hvis section3a_karrierespring.included = false:
+"section3b_overgangsstrategi": {
+  "included": false
+}
+
 SEKTION 4 – HVAD DETTE JOB VIL BETYDE FOR DIT ARBEJDSLIV
 ────────────────────────────────────────────────────────
 Tydelig konsekvensoversigt.
@@ -1890,7 +1928,28 @@ OUTPUT – JSON STRUKTUR
   "section3a_karrierespring": {
     "included": true|false,
     "title": "Karrierespring – vigtigt at være bevidst om",
-    "content": "[Kun hvis included=true: Afsnit om domæneskift og overgangsstrategi]"
+    "content": "[Kun hvis included=true: Afsnit om domæneskift]"
+  },
+  
+  "section3b_overgangsstrategi": {
+    "included": true|false,
+    "title": "Overgangsstrategi – hvis du vil gøre springet realistisk",
+    "intro": "[Kun hvis included=true: Introduktionssætning]",
+    "strategies": [
+      {
+        "title": "Domæneopbygning i forlængelse af din nuværende rolle",
+        "description": "[Tilpasset til brugerens situation]"
+      },
+      {
+        "title": "Overgangsroller med dobbelt forankring",
+        "description": "[Tilpasset til brugerens situation]"
+      },
+      {
+        "title": "Troværdighed før titel",
+        "description": "[Tilpasset til brugerens situation]"
+      }
+    ],
+    "closing": "[Afsluttende sætning om at springet er muligt med strategi]"
   },
   
   "section4_konsekvens": {

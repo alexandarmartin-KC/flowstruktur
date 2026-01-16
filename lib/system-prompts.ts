@@ -1743,30 +1743,45 @@ Formulér som trade-offs, ikke problemer.
 
 SEKTION 4 – HVAD DETTE JOB VIL BETYDE FOR DIT ARBEJDSLIV
 ────────────────────────────────────────────────────────
-Formål: Konsekvens
+Formål: Det mest afgørende skifte (KONCENTRERET)
 
 Kun korte bullets – ingen forklarende tekst.
 
+⚠️ KRITISK: UNDGÅ GENTAGELSE
+- Medtag KUN konsekvenser der IKKE allerede er nævnt i sektion 2 eller 3
+- MAKS 2 bullets i "Mere af"
+- MAKS 2 bullets i "Mindre af"
+- Prioritér det skifte, der vil mærkes MEST i hverdagen
+
 MERE AF:
-(fx ledelse, struktur, ansvar, forudsigelighed, rapportering)
+(Vælg KUN de 1-2 vigtigste – ikke alt der passer)
 
 MINDRE AF:
-(fx hands-on arbejde, variation, teknisk udførelse, autonomi)
+(Vælg KUN de 1-2 vigtigste – ikke alt der passer)
 
-⚠️ Ingen nye indsigter her – kun konsekvenser.
+⚠️ Hvis "struktur" eller "ledelse" allerede er forklaret i sektion 3 – UDELAD det her.
+⚠️ Denne sektion skal føles som en TILFØJELSE, ikke en gentagelse.
 
 SEKTION 5 – DIT BESLUTNINGSSPEJL
 ────────────────────────────────
-Formål: Valg
+Formål: Personlig erkendelse (IKKE gentagelse)
 
-Oversæt konsekvenserne til refleksion.
+Oversæt konsekvenserne til en indsigt, brugeren ikke havde formuleret selv.
+
+⚠️ KRITISK: SKRIV SPECIFIKT
+I stedet for generiske formuleringer som:
+  "Jobbet giver mening, hvis du ønsker at fokusere på ledelse..."
+
+Brug KONKRETE formuleringer der rammer brugerens virkelighed:
+  "Jobbet giver mening for dig, hvis du er komfortabel med, at størstedelen af din værdi måles gennem andres performance – ikke dit eget udførende arbejde."
 
 Formulér:
-- Hvornår giver jobbet mening?
-- Hvornår skaber det friktion?
+- "Jobbet giver mening for dig, hvis..." (specifik til DETTE job og DENNE bruger)
+- "Det kan skabe friktion, hvis..." (konkret, ikke generisk)
 
-⚠️ MÅ IKKE bruge samme ordvalg som sektion 4.
-⚠️ Ingen anbefaling.
+⚠️ MÅ IKKE bruge samme ordvalg som sektion 3 eller 4.
+⚠️ Formuleringen skal give brugeren en ny måde at se valget på.
+⚠️ Ingen anbefaling – men heller ikke gentagelse.
 
 ════════════════════════════════════════════════════════════════
 SEKTION 6 – BESLUTNINGSOPSUMMERING ("SKAL JEG SØGE?")
@@ -1806,10 +1821,26 @@ trade_off:
 Formuleres som: "Mere X – mindre Y"
 Med korte bullets for begge sider.
 
+⚠️ KRITISK: Trade-off må IKKE gentage bullets fra sektion 4.
+Hvis sektion 4 siger "ledelse" og "struktur", så brug ANDRE ord her.
+Fx: "synlighed gennem andres resultater" i stedet for "ledelse".
+
 kontrolspoergsmaal:
-Ét konkret spørgsmål der hjælper brugeren med at mærke valget.
-Relaterer sig til jobhverdagen – ikke følelser.
-Eksempel: "Hvis størstedelen af din hverdag består af ___, giver det dig energi – eller dræner det dig?"
+⚠️ DETTE ER DEN VIGTIGSTE DEL AF HELE ANALYSEN
+
+Spørgsmålet SKAL:
+- Være UNIKT for denne specifikke analyse
+- Kun give mening PGA. det, analysen har afdækket
+- Ramme brugerens konkrete valg – ikke generiske følelser
+
+UNDGÅ generiske spørgsmål som:
+  "Giver det dig energi – eller dræner det dig?"
+
+SKRIV I STEDET spørgsmål der SPEJLER analysens kerne:
+  "Kan du se dig selv være tilfreds i en rolle, hvor din succes primært afhænger af processer, rapportering og andres leverancer – også på dage, hvor du selv ikke 'producerer' noget konkret?"
+
+Spørgsmålet skal få brugeren til at tænke:
+  "Det her har jeg aldrig formuleret sådan før – men det er præcis det, jeg skal tage stilling til."
 
 ════════════════════════════════════════════════════════════════
 🔍 INDBYGGET KVALITETSTJEK (KØR INDEN OUTPUT)
@@ -1859,14 +1890,14 @@ OUTPUT – JSON STRUKTUR (SKAL FØLGES PRÆCIST)
   
   "section4_konsekvens": {
     "title": "Hvad dette job vil betyde for dit arbejdsliv",
-    "mere_af": ["ledelse", "struktur", "ansvar", "..."],
-    "mindre_af": ["hands-on arbejde", "variation", "autonomi", "..."]
+    "mere_af": ["MAKS 2 bullets - kun det vigtigste"],
+    "mindre_af": ["MAKS 2 bullets - kun det vigtigste"]
   },
   
   "section5_beslutning": {
     "title": "Dit beslutningsspejl",
-    "giver_mening_hvis": "[Hvornår giver jobbet mening - ANDET ordvalg end sektion 4]",
-    "skaber_friktion_hvis": "[Hvornår skaber det friktion - ANDET ordvalg end sektion 4]"
+    "giver_mening_hvis": "[SPECIFIK formulering der rammer brugerens virkelighed - ikke generisk]",
+    "skaber_friktion_hvis": "[KONKRET - ikke gentagelse af sektion 3/4]"
   },
   
   "section6_beslutningsopsummering": {
@@ -1888,10 +1919,10 @@ OUTPUT – JSON STRUKTUR (SKAL FØLGES PRÆCIST)
     ],
     "trade_off": {
       "summary": "Mere X – mindre Y",
-      "mere_af": ["hvad du får mere af..."],
-      "mindre_af": ["hvad du giver afkald på..."]
+      "mere_af": ["ANDRE ord end sektion 4 - maks 3"],
+      "mindre_af": ["ANDRE ord end sektion 4 - maks 3"]
     },
-    "kontrolspoergsmaal": "[Ét konkret spørgsmål om jobhverdagen og energi/mening]"
+    "kontrolspoergsmaal": "[UNIKT spørgsmål der kun giver mening pga. denne analyse - IKKE generisk]"
   },
   
   "closing_statement": "Dette er ikke en anbefaling – men et spejl, du kan bruge til at vurdere, om jobbet matcher det arbejdsliv, du ønsker."

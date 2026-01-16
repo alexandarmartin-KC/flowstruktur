@@ -81,20 +81,24 @@ interface CareerCoachResponse {
   patterns?: string[];
   unclear?: string[];
   next_step_explanation?: string;
-  // Job spejling fields (new structure)
+  // Job spejling fields (current structure - neutral analytiker)
   job_title?: string;
-  section1_overordnet?: { title: string; content: string };
-  section2_jobbet?: { title: string; content: string; points: string[] };
-  section3_match?: { title: string; content: string; points: string[] };
-  section4_centrale?: { title: string; content: string };
-  section5_krav?: { title: string; content: string; points: string[] };
+  job_category?: string;
+  section1_jobkrav?: { title: string; content: string; points?: string[] };
+  section2_match?: { title: string; content: string; points?: string[] };
+  section3_opmærksomhed?: { title: string; content: string; points?: string[] };
+  section4_krav?: { title: string; content: string; points?: string[] };
   closing_statement?: string;
-  // Legacy job spejling fields (backwards compatibility)
-  section1_jobkrav?: { title: string; subtitle?: string; content: string };
-  section2_sammenfald?: { title: string; content: string; points: string[] };
-  section3_opmaerksomhed?: { title: string; content: string; points: string[] };
-  section4_uafklaret?: { title: string; content: string; points: string[] };
-  section5_refleksion?: { title: string; questions: string[] };
+  // Legacy job spejling fields (backwards compatibility with old coach structure)
+  section1_overordnet?: { title: string; content: string };
+  section2_jobbet?: { title: string; content: string; points?: string[] };
+  section3_match_legacy?: { title: string; content: string; points?: string[] };
+  section4_centrale?: { title: string; content: string };
+  section5_krav?: { title: string; content: string; points?: string[] };
+  section2_sammenfald?: { title: string; content: string; points?: string[] };
+  section3_opmaerksomhed?: { title: string; content: string; points?: string[] };
+  section4_uafklaret?: { title: string; content: string; points?: string[] };
+  section5_refleksion?: { title: string; questions?: string[] };
 }
 
 // Lag 2 response structure (brugersprog version)
@@ -1547,7 +1551,7 @@ function MulighederPageContent() {
       )}
 
       {/* JOB SPEJLING: Spejling af valgt job – set i lyset af din samlede profil */}
-      {showJobSpejling && coachResponse && (coachResponse.mode === 'job_spejling' || coachResponse.section1_overordnet || coachResponse.section1_jobkrav) && (
+      {showJobSpejling && coachResponse && (coachResponse.mode === 'job_spejling' || coachResponse.section1_jobkrav) && (
         <Card className="border-indigo-200 bg-indigo-50/50 dark:border-indigo-900 dark:bg-indigo-950/20">
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -1558,15 +1562,130 @@ function MulighederPageContent() {
               Set i lyset af din samlede profil
             </CardDescription>
             {coachResponse.job_title && (
-              <p className="text-base font-medium mt-2">
-                {coachResponse.job_title}
-              </p>
+              <div className="mt-2">
+                <p className="text-base font-medium">
+                  {coachResponse.job_title}
+                </p>
+                {coachResponse.job_category && (
+                  <span className="inline-block mt-1 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded">
+                    {coachResponse.job_category}
+                  </span>
+                )}
+              </div>
             )}
           </CardHeader>
           <CardContent className="space-y-8">
             
-            {/* NEW Section 1: Overordnet vurdering */}
-            {coachResponse.section1_overordnet && (
+            {/* Section 1: Hvad jobbet reelt kræver (FAKTUEL AFLÆSNING) */}
+            {coachResponse.section1_jobkrav && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded">1</span>
+                  {coachResponse.section1_jobkrav.title}
+                </h4>
+                {coachResponse.section1_jobkrav.content && (
+                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {coachResponse.section1_jobkrav.content}
+                    </p>
+                  </div>
+                )}
+                {coachResponse.section1_jobkrav.points && coachResponse.section1_jobkrav.points.length > 0 && (
+                  <ul className="space-y-2 pl-8">
+                    {coachResponse.section1_jobkrav.points.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm bg-gray-50 dark:bg-gray-950/30 p-2.5 rounded">
+                        <span className="text-gray-500 font-bold">•</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* Section 2: Hvor der er et klart match */}
+            {coachResponse.section2_match && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold px-2 py-1 rounded">2</span>
+                  {coachResponse.section2_match.title}
+                </h4>
+                {coachResponse.section2_match.content && (
+                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {coachResponse.section2_match.content}
+                    </p>
+                  </div>
+                )}
+                {coachResponse.section2_match.points && coachResponse.section2_match.points.length > 0 && (
+                  <ul className="space-y-2 pl-8">
+                    {coachResponse.section2_match.points.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm bg-green-50 dark:bg-green-950/30 p-2.5 rounded">
+                        <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* Section 3: Opmærksomhedspunkter (IKKE SVAGHEDER) */}
+            {coachResponse.section3_opmærksomhed && (
+              <div className="space-y-3 bg-amber-50/50 dark:bg-amber-950/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 text-xs font-bold px-2 py-1 rounded">3</span>
+                  {coachResponse.section3_opmærksomhed.title}
+                </h4>
+                {coachResponse.section3_opmærksomhed.content && (
+                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {coachResponse.section3_opmærksomhed.content}
+                    </p>
+                  </div>
+                )}
+                {coachResponse.section3_opmærksomhed.points && coachResponse.section3_opmærksomhed.points.length > 0 && (
+                  <ul className="space-y-2 pl-8">
+                    {coachResponse.section3_opmærksomhed.points.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm">
+                        <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* Section 4: Hvad jobbet konkret vil kræve af dig */}
+            {coachResponse.section4_krav && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2 py-1 rounded">4</span>
+                  {coachResponse.section4_krav.title}
+                </h4>
+                {coachResponse.section4_krav.content && (
+                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {coachResponse.section4_krav.content}
+                    </p>
+                  </div>
+                )}
+                {coachResponse.section4_krav.points && coachResponse.section4_krav.points.length > 0 && (
+                  <ul className="space-y-2 pl-8">
+                    {coachResponse.section4_krav.points.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm">
+                        <span className="text-gray-500 font-bold">→</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* LEGACY: Section 1 Overordnet (old coach structure) */}
+            {!coachResponse.section1_jobkrav && coachResponse.section1_overordnet && (
               <div className="space-y-3 bg-indigo-100/50 dark:bg-indigo-900/30 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800">
                 <h4 className="font-semibold text-base flex items-center gap-2">
                   <span className="bg-indigo-200 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded">1</span>
@@ -1580,8 +1699,8 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* NEW Section 2: Hvad jobbet reelt indebærer */}
-            {coachResponse.section2_jobbet && (
+            {/* LEGACY: Section 2 Jobbet (old coach structure) */}
+            {!coachResponse.section1_jobkrav && coachResponse.section2_jobbet && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-base flex items-center gap-2">
                   <span className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2 py-1 rounded">2</span>
@@ -1607,35 +1726,8 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* NEW Section 3: Hvor der er et klart match */}
-            {coachResponse.section3_match && (
-              <div className="space-y-3">
-                <h4 className="font-semibold text-base flex items-center gap-2">
-                  <span className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold px-2 py-1 rounded">3</span>
-                  {coachResponse.section3_match.title}
-                </h4>
-                {coachResponse.section3_match.content && (
-                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {coachResponse.section3_match.content}
-                    </p>
-                  </div>
-                )}
-                {coachResponse.section3_match.points && coachResponse.section3_match.points.length > 0 && (
-                  <ul className="space-y-2 pl-8">
-                    {coachResponse.section3_match.points.map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm bg-green-50 dark:bg-green-950/30 p-2.5 rounded">
-                        <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-
-            {/* NEW Section 4: Det centrale opmærksomhedspunkt */}
-            {coachResponse.section4_centrale && (
+            {/* LEGACY: Section 4 Centrale (old coach structure) */}
+            {!coachResponse.section3_opmærksomhed && coachResponse.section4_centrale && (
               <div className="space-y-3 bg-amber-50/50 dark:bg-amber-950/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
                 <h4 className="font-semibold text-base flex items-center gap-2">
                   <span className="bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 text-xs font-bold px-2 py-1 rounded">4</span>
@@ -1649,8 +1741,8 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* NEW Section 5: Hvad jobbet konkret vil kræve */}
-            {coachResponse.section5_krav && (
+            {/* LEGACY: Section 5 Krav (old coach structure) */}
+            {!coachResponse.section4_krav && coachResponse.section5_krav && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-base flex items-center gap-2">
                   <span className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2 py-1 rounded">5</span>
@@ -1669,125 +1761,6 @@ function MulighederPageContent() {
                       <li key={idx} className="flex items-start gap-2 text-sm">
                         <span className="text-gray-500 font-bold">→</span>
                         <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-
-            {/* LEGACY Section 1: Hvad jobbet reelt kræver (backwards compatibility) */}
-            {!coachResponse.section1_overordnet && coachResponse.section1_jobkrav && (
-              <div className="space-y-3">
-                <h4 className="font-semibold text-base flex items-center gap-2">
-                  <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded">1</span>
-                  {coachResponse.section1_jobkrav.title}
-                </h4>
-                {coachResponse.section1_jobkrav.subtitle && (
-                  <p className="text-sm text-muted-foreground pl-8">{coachResponse.section1_jobkrav.subtitle}</p>
-                )}
-                <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
-                  <p className="text-base leading-relaxed text-foreground">
-                    {coachResponse.section1_jobkrav.content}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* LEGACY Section 2: Tydelige sammenfald (backwards compatibility) */}
-            {!coachResponse.section3_match && coachResponse.section2_sammenfald && (
-              <div className="space-y-3">
-                <h4 className="font-semibold text-base flex items-center gap-2">
-                  <span className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold px-2 py-1 rounded">2</span>
-                  {coachResponse.section2_sammenfald.title}
-                </h4>
-                {coachResponse.section2_sammenfald.content && (
-                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {coachResponse.section2_sammenfald.content}
-                    </p>
-                  </div>
-                )}
-                {coachResponse.section2_sammenfald.points && coachResponse.section2_sammenfald.points.length > 0 && (
-                  <ul className="space-y-2 pl-8">
-                    {coachResponse.section2_sammenfald.points.map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm bg-green-50 dark:bg-green-950/30 p-2.5 rounded">
-                        <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-
-            {/* LEGACY Section 3: Opmærksomhedspunkter (backwards compatibility) */}
-            {!coachResponse.section4_centrale && coachResponse.section3_opmaerksomhed && (
-              <div className="space-y-3 bg-amber-50/50 dark:bg-amber-950/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
-                <h4 className="font-semibold text-base flex items-center gap-2">
-                  <span className="bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 text-xs font-bold px-2 py-1 rounded">3</span>
-                  {coachResponse.section3_opmaerksomhed.title}
-                </h4>
-                {coachResponse.section3_opmaerksomhed.content && (
-                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {coachResponse.section3_opmaerksomhed.content}
-                    </p>
-                  </div>
-                )}
-                {coachResponse.section3_opmaerksomhed.points && coachResponse.section3_opmaerksomhed.points.length > 0 && (
-                  <ul className="space-y-2 pl-8">
-                    {coachResponse.section3_opmaerksomhed.points.map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm">
-                        <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-
-            {/* LEGACY Section 4: Hvad der ikke kan vurderes (backwards compatibility) */}
-            {!coachResponse.section5_krav && coachResponse.section4_uafklaret && (
-              <div className="space-y-3 bg-gray-50 dark:bg-gray-950/20 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                <h4 className="font-semibold text-base flex items-center gap-2">
-                  <span className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2 py-1 rounded">4</span>
-                  {coachResponse.section4_uafklaret.title}
-                </h4>
-                {coachResponse.section4_uafklaret.content && (
-                  <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {coachResponse.section4_uafklaret.content}
-                    </p>
-                  </div>
-                )}
-                {coachResponse.section4_uafklaret.points && coachResponse.section4_uafklaret.points.length > 0 && (
-                  <ul className="space-y-2 pl-8">
-                    {coachResponse.section4_uafklaret.points.map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm">
-                        <span className="text-gray-500 mt-0.5">?</span>
-                        <span className="italic text-muted-foreground">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-
-            {/* LEGACY Section 5: Afklarende refleksion (backwards compatibility) */}
-            {coachResponse.section5_refleksion && (
-              <div className="space-y-3 bg-indigo-50 dark:bg-indigo-950/20 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800">
-                <h4 className="font-semibold text-base flex items-center gap-2">
-                  <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded">5</span>
-                  {coachResponse.section5_refleksion.title}
-                </h4>
-                {coachResponse.section5_refleksion.questions && coachResponse.section5_refleksion.questions.length > 0 && (
-                  <ul className="space-y-3 pl-8">
-                    {coachResponse.section5_refleksion.questions.map((question, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm">
-                        <MessageCircle className="h-4 w-4 text-indigo-600 mt-0.5 flex-shrink-0" />
-                        <span className="font-medium">{question}</span>
                       </li>
                     ))}
                   </ul>

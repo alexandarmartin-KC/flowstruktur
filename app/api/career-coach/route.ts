@@ -187,7 +187,15 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Debug log incoming request
-    console.log('Career coach request:', { user_choice, switch_distance, request_job_examples, hasAnswers: user_answers?.length || 0 });
+    console.log('Career coach request:', { 
+      user_choice, 
+      switch_distance, 
+      request_job_examples, 
+      hasAnswers: user_answers?.length || 0,
+      hasJobAd: !!job_ad_text_or_url,
+      jobAdLength: job_ad_text_or_url?.length || 0,
+      jobAdPreview: job_ad_text_or_url?.substring(0, 200) || 'INGEN'
+    });
 
     // Validate required inputs
     if (!step1_json || !step2_json || !step3_json) {
@@ -233,6 +241,7 @@ export async function POST(request: NextRequest) {
     // Check early if this is job spejling (choice C with job ad)
     // Job spejling uses step1 (CV), step2 (work profile), and step3 (career analysis)
     const isJobSpejlingRequest = user_choice === 'C' && job_ad_text_or_url;
+    console.log('[DEBUG] isJobSpejlingRequest:', isJobSpejlingRequest, '| user_choice:', user_choice, '| hasJobAd:', !!job_ad_text_or_url);
     
     // If user provided a URL, fetch the actual job ad content
     let actualJobAdContent = job_ad_text_or_url || '';

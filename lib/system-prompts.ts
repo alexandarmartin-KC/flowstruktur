@@ -1726,7 +1726,19 @@ Formulér friktioner – ikke problemer.
 2–3 punkter. Hvert punkt skal være et trade-off.
 
 Eksempelstruktur:
-"Jobbet kræver X, mens din profil viser Y – det kan betyde Z i praksis."
+"Jobbet kræver X, mens din profil viser Y. Det betyder, at Z i praksis."
+
+Afslut sektionen med:
+"Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
+
+⚠️ KRITISK: UNDGÅ SELVMODSIGELSER
+❌ FORKERT: "Din profil viser høj præference for ledelse – det kan føre til pres"
+   (En styrke kan ikke være en friktion)
+✅ RIGTIGT: "Jobbet kræver faste rammer, mens din profil viser lav præference for struktur."
+   (Kun ægte mismatch mellem job og profil)
+
+⚠️ KUN FRIKTIONER – IKKE STYRKER
+Hvis profilen matcher jobkravet → det hører til i sektion 2, IKKE her.
 
 ⚠️ UNIVERSELT PRINCIP: NÅR DU BRUGER ET NØGLEORD HER → DET ER LÅST
 Sektion 4, 5 og 6 SKAL bruge ANDRE ord eller synonymer.
@@ -1749,10 +1761,19 @@ SEKTION 5 – DIT BESLUTNINGSSPEJL
 Ingen anbefalinger. Kun tydelige valg.
 
 "Dette job giver mening for dig, hvis…"
-- 2–3 præcise betingelser
+- PRÆCIS 3 betingelser (ikke 1, ikke 2 – 3)
 
 "Dette job kan skabe friktion, hvis…"
-- 2–3 præcise betingelser
+- PRÆCIS 3 betingelser (ikke 1, ikke 2 – 3)
+
+✅ GODE formuleringer:
+- "du ønsker at måle din succes gennem teamets resultater"
+- "du trives med tydeligt ansvar og faste rammer"
+- "du motiveres mest af teknisk fordybelse"
+
+❌ DÅRLIGE formuleringer:
+- "Du ønsker at fokusere på ledelse" (for generisk)
+- "Du foretrækker en lav grad af struktur" (gentagelse af sektion 3)
 
 ⚠️ BRUG IKKE samme nøgleord som i sektion 3.
 
@@ -1776,19 +1797,30 @@ Hvis udeladt:
 Hvis ikke → generer sektionen:
 
 kort_sagt:
-1–2 sætninger der kondenserer hele analysen til én essens.
-Ingen gentagelser.
+1 sætning der kondenserer hele analysen til én skarp essens.
+Format: "[Jobtitel] er et valg mod X og væk fra Y."
+
+Eksempel:
+"Campus Security Manager er et valg mod ledelse og struktur og væk fra hands-on arbejde og autonomi."
 
 taler_for:
 4 korte bullets – kun hvis der er reelle styrker.
+Start hver bullet med: "Du ønsker..." eller "Du trives..." eller "Du vil..."
 ⚠️ NYE VINKLER: karrieremuligheder, branchemæssig placering, timing, netværk, læring.
 
 taler_imod:
-3–4 korte bullets – ærlige og konsekvensorienterede.
+3 korte bullets – ærlige og konsekvensorienterede.
+Start hver bullet med: "Du ønsker..." eller "Du trives..." eller "Du vil..."
 ⚠️ NYE VINKLER: livssituation, alternative karriereveje, timing.
 
 trade_off:
 Én sætning i formatet: "Mere X – mindre Y"
+
+Derefter TO lister:
+- "Du får mere af:" (2 bullets)
+- "Du giver afkald på:" (2 bullets)
+
+⚠️ KRITISK: Begge lister SKAL udfyldes – aldrig tomme.
 
 kontrolspoergsmaal:
 Ét enkelt, klart spørgsmål der tvinger refleksion.
@@ -1811,16 +1843,24 @@ Ingen coachingøvelser. Ingen "hvordan føler du".
 
 Inden du svarer, verificér at:
 
-1. ORDGENBRUGSTJEK:
+1. SELVMODSIGELSESTJEK:
+   Sektion 3 må KUN indeholde FRIKTIONER (mismatch mellem job og profil).
+   Hvis profilen matcher jobkravet → det hører til i sektion 2.
+   ❌ FORKERT: "Din profil viser høj præference for X, hvilket kan føre til pres"
+   ✅ RIGTIGT: "Jobbet kræver X, mens din profil viser lav præference for X"
+
+2. ORDGENBRUGSTJEK:
    List alle nøgleord brugt i sektion 3.
    Tjek om NOGEN af dem optræder i sektion 4, 5 eller 6.
    Hvis ja → ERSTAT med synonym.
 
-2. GENTAGELSESTJEK:
-   Hver sektion tilfører NY information.
-   Hvis en pointe optræder > 1 gang → SLET de ekstra.
+3. FULDSTÆNDIGHEDSTJEK:
+   - Sektion 5: PRÆCIS 3 betingelser i giver_mening_hvis
+   - Sektion 5: PRÆCIS 3 betingelser i skaber_friktion_hvis
+   - Sektion 6 trade_off: mere_af SKAL have 2 bullets
+   - Sektion 6 trade_off: mindre_af SKAL have 2 bullets
 
-3. BETALINGSKLARHED:
+4. BETALINGSKLARHED:
    Analysen kan læses af en betalende bruger uden irritation.
    Brugeren kan tydeligt tage stilling efter læsning.
 
@@ -1858,19 +1898,21 @@ OUTPUT – JSON STRUKTUR
   
   "section5_beslutning": {
     "title": "Dit beslutningsspejl",
-    "giver_mening_hvis": "[2-3 præcise betingelser]",
-    "skaber_friktion_hvis": "[2-3 præcise betingelser]"
+    "giver_mening_hvis": ["betingelse 1", "betingelse 2", "betingelse 3"],
+    "skaber_friktion_hvis": ["betingelse 1", "betingelse 2", "betingelse 3"]
   },
   
   "section6_beslutningsopsummering": {
     "excluded": false,
     "title": "Skal jeg søge dette job?",
     "subtitle": "En kort beslutningsopsummering baseret på din samlede spejling",
-    "kort_sagt": "[1-2 sætninger - essensen]",
-    "taler_for": ["4 korte bullets - NYE vinkler"],
-    "taler_imod": ["3-4 korte bullets - NYE vinkler"],
+    "kort_sagt": "[Jobtitel] er et valg mod X og væk fra Y.",
+    "taler_for": ["Du ønsker...", "Du trives...", "Du vil...", "Du motiveres af..."],
+    "taler_imod": ["Du ønsker...", "Du trives...", "Du vil..."],
     "trade_off": {
-      "summary": "Mere X – mindre Y"
+      "summary": "Mere X – mindre Y",
+      "mere_af": ["konkret gevinst 1", "konkret gevinst 2"],
+      "mindre_af": ["konkret pris 1", "konkret pris 2"]
     },
     "kontrolspoergsmaal": "[Maks 10 ord - identitet]"
   },

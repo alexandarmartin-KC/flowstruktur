@@ -189,10 +189,32 @@ export async function POST(request: NextRequest) {
     // Job spejling uses step1 (CV), step2 (work profile), and step3 (career analysis)
     const isJobSpejlingRequest = user_choice === 'C' && job_ad_text_or_url;
     
+    // If user provided a URL, fetch the actual job ad content
+    let actualJobAdContent = job_ad_text_or_url || '';
+    if (isJobSpejlingRequest && job_ad_text_or_url) {
+      const trimmedInput = job_ad_text_or_url.trim();
+      // Check if it's a URL
+      if (trimmedInput.startsWith('http://') || trimmedInput.startsWith('https://')) {
+        console.log('Job ad is a URL, fetching content:', trimmedInput.substring(0, 100));
+        try {
+          const fetchedContent = await fetchJobAdFromUrl(trimmedInput);
+          if (fetchedContent && fetchedContent.length > 200) {
+            actualJobAdContent = fetchedContent;
+            console.log('Successfully fetched job ad content, length:', fetchedContent.length);
+          } else {
+            console.warn('Fetched content too short or empty, using original input');
+          }
+        } catch (err) {
+          console.error('Failed to fetch job ad URL:', err);
+          // Keep the original URL text as fallback
+        }
+      }
+    }
+    
     // Pre-extract job title if this is a job spejling request
     let extractedJobTitle = '';
-    if (isJobSpejlingRequest && job_ad_text_or_url) {
-      extractedJobTitle = await extractJobTitleFromAd(job_ad_text_or_url);
+    if (isJobSpejlingRequest && actualJobAdContent) {
+      extractedJobTitle = await extractJobTitleFromAd(actualJobAdContent);
       console.log('Pre-extracted job title for spejling:', extractedJobTitle);
     }
 
@@ -221,8 +243,8 @@ export async function POST(request: NextRequest) {
       
       // Log the sanitized content for debugging
       console.log('Job Spejling - sanitized step1 preview:', sanitizedStep1.substring(0, 300));
-      console.log('Job Spejling - job_ad length:', job_ad_text_or_url?.length || 0);
-      console.log('Job Spejling - job_ad first 200 chars:', job_ad_text_or_url?.substring(0, 200));
+      console.log('Job Spejling - job_ad length:', actualJobAdContent?.length || 0);
+      console.log('Job Spejling - job_ad first 500 chars:', actualJobAdContent?.substring(0, 500));
       
       userMessage = `════════════════════════════════════════════════════════════════════════
 ████ JOBANNONCE - DU ANALYSERER DETTE JOB ████
@@ -239,7 +261,7 @@ ALT ANALYSE SKAL HANDLE OM DETTE JOB: "${extractedJobTitle}"
 ` : ''}
 JOBANNONCENS FULDE TEKST:
 ---
-${job_ad_text_or_url}
+${actualJobAdContent}
 ---
 
 ════════════════════════════════════════════════════════════════════════
@@ -312,8 +334,8 @@ user_choice: ${user_choice || '(tom)'}`;
       userMessage += `\nswitch_distance: ${switch_distance}\nBeskrivelse: ${distanceDescription}`;
     }
 
-    if (user_choice === 'C' && job_ad_text_or_url) {
-      userMessage += `\n\njob_ad_text_or_url:\n${job_ad_text_or_url}`;
+    if (user_choice === 'C' && actualJobAdContent) {
+      userMessage += `\n\njob_ad_text_or_url:\n${actualJobAdContent}`;
     }
 
     if (user_answers && user_answers.length > 0) {
@@ -630,6 +652,65 @@ REGLER:
   } catch (err) {
     console.error('Error extracting job title:', err);
     return '';
+  }
+}
+
+// Helper function to fetch job ad content from URL
+async function fetchJobAdFromUrl(url: string): Promise<string> {
+  try {
+    console.log('Fetching job ad from URL:', url);
+    
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'da,en;q=0.9',
+      },
+    });
+    
+    clearTimeout(timeout);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const html = await response.text();
+    console.log('Fetched HTML length:', html.length);
+    
+    // Extract text content from HTML (simple approach)
+    // Remove script and style tags first
+    let text = html
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '')
+      .replace(/<header[^>]*>[\s\S]*?<\/header>/gi, '')
+      .replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, '');
+    
+    // Replace common block elements with newlines
+    text = text
+      .replace(/<\/?(div|p|br|h[1-6]|li|tr)[^>]*>/gi, '\n')
+      .replace(/<[^>]+>/g, ' ')  // Remove remaining tags
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&amp;/gi, '&')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;/gi, "'")
+      .replace(/\s+/g, ' ')  // Collapse whitespace
+      .replace(/\n\s*\n/g, '\n')  // Collapse multiple newlines
+      .trim();
+    
+    console.log('Extracted text length:', text.length);
+    console.log('First 500 chars of extracted text:', text.substring(0, 500));
+    
+    return text;
+  } catch (err) {
+    console.error('Error fetching job ad URL:', err);
+    throw err;
   }
 }
 

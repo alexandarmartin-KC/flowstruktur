@@ -1715,14 +1715,41 @@ Sammenhold jobannoncens krav med CV'et:
 
 Tjek for:
 - Uddannelseskrav (fx bachelor, kandidat)
-- Certificeringer
+- Certificeringer (fx IPMA, PMP, PRINCE2, ITIL)
 - Minimum års erfaring i specifik rolle/domæne
 - Regulerede krav (GxP, autorisationer, sikkerhedsgodkendelse)
+- Sprogkrav (dansk/engelsk)
+- Kørekort, sikkerhedsgodkendelse, andre specifikke krav
 
 Klassificér hvert krav som:
-✔️ Opfyldt
-⚠️ Delvist opfyldt
-❌ Ikke opfyldt
+✔️ Opfyldt (dokumenteret i CV)
+⚠️ Delvist opfyldt (relateret erfaring, men ikke præcist match)
+❌ Ikke opfyldt (ingen dokumentation i CV)
+
+Hvis ⚠️ eller ❌ på vigtige krav: Indsæt et tydeligt "Formelt adgangstjek"-afsnit i sektion 3 (FØR karrierespring).
+Skriv neutralt: "Dette er ikke en vurdering af dine evner, men et typisk rekrutteringsfilter."
+
+════════════════════════════════════════════════════════════════
+TRIN 2B — DOMÆNEAFSTAND (OBLIGATORISK KLASSIFICERING)
+════════════════════════════════════════════════════════════════
+
+Vurdér afstanden mellem CV'ets primære fagdomæne(r) og jobannoncens fagdomæne(r):
+
+LAV domæneafstand:
+- Samme branche og samme rolletypen
+- Fx: Projektleder i IT → Projektleder i IT
+
+MODERAT domæneafstand:
+- Samme rolletype, men ny branche ELLER ny rolletype i samme branche
+- Fx: Projektleder i finans → Projektleder i pharma
+- Fx: Specialist i IT → Projektleder i IT
+
+HØJ domæneafstand:
+- Ny branche OG ny rolletype
+- Fx: Sikkerhedsleder i ejendomsbranchen → IT-projektleder i pharma
+- Fx: Driftsleder i produktion → Strategisk konsulent i finans
+
+⚠️ Klassificér som LAV / MODERAT / HØJ – dette styrer om karrierespring-sektionen skal vises.
 
 Gem resultatet — det styrer senere, hvilke afsnit der skal aktiveres.
 
@@ -1730,10 +1757,15 @@ Gem resultatet — det styrer senere, hvilke afsnit der skal aktiveres.
 TRIN 3 — HOVEDANALYSEN (FAST STRUKTUR)
 ════════════════════════════════════════════════════════════════
 
+⚠️ KRITISK REGEL: INGEN GENTAGELSER
+- Du må IKKE sige det samme 3 gange med nye ord.
+- Hver sektion SKAL tilføre ny værdi.
+- Før du skriver en sætning, tjek: "Har jeg sagt dette før?"
+
 SEKTION 1 – HVAD JOBBET REELT ER
 ────────────────────────────────
 Beskriv nøgternt:
-- hvad hverdagen består af
+- hvad hverdagen består af (mindst 2 konkrete aktiviteter)
 - hvor tiden bruges
 - hvilket ansvar man måles på
 - hvilke beslutninger rollen reelt træffer
@@ -1758,24 +1790,24 @@ Formuleres som:
 
 SEKTION 3 – DET CENTRALE OPMÆRKSOMHEDSPUNKT
 ───────────────────────────────────────────
-Beskriv friktioner, ikke mangler.
 
-⚠️ KRITISK: SEKTION 3 HANDLER KUN OM ARBEJDSSTIL-FRIKTION
-Denne sektion fokuserer på friktion mellem jobbet og brugerens ARBEJDSPRÆFERENCER:
+3A) FORMELT ADGANGSTJEK (kun hvis ⚠️/❌ krav):
+Hvis jobannoncen kræver formelle kvalifikationer som CV'et IKKE dokumenterer, indsæt:
+"Formelt adgangstjek: Jobannoncen kræver [krav]. Dit CV dokumenterer ikke dette direkte. Dette er ikke en vurdering af dine evner, men et typisk rekrutteringsfilter som kan påvirke dine chancer."
+
+3B) ARBEJDSSTIL-FRIKTION:
+Beskriv friktioner mellem jobbet og brugerens ARBEJDSPRÆFERENCER:
 - Struktur vs. fleksibilitet
 - Tempo og forudsigelighed
 - Samarbejdsform og sociale krav
 - Autonomi vs. rammer
 - Arbejdstider og balance
-- Fysisk vs. stillesiddende arbejde
-- Kundevendt vs. intern fokus
-- Teambaseret vs. solo-arbejde
 
 Form:
 "Jobbet kræver X, mens din profil viser Y"
 
 ❌ ALDRIG: "du kan have svært ved", "det kan være udfordrende for dig som person"
-❌ SEKTION 3 MÅ IKKE nævne domæneskift eller karrierespring (det hører til sektion 3A)
+❌ SEKTION 3 MÅ IKKE nævne domæneskift eller karrierespring (det hører til sektion 3C)
 
 Afslut ALTID med:
 "Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
@@ -1784,15 +1816,18 @@ Afslut ALTID med:
 TRIN 4 — KARRIERESPRINGSLOGIK (BETINGET)
 ════════════════════════════════════════════════════════════════
 
-Aktivér dette afsnit, hvis:
-- jobdomænet ≠ brugerens primære domæne
-- ELLER formelle krav er ⚠️ / ❌
+⚠️ SEKTION 3C – KARRIERESPRING (KUN HVIS DOMÆNEAFSTAND = HØJ)
+
+Hvis domæneafstand = LAV eller MODERAT: UDELAD karrierespring-boksen helt.
+
+Hvis domæneafstand = HØJ: Indsæt karrierespring-boks med:
+- Forklar HVORFOR det er et stort spring (domæne/branche/typiske meritkrav)
+- Ingen dom, ingen skræmmekampagne
+- Markedslogik, ikke personlig vurdering
 
 ⚠️ VIGTIG SYSTEMLOGIK – KARRIERESPRING
 
-Inden analysen skrives, skal du EKSPLICIT vurdere, om dette job repræsenterer et stort karrierespring set fra ARBEJDSMARKEDETS perspektiv – ikke brugerens kompetencer alene.
-
-⚠️ AKTIVÉR SEKTIONEN hvis mindst TO af følgende tre kriterier er opfyldt:
+AKTIVÉR SEKTIONEN hvis mindst TO af følgende tre kriterier er opfyldt:
 1) Jobbet ligger i et ANDET FAGLIGT HOVEDDOMÆNE end brugerens primære CV-historik.
 2) Jobbet forudsætter DOMÆNESPECIFIK ERFARING, som normalt opbygges over mange år i netop dette felt.
 3) Stillingen rekrutteres typisk blandt profiler, der ALLEREDE HAR ARBEJDET i samme domæne.
@@ -1956,32 +1991,39 @@ KVALITETSTJEK (SKAL KØRES INDEN OUTPUT)
 
 Inden du returnerer analysen, verificér:
 
-1. SELVMODSIGELSESTJEK:
+1. JOBTITEL-TJEK (KRITISK):
+   ⚠️ job_title SKAL være den PRÆCISE titel fra jobannoncen.
+   ⚠️ ALDRIG brug en titel fra brugerens CV eller en generisk titel.
+   ⚠️ Læs jobannoncens første linje eller "Position:"-felt.
+
+2. SELVMODSIGELSESTJEK:
    Sektion 3 må KUN indeholde FRIKTIONER (mismatch).
    Match hører til i sektion 2.
 
-2. ORDGENBRUGSTJEK:
-   Ingen nøgleord fra sektion 3 må optræde i sektion 4, 5 eller 6.
+3. GENTAGELSESTJEK:
+   - Har du sagt det samme 3 gange med forskellige ord? Hvis ja: FJERN gentagelser.
+   - Hver sektion SKAL tilføre ny værdi.
+   - Ingen nøgleord fra sektion 3 må optræde i sektion 4, 5 eller 6.
 
-3. FULDSTÆNDIGHEDSTJEK:
+4. FULDSTÆNDIGHEDSTJEK:
+   - Sektion 1: Mindst 2 konkrete "hvad det betyder i praksis"-linjer
+   - Sektion 4: Mindst 2 konkrete ting under "mere af" og "mindre af"
    - Sektion 5: PRÆCIS 3 betingelser i hver liste
    - Sektion 6 trade_off: PRÆCIS 2 bullets i hver liste
 
-4. SEKTION 3 VS 3A ADSKILLELSE (KRITISK):
-   Sektion 3 må KUN handle om ARBEJDSSTIL-friktion (tempo, struktur, samarbejdsform, autonomi).
-   Sektion 3A må KUN handle om KARRIERE/DOMÆNE-skift (brancheskift, ansvarsniveau, karriereretning).
-   ❌ FORKERT: Sektion 3 siger "repræsenterer en bevægelse fremad" → det hører til 3A
-   ✅ RIGTIGT: Sektion 3 siger "rollen kræver hyppige møder, mens din profil viser..."
+5. FORMELLE KRAV-TJEK:
+   - Har jobannoncen formelle krav (uddannelse, certificering, års erfaring)?
+   - Hvis ja: Har du nævnt om CV'et dokumenterer dem?
+   - Hvis ikke dokumenteret: Er "Formelt adgangstjek" inkluderet i sektion 3?
 
-5. KARRIERESPRINGTJEK:
-   Hvis jobbet er i nyt domæne med høje ansvarskrav → sektion 3A SKAL inkluderes.
-   Hvis sektion 3A inkluderes → sektion 3B (overgangsstrategi) SKAL også inkluderes.
+6. DOMÆNEAFSTAND-TJEK:
+   - Har du klassificeret domæneafstand som LAV/MODERAT/HØJ?
+   - Hvis HØJ: Er karrierespring-sektionen inkluderet?
+   - Hvis LAV/MODERAT: Er karrierespring-sektionen UDELADT?
 
-6. INGEN PSYKOLOGISKE ANTAGELSER:
-   Kun udsagn der kan spores til CV, profil eller brugerens egne svar.
-
-7. INGEN BRANCHE-BIAS:
-   Samme refleksionsniveau uanset om jobbet er "prestigefyldt" eller ej.
+7. ANTAGELSESTJEK:
+   - Har du lavet antagelser uden data? Hvis ja: FJERN eller omskriv til hypotese.
+   - Kun udsagn der kan spores til CV, profil eller brugerens egne svar.
 
 8. BETALINGSKLARHED:
    Analysen kan læses af en betalende bruger uden irritation.
@@ -1993,12 +2035,13 @@ OUTPUT – JSON STRUKTUR
 
 {
   "mode": "job_spejling",
-  "job_title": "[PRÆCIS jobtitel fra annoncen]",
+  "job_title": "[PRÆCIS jobtitel fra annoncen - ALDRIG fra CV]",
   "job_category": "[Udførende drift | Linjeledelse / People management | Projektledelse | Specialistrolle | Strategisk ledelse | Tværfaglig koordinering]",
+  "domain_distance": "[LAV | MODERAT | HØJ]",
   
   "section1_jobbet": {
     "title": "Hvad jobbet reelt er",
-    "content": "[Max 1 kort afsnit - hverdagen i praksis]"
+    "content": "[Max 1 kort afsnit - hverdagen i praksis med mindst 2 konkrete aktiviteter]"
   },
   
   "section2_match": {
@@ -2009,7 +2052,7 @@ OUTPUT – JSON STRUKTUR
   
   "section3_opmærksomhed": {
     "title": "Det centrale opmærksomhedspunkt",
-    "content": "[SAMMENHÆNGENDE afsnit på 3-5 sætninger. Afslut med: 'Dette er ikke problemer – men vilkår, der skal give mening for dig i længden.']"
+    "content": "[SAMMENHÆNGENDE afsnit på 3-5 sætninger. Inkluder 'Formelt adgangstjek' hvis relevant. Afslut med: 'Dette er ikke problemer – men vilkår, der skal give mening for dig i længden.']"
   },
   
   "section3a_karrierespring": {

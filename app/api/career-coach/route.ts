@@ -642,19 +642,40 @@ async function extractJobTitleFromAd(jobAdText: string): Promise<string> {
   console.log('extractJobTitleFromAd called with text length:', jobAdText?.length);
   console.log('First 500 chars of job ad:', jobAdText?.substring(0, 500));
   
-  // FIRST: Try to extract using common patterns (more reliable than GPT)
+  // FIRST: Try to extract the first non-empty line that looks like a title
+  const lines = jobAdText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (lines.length > 0) {
+    const firstLine = lines[0];
+    // If first line is short enough to be a title (max ~80 chars) and doesn't contain typical body text markers
+    if (firstLine.length > 3 && firstLine.length < 80 && 
+        !firstLine.includes('.') && 
+        !firstLine.toLowerCase().startsWith('vi ') &&
+        !firstLine.toLowerCase().startsWith('er du') &&
+        !firstLine.toLowerCase().startsWith('har du') &&
+        !firstLine.toLowerCase().startsWith('om ')) {
+      console.log('Extracted job title from first line:', firstLine);
+      return firstLine;
+    }
+  }
+  
+  // SECOND: Try to extract using common patterns (English and Danish)
   const patterns = [
-    /Step into the role of ([A-Za-z\s]+?)(?:\s+for|\s+at|\s*\n)/i,
-    /(?:Position|Role|Job Title|Stilling|Titel):\s*([A-Za-z\s]+?)(?:\n|$)/i,
-    /(?:We are looking for|Vi søger|Søger)\s+(?:a |an |en )?([A-Za-z\s]+?)(?:\s+to|\s+for|\s*\n)/i,
-    /^([A-Z][A-Za-z\s]+(?:Manager|Specialist|Officer|Director|Lead|Coordinator|Consultant|Engineer|Developer|Analyst|Administrator))/m,
+    // Danish patterns
+    /^((?:Erfaren |Senior |Junior )?[A-ZÆØÅa-zæøå\s-]+(?:leder|manager|specialist|konsulent|medarbejder|chef|koordinator|ansvarlig|rådgiver|analytiker|udvikler|ingeniør|controller|assistent|projektleder))(?:\n|$)/im,
+    /(?:Stilling|Titel|Position):\s*([A-ZÆØÅa-zæøå\s-]+?)(?:\n|$)/i,
+    /(?:Vi søger|Søger)\s+(?:en |an )?([A-ZÆØÅa-zæøå\s-]+?)(?:\s+til|\s+for|\s+som|\s*\n)/i,
+    // English patterns
+    /Step into the role of ([A-Za-z\s-]+?)(?:\s+for|\s+at|\s*\n)/i,
+    /(?:Position|Role|Job Title):\s*([A-Za-z\s-]+?)(?:\n|$)/i,
+    /(?:We are looking for|Looking for)\s+(?:a |an )?([A-Za-z\s-]+?)(?:\s+to|\s+for|\s*\n)/i,
+    /^([A-Z][A-Za-z\s-]+(?:Manager|Specialist|Officer|Director|Lead|Coordinator|Consultant|Engineer|Developer|Analyst|Administrator))/m,
   ];
   
   for (const pattern of patterns) {
     const match = jobAdText.match(pattern);
     if (match && match[1]) {
       const title = match[1].trim();
-      if (title.length > 3 && title.length < 60) {
+      if (title.length > 3 && title.length < 80) {
         console.log('Extracted job title via regex pattern:', title);
         return title;
       }

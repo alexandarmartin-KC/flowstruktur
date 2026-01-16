@@ -1782,20 +1782,45 @@ Kun sammenfald, der kan dokumenteres via:
 
 Ingen stræk, ingen "potentiale-argumenter".
 
-Formuleres som:
-"Dit CV / din profil dokumenterer … hvilket matcher jobkravet om …"
+⚠️ KONKRETISERINGSKRAV:
+For hvert match-punkt SKAL du:
+1) Nævne SPECIFIK erfaring fra CV (jobtitel, opgave, branche)
+2) Koble til KONKRET jobkrav fra annoncen
+3) Forklare HVORDAN erfaringen er relevant
 
-❌ Undgå floskler som "matcher godt"
-✅ Vis konsekvens: "Det betyder, at…"
+Formuleres som:
+"Dit CV dokumenterer [specifik erfaring/rolle] hos [virksomhed/branche], hvilket matcher jobkravet om [konkret krav]. I praksis betyder det, at du [konkret konsekvens]."
+
+EKSEMPEL PÅ GOD MATCH-FORMULERING:
+"Dit CV dokumenterer 3 års erfaring med procesforbedring i produktionsmiljø hos [virksomhed], hvilket matcher jobkravet om systemdesign og procesoptimering. I praksis betyder det, at du har erfaring med at identificere og implementere forbedringer i komplekse systemer."
+
+EKSEMPEL PÅ DÅRLIG MATCH-FORMULERING (UNDGÅ):
+"Din profil viser høje niveauer i ledelse, hvilket er i overensstemmelse med kravene."
+
+❌ Undgå floskler som "matcher godt", "er i overensstemmelse med"
+✅ Vis konkret kobling med "I praksis betyder det..."
+
+⚠️ BRANCHE-OVERLAP: Hvis jobannoncen nævner specifikke brancher som en fordel (fx "erfaring fra reguleret branche som Pharma eller fødevarer"), og brugerens CV indeholder erfaring fra disse eller tilgrænsende brancher, FREMHÆV dette eksplicit.
 
 SEKTION 3 – DET CENTRALE OPMÆRKSOMHEDSPUNKT
 ───────────────────────────────────────────
+⚠️ DENNE SEKTION HAR 3 ADSKILTE DELE – HOLD DEM TYDELIGT ADSKILT
 
 3A) FORMELT ADGANGSTJEK (kun hvis ⚠️/❌ krav):
+─────────────────────────────────────────────
+PLACERES FØRST i sektion 3.
+
 Hvis jobannoncen kræver formelle kvalifikationer som CV'et IKKE dokumenterer, indsæt:
-"Formelt adgangstjek: Jobannoncen kræver [krav]. Dit CV dokumenterer ikke dette direkte. Dette er ikke en vurdering af dine evner, men et typisk rekrutteringsfilter som kan påvirke dine chancer."
+
+Format:
+"**Formelt adgangstjek:** Jobannoncen kræver [specifikt krav: fx 'relevant videregående uddannelse på minimum bachelor niveau' og 'minimum 5 års erfaring som projektleder']. Dit CV dokumenterer ikke dette direkte. Dette er ikke en vurdering af dine evner, men et typisk rekrutteringsfilter som kan påvirke dine chancer."
+
+⚠️ VÆR SPECIFIK: Nævn PRÆCIS hvad jobbet kræver, ikke generiske krav.
 
 3B) ARBEJDSSTIL-FRIKTION:
+─────────────────────────────────────────────
+PLACERES EFTER formelt adgangstjek (hvis relevant).
+
 Beskriv friktioner mellem jobbet og brugerens ARBEJDSPRÆFERENCER:
 - Struktur vs. fleksibilitet
 - Tempo og forudsigelighed
@@ -2011,21 +2036,31 @@ Inden du returnerer analysen, verificér:
    - Sektion 5: PRÆCIS 3 betingelser i hver liste
    - Sektion 6 trade_off: PRÆCIS 2 bullets i hver liste
 
-5. FORMELLE KRAV-TJEK:
+5. MATCH-KONKRETISERINGSTJEK (KRITISK):
+   - Hvert match-punkt i sektion 2 SKAL indeholde:
+     a) SPECIFIK erfaring fra CV (jobtitel, virksomhed eller opgavetype)
+     b) KONKRET jobkrav fra annoncen (ikke generisk)
+     c) PRAKTISK konsekvens ("I praksis betyder det...")
+   - UNDGÅ generiske formuleringer som "høje niveauer i ledelse"
+   - UNDGÅ "er i overensstemmelse med" – brug "I praksis betyder det..."
+
+6. FORMELLE KRAV-TJEK:
    - Har jobannoncen formelle krav (uddannelse, certificering, års erfaring)?
    - Hvis ja: Har du nævnt om CV'et dokumenterer dem?
    - Hvis ikke dokumenteret: Er "Formelt adgangstjek" inkluderet i sektion 3?
+   - Formelt adgangstjek SKAL være SPECIFIKT (fx "bachelor niveau + 5 års erfaring som projektleder")
 
-6. DOMÆNEAFSTAND-TJEK:
+7. DOMÆNEAFSTAND-TJEK:
    - Har du klassificeret domæneafstand som LAV/MODERAT/HØJ?
+   - Har du tilføjet domain_distance_explanation?
    - Hvis HØJ: Er karrierespring-sektionen inkluderet?
    - Hvis LAV/MODERAT: Er karrierespring-sektionen UDELADT?
 
-7. ANTAGELSESTJEK:
+8. ANTAGELSESTJEK:
    - Har du lavet antagelser uden data? Hvis ja: FJERN eller omskriv til hypotese.
    - Kun udsagn der kan spores til CV, profil eller brugerens egne svar.
 
-8. BETALINGSKLARHED:
+9. BETALINGSKLARHED:
    Analysen kan læses af en betalende bruger uden irritation.
    Brugeren kan tydeligt tage stilling efter læsning.
 
@@ -2038,6 +2073,7 @@ OUTPUT – JSON STRUKTUR
   "job_title": "[PRÆCIS jobtitel fra annoncen - ALDRIG fra CV]",
   "job_category": "[Udførende drift | Linjeledelse / People management | Projektledelse | Specialistrolle | Strategisk ledelse | Tværfaglig koordinering]",
   "domain_distance": "[LAV | MODERAT | HØJ]",
+  "domain_distance_explanation": "[Kort forklaring: 'Fra [CV-domæne] til [job-domæne]' + hvorfor LAV/MODERAT/HØJ]",
   
   "section1_jobbet": {
     "title": "Hvad jobbet reelt er",
@@ -2046,13 +2082,19 @@ OUTPUT – JSON STRUKTUR
   
   "section2_match": {
     "title": "Hvor der er et tydeligt match",
-    "content": "[Kort intro]",
-    "points": ["3 præcise sammenfald der viser HVORDAN erfaring bruges"]
+    "content": "[Kort intro der opsummerer matchets karakter]",
+    "points": [
+      "[Specifik CV-erfaring] → [Konkret jobkrav] → [Praktisk konsekvens]",
+      "[Specifik CV-erfaring] → [Konkret jobkrav] → [Praktisk konsekvens]",
+      "[Specifik CV-erfaring] → [Konkret jobkrav] → [Praktisk konsekvens]"
+    ]
   },
   
   "section3_opmærksomhed": {
     "title": "Det centrale opmærksomhedspunkt",
-    "content": "[SAMMENHÆNGENDE afsnit på 3-5 sætninger. Inkluder 'Formelt adgangstjek' hvis relevant. Afslut med: 'Dette er ikke problemer – men vilkår, der skal give mening for dig i længden.']"
+    "formelt_adgangstjek": "[Kun hvis relevant: 'Jobannoncen kræver X. Dit CV dokumenterer ikke dette direkte...'] ELLER null",
+    "arbejdsstil_friktion": "[Friktioner mellem jobkrav og arbejdspræferencer]",
+    "closing": "Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
   },
   
   "section3a_karrierespring": {

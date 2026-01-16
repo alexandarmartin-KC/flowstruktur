@@ -570,8 +570,31 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
   }
 }
 
-// Helper function to extract job title from job ad using focused GPT call
+// Helper function to extract job title from job ad - uses regex patterns first, then GPT as fallback
 async function extractJobTitleFromAd(jobAdText: string): Promise<string> {
+  console.log('extractJobTitleFromAd called with text length:', jobAdText?.length);
+  console.log('First 500 chars of job ad:', jobAdText?.substring(0, 500));
+  
+  // FIRST: Try to extract using common patterns (more reliable than GPT)
+  const patterns = [
+    /Step into the role of ([A-Za-z\s]+?)(?:\s+for|\s+at|\s*\n)/i,
+    /(?:Position|Role|Job Title|Stilling|Titel):\s*([A-Za-z\s]+?)(?:\n|$)/i,
+    /(?:We are looking for|Vi søger|Søger)\s+(?:a |an |en )?([A-Za-z\s]+?)(?:\s+to|\s+for|\s*\n)/i,
+    /^([A-Z][A-Za-z\s]+(?:Manager|Specialist|Officer|Director|Lead|Coordinator|Consultant|Engineer|Developer|Analyst|Administrator))/m,
+  ];
+  
+  for (const pattern of patterns) {
+    const match = jobAdText.match(pattern);
+    if (match && match[1]) {
+      const title = match[1].trim();
+      if (title.length > 3 && title.length < 60) {
+        console.log('Extracted job title via regex pattern:', title);
+        return title;
+      }
+    }
+  }
+  
+  // FALLBACK: Use GPT to extract title
   try {
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o-mini',
@@ -581,28 +604,26 @@ async function extractJobTitleFromAd(jobAdText: string): Promise<string> {
           content: `Du er en præcis tekst-ekstraktor. Din ENESTE opgave er at finde den EKSAKTE jobtitel fra en jobannonce.
 
 REGLER:
-- Returner KUN jobtitlen på ENGELSK hvis annoncen er på engelsk
-- Brug den PRÆCISE titel som står i annoncen - ALDRIG oversæt
-- Jobtitlen er typisk i starten af annoncen, ofte i første linje eller efter "Role:", "Position:", "Job title:" etc.
-- Kig efter mønstre som "Step into the role of [JOBTITEL]" eller "[JOBTITEL] - Company"
-- Hvis annoncen siger "Campus Security Manager" - returner "Campus Security Manager"
-- Hvis annoncen siger "Security Officer" - returner "Security Officer" 
-- ALDRIG returner "Vagt" medmindre det EKSAKT står i teksten
-- ALDRIG oversæt titlen til dansk
-- Returner max 10 ord`
+- Returner KUN jobtitlen - PRÆCIS som den står i teksten
+- Jobtitlen er typisk i starten af annoncen
+- Kig efter "Step into the role of [TITEL]", "Position: [TITEL]", "[TITEL] wanted" etc.
+- ALDRIG opfind en titel - kun brug hvad der står i teksten
+- ALDRIG returner generiske titler som "Project Manager" medmindre det PRÆCIST står i annoncen
+- Returner max 8 ord`
         },
         {
           role: 'user',
-          content: `Find jobtitlen i denne jobannonce. Returner KUN titlen, ingen forklaring:\n\n${jobAdText.substring(0, 3000)}`
+          content: `Find den EKSAKTE jobtitel i denne jobannonce. Returner KUN titlen:\n\n${jobAdText.substring(0, 2000)}`
         }
       ],
-      max_tokens: 50,
+      max_tokens: 30,
       temperature: 0
     });
     
     const title = response.choices[0]?.message?.content?.trim();
-    if (title && title.length > 0 && title.length < 100) {
-      console.log('Extracted job title:', title);
+    console.log('GPT extracted job title:', title);
+    
+    if (title && title.length > 3 && title.length < 80) {
       return title;
     }
     return '';

@@ -1753,8 +1753,18 @@ Tydelig konsekvensoversigt.
 ↑ Mere af: 3–4 konkrete ting
 ↓ Mindre af: 2–3 konkrete ting
 
+⚠️ KRITISK: ORDLÅS-PRINCIP
+Hvis sektion 3 bruger disse ord, SKAL du bruge SYNONYMER:
+
+| Sektion 3 bruger | Sektion 4 skal bruge |
+|------------------|----------------------|
+| struktur         | faste processer, dokumentation, procedurer |
+| fleksibilitet    | improvisationsmulighed, selvbestemmelse |
+| autonomi         | selvstændige beslutninger, frihed |
+| hands-on         | praktisk arbejde, udførende opgaver |
+
 ⚠️ INGEN gentagelser fra sektion 3.
-⚠️ Brug KONKRETE aktiviteter (møder, dokumentation, rejser) – ikke abstrakte ord.
+⚠️ Brug KONKRETE aktiviteter (møder, dokumentation, rejser).
 
 SEKTION 5 – DIT BESLUTNINGSSPEJL
 ────────────────────────────────
@@ -1765,6 +1775,10 @@ Ingen anbefalinger. Kun tydelige valg.
 
 "Dette job kan skabe friktion, hvis…"
 - PRÆCIS 3 betingelser (ikke 1, ikke 2 – 3)
+
+⚠️ KRITISK: BRUG IKKE SAMME ORD SOM SEKTION 3
+Hvis sektion 3 siger "struktur" → sig her "klare rammer" eller "faste forventninger"
+Hvis sektion 3 siger "fleksibilitet" → sig her "frihed til at improvisere"
 
 ✅ GODE formuleringer:
 - "du ønsker at måle din succes gennem teamets resultater"
@@ -1886,8 +1900,9 @@ OUTPUT – JSON STRUKTUR
   
   "section3_opmærksomhed": {
     "title": "Det centrale opmærksomhedspunkt",
-    "content": "[Intro til friktioner]",
-    "points": ["2-3 trade-offs som neutral observation"]
+    "content": "Der er nogle potentielle friktioner mellem jobkravene og din profil.",
+    "points": ["2-3 trade-offs som neutral observation"],
+    "closing": "Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
   },
   
   "section4_konsekvens": {

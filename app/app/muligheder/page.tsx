@@ -345,6 +345,15 @@ function MulighederPageContent() {
     setIsLoading(true);
     setError(null);
 
+    // Debug logging
+    console.log('[callCareerCoach] Called with:', {
+      choice,
+      hasJobAd: !!jobAd,
+      jobAdLength: jobAd?.length || 0,
+      jobAdPreview: jobAd?.substring(0, 100) || 'INGEN',
+      requestJobExamples
+    });
+
     const stepData = buildStepData();
     if (!stepData) {
       setError('Manglende profildata. Gå til Profil for at udfylde CV og præferencer.');
@@ -352,18 +361,22 @@ function MulighederPageContent() {
       return;
     }
 
+    const requestBody = {
+      ...stepData,
+      user_choice: choice || '',
+      switch_distance: switchDist || switchSubChoice || undefined,
+      user_answers: answers.length > 0 ? answers : undefined,
+      request_job_examples: requestJobExamples,
+      job_ad_text_or_url: jobAd || undefined,
+    };
+    
+    console.log('[callCareerCoach] Sending job_ad_text_or_url:', requestBody.job_ad_text_or_url?.substring(0, 100) || 'UNDEFINED');
+
     try {
       const response = await fetch('/api/career-coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...stepData,
-          user_choice: choice || '',
-          switch_distance: switchDist || switchSubChoice || undefined,
-          user_answers: answers.length > 0 ? answers : undefined,
-          request_job_examples: requestJobExamples,
-          job_ad_text_or_url: jobAd || undefined,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {

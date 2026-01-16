@@ -456,31 +456,52 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
       // Validate and ensure required fields exist
       parsedResponse = validateAndNormalizeResponse(parsedResponse, user_choice, shouldTriggerSpejling);
       
-      // CRITICAL: Override job_title if we pre-extracted it
+      // CRITICAL: Override job_title AND fix content if we pre-extracted it
       // This ensures the model can't substitute a CV title for the actual job ad title
       if (isJobSpejlingRequest && extractedJobTitle && parsedResponse.mode === 'job_spejling') {
         // Log the full response for debugging
         console.log('Job Spejling - extracted title:', extractedJobTitle);
         console.log('Job Spejling - model job_title:', parsedResponse.job_title);
-        console.log('Job Spejling - section1_jobkrav content preview:', parsedResponse.section1_jobkrav?.content?.substring(0, 200));
         
-        if (parsedResponse.job_title !== extractedJobTitle) {
-          console.log(`Job title mismatch detected! Model returned "${parsedResponse.job_title}" but job ad says "${extractedJobTitle}". Correcting...`);
-          parsedResponse.job_title = extractedJobTitle;
-        }
+        const modelTitle = parsedResponse.job_title || '';
         
-        // Also check if section1_jobkrav mentions a wrong job title
-        // This catches cases where the model uses CV title in the analysis content
-        const section1Content = parsedResponse.section1_jobkrav?.content || parsedResponse.section1_overordnet?.content;
-        if (section1Content) {
-          const content = section1Content.toLowerCase();
-          const correctTitle = extractedJobTitle.toLowerCase();
+        // Always override job_title with the extracted title
+        parsedResponse.job_title = extractedJobTitle;
+        
+        // If model used a wrong title (e.g. "Project Manager" instead of "Campus Security Manager"),
+        // replace ALL occurrences in the entire response
+        if (modelTitle && modelTitle.toLowerCase() !== extractedJobTitle.toLowerCase()) {
+          console.log(`Job title mismatch! Replacing "${modelTitle}" with "${extractedJobTitle}" in all content`);
           
-          // Log warning if content doesn't mention the correct job title
-          if (!content.includes(correctTitle) && !content.includes(correctTitle.split(' ')[0])) {
-            console.warn(`WARNING: section1 may not be about the correct job. Expected to mention "${extractedJobTitle}"`);
+          // Convert response to string, replace wrong title, parse back
+          let responseStr = JSON.stringify(parsedResponse);
+          
+          // Replace the wrong title with correct title (case-insensitive)
+          const wrongTitleRegex = new RegExp(modelTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+          responseStr = responseStr.replace(wrongTitleRegex, extractedJobTitle);
+          
+          // Also replace common generic titles that might be used
+          const genericTitles = ['Project Manager', 'Projektleder', 'Manager', 'Leder'];
+          for (const genericTitle of genericTitles) {
+            if (genericTitle.toLowerCase() !== extractedJobTitle.toLowerCase()) {
+              // Only replace if it's in a job context (preceded by "som " or "Jobbet som" or at start)
+              const contextRegex = new RegExp(`(Jobbet som |jobbet som |[Ss]om |[Ss]tillingen som |rollen som )${genericTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi');
+              responseStr = responseStr.replace(contextRegex, `$1${extractedJobTitle}`);
+            }
+          }
+          
+          try {
+            parsedResponse = JSON.parse(responseStr);
+            console.log('Successfully replaced wrong job title in response content');
+          } catch (e) {
+            console.error('Failed to parse corrected response, using original with fixed job_title');
           }
         }
+        
+        // Log final result
+        console.log('Job Spejling - final job_title:', parsedResponse.job_title);
+        console.log('Job Spejling - section1 content preview:', 
+          (parsedResponse.section1_jobkrav?.content || parsedResponse.section1_overordnet?.content)?.substring(0, 200));
       }
       
     } catch (parseErr) {

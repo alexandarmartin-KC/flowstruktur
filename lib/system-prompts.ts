@@ -1761,14 +1761,65 @@ Formålet er at gøre konsekvenserne MÆRKBARE – ikke teoretiske.
 SEKTION 5 – DIT BESLUTNINGSSPEJL
 ════════════════════════════════════════════════════════════════
 
-Afslut med en neutral refleksionsramme:
+En neutral refleksionsramme:
 
 Brug formuleringer som:
 - "Dette job giver mening for dig, hvis..."
 - "Jobbet kan skabe friktion, hvis..."
 
-Slut ALTID med:
-"Dette er ikke en anbefaling – men et spejl, du kan bruge til at vurdere, om jobbet matcher det arbejdsliv, du ønsker."
+════════════════════════════════════════════════════════════════
+SEKTION 6 – BESLUTNINGSOPSUMMERING ("SKAL JEG SØGE?")
+════════════════════════════════════════════════════════════════
+
+🔍 KVALITETSGATE – SKAL SEKTIONEN VISES?
+
+Før du genererer sektionen, vurdér jobkvaliteten.
+Udelad hele sektionen (sæt section6_beslutningsopsummering til null), hvis ét eller flere er opfyldt:
+- Jobannoncen er meget vag eller mangler konkrete opgaver og ansvar
+- Arbejdsform og ansvarsniveau kan ikke aflæses tydeligt
+- Jobbet er åbenlyst langt under eller langt over brugerens dokumenterede niveau
+- Der er ingen reelle sammenfald mellem jobkrav og brugerens erfaring/profil
+
+Hvis sektionen udelades, sæt:
+  "section6_beslutningsopsummering": {
+    "excluded": true,
+    "excluded_reason": "Dette job er for upræcist eller for fjernt fra din profil til at danne grundlag for en meningsfuld beslutningsopsummering."
+  }
+
+Hvis ingen af ovenstående gælder → generer sektionen.
+
+🧩 STRUKTUR FOR SEKTION 6
+
+kort_sagt:
+Én kort paragraf (2-3 linjer), der opsummerer:
+- hvad jobbet grundlæggende repræsenterer
+- hvilken type arbejdsliv det peger mod
+Ingen vurderinger – kun essens.
+
+taler_for:
+Formulér 4-6 punkter som udsagn brugeren kan spejle sig i.
+Start hvert punkt implicit med: "Søg jobbet, hvis..."
+Fokusér på: ansvar, arbejdsform, struktur/frihed, daglig rytme.
+
+taler_imod:
+Formulér 4-6 punkter som advarselssignaler.
+Start implicit med: "Overvej at lade være, hvis..."
+Ingen dømmende formuleringer.
+
+trade_off:
+Én tydelig formulering i stil med: "Mere X – mindre Y"
+Forklar i bullets: hvad brugeren får mere af, hvad brugeren reelt giver afkald på.
+
+kontrolspoergsmaal:
+Stil ét konkret spørgsmål der:
+- relaterer sig direkte til jobhverdagen
+- ikke handler om følelser, men oplevet energi/mening
+Eksempel: "Hvis størstedelen af din hverdag består af ___, giver det dig energi – eller dræner det dig?"
+
+naeste_skridt:
+Neutral afslutning med 2 muligheder, fx:
+- arbejde videre med ansøgning
+- se alternative jobs med andre trade-offs
 
 ════════════════════════════════════════════════════════════════
 OUTPUT – JSON STRUKTUR (SKAL FØLGES PRÆCIST)
@@ -1806,6 +1857,35 @@ OUTPUT – JSON STRUKTUR (SKAL FØLGES PRÆCIST)
     "title": "Dit beslutningsspejl",
     "giver_mening_hvis": "[Dette job giver mening for dig, hvis...]",
     "skaber_friktion_hvis": "[Jobbet kan skabe friktion, hvis...]"
+  },
+  
+  "section6_beslutningsopsummering": {
+    "excluded": false,
+    "title": "Skal jeg søge dette job?",
+    "subtitle": "En kort beslutningsopsummering baseret på din samlede spejling",
+    "kort_sagt": "[2-3 linjer: hvad jobbet repræsenterer, hvilken type arbejdsliv det peger mod]",
+    "taler_for": [
+      "Søg jobbet, hvis du ønsker...",
+      "Søg jobbet, hvis du trives med...",
+      "Søg jobbet, hvis du foretrækker...",
+      "Søg jobbet, hvis du vil have..."
+    ],
+    "taler_imod": [
+      "Overvej at lade være, hvis du har brug for...",
+      "Overvej at lade være, hvis du ikke trives med...",
+      "Overvej at lade være, hvis du foretrækker...",
+      "Overvej at lade være, hvis du ikke ønsker..."
+    ],
+    "trade_off": {
+      "summary": "Mere X – mindre Y",
+      "mere_af": ["hvad du får mere af..."],
+      "mindre_af": ["hvad du giver afkald på..."]
+    },
+    "kontrolspoergsmaal": "Hvis størstedelen af din hverdag består af ___, giver det dig energi – eller dræner det dig?",
+    "naeste_skridt": [
+      "Arbejd videre med ansøgning til dette job",
+      "Se alternative jobs med andre trade-offs"
+    ]
   },
   
   "closing_statement": "Dette er ikke en anbefaling – men et spejl, du kan bruge til at vurdere, om jobbet matcher det arbejdsliv, du ønsker."

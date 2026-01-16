@@ -109,6 +109,35 @@ interface CareerCoachResponse {
   section2_match?: { title: string; content: string; points?: string[] };
   section3_opmærksomhed?: { title: string; content: string; points?: string[] };
   section4_krav?: { title: string; content: string; points?: string[] };
+  // NY sektion 4: Hvad dette job vil betyde (Mere af/Mindre af)
+  section4_konsekvens?: { 
+    title: string; 
+    mere_af: string[]; 
+    mindre_af: string[];
+  };
+  // NY sektion 5: Dit beslutningsspejl
+  section5_beslutning?: {
+    title: string;
+    giver_mening_hvis: string;
+    skaber_friktion_hvis: string;
+  };
+  // NY sektion 6: Beslutningsopsummering
+  section6_beslutningsopsummering?: {
+    excluded?: boolean;
+    excluded_reason?: string;
+    title?: string;
+    subtitle?: string;
+    kort_sagt?: string;
+    taler_for?: string[];
+    taler_imod?: string[];
+    trade_off?: {
+      summary: string;
+      mere_af: string[];
+      mindre_af: string[];
+    };
+    kontrolspoergsmaal?: string;
+    naeste_skridt?: string[];
+  };
   closing_statement?: string;
   // Legacy job spejling fields (backwards compatibility with old coach structure)
   section1_overordnet?: { title: string; content: string };

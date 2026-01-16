@@ -102,6 +102,23 @@ interface CareerCoachResponse {
     giver_mening_hvis: string;
     skaber_friktion_hvis: string;
   };
+  // NY sektion 6: Beslutningsopsummering ("Skal jeg søge?")
+  section6_beslutningsopsummering?: {
+    excluded?: boolean;
+    excluded_reason?: string;
+    title?: string;
+    subtitle?: string;
+    kort_sagt?: string;
+    taler_for?: string[];
+    taler_imod?: string[];
+    trade_off?: {
+      summary: string;
+      mere_af: string[];
+      mindre_af: string[];
+    };
+    kontrolspoergsmaal?: string;
+    naeste_skridt?: string[];
+  };
   closing_statement?: string;
   // Legacy (backwards compatibility)
   section1_jobkrav?: { title: string; content: string; points?: string[] };
@@ -1866,6 +1883,156 @@ function MulighederPageContent() {
                       </li>
                     ))}
                   </ul>
+                )}
+              </div>
+            )}
+
+            {/* NY SEKTION 6: Beslutningsopsummering "Skal jeg søge dette job?" */}
+            {coachResponse.section6_beslutningsopsummering && (
+              <div className="space-y-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/30 p-6 rounded-xl border-2 border-slate-200 dark:border-slate-700 mt-8">
+                {/* Header */}
+                <div className="text-center pb-4 border-b border-slate-200 dark:border-slate-700">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                    {coachResponse.section6_beslutningsopsummering.excluded 
+                      ? "Beslutningsopsummering ikke tilgængelig"
+                      : coachResponse.section6_beslutningsopsummering.title || "Skal jeg søge dette job?"}
+                  </h3>
+                  {!coachResponse.section6_beslutningsopsummering.excluded && coachResponse.section6_beslutningsopsummering.subtitle && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {coachResponse.section6_beslutningsopsummering.subtitle}
+                    </p>
+                  )}
+                  {coachResponse.job_title && !coachResponse.section6_beslutningsopsummering.excluded && (
+                    <p className="text-base font-medium text-slate-700 dark:text-slate-300 mt-2">
+                      {coachResponse.job_title}
+                    </p>
+                  )}
+                </div>
+
+                {/* Excluded case */}
+                {coachResponse.section6_beslutningsopsummering.excluded && (
+                  <div className="flex items-start gap-3 p-4 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
+                    <AlertCircle className="h-5 w-5 text-slate-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-muted-foreground">
+                      {coachResponse.section6_beslutningsopsummering.excluded_reason || "Dette job er for upræcist eller for fjernt fra din profil til at danne grundlag for en meningsfuld beslutningsopsummering."}
+                    </p>
+                  </div>
+                )}
+
+                {/* Kort sagt */}
+                {!coachResponse.section6_beslutningsopsummering.excluded && coachResponse.section6_beslutningsopsummering.kort_sagt && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Kort sagt</h4>
+                    <p className="text-base leading-relaxed text-slate-800 dark:text-slate-200">
+                      {coachResponse.section6_beslutningsopsummering.kort_sagt}
+                    </p>
+                  </div>
+                )}
+
+                {/* Det taler for / Det taler imod - side by side */}
+                {!coachResponse.section6_beslutningsopsummering.excluded && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Det taler for at søge */}
+                    {coachResponse.section6_beslutningsopsummering.taler_for && coachResponse.section6_beslutningsopsummering.taler_for.length > 0 && (
+                      <div className="bg-green-50 dark:bg-green-950/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                        <h4 className="font-semibold text-sm text-green-700 dark:text-green-400 mb-3 flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Det taler for at søge
+                        </h4>
+                        <ul className="space-y-2">
+                          {coachResponse.section6_beslutningsopsummering.taler_for.map((point, idx) => (
+                            <li key={idx} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                              <span className="text-green-500 font-bold mt-0.5">✓</span>
+                              <span>{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Det taler imod at søge */}
+                    {coachResponse.section6_beslutningsopsummering.taler_imod && coachResponse.section6_beslutningsopsummering.taler_imod.length > 0 && (
+                      <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
+                        <h4 className="font-semibold text-sm text-amber-700 dark:text-amber-400 mb-3 flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4" />
+                          Det taler imod at søge
+                        </h4>
+                        <ul className="space-y-2">
+                          {coachResponse.section6_beslutningsopsummering.taler_imod.map((point, idx) => (
+                            <li key={idx} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                              <span className="text-amber-500 font-bold mt-0.5">!</span>
+                              <span>{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Det vigtigste trade-off */}
+                {!coachResponse.section6_beslutningsopsummering.excluded && coachResponse.section6_beslutningsopsummering.trade_off && (
+                  <div className="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-sm text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">
+                      Det vigtigste trade-off
+                    </h4>
+                    <p className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-4">
+                      {coachResponse.section6_beslutningsopsummering.trade_off.summary}
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-2">Du får mere af:</p>
+                        <ul className="space-y-1">
+                          {coachResponse.section6_beslutningsopsummering.trade_off.mere_af?.map((item, idx) => (
+                            <li key={idx} className="flex items-start gap-2 text-sm">
+                              <span className="text-blue-500">+</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Du giver afkald på:</p>
+                        <ul className="space-y-1">
+                          {coachResponse.section6_beslutningsopsummering.trade_off.mindre_af?.map((item, idx) => (
+                            <li key={idx} className="flex items-start gap-2 text-sm">
+                              <span className="text-slate-400">−</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Ét ærligt kontrolspørgsmål */}
+                {!coachResponse.section6_beslutningsopsummering.excluded && coachResponse.section6_beslutningsopsummering.kontrolspoergsmaal && (
+                  <div className="bg-indigo-50 dark:bg-indigo-950/30 p-5 rounded-lg border border-indigo-200 dark:border-indigo-800 text-center">
+                    <h4 className="font-semibold text-sm text-indigo-600 dark:text-indigo-400 uppercase tracking-wide mb-3">
+                      Ét ærligt spørgsmål at stille dig selv
+                    </h4>
+                    <p className="text-base italic text-slate-700 dark:text-slate-300">
+                      &ldquo;{coachResponse.section6_beslutningsopsummering.kontrolspoergsmaal}&rdquo;
+                    </p>
+                  </div>
+                )}
+
+                {/* Næste skridt */}
+                {!coachResponse.section6_beslutningsopsummering.excluded && coachResponse.section6_beslutningsopsummering.naeste_skridt && coachResponse.section6_beslutningsopsummering.naeste_skridt.length > 0 && (
+                  <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <h4 className="font-semibold text-sm text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">
+                      Mulige næste skridt
+                    </h4>
+                    <div className="grid gap-2">
+                      {coachResponse.section6_beslutningsopsummering.naeste_skridt.map((step, idx) => (
+                        <div key={idx} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600">
+                          <span className="text-slate-400 font-medium">{idx + 1}.</span>
+                          <span className="text-sm text-slate-700 dark:text-slate-300">{step}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
             )}

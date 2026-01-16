@@ -638,12 +638,15 @@ Generér en spejling baseret på brugerens reaktioner og alle deres svar.`;
 }
 
 // Helper function to extract job title from job ad - uses regex patterns first, then GPT as fallback
+// Version 2.0 - Improved Danish title extraction (Jan 16, 2026)
 async function extractJobTitleFromAd(jobAdText: string): Promise<string> {
-  console.log('extractJobTitleFromAd called with text length:', jobAdText?.length);
-  console.log('First 500 chars of job ad:', jobAdText?.substring(0, 500));
+  console.log('[extractJobTitle v2.0] Called with text length:', jobAdText?.length);
+  console.log('[extractJobTitle] First 500 chars of job ad:', jobAdText?.substring(0, 500));
   
   // FIRST: Try to extract the first non-empty line that looks like a title
   const lines = jobAdText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  console.log('[extractJobTitle] First 3 lines:', lines.slice(0, 3));
+  
   if (lines.length > 0) {
     const firstLine = lines[0];
     // If first line is short enough to be a title (max ~80 chars) and doesn't contain typical body text markers
@@ -653,8 +656,15 @@ async function extractJobTitleFromAd(jobAdText: string): Promise<string> {
         !firstLine.toLowerCase().startsWith('er du') &&
         !firstLine.toLowerCase().startsWith('har du') &&
         !firstLine.toLowerCase().startsWith('om ')) {
-      console.log('Extracted job title from first line:', firstLine);
+      console.log('[extractJobTitle] SUCCESS: Extracted from first line:', firstLine);
       return firstLine;
+    } else {
+      console.log('[extractJobTitle] First line rejected:', { 
+        length: firstLine.length, 
+        hasDot: firstLine.includes('.'),
+        startsWithVi: firstLine.toLowerCase().startsWith('vi '),
+        startsWithErDu: firstLine.toLowerCase().startsWith('er du')
+      });
     }
   }
   

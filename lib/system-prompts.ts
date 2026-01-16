@@ -2071,13 +2071,23 @@ Inden du returnerer analysen, verificér:
    - UNDGÅ "er i overensstemmelse med" – brug "I praksis betyder det..."
    - ⚠️ ALDRIG skriv "ingen match" eller "ingen direkte match" – find ALTID overførbare elementer
 
-6. FORMELLE KRAV-TJEK (OBLIGATORISK):
-   - Scan jobannoncen for: uddannelseskrav, års erfaring, certificeringer, sprogkrav
-   - Hvis jobannoncen indeholder "minimum X års erfaring" eller "bachelor/kandidat": SKAL du inkludere formelt adgangstjek
-   - Hvis CV'et ikke dokumenterer kravene: formelt_adgangstjek SKAL udfyldes (ikke null)
-   - Vær SPECIFIK: "bachelor niveau + 5 års erfaring som projektleder" (ikke "relevante kvalifikationer")
-   - Hvis ikke dokumenteret: Er "Formelt adgangstjek" inkluderet i sektion 3?
-   - Formelt adgangstjek SKAL være SPECIFIKT (fx "bachelor niveau + 5 års erfaring som projektleder")
+6. FORMELLE KRAV-TJEK (KRITISK - MÅ IKKE SPRINGES OVER):
+   ⚠️ STOP og scan jobannoncen GRUNDIGT for disse ord/fraser:
+   - "uddannelse" / "bachelor" / "kandidat" / "videregående"
+   - "minimum X års erfaring" / "X års erfaring"
+   - "certificering" / "IPMA" / "PMP" / "PRINCE2" / "ITIL"
+   - "dansk" / "engelsk" (sprogkrav)
+   
+   HVIS du finder NOGEN af disse i jobannoncen:
+   → formelt_adgangstjek.included SKAL være true
+   → krav_fra_annonce SKAL liste de specifikke krav
+   → tekst SKAL nævne de præcise krav fra annoncen
+   
+   ⚠️ EKSEMPEL: Nomeco-annoncen siger:
+   "relevant videregående uddannelse, minimum på bachelor niveau"
+   "minimum 5 års erfaring som projektleder"
+   "IPMA-certificering eller tilsvarende" (ønskes)
+   → ALLE disse SKAL nævnes i formelt_adgangstjek
 
 7. DOMÆNEAFSTAND-TJEK:
    - Har du klassificeret domæneafstand som LAV/MODERAT/HØJ?
@@ -2121,8 +2131,13 @@ OUTPUT – JSON STRUKTUR
   
   "section3_opmærksomhed": {
     "title": "Det centrale opmærksomhedspunkt",
-    "formelt_adgangstjek": "[Kun hvis relevant: 'Jobannoncen kræver X. Dit CV dokumenterer ikke dette direkte...'] ELLER null",
-    "arbejdsstil_friktion": "[Friktioner mellem jobkrav og arbejdspræferencer]",
+    "formelt_adgangstjek": {
+      "included": true,
+      "krav_fra_annonce": ["bachelor niveau", "minimum 5 års erfaring som projektleder", "IPMA-certificering (ønskes)"],
+      "cv_dokumenterer": false,
+      "tekst": "Jobannoncen kræver relevant videregående uddannelse på minimum bachelor niveau og minimum 5 års erfaring som projektleder. IPMA-certificering eller tilsvarende ønskes. Dit CV dokumenterer ikke dette direkte. Dette er ikke en vurdering af dine evner, men et typisk rekrutteringsfilter som kan påvirke dine chancer."
+    },
+    "arbejdsstil_friktion": "[Friktioner mellem jobkrav og arbejdspræferencer - KUN hvis relevant]",
     "closing": "Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
   },
   

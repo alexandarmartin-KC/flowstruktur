@@ -242,28 +242,36 @@ export async function POST(request: NextRequest) {
     // Job spejling uses step1 (CV), step2 (work profile), and step3 (career analysis)
     const isJobSpejlingRequest = user_choice === 'C' && job_ad_text_or_url;
     console.log('[DEBUG] isJobSpejlingRequest:', isJobSpejlingRequest, '| user_choice:', user_choice, '| hasJobAd:', !!job_ad_text_or_url);
+    console.log('[DEBUG] job_ad_text_or_url preview:', job_ad_text_or_url?.substring(0, 150) || 'NONE');
     
     // If user provided a URL, fetch the actual job ad content
     let actualJobAdContent = job_ad_text_or_url || '';
     if (isJobSpejlingRequest && job_ad_text_or_url) {
       const trimmedInput = job_ad_text_or_url.trim();
       // Check if it's a URL
-      if (trimmedInput.startsWith('http://') || trimmedInput.startsWith('https://')) {
-        console.log('Job ad is a URL, fetching content:', trimmedInput.substring(0, 100));
+      const isUrl = trimmedInput.startsWith('http://') || trimmedInput.startsWith('https://');
+      console.log('[DEBUG] Input is URL:', isUrl);
+      
+      if (isUrl) {
+        console.log('[DEBUG] Attempting to fetch job ad from URL...');
         try {
           const fetchedContent = await fetchJobAdFromUrl(trimmedInput);
+          console.log('[DEBUG] Fetched content length:', fetchedContent?.length || 0);
           if (fetchedContent && fetchedContent.length > 200) {
             actualJobAdContent = fetchedContent;
-            console.log('Successfully fetched job ad content, length:', fetchedContent.length);
+            console.log('[DEBUG] Successfully using fetched content, preview:', actualJobAdContent.substring(0, 200));
           } else {
-            console.warn('Fetched content too short or empty, using original input');
+            console.warn('[DEBUG] Fetched content too short or empty:', fetchedContent?.length || 0);
           }
         } catch (err) {
-          console.error('Failed to fetch job ad URL:', err);
+          console.error('[DEBUG] Failed to fetch job ad URL:', err);
           // Keep the original URL text as fallback
         }
       }
     }
+    
+    console.log('[DEBUG] Final actualJobAdContent length:', actualJobAdContent?.length || 0);
+    console.log('[DEBUG] Final actualJobAdContent preview:', actualJobAdContent?.substring(0, 200) || 'NONE');
     
     // Pre-extract job title if this is a job spejling request
     let extractedJobTitle = '';
@@ -743,11 +751,12 @@ REGLER:
 // Helper function to fetch job ad content from URL
 async function fetchJobAdFromUrl(url: string): Promise<string> {
   try {
-    console.log('Fetching job ad from URL:', url);
+    console.log('[URL-FETCH] Starting fetch for URL:', url);
     
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
     
+    console.log('[URL-FETCH] Making request...');
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
@@ -758,13 +767,14 @@ async function fetchJobAdFromUrl(url: string): Promise<string> {
     });
     
     clearTimeout(timeout);
+    console.log('[URL-FETCH] Response status:', response.status, response.statusText);
     
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     
     const html = await response.text();
-    console.log('Fetched HTML length:', html.length);
+    console.log('[URL-FETCH] Fetched HTML length:', html.length);
     
     // Extract text content from HTML (simple approach)
     // Remove script and style tags first
@@ -789,12 +799,12 @@ async function fetchJobAdFromUrl(url: string): Promise<string> {
       .replace(/\n\s*\n/g, '\n')  // Collapse multiple newlines
       .trim();
     
-    console.log('Extracted text length:', text.length);
-    console.log('First 500 chars of extracted text:', text.substring(0, 500));
+    console.log('[URL-FETCH] Extracted text length:', text.length);
+    console.log('[URL-FETCH] First 500 chars:', text.substring(0, 500));
     
     return text;
   } catch (err) {
-    console.error('Error fetching job ad URL:', err);
+    console.error('[URL-FETCH] Error:', err);
     throw err;
   }
 }

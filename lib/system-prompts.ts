@@ -2010,69 +2010,55 @@ OUTPUT – JSON STRUKTUR
   "job_title": "[Jobtitel fra annoncen] – [Virksomhedsnavn]",
   "job_category": "[Projektledelse / Digital transformation | Linjeledelse / People management | Specialistrolle | osv.]",
   "domain_distance": "[LAV | MODERAT | HØJ]",
-  "domain_distance_explanation": "Fra [CV-domæne] til [job-domæne]. [Begrundelse for LAV/MODERAT/HØJ]",
   "match_quality": "[GOD | MODERAT | DÅRLIG]",
   
   "section1_jobbet": {
     "title": "Hvad jobbet reelt er",
-    "intro": "[Kort beskrivelse af stillingen og dens placering]",
-    "forudsaetninger": [
-      "[Konkret forudsætning 1 fra annoncen]",
-      "[Konkret forudsætning 2 fra annoncen]",
-      "[Konkret forudsætning 3 fra annoncen]"
-    ],
-    "niveau_afklaring": "[Dette er ikke en udviklingsrolle, men en rolle for kandidater, der allerede har X] ELLER [Dette er en indgangsrolle...]"
+    "content": "[Beskriv stillingen, dens placering, og afslut med: 'Rollen forudsætter: [liste]. Dette er ikke en udviklingsrolle, men en rolle for kandidater, der allerede har [X].']"
   },
   
   "section2_match": {
     "title": "Match-afklaring",
-    "match_niveau": "[GOD | MODERAT | DÅRLIG]",
-    "content_ved_godt_match": "[Kun ved GOD/MODERAT: Beskrivelse af konkrete match-punkter]",
-    "content_ved_daarligt_match": "Der er ingen direkte match mellem din nuværende erfaring og de centrale krav i jobannoncen. Dit CV dokumenterer hverken [krav1], [krav2] eller erfaring fra [domæne]. Der er heller ingen dokumenteret [uddannelse/certificering] som kræves i opslaget. Eventuelle overførbare kompetencer ([liste]) er utilstrækkelige til at opveje dette mismatch i en rekrutteringskontekst.",
+    "content": "[Ved DÅRLIGT match: 'Der er ingen direkte match mellem din nuværende erfaring og de centrale krav i jobannoncen. Dit CV dokumenterer hverken [krav1], [krav2] eller erfaring fra [domæne]. Der er heller ingen dokumenteret [uddannelse] som kræves i opslaget. Eventuelle overførbare kompetencer er utilstrækkelige til at opveje dette mismatch i en rekrutteringskontekst.'] [Ved GODT match: normal match-beskrivelse]",
     "points": [
-      "[Ved GODT match: Specifik CV-erfaring → Konkret jobkrav → Praktisk konsekvens]"
+      "[Ved GODT match: CV-erfaring → Jobkrav → Konsekvens]"
     ]
   },
   
-  "section3_realtjek": {
+  "section3_opmærksomhed": {
     "title": "Realtjek: karrierespring",
-    "included": true,
-    "spring_dimensioner": [
-      "Fra [CV-domæne] → [job-domæne]",
-      "Fra [CV-rolletype] → [job-rolletype]",
-      "Fra [CV-niveau] → [job-niveau]"
-    ],
-    "typisk_rekruttering": [
-      "[Hvem rekrutteres typisk til denne rolle - krav 1]",
-      "[Hvem rekrutteres typisk - krav 2]",
-      "[Hvem rekrutteres typisk - formelle krav]"
-    ],
-    "realisme_vurdering": "[lavt realistisk | moderat udfordrende | muligt med strategi]",
-    "overgangsstrategi": {
-      "included": true,
-      "intro": "Hvis denne type rolle repræsenterer et langsigtet karrieremål, vil en realistisk vej typisk indebære:",
-      "trin": [
-        {
-          "title": "Dokumenteret projektansvar i nært beslægtet domæne",
-          "description": "[Tilpasset til brugerens situation]"
-        },
-        {
-          "title": "Mellemliggende roller før senior-titel",
-          "description": "[Fx junior projektleder, projektkoordinator, PMO-funktioner]"
-        },
-        {
-          "title": "Formelle kvalifikationer før næste spring",
-          "description": "Uddannelse og/eller certificering er i dette felt ikke 'nice to have', men adgangsbillet."
-        }
-      ],
-      "closing": "Dette er ikke en vurdering af dit potentiale – men af markedslogik."
-    }
+    "content": "[Ved HØJ domæneafstand: Beskriv springet struktureret - fra X til Y, hvem rekrutteres typisk, realisme-vurdering. Afslut med: 'Et direkte spring til denne rolle vurderes derfor som lavt realistisk.']"
   },
+  
+  "section3a_karrierespring": {
+    "included": true,
+    "title": "Karrierespring – vigtigt at være bevidst om",
+    "content": "Dette job repræsenterer et markant karrierespring på flere niveauer samtidig: Fra [CV-domæne] til [job-domæne]. Fra [CV-rolletype] til [job-rolletype]. I praksis rekrutteres denne type stillinger næsten udelukkende blandt kandidater, som: [krav1], [krav2], [formelle krav]. Et direkte spring til denne rolle vurderes derfor som lavt realistisk."
+  },
+  
+  "section3b_overgangsstrategi": {
+    "included": true,
+    "title": "Overgangsstrategi (kun relevant ved langsigtet mål)",
+    "intro": "Hvis denne type rolle repræsenterer et langsigtet karrieremål, vil en realistisk vej typisk indebære:",
+    "strategies": [
+      {
+        "title": "Dokumenteret projektansvar i nært beslægtet domæne",
+        "description": "[Tilpasset til brugerens situation]"
+      },
+      {
+        "title": "Mellemliggende roller før senior-titel",
+        "description": "Fx junior projektleder, projektkoordinator eller PMO-relaterede funktioner."
+      },
+      {
+        "title": "Formelle kvalifikationer før næste spring",
+        "description": "Uddannelse og/eller certificering er i dette felt ikke 'nice to have', men adgangsbillet."
+      }
+    ],
+    "closing": "Dette er ikke en vurdering af dit potentiale – men af markedslogik."
   },
   
   "section4_konsekvens": {
     "title": "Hvad jobbet vil betyde for dit arbejdsliv",
-    "title_ved_mismatch": "Hvad jobbet vil betyde for dit arbejdsliv (hvis det var realistisk)",
     "mere_af": [
       "Struktur, metode og formel styring",
       "Governance, compliance og rapportering",
@@ -2092,7 +2078,7 @@ OUTPUT – JSON STRUKTUR
       "[Ved DÅRLIGT match: 'Du ser det som et langsigtet pejlemærke, ikke et realistisk næste skridt']",
       "[Ved DÅRLIGT match: 'Du er villig til flere års målrettet opbygning før næste spring']"
     ],
-    "giver_ikke_mening_hvis": [
+    "skaber_friktion_hvis": [
       "[Ved DÅRLIGT match: 'Du ønsker reel samtalechance nu']",
       "[Ved DÅRLIGT match: 'Du vil bruge din jobsøgning strategisk']",
       "[Ved DÅRLIGT match: 'Du forventer, at din nuværende erfaring kan bære dig direkte ind i rollen']"
@@ -2100,21 +2086,21 @@ OUTPUT – JSON STRUKTUR
   },
   
   "section6_beslutningsopsummering": {
+    "excluded": false,
     "title": "Skal jeg søge dette job?",
-    "kort_svar": "[JA/NEJ/MULIGVIS] – [begrundelse]",
-    "kort_svar_eksempler": {
-      "ved_godt_match": "Ja, hvis du ønsker [X]",
-      "ved_moderat_match": "Muligvis, men vær opmærksom på [X]",
-      "ved_daarligt_match": "Nej – ikke på nuværende tidspunkt."
-    },
+    "kort_sagt": "[Ved DÅRLIGT match: 'Nej – ikke på nuværende tidspunkt.'] [Ved GODT match: '[Jobtitel] er et valg mod X og væk fra Y.']",
+    "taler_for": [
+      "[Ved GODT match: 'Du ønsker...']"
+    ],
+    "taler_imod": [
+      "[Ved DÅRLIGT match: 'Du ønsker reel samtalechance nu']"
+    ],
     "trade_off": {
-      "ved_godt_match": "Mere [konkret arbejdsform] – mindre [konkret arbejdsform]",
-      "ved_daarligt_match": "Ambition vs. realisme"
+      "summary": "[Ved DÅRLIGT match: 'Ambition vs. realisme'] [Ved GODT match: 'Mere X – mindre Y']",
+      "mere_af": ["[konkret]"],
+      "mindre_af": ["[konkret]"]
     },
-    "kontrolspoergsmaal": {
-      "ved_godt_match": "Er [jobbets kernefokus] det, du vil kendes for?",
-      "ved_daarligt_match": "Vil du bruge din energi på en ansøgning, der sandsynligvis stopper ved første filter – eller på skridt, der faktisk flytter dig?"
-    }
+    "kontrolspoergsmaal": "[Ved DÅRLIGT match: 'Vil du bruge din energi på en ansøgning, der sandsynligvis stopper ved første filter – eller på skridt, der faktisk flytter dig?'] [Ved GODT match: 'Er [X] det, du vil kendes for?']"
   },
   
   "closing_statement": "Dette er ikke en anbefaling – men et spejl, du kan bruge til at vurdere, om jobbet matcher det arbejdsliv, du ønsker."

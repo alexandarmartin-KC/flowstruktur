@@ -254,6 +254,9 @@ export async function POST(request: NextRequest) {
       
       if (isUrl) {
         console.log('[DEBUG] Attempting to fetch job ad from URL...');
+        let urlFetchFailed = false;
+        let fetchError = '';
+        
         try {
           const fetchedContent = await fetchJobAdFromUrl(trimmedInput);
           console.log('[DEBUG] Fetched content length:', fetchedContent?.length || 0);
@@ -262,10 +265,21 @@ export async function POST(request: NextRequest) {
             console.log('[DEBUG] Successfully using fetched content, preview:', actualJobAdContent.substring(0, 200));
           } else {
             console.warn('[DEBUG] Fetched content too short or empty:', fetchedContent?.length || 0);
+            urlFetchFailed = true;
+            fetchError = 'Hjemmesiden indlæser jobannoncen via JavaScript, så vi kan ikke hente indholdet automatisk.';
           }
         } catch (err) {
           console.error('[DEBUG] Failed to fetch job ad URL:', err);
-          // Keep the original URL text as fallback
+          urlFetchFailed = true;
+          fetchError = 'Kunne ikke hente jobannoncen fra URL\'en.';
+        }
+        
+        // If URL fetch failed, return an error asking user to paste the text
+        if (urlFetchFailed) {
+          return NextResponse.json({
+            error: 'URL_FETCH_FAILED',
+            message: `${fetchError}\n\n**Kopier venligst jobannonseteksten direkte fra hjemmesiden og indsæt den i feltet i stedet for URL'en.**\n\nTip: Marker al tekst på jobannoncesiden (Ctrl+A), kopier (Ctrl+C), og indsæt her.`,
+          }, { status: 422 });
         }
       }
     }

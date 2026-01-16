@@ -380,9 +380,17 @@ function MulighederPageContent() {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API error response:', response.status, errorText);
-        throw new Error(`API fejl (${response.status}): ${errorText.substring(0, 100)}`);
+        const errorData = await response.json().catch(() => null);
+        console.error('API error response:', response.status, errorData);
+        
+        // Special handling for URL fetch failures
+        if (errorData?.error === 'URL_FETCH_FAILED') {
+          setError(errorData.message || 'Kunne ikke hente jobannoncen fra URL. Prøv at kopiere teksten direkte.');
+          setIsLoading(false);
+          return;
+        }
+        
+        throw new Error(`API fejl (${response.status}): ${JSON.stringify(errorData).substring(0, 100)}`);
       }
 
       const data: CareerCoachResponse = await response.json();

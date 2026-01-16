@@ -202,6 +202,25 @@ export async function POST(request: NextRequest) {
       // 2. Clear separation between job ad and user profile
       // 3. User profile LAST to prevent title contamination
       
+      // Sanitize step1_json to remove any job titles that could confuse the model
+      // We replace common job title patterns with generic placeholders
+      const sanitizedStep1 = JSON.stringify(step1_json, null, 2)
+        .replace(/"(job_?title|position|stilling|titel|role)":\s*"[^"]+"/gi, '"current_role": "[BRUGERENS NUVÆRENDE ROLLE - IKKE RELEVANT FOR DENNE ANALYSE]"')
+        .replace(/"title":\s*"[^"]+"/gi, '"title": "[BRUGERENS TIDLIGERE TITEL]"');
+      
+      // Also sanitize step3_json analysis text to avoid title confusion
+      const sanitizedStep3 = {
+        ...step3_json,
+        analysis_text: step3_json.analysis_text 
+          ? `[Karriereanalyse - jobtitler er anonymiseret]\n${step3_json.analysis_text}`
+          : ''
+      };
+      
+      // Log the sanitized content for debugging
+      console.log('Job Spejling - sanitized step1 preview:', sanitizedStep1.substring(0, 300));
+      console.log('Job Spejling - job_ad length:', job_ad_text_or_url?.length || 0);
+      console.log('Job Spejling - job_ad first 200 chars:', job_ad_text_or_url?.substring(0, 200));
+      
       userMessage = `════════════════════════════════════════════════════════════════════════
 ████ JOBANNONCE - DU ANALYSERER DETTE JOB ████
 ════════════════════════════════════════════════════════════════════════
@@ -245,15 +264,16 @@ Brug ALDRIG en titel fra brugerens CV.
 
 BEMÆRK: Nedenfor er brugerens profil. Brug KUN til at sammenligne med jobbet.
 JOBTITLEN KOMMER FRA ANNONCEN OVENFOR - ALDRIG fra dataen nedenfor.
+Brugerens jobtitler er fjernet for at undgå forvirring.
 
-Brugerens CV (step1_json):
-${JSON.stringify(step1_json, null, 2)}
+Brugerens CV (step1_json - jobtitler anonymiseret):
+${sanitizedStep1}
 
 Brugerens arbejdsprofil (step2_json):
 ${JSON.stringify(step2_json, null, 2)}
 
-Brugerens karriereanalyse (step3_json):
-${JSON.stringify(step3_json, null, 2)}
+Brugerens karriereanalyse (step3_json - jobtitler anonymiseret):
+${JSON.stringify(sanitizedStep3, null, 2)}
 
 ════════════════════════════════════════════════════════════════════════
 ████ DIN OPGAVE ████

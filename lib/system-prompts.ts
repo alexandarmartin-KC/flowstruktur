@@ -1746,15 +1746,10 @@ Denne sektion skal svare på ÉT spørgsmål:
 Identificér 1–2 væsentlige forskelle.
 Formulér som neutral observation – ikke advarsel.
 
-⚠️ DENNE SEKTION EJER DISSE ORD (må IKKE bruges i sektion 4, 5 eller 6):
-- "struktur" / "struktureret"
-- "fleksibilitet" / "fleksibel"
-- "hands-on"
-- "administrativ" / "administration"
-- "dynamisk"
+⚠️ UNIVERSELT PRINCIP: NÅR DU BRUGER ET NØGLEORD HER → DET ER LÅST
+Hvert nøgleord du bruger i denne sektion (fx "struktur", "tempo", "autonomi", "kreativitet", "samarbejde" osv.) må IKKE genbruges i sektion 4, 5 eller 6.
 
-NÅR DU BRUGER ET ORD HER → DET ER LÅST.
-Sektion 4, 5 og 6 SKAL bruge ANDRE ord for samme koncept.
+Sektion 4, 5 og 6 SKAL bruge ANDRE ord eller synonymer for samme koncept.
 
 SEKTION 4 – HVAD DETTE JOB VIL BETYDE FOR DIT ARBEJDSLIV
 ────────────────────────────────────────────────────────
@@ -1769,22 +1764,21 @@ MINDRE AF: [1 ord eller kort frase] (maks 2 bullets)
 
 Ingen forklaringer. Ingen sætninger. Kun konsekvenser.
 
-✅ GODE eksempler:
+✅ GODE eksempler (konkrete aktiviteter):
 - "møder"
-- "rapportering"
-- "synlighed opad"
-- "eget håndværk"
-- "improvisation"
+- "dokumentation"
+- "e-mails"
+- "kundesamtaler"
+- "kodearbejde"
+- "kreativt arbejde"
+- "rejser"
 
-❌ FORBUDTE ord (allerede brugt i sektion 3):
-- struktur / struktureret
-- fleksibilitet / fleksibel
-- hands-on
-- administrativ
-- dynamisk
+⚠️ UNDGÅ abstrakte ord der allerede er brugt i sektion 3.
+Brug KONKRETE aktiviteter i stedet.
 
-⚠️ SKRIV IKKE "Mere af: ledelse og udvikling af teams"
-SKRIV: "Mere af: møder" eller "Mere af: 1:1-samtaler"
+Eksempel:
+Hvis sektion 3 siger "struktur" → sig her "faste processer" eller "dokumentation"
+Hvis sektion 3 siger "autonomi" → sig her "selvstændig planlægning" eller "egne beslutninger"
 
 SEKTION 5 – DIT BESLUTNINGSSPEJL
 ────────────────────────────────
@@ -1804,10 +1798,8 @@ Denne sektion skal få brugeren til at tænke:
 ❌ DÅRLIG (for lang):
 "Jobbet giver mening for dig, hvis du er komfortabel med at arbejde i en rolle, hvor din succes primært afhænger af teamets præstationer."
 
-❌ FORBUDTE ord (allerede brugt):
-- struktur / struktureret / struktureret ramme
-- fleksibilitet / fleksibel / fleksibel arbejdsstil
-- hands-on
+⚠️ BRUG IKKE samme nøgleord som i sektion 3.
+Find NYE ord der rammer samme pointe på en frisk måde.
 
 ⚠️ 10 ORD. MAVEN. STOP.
 
@@ -1840,41 +1832,36 @@ kort_sagt:
 taler_for:
 4 udsagn formuleret som: "Søg jobbet, hvis…"
 ⚠️ NYE VINKLER KUN – ikke gentagelse af sektion 2-5.
-Fokusér på: karrieremuligheder, branchemæssig placering, timing i livet.
+Fokusér på: karrieremuligheder, branchemæssig placering, timing i livet, netværk, læring.
 
-⚠️ FORBUDTE FORMULERINGER i taler_for:
-- "hvis du ønsker at lede" (allerede dækket)
-- "hvis du trives med struktur" (allerede dækket)
-- "hvis du vil udvikle ledelseskompetencer" (for generisk)
+⚠️ UNIVERSELT PRINCIP: Brug IKKE samme nøgleord som i sektion 3.
+Hvis sektion 3 nævner et koncept → find en ANDEN vinkel her.
 
 taler_imod:
 4 udsagn formuleret som: "Overvej at lade være, hvis…"
 ⚠️ NYE VINKLER KUN – ikke gentagelse af sektion 3.
+Fokusér på: livssituation, alternative karriereveje, timing, personlige prioriteter.
 
-⚠️ FORBUDTE FORMULERINGER i taler_imod:
-- "hvis du foretrækker fleksibilitet" (allerede i sektion 3)
-- "hvis du foretrækker hands-on" (allerede i sektion 3)
-- "hvis du ikke trives med struktur" (allerede i sektion 3)
+⚠️ UNIVERSELT PRINCIP: Brug IKKE samme nøgleord som i sektion 3.
 
 trade_off:
 Formuleres som: "Mere X – mindre Y" (maks 5 ord per side)
 ⚠️ MAKS 2 bullets per side.
-⚠️ ANDRE ord end sektion 4.
+⚠️ ANDRE ord end sektion 4 – brug synonymer eller konkrete aktiviteter.
 
 kontrolspoergsmaal:
 ⚠️ MAKS 10 ORD. MAVEN. IDENTITET.
 
 Spørgsmålet skal ramme IDENTITET, ikke opgave.
 
-✅ GOD (identitet):
+✅ GODE eksempler (universelle):
 "Vil du måles på andres arbejde – eller dit eget?"
-"Er du leder – eller udfører?"
+"Er du strateg – eller udfører?"
+"Vil du forme retning – eller levere resultat?"
+"Er du klar til at vælge dybde over bredde?"
 
-❌ DÅRLIG (opgave):
-"Er du klar til at lede uden at udføre?" (for lang, for opgave-fokuseret)
-  "Vil du måles på andres arbejde – eller dit eget?"
-  "Kan du trives med at lede uden at udføre?"
-  "Er du klar til at bytte frihed for indflydelse?"
+❌ DÅRLIGE eksempler:
+For lange spørgsmål med flere sætninger.
 
 Spørgsmålet skal sidde i maven – ikke i hovedet.
 
@@ -1884,15 +1871,10 @@ Spørgsmålet skal sidde i maven – ikke i hovedet.
 
 Før output genereres, verificér internt:
 
-1. ORDFORBUDSTJEK (KRITISK):
-   Disse ord må KUN optræde i sektion 3:
-   - struktur / struktureret
-   - fleksibilitet / fleksibel
-   - hands-on
-   - administrativ
-   - dynamisk
-   
-   Hvis et af disse ord optræder i sektion 4, 5 eller 6 → ERSTAT med synonym.
+1. ORDGENBRUGSTJEK (KRITISK):
+   List alle nøgleord brugt i sektion 3.
+   Tjek om NOGEN af dem optræder i sektion 4, 5 eller 6.
+   Hvis ja → ERSTAT med synonym eller konkret aktivitet.
 
 2. GENTAGELSESTJEK:
    Læs sektion 3, 4, 5, 6 efter hinanden.

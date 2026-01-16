@@ -1715,73 +1715,89 @@ Formål: Oversættelse af job → arbejdsliv
 
 SEKTION 2 – HVOR DER ER ET TYDELIGT MATCH
 ─────────────────────────────────────────
-Formål: Dokumentation
+Formål: Præcis anvendelse (IKKE bare dokumentation)
 
-Peg på konkrete sammenfald mellem:
-- Jobkrav
-- CV-erfaring
-- Arbejdsprofil (dimensioner)
+Denne sektion skal svare på ÉT spørgsmål:
+"Hvad i dette job vil trække mest på brugerens dokumenterede styrker?"
+
+⚠️ KRITISK: UNDGÅ "CV-ALIGNED" GENTAGELSE
+Brugeren ved godt, hvad der står i deres CV.
+De skal vide, HVORDAN deres erfaring vil blive BRUGT i dette job.
+
+I stedet for:
+  "Dit CV dokumenterer erfaring med ledelse, hvilket matcher jobkravet."
+
+Skriv:
+  "Din erfaring med at opbygge sikkerhedsprocedurer vil i dette job primært blive brugt til at evaluere andres arbejde – ikke til selv at designe dem."
 
 Formulér med:
-- "Dit CV dokumenterer…"
-- "Din arbejdsprofil viser…"
+- "Dit CV dokumenterer…" + HVORDAN det vil blive brugt anderledes
+- "Din arbejdsprofil viser…" + HVAD det betyder i denne kontekst
 
-⚠️ Kun fakta og sammenfald – ingen advarsler.
+⚠️ Målet er AHA – ikke bekræftelse.
 
 SEKTION 3 – DET CENTRALE OPMÆRKSOMHEDSPUNKT
 ───────────────────────────────────────────
-Formål: Friktion
+Formål: Hvad kræver BEVIDST tilpasning?
+
+Denne sektion skal svare på ÉT spørgsmål:
+"Hvad i dette job vil kræve, at brugeren arbejder mod deres naturlige præferencer?"
 
 Identificér 1–2 væsentlige forskelle mellem:
 - Jobkrav
 - Brugerens præferencer eller mønstre
 
-Formulér som trade-offs, ikke problemer.
+Formulér som neutral observation – ikke advarsel:
+  "Jobbet kræver X, mens din profil viser præference for Y."
 
-⚠️ Ingen opsummering af hele jobbet.
-⚠️ Ingen gentagelse af match.
+⚠️ DENNE SEKTION EJER FRIKTIONEN.
+Sektion 4, 5 og 6 må IKKE gentage disse pointer – kun bygge videre.
 
 SEKTION 4 – HVAD DETTE JOB VIL BETYDE FOR DIT ARBEJDSLIV
 ────────────────────────────────────────────────────────
-Formål: Det mest afgørende skifte (KONCENTRERET)
+Formål: Konkret hverdagsændring (IKKE friktion igen)
 
-Kun korte bullets – ingen forklarende tekst.
+Denne sektion skal svare på ÉT spørgsmål:
+"Hvordan vil brugerens typiske arbejdsdag ændre sig – i praksis?"
 
-⚠️ KRITISK: UNDGÅ GENTAGELSE
-- Medtag KUN konsekvenser der IKKE allerede er nævnt i sektion 2 eller 3
-- MAKS 2 bullets i "Mere af"
-- MAKS 2 bullets i "Mindre af"
-- Prioritér det skifte, der vil mærkes MEST i hverdagen
+⚠️ DENNE SEKTION HANDLER OM TID OG AKTIVITET – IKKE FRIKTION
+Sektion 3 har allerede dækket friktionen.
+Her handler det om: hvad fylder mere/mindre i kalenderen?
 
-MERE AF:
-(Vælg KUN de 1-2 vigtigste – ikke alt der passer)
+Eksempler på GOD formulering:
+- "Mere af: møder med andre ledere" (tid)
+- "Mindre af: hands-on problemløsning" (aktivitet)
 
-MINDRE AF:
-(Vælg KUN de 1-2 vigtigste – ikke alt der passer)
+Eksempler på DÅRLIG formulering (gentagelse):
+- "Mere af: struktur" (allerede nævnt i sektion 3)
+- "Mindre af: fleksibilitet" (allerede nævnt i sektion 3)
 
-⚠️ Hvis "struktur" eller "ledelse" allerede er forklaret i sektion 3 – UDELAD det her.
-⚠️ Denne sektion skal føles som en TILFØJELSE, ikke en gentagelse.
+MERE AF: (maks 2 – tid/aktivitet)
+MINDRE AF: (maks 2 – tid/aktivitet)
+
+⚠️ Brug ANDRE ord end sektion 3. Hvis sektion 3 siger "struktur", sig her fx "faste processer og dokumentation".
 
 SEKTION 5 – DIT BESLUTNINGSSPEJL
 ────────────────────────────────
-Formål: Personlig erkendelse (IKKE gentagelse)
+Formål: Én ny erkendelse (KORT og SKARP)
 
-Oversæt konsekvenserne til en indsigt, brugeren ikke havde formuleret selv.
+Denne sektion skal svare på ÉT spørgsmål:
+"Hvad skal brugeren vide om sig selv efter denne spejling, som de ikke vidste før?"
 
-⚠️ KRITISK: SKRIV SPECIFIKT
-I stedet for generiske formuleringer som:
-  "Jobbet giver mening, hvis du ønsker at fokusere på ledelse..."
+⚠️ DETTE ER SPEJLETS KERNE
+Her skal brugeren tænke: "Det her kunne jeg aldrig selv have læst ud af annoncen."
 
-Brug KONKRETE formuleringer der rammer brugerens virkelighed:
-  "Jobbet giver mening for dig, hvis du er komfortabel med, at størstedelen af din værdi måles gennem andres performance – ikke dit eget udførende arbejde."
+Formulér KORT – maks 1-2 sætninger per punkt:
+- "Jobbet giver mening for dig, hvis..." (ÉN skarp indsigt)
+- "Det kan skabe friktion, hvis..." (ÉN skarp indsigt)
 
-Formulér:
-- "Jobbet giver mening for dig, hvis..." (specifik til DETTE job og DENNE bruger)
-- "Det kan skabe friktion, hvis..." (konkret, ikke generisk)
+Eksempel på SKARP formulering:
+  "Jobbet giver mening, hvis du er klar til at måle din værdi gennem andres præstationer – ikke dit eget arbejde."
 
-⚠️ MÅ IKKE bruge samme ordvalg som sektion 3 eller 4.
-⚠️ Formuleringen skal give brugeren en ny måde at se valget på.
-⚠️ Ingen anbefaling – men heller ikke gentagelse.
+Eksempel på SVAG formulering (for lang):
+  "Jobbet giver mening for dig, hvis du er komfortabel med at arbejde i en rolle, hvor din succes primært afhænger af teamets præstationer og evnen til at opretholde høje sikkerhedsstandarder."
+
+⚠️ KORT. MAVEN. 3 SEKUNDER.
 
 ════════════════════════════════════════════════════════════════
 SEKTION 6 – BESLUTNINGSOPSUMMERING ("SKAL JEG SØGE?")
@@ -1810,37 +1826,41 @@ kort_sagt:
 (Ingen vurderinger – kun essens)
 
 taler_for:
-4–6 udsagn formuleret som: "Søg jobbet, hvis…"
-Fokusér på: ansvar, arbejdsform, struktur/frihed, daglig rytme.
+4 udsagn formuleret som: "Søg jobbet, hvis…"
+⚠️ MÅ IKKE gentage pointer fra sektion 2, 3, 4 eller 5.
+Fokusér på NYE vinkler: karrieremuligheder, branchemæssig placering, timing i livet.
 
 taler_imod:
-4–6 udsagn formuleret som: "Overvej at lade være, hvis…"
-Ingen dømmende formuleringer.
+4 udsagn formuleret som: "Overvej at lade være, hvis…"
+⚠️ MÅ IKKE gentage pointer fra sektion 3.
+Fokusér på NYE vinkler: livssituation, alternative veje, timing.
 
 trade_off:
 Formuleres som: "Mere X – mindre Y"
-Med korte bullets for begge sider.
+⚠️ MAKS 2 bullets per side.
+⚠️ SKAL bruge ANDRE ord end sektion 4.
 
-⚠️ KRITISK: Trade-off må IKKE gentage bullets fra sektion 4.
-Hvis sektion 4 siger "ledelse" og "struktur", så brug ANDRE ord her.
-Fx: "synlighed gennem andres resultater" i stedet for "ledelse".
+Eksempel:
+Hvis sektion 4 siger "ledelse" → sig her "synlighed gennem andres resultater"
+Hvis sektion 4 siger "fleksibilitet" → sig her "mulighed for at improvisere"
 
 kontrolspoergsmaal:
-⚠️ DETTE ER DEN VIGTIGSTE DEL AF HELE ANALYSEN
+⚠️ KORT. MAVEN. 3 SEKUNDER.
 
 Spørgsmålet SKAL:
-- Være UNIKT for denne specifikke analyse
-- Kun give mening PGA. det, analysen har afdækket
-- Ramme brugerens konkrete valg – ikke generiske følelser
+- Kunne læses og mærkes på 3 sekunder
+- Være maks 20 ord
+- Ramme det centrale valg
 
-UNDGÅ generiske spørgsmål som:
-  "Giver det dig energi – eller dræner det dig?"
+UNDGÅ lange forklarende spørgsmål som:
+  "Kan du se dig selv være tilfreds i en rolle, hvor din succes primært afhænger af teamets præstationer og evnen til at opretholde høje sikkerhedsstandarder, også på dage hvor du ikke selv udfører konkrete sikkerhedsopgaver?"
 
-SKRIV I STEDET spørgsmål der SPEJLER analysens kerne:
-  "Kan du se dig selv være tilfreds i en rolle, hvor din succes primært afhænger af processer, rapportering og andres leverancer – også på dage, hvor du selv ikke 'producerer' noget konkret?"
+SKRIV I STEDET kort og skarpt:
+  "Vil du måles på andres arbejde – eller dit eget?"
+  "Kan du trives med at lede uden at udføre?"
+  "Er du klar til at bytte frihed for indflydelse?"
 
-Spørgsmålet skal få brugeren til at tænke:
-  "Det her har jeg aldrig formuleret sådan før – men det er præcis det, jeg skal tage stilling til."
+Spørgsmålet skal sidde i maven – ikke i hovedet.
 
 ════════════════════════════════════════════════════════════════
 🔍 INDBYGGET KVALITETSTJEK (KØR INDEN OUTPUT)
@@ -1857,10 +1877,21 @@ Før output genereres, verificér internt:
 
 3. PROGRESSION:
    Hver sektion gør brugeren klogere end den forrige.
+   
+4. GENTAGELSESTJEK (KRITISK):
+   Læs sektion 3, 4, 5, 6 efter hinanden.
+   Hvis samme pointe optræder mere end én gang → FJERN den ene.
+   
+   Eksempel på FEJL:
+   - Sektion 3: "kræver struktur"
+   - Sektion 4: "mere struktur"
+   - Sektion 6 taler_imod: "hvis du ikke trives med struktur"
+   → "struktur" nævnes 3 gange = FEJL
 
-4. BETALINGSKLARHED:
+5. BETALINGSKLARHED:
    Ville en betalende bruger føle sig mere afklaret efter at have læst dette?
-   Hvis ikke – justér sproget.
+   Ville de tænke "det vidste jeg godt" – eller "det har jeg aldrig set sådan før"?
+   Hvis det første – justér sproget.
 
 ════════════════════════════════════════════════════════════════
 OUTPUT – JSON STRUKTUR (SKAL FØLGES PRÆCIST)
@@ -1890,14 +1921,14 @@ OUTPUT – JSON STRUKTUR (SKAL FØLGES PRÆCIST)
   
   "section4_konsekvens": {
     "title": "Hvad dette job vil betyde for dit arbejdsliv",
-    "mere_af": ["MAKS 2 bullets - kun det vigtigste"],
-    "mindre_af": ["MAKS 2 bullets - kun det vigtigste"]
+    "mere_af": ["Tid/aktivitet - IKKE gentagelse af sektion 3", "Maks 2"],
+    "mindre_af": ["Tid/aktivitet - IKKE gentagelse af sektion 3", "Maks 2"]
   },
   
   "section5_beslutning": {
     "title": "Dit beslutningsspejl",
-    "giver_mening_hvis": "[SPECIFIK formulering der rammer brugerens virkelighed - ikke generisk]",
-    "skaber_friktion_hvis": "[KONKRET - ikke gentagelse af sektion 3/4]"
+    "giver_mening_hvis": "[KORT - maks 1-2 sætninger - skal ramme maven]",
+    "skaber_friktion_hvis": "[KORT - maks 1-2 sætninger - ANDRE ord end sektion 3]"
   },
   
   "section6_beslutningsopsummering": {
@@ -1906,23 +1937,23 @@ OUTPUT – JSON STRUKTUR (SKAL FØLGES PRÆCIST)
     "subtitle": "En kort beslutningsopsummering baseret på din samlede spejling",
     "kort_sagt": "[2-3 linjer: hvad jobbet repræsenterer, hvilken type arbejdsliv det peger mod]",
     "taler_for": [
-      "Søg jobbet, hvis...",
+      "Søg jobbet, hvis... [NYE vinkler - ikke gentagelse]",
       "Søg jobbet, hvis...",
       "Søg jobbet, hvis...",
       "Søg jobbet, hvis..."
     ],
     "taler_imod": [
-      "Overvej at lade være, hvis...",
+      "Overvej at lade være, hvis... [NYE vinkler - ikke gentagelse af sektion 3]",
       "Overvej at lade være, hvis...",
       "Overvej at lade være, hvis...",
       "Overvej at lade være, hvis..."
     ],
     "trade_off": {
       "summary": "Mere X – mindre Y",
-      "mere_af": ["ANDRE ord end sektion 4 - maks 3"],
-      "mindre_af": ["ANDRE ord end sektion 4 - maks 3"]
+      "mere_af": ["ANDRE ord end sektion 4 - maks 2"],
+      "mindre_af": ["ANDRE ord end sektion 4 - maks 2"]
     },
-    "kontrolspoergsmaal": "[UNIKT spørgsmål der kun giver mening pga. denne analyse - IKKE generisk]"
+    "kontrolspoergsmaal": "[KORT - maks 20 ord - skal sidde i maven på 3 sekunder]"
   },
   
   "closing_statement": "Dette er ikke en anbefaling – men et spejl, du kan bruge til at vurdere, om jobbet matcher det arbejdsliv, du ønsker."

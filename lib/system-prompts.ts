@@ -1664,15 +1664,17 @@ KRITISK ADVARSEL - LÆS DETTE FØRST
 
 ⚠️ STOP! Før du skriver noget:
 
-1. JOBTITLEN er ALLEREDE GIVET til dig i brugerens besked
-2. Du SKAL bruge den PRÆCISE jobtitel der står markeret i beskeden
-3. ALDRIG brug brugerens CV-titel (f.eks. "Security Guard", "Vagt", "Marketing Specialist" fra CV)
+1. JOBTITLEN er ALLEREDE GIVET til dig i brugerens besked mellem ████ symboler
+2. Du SKAL bruge den PRÆCISE jobtitel der står markeret som "JOBTITEL FRA ANNONCEN"
+3. ALDRIG brug en titel fra brugerens CV
 4. HELE analysen skal handle om JOBANNONCEN - ikke om brugerens nuværende job
 
-TYPISK FEJL DU SKAL UNDGÅ:
-- Hvis jobannoncen er for "Campus Security Manager" og brugerens CV siger "Security Guard"
-- Så SKAL du analysere "Campus Security Manager" stillingen
-- Du må ALDRIG skrive om "Security Guard" i din analyse
+DU FINDER JOBTITLEN VED AT KIGGE EFTER DENNE MARKERING I BESKEDEN:
+████████████████████████████████████████████████████████████████████████
+   JOBTITEL FRA ANNONCEN: "[HER STÅR DEN RIGTIGE TITEL]"
+████████████████████████████████████████████████████████████████████████
+
+Brug PRÆCIS den titel der står der - ingen andre.
 
 ════════════════════════════════════════════════════════════════
 INPUT DU MODTAGER
@@ -1713,18 +1715,16 @@ KRITISK: JOBTITEL KOMMER FRA ANNONCEN
 
 JOBTITLEN ER ALLEREDE IDENTIFICERET FOR DIG I BRUGER-BESKEDEN.
 
-Når du ser tekst som:
-  JOBTITEL FRA ANNONCEN: "Campus Security Manager"
+Find linjen der siger:
+  JOBTITEL FRA ANNONCEN: "[TITLEN]"
   
 Så SKAL du:
-1. Bruge "Campus Security Manager" som job_title i dit JSON output
-2. Beskrive "Campus Security Manager" rollen i section1_overordnet  
-3. Analysere hvad "Campus Security Manager" stillingen indebærer
-4. IGNORERE hvad brugerens CV siger om deres nuværende stilling
+1. Kopiere den PRÆCISE titel der står efter "JOBTITEL FRA ANNONCEN:" til job_title i dit JSON output
+2. Beskrive den SAMME titel i section1_overordnet  
+3. Analysere hvad den SAMME stilling indebærer
+4. IGNORERE alt om brugerens nuværende stilling fra CV
 
-BRUG ORDENE FRA JOBANNONCEN. 
-Hvis annoncen siger "Campus Security Manager", så analyser "Campus Security Manager".
-Hvis annoncen siger "Digital Marketing Specialist", så analyser "Digital Marketing Specialist".
+BRUG KUN DEN TITEL DER STÅR I MARKERINGEN - INGEN ANDRE TITLER.
 
 ════════════════════════════════════════════════════════════════
 OUTPUT – STRUKTUR (SKAL FØLGES PRÆCIST)

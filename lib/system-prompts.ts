@@ -1743,61 +1743,73 @@ Formål: Hvad kræver BEVIDST tilpasning?
 Denne sektion skal svare på ÉT spørgsmål:
 "Hvad i dette job vil kræve, at brugeren arbejder mod deres naturlige præferencer?"
 
-Identificér 1–2 væsentlige forskelle mellem:
-- Jobkrav
-- Brugerens præferencer eller mønstre
+Identificér 1–2 væsentlige forskelle.
+Formulér som neutral observation – ikke advarsel.
 
-Formulér som neutral observation – ikke advarsel:
-  "Jobbet kræver X, mens din profil viser præference for Y."
+⚠️ DENNE SEKTION EJER DISSE ORD (må IKKE bruges i sektion 4, 5 eller 6):
+- "struktur" / "struktureret"
+- "fleksibilitet" / "fleksibel"
+- "hands-on"
+- "administrativ" / "administration"
+- "dynamisk"
 
-⚠️ DENNE SEKTION EJER FRIKTIONEN.
-Sektion 4, 5 og 6 må IKKE gentage disse pointer – kun bygge videre.
+NÅR DU BRUGER ET ORD HER → DET ER LÅST.
+Sektion 4, 5 og 6 SKAL bruge ANDRE ord for samme koncept.
 
 SEKTION 4 – HVAD DETTE JOB VIL BETYDE FOR DIT ARBEJDSLIV
 ────────────────────────────────────────────────────────
-Formål: Konkret hverdagsændring (IKKE friktion igen)
+Formål: PRIS OG GEVINST (brutal og kort)
 
 Denne sektion skal svare på ÉT spørgsmål:
-"Hvordan vil brugerens typiske arbejdsdag ændre sig – i praksis?"
+"Hvad er prisen? Hvad er gevinsten?"
 
-⚠️ DENNE SEKTION HANDLER OM TID OG AKTIVITET – IKKE FRIKTION
-Sektion 3 har allerede dækket friktionen.
-Her handler det om: hvad fylder mere/mindre i kalenderen?
+⚠️ BRUTAL FORMAT:
+MERE AF: [1 ord eller kort frase] (maks 2 bullets)
+MINDRE AF: [1 ord eller kort frase] (maks 2 bullets)
 
-Eksempler på GOD formulering:
-- "Mere af: møder med andre ledere" (tid)
-- "Mindre af: hands-on problemløsning" (aktivitet)
+Ingen forklaringer. Ingen sætninger. Kun konsekvenser.
 
-Eksempler på DÅRLIG formulering (gentagelse):
-- "Mere af: struktur" (allerede nævnt i sektion 3)
-- "Mindre af: fleksibilitet" (allerede nævnt i sektion 3)
+✅ GODE eksempler:
+- "møder"
+- "rapportering"
+- "synlighed opad"
+- "eget håndværk"
+- "improvisation"
 
-MERE AF: (maks 2 – tid/aktivitet)
-MINDRE AF: (maks 2 – tid/aktivitet)
+❌ FORBUDTE ord (allerede brugt i sektion 3):
+- struktur / struktureret
+- fleksibilitet / fleksibel
+- hands-on
+- administrativ
+- dynamisk
 
-⚠️ Brug ANDRE ord end sektion 3. Hvis sektion 3 siger "struktur", sig her fx "faste processer og dokumentation".
+⚠️ SKRIV IKKE "Mere af: ledelse og udvikling af teams"
+SKRIV: "Mere af: møder" eller "Mere af: 1:1-samtaler"
 
 SEKTION 5 – DIT BESLUTNINGSSPEJL
 ────────────────────────────────
-Formål: Én ny erkendelse (KORT og SKARP)
+Formål: ÉN SKARP ERKENDELSE
 
-Denne sektion skal svare på ÉT spørgsmål:
-"Hvad skal brugeren vide om sig selv efter denne spejling, som de ikke vidste før?"
+Denne sektion skal få brugeren til at tænke:
+"Det her kunne jeg aldrig selv have læst ud af annoncen."
 
-⚠️ DETTE ER SPEJLETS KERNE
-Her skal brugeren tænke: "Det her kunne jeg aldrig selv have læst ud af annoncen."
+⚠️ MAKS 10 ORD PER PUNKT:
+- "Giver mening, hvis..." (maks 10 ord)
+- "Skaber friktion, hvis..." (maks 10 ord)
 
-Formulér KORT – maks 1-2 sætninger per punkt:
-- "Jobbet giver mening for dig, hvis..." (ÉN skarp indsigt)
-- "Det kan skabe friktion, hvis..." (ÉN skarp indsigt)
+✅ GOD:
+"Giver mening, hvis du vil måles på andres arbejde."
+"Skaber friktion, hvis du vil se dit eget håndværk."
 
-Eksempel på SKARP formulering:
-  "Jobbet giver mening, hvis du er klar til at måle din værdi gennem andres præstationer – ikke dit eget arbejde."
+❌ DÅRLIG (for lang):
+"Jobbet giver mening for dig, hvis du er komfortabel med at arbejde i en rolle, hvor din succes primært afhænger af teamets præstationer."
 
-Eksempel på SVAG formulering (for lang):
-  "Jobbet giver mening for dig, hvis du er komfortabel med at arbejde i en rolle, hvor din succes primært afhænger af teamets præstationer og evnen til at opretholde høje sikkerhedsstandarder."
+❌ FORBUDTE ord (allerede brugt):
+- struktur / struktureret / struktureret ramme
+- fleksibilitet / fleksibel / fleksibel arbejdsstil
+- hands-on
 
-⚠️ KORT. MAVEN. 3 SEKUNDER.
+⚠️ 10 ORD. MAVEN. STOP.
 
 ════════════════════════════════════════════════════════════════
 SEKTION 6 – BESLUTNINGSOPSUMMERING ("SKAL JEG SØGE?")
@@ -1827,35 +1839,39 @@ kort_sagt:
 
 taler_for:
 4 udsagn formuleret som: "Søg jobbet, hvis…"
-⚠️ MÅ IKKE gentage pointer fra sektion 2, 3, 4 eller 5.
-Fokusér på NYE vinkler: karrieremuligheder, branchemæssig placering, timing i livet.
+⚠️ NYE VINKLER KUN – ikke gentagelse af sektion 2-5.
+Fokusér på: karrieremuligheder, branchemæssig placering, timing i livet.
+
+⚠️ FORBUDTE FORMULERINGER i taler_for:
+- "hvis du ønsker at lede" (allerede dækket)
+- "hvis du trives med struktur" (allerede dækket)
+- "hvis du vil udvikle ledelseskompetencer" (for generisk)
 
 taler_imod:
 4 udsagn formuleret som: "Overvej at lade være, hvis…"
-⚠️ MÅ IKKE gentage pointer fra sektion 3.
-Fokusér på NYE vinkler: livssituation, alternative veje, timing.
+⚠️ NYE VINKLER KUN – ikke gentagelse af sektion 3.
+
+⚠️ FORBUDTE FORMULERINGER i taler_imod:
+- "hvis du foretrækker fleksibilitet" (allerede i sektion 3)
+- "hvis du foretrækker hands-on" (allerede i sektion 3)
+- "hvis du ikke trives med struktur" (allerede i sektion 3)
 
 trade_off:
-Formuleres som: "Mere X – mindre Y"
+Formuleres som: "Mere X – mindre Y" (maks 5 ord per side)
 ⚠️ MAKS 2 bullets per side.
-⚠️ SKAL bruge ANDRE ord end sektion 4.
-
-Eksempel:
-Hvis sektion 4 siger "ledelse" → sig her "synlighed gennem andres resultater"
-Hvis sektion 4 siger "fleksibilitet" → sig her "mulighed for at improvisere"
+⚠️ ANDRE ord end sektion 4.
 
 kontrolspoergsmaal:
-⚠️ KORT. MAVEN. 3 SEKUNDER.
+⚠️ MAKS 10 ORD. MAVEN. IDENTITET.
 
-Spørgsmålet SKAL:
-- Kunne læses og mærkes på 3 sekunder
-- Være maks 20 ord
-- Ramme det centrale valg
+Spørgsmålet skal ramme IDENTITET, ikke opgave.
 
-UNDGÅ lange forklarende spørgsmål som:
-  "Kan du se dig selv være tilfreds i en rolle, hvor din succes primært afhænger af teamets præstationer og evnen til at opretholde høje sikkerhedsstandarder, også på dage hvor du ikke selv udfører konkrete sikkerhedsopgaver?"
+✅ GOD (identitet):
+"Vil du måles på andres arbejde – eller dit eget?"
+"Er du leder – eller udfører?"
 
-SKRIV I STEDET kort og skarpt:
+❌ DÅRLIG (opgave):
+"Er du klar til at lede uden at udføre?" (for lang, for opgave-fokuseret)
   "Vil du måles på andres arbejde – eller dit eget?"
   "Kan du trives med at lede uden at udføre?"
   "Er du klar til at bytte frihed for indflydelse?"
@@ -1868,30 +1884,30 @@ Spørgsmålet skal sidde i maven – ikke i hovedet.
 
 Før output genereres, verificér internt:
 
-1. INGEN GENTAGELSE:
-   Hver indsigt optræder kun én gang og eskalerer i niveau:
-   beskrivelse → konsekvens → valg
-
-2. INGEN PSYKOLOGISERING UDEN DATADÆKNING:
-   Alle udsagn kan spores til CV, profil eller brugerens egne svar.
-
-3. PROGRESSION:
-   Hver sektion gør brugeren klogere end den forrige.
+1. ORDFORBUDSTJEK (KRITISK):
+   Disse ord må KUN optræde i sektion 3:
+   - struktur / struktureret
+   - fleksibilitet / fleksibel
+   - hands-on
+   - administrativ
+   - dynamisk
    
-4. GENTAGELSESTJEK (KRITISK):
+   Hvis et af disse ord optræder i sektion 4, 5 eller 6 → ERSTAT med synonym.
+
+2. GENTAGELSESTJEK:
    Læs sektion 3, 4, 5, 6 efter hinanden.
-   Hvis samme pointe optræder mere end én gang → FJERN den ene.
-   
-   Eksempel på FEJL:
-   - Sektion 3: "kræver struktur"
-   - Sektion 4: "mere struktur"
-   - Sektion 6 taler_imod: "hvis du ikke trives med struktur"
-   → "struktur" nævnes 3 gange = FEJL
+   Tæl hvor mange gange hver pointe optræder.
+   Hvis > 1 gang → SLET de ekstra.
 
-5. BETALINGSKLARHED:
-   Ville en betalende bruger føle sig mere afklaret efter at have læst dette?
-   Ville de tænke "det vidste jeg godt" – eller "det har jeg aldrig set sådan før"?
-   Hvis det første – justér sproget.
+3. LÆNGDETJEK:
+   - Sektion 4 bullets: maks 4 ord hver
+   - Sektion 5: maks 10 ord per punkt
+   - Sektion 6 kontrolspørgsmål: maks 10 ord
+
+4. NYE VINKLER TJEK:
+   Er "taler_for" og "taler_imod" NYE vinkler?
+   Eller bare omformuleringer af sektion 3?
+   Hvis omformuleringer → ERSTAT med karriere/timing/livssituation-vinkler.
 
 ════════════════════════════════════════════════════════════════
 OUTPUT – JSON STRUKTUR (SKAL FØLGES PRÆCIST)

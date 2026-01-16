@@ -90,6 +90,12 @@ interface CareerCoachResponse {
   section2_match?: { title: string; content: string; points?: string[] };
   // Sektion 3: Det centrale opmærksomhedspunkt
   section3_opmærksomhed?: { title: string; content: string; points?: string[] };
+  // NY sektion 3A: Karrierespring (kun hvis relevant)
+  section3a_karrierespring?: {
+    included: boolean;
+    title?: string;
+    content?: string;
+  };
   // NY sektion 4: Hvad dette job vil betyde (Mere af/Mindre af)
   section4_konsekvens?: { 
     title: string; 
@@ -1702,6 +1708,21 @@ function MulighederPageContent() {
                     ))}
                   </ul>
                 )}
+              </div>
+            )}
+
+            {/* Section 3A: Karrierespring (kun hvis included=true) */}
+            {coachResponse.section3a_karrierespring?.included && coachResponse.section3a_karrierespring.content && (
+              <div className="space-y-3 bg-orange-50/50 dark:bg-orange-950/20 p-4 rounded-lg border-2 border-orange-300 dark:border-orange-700">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 text-xs font-bold px-2 py-1 rounded">!</span>
+                  {coachResponse.section3a_karrierespring.title || 'Karrierespring – vigtigt at være bevidst om'}
+                </h4>
+                <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                  <p className="text-sm leading-relaxed text-orange-900 dark:text-orange-100">
+                    {coachResponse.section3a_karrierespring.content}
+                  </p>
+                </div>
               </div>
             )}
 

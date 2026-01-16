@@ -108,6 +108,12 @@ interface CareerCoachResponse {
   section1_jobkrav?: { title: string; content: string; points?: string[] };
   section2_match?: { title: string; content: string; points?: string[] };
   section3_opmærksomhed?: { title: string; content: string; points?: string[] };
+  // NY sektion 3A: Karrierespring (kun hvis relevant)
+  section3a_karrierespring?: {
+    included: boolean;
+    title?: string;
+    content?: string;
+  };
   section4_krav?: { title: string; content: string; points?: string[] };
   // NY sektion 4: Hvad dette job vil betyde (Mere af/Mindre af)
   section4_konsekvens?: { 

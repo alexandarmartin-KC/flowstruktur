@@ -1721,24 +1721,22 @@ Hvert punkt skal:
 
 SEKTION 3 – DET CENTRALE OPMÆRKSOMHEDSPUNKT
 ───────────────────────────────────────────
-Formulér friktioner – ikke problemer.
+Formulér friktioner som ÉT sammenhængende afsnit – ikke punkter.
 
-2–3 punkter. Hvert punkt skal være et trade-off.
+Eksempel på GOD formulering:
+"Rollen stiller høje krav til struktur, faste arbejdsgange og løbende rapportering. Din profil viser derimod en lavere præference for struktur og en større lyst til fleksible arbejdsmetoder. Samtidig indebærer jobbet hyppige møder og tæt interessentsamarbejde, hvilket kan kræve mere organisatorisk og social energi, end du tidligere har foretrukket."
 
-Eksempelstruktur:
-"Jobbet kræver X, mens din profil viser Y. Det betyder, at Z i praksis."
+Afslut ALTID med:
+"Det er ikke svagheder – men vilkår, som skal give mening for dig i hverdagen."
 
-Afslut sektionen med:
-"Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
+⚠️ FORBUDT HR-SPROG:
+❌ "Dette kan kræve tilpasning fra din side"
+❌ "Dette kan være udfordrende"
+❌ "Du kan opleve udfordringer"
 
-⚠️ KRITISK: UNDGÅ SELVMODSIGELSER
-❌ FORKERT: "Din profil viser høj præference for ledelse – det kan føre til pres"
-   (En styrke kan ikke være en friktion)
-✅ RIGTIGT: "Jobbet kræver faste rammer, mens din profil viser lav præference for struktur."
-   (Kun ægte mismatch mellem job og profil)
-
-⚠️ KUN FRIKTIONER – IKKE STYRKER
-Hvis profilen matcher jobkravet → det hører til i sektion 2, IKKE her.
+✅ VOKSENT SPROG:
+✅ "Rollen stiller andre krav til din arbejdsstil, end du tidligere har foretrukket"
+✅ "Det betyder, at..."
 
 ⚠️ UNIVERSELT PRINCIP: NÅR DU BRUGER ET NØGLEORD HER → DET ER LÅST
 Sektion 4, 5 og 6 SKAL bruge ANDRE ord eller synonymer.
@@ -1838,7 +1836,16 @@ Derefter TO lister:
 
 kontrolspoergsmaal:
 Ét enkelt, klart spørgsmål der tvinger refleksion.
-⚠️ MAKS 10 ORD. IDENTITET, ikke opgave.
+⚠️ MAKS 12 ORD. IDENTITET, ikke opgave.
+
+✅ GODE eksempler:
+"Vil du måles på, hvordan andre lykkes – fremfor hvad du selv udfører?"
+"Er ledelse din primære drivkraft – eller et middel?"
+"Vil du vælge indflydelse over frihed?"
+
+❌ DÅRLIGE eksempler:
+"Er ledelse din primære drivkraft?" (for simpelt, for kort)
+"Er du klar til at lede?" (for generisk)
 
 Ingen coachingøvelser. Ingen "hvordan føler du".
 
@@ -1900,9 +1907,7 @@ OUTPUT – JSON STRUKTUR
   
   "section3_opmærksomhed": {
     "title": "Det centrale opmærksomhedspunkt",
-    "content": "Der er nogle potentielle friktioner mellem jobkravene og din profil.",
-    "points": ["2-3 trade-offs som neutral observation"],
-    "closing": "Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
+    "content": "[SAMMENHÆNGENDE afsnit på 3-5 sætninger der beskriver friktionspunkterne flydende. Afslut med: 'Dette er ikke problemer – men vilkår, der skal give mening for dig i længden.']"
   },
   
   "section4_konsekvens": {

@@ -1714,11 +1714,14 @@ SEKTION 3 – DET CENTRALE OPMÆRKSOMHEDSPUNKT
 
 ⚠️ KRITISK: SEKTION 3 HANDLER KUN OM ARBEJDSSTIL-FRIKTION
 Denne sektion fokuserer på friktion mellem jobbet og brugerens ARBEJDSPRÆFERENCER:
-- struktur vs. fleksibilitet
-- tempo og forudsigelighed
-- samarbejdsform og sociale krav
-- autonomi vs. rammer
-- arbejdstider og balance
+- Struktur vs. fleksibilitet
+- Tempo og forudsigelighed
+- Samarbejdsform og sociale krav
+- Autonomi vs. rammer
+- Arbejdstider og balance
+- Fysisk vs. stillesiddende arbejde
+- Kundevendt vs. intern fokus
+- Teambaseret vs. solo-arbejde
 
 ❌ SEKTION 3 MÅ IKKE nævne:
 - Domæneskift eller brancheskift (det hører til sektion 3A)
@@ -1729,8 +1732,19 @@ Denne sektion fokuserer på friktion mellem jobbet og brugerens ARBEJDSPRÆFEREN
 - Konkrete arbejdsform-forskelle mellem jobbet og brugerens profil
 - Hverdagens vilkår i rollen vs. brugerens præferencer
 
-Eksempel på GOD formulering (arbejdsstil-fokus):
-"Rollen kræver hyppige møder og tæt interessentsamarbejde, mens din profil viser en moderat præference for sociale interaktioner. Samtidig indebærer jobbet en høj grad af uforudsigelighed og hurtige beslutningsprocesser, hvilket kan kræve mere organisatorisk energi end du tidligere har foretrukket. Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
+UNIVERSELLE EKSEMPLER på GOD formulering:
+
+Eksempel 1 (kontor/ledelse):
+"Rollen kræver hyppige møder og tæt interessentsamarbejde, mens din profil viser en moderat præference for sociale interaktioner. Samtidig indebærer jobbet en høj grad af uforudsigelighed og hurtige beslutningsprocesser. Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
+
+Eksempel 2 (håndværk/praktisk):
+"Jobbet indebærer fysisk arbejde i skiftende omgivelser og varierende vejrforhold, mens din profil viser en præference for forudsigelige rammer. Arbejdstiderne kan variere, og der er perioder med høj intensitet. Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
+
+Eksempel 3 (service/kundevendt):
+"Rollen kræver konstant kundeinteraktion og evnen til at håndtere konflikter på stedet, mens din profil viser en moderat præference for sociale situationer. Arbejdet foregår i skiftende vagter med begrænset autonomi i opgaveløsningen. Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
+
+Eksempel 4 (skiftende arbejdstider):
+"Jobbet indebærer skiftende arbejdstider inkl. aften- og weekendvagter, mens din profil viser en præference for forudsigelige arbejdstider. Der er perioder med alenearbejde, hvilket kræver selvstændighed uden daglig sparring. Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
 
 ❌ DÅRLIG formulering (overlapper med 3A):
 "Jobbet repræsenterer en bevægelse fremad i retning af strategisk ledelse, hvilket kan være en ændring fra dine tidligere roller."

@@ -1712,19 +1712,28 @@ SEKTION 3 – DET CENTRALE OPMÆRKSOMHEDSPUNKT
 ───────────────────────────────────────────
 (Trade-offs og vilkår – ikke problemer)
 
-Her beskriver du friktioner mellem job og profil som ÉT sammenhængende afsnit, fx:
+⚠️ KRITISK: SEKTION 3 HANDLER KUN OM ARBEJDSSTIL-FRIKTION
+Denne sektion fokuserer på friktion mellem jobbet og brugerens ARBEJDSPRÆFERENCER:
 - struktur vs. fleksibilitet
-- ledelse vs. hands-on
-- tempo vs. forudsigelighed
+- tempo og forudsigelighed
+- samarbejdsform og sociale krav
+- autonomi vs. rammer
+- arbejdstider og balance
 
-⚠️ KRITISK: KARRIERERETNING SKAL ADRESSERES
-Vurder ALTID om dette job repræsenterer:
-- En bevægelse FREMAD (ny ansvarstype, bredere rolle, strategisk niveau)
-- Et RETNINGSSKIFTE (mindre ansvar end tidligere roller, udførende efter ledelse)
-- En PARALLEL bevægelse (samme niveau, ny kontekst)
+❌ SEKTION 3 MÅ IKKE nævne:
+- Domæneskift eller brancheskift (det hører til sektion 3A)
+- At jobbet er "en bevægelse fremad" eller "et karrierespring" (det hører til sektion 3A)
+- Overordnede karriereretnings-overvejelser
 
-Hvis brugerens CV viser progression (fx fra udførende → koordinerende → ledende):
-→ Sig TYDELIGT om dette job fortsætter, stopper eller ændrer den progression.
+✅ SEKTION 3 SKAL fokusere på:
+- Konkrete arbejdsform-forskelle mellem jobbet og brugerens profil
+- Hverdagens vilkår i rollen vs. brugerens præferencer
+
+Eksempel på GOD formulering (arbejdsstil-fokus):
+"Rollen kræver hyppige møder og tæt interessentsamarbejde, mens din profil viser en moderat præference for sociale interaktioner. Samtidig indebærer jobbet en høj grad af uforudsigelighed og hurtige beslutningsprocesser, hvilket kan kræve mere organisatorisk energi end du tidligere har foretrukket. Dette er ikke problemer – men vilkår, der skal give mening for dig i længden."
+
+❌ DÅRLIG formulering (overlapper med 3A):
+"Jobbet repræsenterer en bevægelse fremad i retning af strategisk ledelse, hvilket kan være en ændring fra dine tidligere roller."
 
 ⚠️ VIGTIGT: RETNINGSSKIFTE ER IKKE NEGATIVT
 Et retningsskifte i ansvarsniveau kan være et BEVIDST og KLOGT valg:
@@ -1744,13 +1753,21 @@ Afslut ALTID med:
 ❌ "Dette kan kræve tilpasning fra din side"
 ❌ "Dette kan være udfordrende"
 ❌ "Et skridt tilbage" (brug "retningsskifte" eller "bevægelse væk fra")
+❌ "repræsenterer en bevægelse fremad" (hører til sektion 3A)
 
 ✅ VOKSENT SPROG:
-✅ "Set i lyset af dine tidligere valg repræsenterer dette job..."
-✅ "Det er ikke et tilbageskridt, men et retningsskifte"
+✅ "Rollen kræver X, mens din profil viser Y"
+✅ "Jobbet indebærer X, hvilket kan kræve mere energi end du tidligere har foretrukket"
 
 SEKTION 3A – KARRIERESPRING (KUN HVIS RELEVANT)
 ───────────────────────────────────────────────
+⚠️ SEKTION 3A HANDLER KUN OM DOMÆNE/KARRIERESKIFT
+Denne sektion fokuserer på:
+- Domæneskift eller brancheskift
+- Karriereretning (fremad, tilbage, parallelt)
+- Ansvarsniveau-ændringer
+- Markedets forventninger til sådanne skift
+
 ⚠️ INDSÆT DETTE AFSNIT KUN HVIS KRITERIERNE ER OPFYLDT:
 - Jobbet ligger i et nyt domæne eller branche
 - Jobbet forventer beslutnings- og ansvarsniveau i et fagområde, hvor brugeren ikke har direkte erfaring
@@ -1883,12 +1900,15 @@ Inden du returnerer analysen, verificér:
    - Sektion 5: PRÆCIS 3 betingelser i hver liste
    - Sektion 6 trade_off: PRÆCIS 2 bullets i hver liste
 
-4. KARRIERERETNINGSTJEK:
-   Sammenlign jobbets ansvarsniveau med brugerens CV-progression.
-   Sektion 3 SKAL adressere retningen eksplicit.
+4. SEKTION 3 VS 3A ADSKILLELSE (KRITISK):
+   Sektion 3 må KUN handle om ARBEJDSSTIL-friktion (tempo, struktur, samarbejdsform, autonomi).
+   Sektion 3A må KUN handle om KARRIERE/DOMÆNE-skift (brancheskift, ansvarsniveau, karriereretning).
+   ❌ FORKERT: Sektion 3 siger "repræsenterer en bevægelse fremad" → det hører til 3A
+   ✅ RIGTIGT: Sektion 3 siger "rollen kræver hyppige møder, mens din profil viser..."
 
 5. KARRIERESPRINGTJEK:
    Hvis jobbet er i nyt domæne med høje ansvarskrav → sektion 3A SKAL inkluderes.
+   Hvis sektion 3A inkluderes → sektion 3B (overgangsstrategi) SKAL også inkluderes.
 
 6. INGEN PSYKOLOGISKE ANTAGELSER:
    Kun udsagn der kan spores til CV, profil eller brugerens egne svar.

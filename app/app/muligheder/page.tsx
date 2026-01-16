@@ -81,14 +81,31 @@ interface CareerCoachResponse {
   patterns?: string[];
   unclear?: string[];
   next_step_explanation?: string;
-  // Job spejling fields (current structure - neutral analytiker)
+  // Job spejling fields (ny 5-sektion struktur - neutral karriereanalytiker)
   job_title?: string;
   job_category?: string;
-  section1_jobkrav?: { title: string; content: string; points?: string[] };
+  // NY sektion 1: Hvad jobbet reelt er (ikke stillingstitler)
+  section1_jobbet?: { title: string; content: string };
+  // Sektion 2: Hvor der er et tydeligt match
   section2_match?: { title: string; content: string; points?: string[] };
+  // Sektion 3: Det centrale opmærksomhedspunkt
   section3_opmærksomhed?: { title: string; content: string; points?: string[] };
-  section4_krav?: { title: string; content: string; points?: string[] };
+  // NY sektion 4: Hvad dette job vil betyde (Mere af/Mindre af)
+  section4_konsekvens?: { 
+    title: string; 
+    mere_af: string[]; 
+    mindre_af: string[];
+  };
+  // NY sektion 5: Dit beslutningsspejl
+  section5_beslutning?: {
+    title: string;
+    giver_mening_hvis: string;
+    skaber_friktion_hvis: string;
+  };
   closing_statement?: string;
+  // Legacy (backwards compatibility)
+  section1_jobkrav?: { title: string; content: string; points?: string[] };
+  section4_krav?: { title: string; content: string; points?: string[] };
   // Legacy job spejling fields (backwards compatibility with old coach structure)
   section1_overordnet?: { title: string; content: string };
   section2_jobbet?: { title: string; content: string; points?: string[] };
@@ -1551,7 +1568,7 @@ function MulighederPageContent() {
       )}
 
       {/* JOB SPEJLING: Spejling af valgt job – set i lyset af din samlede profil */}
-      {showJobSpejling && coachResponse && (coachResponse.mode === 'job_spejling' || coachResponse.section1_jobkrav) && (
+      {showJobSpejling && coachResponse && (coachResponse.mode === 'job_spejling' || coachResponse.section1_jobbet || coachResponse.section1_jobkrav) && (
         <Card className="border-indigo-200 bg-indigo-50/50 dark:border-indigo-900 dark:bg-indigo-950/20">
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -1576,8 +1593,23 @@ function MulighederPageContent() {
           </CardHeader>
           <CardContent className="space-y-8">
             
-            {/* Section 1: Hvad jobbet reelt kræver (FAKTUEL AFLÆSNING) */}
-            {coachResponse.section1_jobkrav && (
+            {/* NYT Section 1: Hvad jobbet reelt er (uden stillingstitler) */}
+            {coachResponse.section1_jobbet && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded">1</span>
+                  {coachResponse.section1_jobbet.title}
+                </h4>
+                <div className="prose prose-sm dark:prose-invert max-w-none pl-8">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {coachResponse.section1_jobbet.content}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* LEGACY Section 1: Hvad jobbet reelt kræver (gammel struktur) */}
+            {!coachResponse.section1_jobbet && coachResponse.section1_jobkrav && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-base flex items-center gap-2">
                   <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded">1</span>
@@ -1657,8 +1689,78 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* Section 4: Hvad jobbet konkret vil kræve af dig */}
-            {coachResponse.section4_krav && (
+            {/* NYT Section 4: Hvad dette job vil betyde for dit arbejdsliv (Mere af / Mindre af) */}
+            {coachResponse.section4_konsekvens && (
+              <div className="space-y-4">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold px-2 py-1 rounded">4</span>
+                  {coachResponse.section4_konsekvens.title}
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-8">
+                  {/* Mere af */}
+                  <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <h5 className="font-medium text-sm text-blue-700 dark:text-blue-300 mb-3 flex items-center gap-2">
+                      <span className="text-lg">↑</span> Mere af:
+                    </h5>
+                    <ul className="space-y-2">
+                      {coachResponse.section4_konsekvens.mere_af?.map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm">
+                          <span className="text-blue-500 font-bold">+</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  {/* Mindre af */}
+                  <div className="bg-gray-50 dark:bg-gray-900/30 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <h5 className="font-medium text-sm text-gray-600 dark:text-gray-400 mb-3 flex items-center gap-2">
+                      <span className="text-lg">↓</span> Mindre af:
+                    </h5>
+                    <ul className="space-y-2">
+                      {coachResponse.section4_konsekvens.mindre_af?.map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm">
+                          <span className="text-gray-400 font-bold">−</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* NYT Section 5: Dit beslutningsspejl */}
+            {coachResponse.section5_beslutning && (
+              <div className="space-y-4 bg-indigo-100/50 dark:bg-indigo-900/20 p-5 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                <h4 className="font-semibold text-base flex items-center gap-2">
+                  <span className="bg-indigo-200 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded">5</span>
+                  {coachResponse.section5_beslutning.title}
+                </h4>
+                <div className="space-y-4 pl-8">
+                  {coachResponse.section5_beslutning.giver_mening_hvis && (
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-green-700 dark:text-green-400">Dette job giver mening for dig, hvis...</p>
+                        <p className="text-sm text-muted-foreground mt-1">{coachResponse.section5_beslutning.giver_mening_hvis}</p>
+                      </div>
+                    </div>
+                  )}
+                  {coachResponse.section5_beslutning.skaber_friktion_hvis && (
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Jobbet kan skabe friktion, hvis...</p>
+                        <p className="text-sm text-muted-foreground mt-1">{coachResponse.section5_beslutning.skaber_friktion_hvis}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* LEGACY Section 4: Hvad jobbet konkret vil kræve af dig (gammel struktur) */}
+            {!coachResponse.section4_konsekvens && coachResponse.section4_krav && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-base flex items-center gap-2">
                   <span className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-2 py-1 rounded">4</span>
@@ -1685,7 +1787,7 @@ function MulighederPageContent() {
             )}
 
             {/* LEGACY: Section 1 Overordnet (old coach structure) */}
-            {!coachResponse.section1_jobkrav && coachResponse.section1_overordnet && (
+            {!coachResponse.section1_jobbet && !coachResponse.section1_jobkrav && coachResponse.section1_overordnet && (
               <div className="space-y-3 bg-indigo-100/50 dark:bg-indigo-900/30 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800">
                 <h4 className="font-semibold text-base flex items-center gap-2">
                   <span className="bg-indigo-200 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded">1</span>

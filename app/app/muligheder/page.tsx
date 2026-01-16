@@ -1130,8 +1130,8 @@ function MulighederPageContent() {
         </Card>
       )}
 
-      {/* Coach Response - hide when showing Spejling */}
-      {coachResponse && !isLoading && !showSpejling && (
+      {/* Coach Response - hidden */}
+      {false && coachResponse && !isLoading && !showSpejling && (
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -2217,8 +2217,8 @@ function MulighederPageContent() {
         </Card>
       )}
 
-      {/* Direction State Summary - only show when no questions are pending, NOT ready for jobs, and NOT showing job examples */}
-      {directionState && directionState.choice !== 'UNSET' && !showSpejling && !showJobExamples && !showLag2 &&
+      {/* Direction State Summary - hidden */}
+      {false && directionState && directionState.choice !== 'UNSET' && !showSpejling && !showJobExamples && !showLag2 &&
        (!coachResponse?.questions || coachResponse.questions.length === 0) && 
        !directionState.next_step_ready_for_jobs && (
         <Card className={directionState.next_step_ready_for_jobs 

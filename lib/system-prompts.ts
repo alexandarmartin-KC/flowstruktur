@@ -1775,19 +1775,19 @@ Afslut ALTID med:
 
 SEKTION 3A – KARRIERESPRING (KUN HVIS RELEVANT)
 ───────────────────────────────────────────────
-⚠️ SEKTION 3A HANDLER KUN OM DOMÆNE/KARRIERESKIFT
-Denne sektion fokuserer på:
-- Domæneskift eller brancheskift
-- Karriereretning (fremad, tilbage, parallelt)
-- Ansvarsniveau-ændringer
-- Markedets forventninger til sådanne skift
+⚠️ VIGTIG SYSTEMLOGIK – KARRIERESPRING
 
-⚠️ INDSÆT DETTE AFSNIT KUN HVIS KRITERIERNE ER OPFYLDT:
-- Jobbet ligger i et nyt domæne eller branche
-- Jobbet forventer beslutnings- og ansvarsniveau i et fagområde, hvor brugeren ikke har direkte erfaring
-- Skiftet sker normalt via overgangsroller eller intern udvikling på arbejdsmarkedet
+Inden analysen skrives, skal du EKSPLICIT vurdere, om dette job repræsenterer et stort karrierespring set fra ARBEJDSMARKEDETS perspektiv – ikke brugerens kompetencer alene.
 
-Hvis kriterierne ER opfyldt, inkludér dette i JSON:
+⚠️ AKTIVÉR SEKTIONEN hvis mindst TO af følgende tre kriterier er opfyldt:
+1) Jobbet ligger i et ANDET FAGLIGT HOVEDDOMÆNE end brugerens primære CV-historik.
+2) Jobbet forudsætter DOMÆNESPECIFIK ERFARING, som normalt opbygges over mange år i netop dette felt.
+3) Stillingen rekrutteres typisk blandt profiler, der ALLEREDE HAR ARBEJDET i samme domæne.
+
+⚠️ KRITISK: Denne vurdering SKAL foretages, SELV HVIS der findes overførbare ledelses-, proces- eller projektkompetencer.
+⚠️ KRITISK: Sektionen MÅ IKKE udelades alene fordi der er kompetencematch.
+
+Hvis kriterierne ER opfyldt (mindst 2 af 3), inkludér dette i JSON:
 "section3a_karrierespring": {
   "included": true,
   "title": "Karrierespring – vigtigt at være bevidst om",

@@ -23,8 +23,10 @@ import {
   Save,
   HelpCircle,
   Briefcase,
-  ExternalLink
+  ExternalLink,
+  BookmarkPlus
 } from 'lucide-react';
+import { useSavedJobs } from '@/contexts/saved-jobs-context';
 
 // Main choice: stay, switch, or use URL
 type MainChoice = 'stay' | 'switch' | 'url' | '';
@@ -189,6 +191,7 @@ const STORAGE_KEYS = {
 function MulighederPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { saveJob, isJobSaved } = useSavedJobs();
   
   // State
   const [mainChoice, setMainChoice] = useState<MainChoice>('');
@@ -207,6 +210,7 @@ function MulighederPageContent() {
   const [showSpejling, setShowSpejling] = useState(false);
   const [spejlingNextAction, setSpejlingNextAction] = useState<string>('');
   const [showJobSpejling, setShowJobSpejling] = useState(false);
+  const [jobSaved, setJobSaved] = useState(false);
   
   // Post job examples coaching questions state
   const [postJobExamplesQuestions, setPostJobExamplesQuestions] = useState<CoachQuestion[]>([]);
@@ -1884,6 +1888,7 @@ function MulighederPageContent() {
                   onClick={() => {
                     setShowJobSpejling(false);
                     setJobAdText('');
+                    setJobSaved(false);
                     setMainChoice('url');
                   }}
                 >
@@ -1891,18 +1896,51 @@ function MulighederPageContent() {
                   <span>Analysér en anden jobannonce</span>
                 </Button>
                 <Button
-                  variant="outline"
-                  className="justify-start text-left h-auto py-4 px-4"
+                  variant={jobSaved ? "secondary" : "default"}
+                  className={`justify-start text-left h-auto py-4 px-4 ${jobSaved ? '' : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}
+                  disabled={jobSaved}
                   onClick={() => {
-                    setShowJobSpejling(false);
-                    setMainChoice('');
-                    setSwitchSubChoice('');
-                    setSelectedChoice('');
-                    setJobAdText('');
+                    // Extract job title and company from coachResponse
+                    const jobTitle = coachResponse?.job_title || 'Ukendt job';
+                    const titleParts = jobTitle.split(' – ');
+                    const title = titleParts[0] || jobTitle;
+                    const company = titleParts[1] || undefined;
+                    
+                    // Generate unique ID
+                    const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    
+                    // Save the job
+                    saveJob({
+                      id: jobId,
+                      title: title,
+                      company: company,
+                      description: jobAdText.substring(0, 500),
+                      source: 'manual',
+                      fullData: {
+                        jobAdText: jobAdText,
+                        analysis: coachResponse
+                      }
+                    });
+                    
+                    setJobSaved(true);
+                    
+                    // Navigate to gemte-jobs after a short delay
+                    setTimeout(() => {
+                      router.push('/app/gemte-jobs');
+                    }, 500);
                   }}
                 >
-                  <ArrowLeft className="mr-3 h-5 w-5 flex-shrink-0" />
-                  <span>Gå tilbage til retningsvalg</span>
+                  {jobSaved ? (
+                    <>
+                      <CheckCircle2 className="mr-3 h-5 w-5 flex-shrink-0 text-green-600" />
+                      <span>Job gemt! Går til dine gemte jobs...</span>
+                    </>
+                  ) : (
+                    <>
+                      <BookmarkPlus className="mr-3 h-5 w-5 flex-shrink-0" />
+                      <span>Gem analyse og job – arbejd videre med ansøgning</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </div>

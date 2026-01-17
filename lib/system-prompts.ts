@@ -1753,6 +1753,20 @@ HØJ domæneafstand:
 
 Gem resultatet — det styrer senere, hvilke afsnit der skal aktiveres.
 
+⚠️ KRITISKE EKSEMPLER PÅ DOMÆNEAFSTAND:
+
+EKSEMPEL 1 - LAV (GODT MATCH):
+Job: "Campus Security Manager" hos datacenter
+CV: Sikkerhedskoordinator/-leder med erfaring fra Ørsted A/S
+→ SAMME domæne (sikkerhed) = LAV domæneafstand = GODT MATCH muligt
+→ Karrierespring-sektion UDELADES
+
+EKSEMPEL 2 - HØJ (KARRIERESPRING):
+Job: "Erfaren Projektleder" hos Nomeco (pharma)
+CV: Teknisk support og sikkerhedskoordinering
+→ NY branche (pharma) OG ny rolletype (projektledelse) = HØJ domæneafstand
+→ Karrierespring-sektion INKLUDERES
+
 ════════════════════════════════════════════════════════════════
 TRIN 3 — HOVEDANALYSEN (FAST STRUKTUR)
 ════════════════════════════════════════════════════════════════
@@ -1776,30 +1790,72 @@ Hvis jobbet er en senior/erfaren rolle, skriv eksplicit:
 Hvis jobbet er en entry-level/junior rolle, skriv:
 "Dette er en indgangsrolle, hvor erfaring opbygges gennem stillingen."
 
+⚠️ VIGTIGT: Beskriv jobbet NEUTRALT. Forudsætningslisten skal være objektiv - om du kan opfylde dem vurderes i SEKTION 2.
+
 SEKTION 2 – MATCH-AFKLARING
 ───────────────────────────
-⚠️ VÆR ÆRLIG OM MATCH-NIVEAU
+⚠️ KRITISK: VURDER FØRST DOMÆNEAFSTAND KORREKT
 
-HVIS domæneafstand = LAV og CV dokumenterer relevant erfaring:
-→ Beskriv konkrete match-punkter som før
+TRIN A: KLASSIFICÉR DOMÆNEAFSTAND
+─────────────────────────────────
+Sammenlign CV'ets PRIMÆRE fagdomæne med jobbets fagdomæne:
 
-HVIS domæneafstand = HØJ eller CV mangler central erfaring:
-→ Vær direkte: "Der er ingen direkte match mellem din nuværende erfaring og de centrale krav i jobannoncen."
-→ Forklar specifikt hvad der mangler
-→ Nævn hvis overførbare kompetencer er "utilstrækkelige til at opveje dette mismatch i en rekrutteringskontekst"
+LAV domæneafstand (GODT MATCH muligt):
+- SAMME branche OG lignende rolletype
+- Eksempel: Sikkerhedskoordinator → Security Manager (begge sikkerhed)
+- Eksempel: Projektleder i IT → Senior Projektleder i IT
 
-Formulering ved mismatch:
-"Dit CV dokumenterer hverken [konkret krav 1], [konkret krav 2] eller erfaring fra [domæne].
-Der er heller ingen dokumenteret [uddannelse/certificering] som kræves i opslaget.
-Eventuelle overførbare kompetencer ([liste]) er utilstrækkelige til at opveje dette mismatch i en rekrutteringskontekst."
+MODERAT domæneafstand:
+- Samme rolletype, men ny branche ELLER ny rolletype i samme branche
+- Eksempel: Sikkerhedskoordinator i energi → Sikkerhedsleder i datacenter (samme domæne, højere niveau)
+- Eksempel: Projektleder i finans → Projektleder i pharma
 
-⚠️ DETTE ER IKKE NEGATIVT – DET ER ÆRLIGT. Brugeren har brug for at vide dette FØR de bruger tid på en ansøgning.
+HØJ domæneafstand (KARRIERESPRING):
+- NY branche OG NY rolletype
+- Eksempel: Sikkerhedskoordinator → IT Projektleder i pharma
+- Eksempel: Teknisk support → Strategisk konsulent
 
-SEKTION 3 – REALTJEK: KARRIERESPRING (NÅR RELEVANT)
-───────────────────────────────────────────────────
-⚠️ DENNE SEKTION AKTIVERES VED HØJ DOMÆNEAFSTAND ELLER MARKANT MISMATCH
+⚠️ VIGTIGT: Hvis brugerens CV viser erfaring i SAMME domæne som jobbet (fx sikkerhed → sikkerhed), er domæneafstand LAV eller MODERAT – ALDRIG HØJ!
 
-Strukturér som følger:
+TRIN B: VÆLG KORREKT OUTPUT BASERET PÅ DOMÆNEAFSTAND
+────────────────────────────────────────────────────
+
+VED LAV DOMÆNEAFSTAND (GODT MATCH):
+→ Beskriv konkrete match-punkter
+→ Brug format: "Dit CV dokumenterer [erfaring], hvilket matcher jobkravet om [krav]. I praksis betyder det..."
+→ UDELAD karrierespring-sektionen (section3a, section3b)
+→ Brug positiv beslutningsopsummering
+
+VED MODERAT DOMÆNEAFSTAND:
+→ Beskriv match-punkter OG opmærksomhedspunkter
+→ Nævn hvad der er nyt/udfordrende
+→ Karrierespring-sektion er VALGFRI (kun hvis relevant)
+
+VED HØJ DOMÆNEAFSTAND (STORT MISMATCH):
+→ Vær direkte: "Der er ingen direkte match..."
+→ Inkludér karrierespring-sektionen
+→ Brug "Nej – ikke på nuværende tidspunkt" i beslutningsopsummering
+
+EKSEMPEL PÅ GODT MATCH (Campus Security Manager + sikkerhedsbaggrund):
+"Dit CV dokumenterer erfaring med sikkerhedskoordinering og supervision af sikkerhedsvagter hos Ørsted A/S, hvilket matcher jobkravet om ledelse af sikkerhedspersonale. I praksis betyder det, at du har erfaring med de kerneopgaver, stillingen kræver."
+
+EKSEMPEL PÅ DÅRLIGT MATCH (IT Projektleder + sikkerhedsbaggrund):
+"Der er ingen direkte match mellem din nuværende erfaring og de centrale krav i jobannoncen. Dit CV dokumenterer hverken formel projektlederrolle, IT-projekter eller erfaring fra IT-domænet."
+
+SEKTION 3 – REALTJEK: KARRIERESPRING (KUN VED HØJ DOMÆNEAFSTAND)
+────────────────────────────────────────────────────────────────
+⚠️ DENNE SEKTION UDELADES HELT NÅR domæneafstand = LAV eller MODERAT
+
+⚠️ INKLUDÉR KUN DENNE SEKTION NÅR:
+   - domæneafstand = HØJ (helt ny branche OG rolletype)
+   - ELLER CV mangler 3+ centrale krav fra jobbet
+
+⚠️ UDELAD DENNE SEKTION NÅR:
+   - Brugerens CV har erfaring i SAMME domæne som jobbet
+   - Der er dokumenteret match på kernekrav
+   - Jobbet er en naturlig næste stilling i brugerens karrierespor
+
+Ved HØJ domæneafstand - strukturér som følger:
 
 **⚠ Vigtigt opmærksomhedspunkt**
 
@@ -2019,25 +2075,25 @@ OUTPUT – JSON STRUKTUR
   
   "section2_match": {
     "title": "Match-afklaring",
-    "content": "[Ved DÅRLIGT match: 'Der er ingen direkte match mellem din nuværende erfaring og de centrale krav i jobannoncen. Dit CV dokumenterer hverken [krav1], [krav2] eller erfaring fra [domæne]. Der er heller ingen dokumenteret [uddannelse] som kræves i opslaget. Eventuelle overførbare kompetencer er utilstrækkelige til at opveje dette mismatch i en rekrutteringskontekst.'] [Ved GODT match: normal match-beskrivelse]",
+    "content": "[VÆLG BASERET PÅ DOMÆNEAFSTAND: Ved LAV/MODERAT domæneafstand: 'Dit CV dokumenterer [konkret erfaring] fra [virksomhed], hvilket matcher jobkravet om [krav]. I praksis betyder det, at du har erfaring med de kerneopgaver, stillingen kræver.' | Ved HØJ domæneafstand: 'Der er ingen direkte match mellem din nuværende erfaring og de centrale krav i jobannoncen. Dit CV dokumenterer hverken [krav1], [krav2] eller erfaring fra [domæne].']",
     "points": [
-      "[Ved GODT match: CV-erfaring → Jobkrav → Konsekvens]"
+      "[Ved LAV/MODERAT: 'Din erfaring med [X] fra [virksomhed] matcher jobkravet om [Y]. I praksis betyder det [konsekvens].'] [Ved HØJ: 'Overførbare kompetencer som [X] er utilstrækkelige til at opveje mismatch i rekrutteringskontekst.']"
     ]
   },
   
   "section3_opmærksomhed": {
     "title": "Realtjek: karrierespring",
-    "content": "[Ved HØJ domæneafstand: Beskriv springet struktureret - fra X til Y, hvem rekrutteres typisk, realisme-vurdering. Afslut med: 'Et direkte spring til denne rolle vurderes derfor som lavt realistisk.']"
+    "content": "[KUN VED HØJ domæneafstand - ellers UDELAD HELT. Ved HØJ domæneafstand: Beskriv springet struktureret - fra X til Y, hvem rekrutteres typisk, realisme-vurdering. Afslut med: 'Et direkte spring til denne rolle vurderes derfor som lavt realistisk.']"
   },
   
   "section3a_karrierespring": {
-    "included": true,
+    "included": "[true KUN ved HØJ domæneafstand, false ved LAV/MODERAT]",
     "title": "Karrierespring – vigtigt at være bevidst om",
-    "content": "Dette job repræsenterer et markant karrierespring på flere niveauer samtidig: Fra [CV-domæne] til [job-domæne]. Fra [CV-rolletype] til [job-rolletype]. I praksis rekrutteres denne type stillinger næsten udelukkende blandt kandidater, som: [krav1], [krav2], [formelle krav]. Et direkte spring til denne rolle vurderes derfor som lavt realistisk."
+    "content": "[KUN ved HØJ domæneafstand] Dette job repræsenterer et markant karrierespring på flere niveauer samtidig: Fra [CV-domæne] til [job-domæne]. Fra [CV-rolletype] til [job-rolletype]. I praksis rekrutteres denne type stillinger næsten udelukkende blandt kandidater, som: [krav1], [krav2], [formelle krav]. Et direkte spring til denne rolle vurderes derfor som lavt realistisk."
   },
   
   "section3b_overgangsstrategi": {
-    "included": true,
+    "included": "[true KUN ved HØJ domæneafstand, false ved LAV/MODERAT]",
     "title": "Overgangsstrategi (kun relevant ved langsigtet mål)",
     "intro": "Hvis denne type rolle repræsenterer et langsigtet karrieremål, vil en realistisk vej typisk indebære:",
     "strategies": [

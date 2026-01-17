@@ -1456,8 +1456,11 @@ function MulighederPageContent() {
               </div>
             )}
 
-            {/* Section 3: Opmærksomhedspunkter (IKKE SVAGHEDER) */}
-            {coachResponse.section3_opmærksomhed && (
+            {/* Section 3: Opmærksomhedspunkter - kun vis hvis content har reel værdi */}
+            {coachResponse.section3_opmærksomhed && 
+             coachResponse.section3_opmærksomhed.content && 
+             coachResponse.section3_opmærksomhed.content.trim().length > 10 && 
+             !coachResponse.section3_opmærksomhed.content.toLowerCase().includes('ikke relevant') && (
               <div className="space-y-3 bg-amber-50/50 dark:bg-amber-950/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
                 <h4 className="font-semibold text-base flex items-center gap-2">
                   <span className="bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 text-xs font-bold px-2 py-1 rounded">3</span>

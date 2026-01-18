@@ -34,6 +34,33 @@ export interface RawCVData {
   cvText: string;           // Original CV text
   summary?: string;         // AI-generated summary (from extraction)
   extracted?: ParsedCVData; // Structured extraction if available
+  structured?: StructuredCVFromAPI; // AI-structured CV data from /api/cv/structure
+}
+
+/**
+ * Structured CV data from the AI structure API
+ */
+export interface StructuredCVFromAPI {
+  professionalIntro?: string;
+  experience: {
+    title: string;
+    company: string;
+    location?: string;
+    startDate: string;
+    endDate?: string;
+    keyMilestones?: string;
+    bullets: string[];
+  }[];
+  education: {
+    title: string;
+    institution: string;
+    year: string;
+  }[];
+  skills: string[];
+  languages: {
+    language: string;
+    level: 'native' | 'fluent' | 'advanced' | 'intermediate' | 'basic';
+  }[];
 }
 
 /**
@@ -132,19 +159,67 @@ export function normalizeCVData(
   rawData: RawCVData,
   existingDocument?: CVDocument | null
 ): CVDocument {
-  // If we have an existing document with content, preserve it
-  if (existingDocument && hasExistingContent(existingDocument)) {
-    return existingDocument;
-  }
-
   // Create base document
   const doc = createEmptyCVDocument(jobId);
   
-  // Try to parse structured data from the CV text
-  const parsed = rawData.extracted || parseRawCVText(rawData.cvText);
+  // Priority 1: Use AI-structured data if available (most reliable)
+  // This takes precedence over existing document to ensure CV data is properly loaded
+  if (rawData.structured && hasStructuredContent(rawData.structured)) {
+    const structuredDoc = mapStructuredDataToDocument(doc, rawData.structured);
+    
+    // If we have an existing document with user edits, we should preserve those
+    // But only for the same job - otherwise use fresh structured data
+    if (existingDocument && existingDocument.jobId === jobId && hasUserEdits(existingDocument)) {
+      // User has made edits - keep existing document
+      return existingDocument;
+    }
+    
+    return structuredDoc;
+  }
   
-  // Map parsed data to document structure
+  // If no structured data but we have existing document with content, use it
+  if (existingDocument && hasExistingContent(existingDocument)) {
+    return existingDocument;
+  }
+  
+  // Priority 2: Use previously extracted structured data
+  if (rawData.extracted) {
+    return mapParsedDataToDocument(doc, rawData.extracted, rawData);
+  }
+  
+  // Priority 3: Try to parse raw CV text (least reliable)
+  const parsed = parseRawCVText(rawData.cvText);
   return mapParsedDataToDocument(doc, parsed, rawData);
+}
+
+/**
+ * Check if AI-structured data has meaningful content
+ */
+function hasStructuredContent(structured: StructuredCVFromAPI): boolean {
+  return (
+    (structured.experience && structured.experience.length > 0) ||
+    (structured.education && structured.education.length > 0) ||
+    (structured.skills && structured.skills.length > 0) ||
+    !!structured.professionalIntro
+  );
+}
+
+/**
+ * Check if user has made edits to the document
+ * We detect this by checking if checkpoints exist or if updatedAt differs significantly from createdAt
+ */
+function hasUserEdits(doc: CVDocument): boolean {
+  // If there are checkpoints, user has explicitly saved versions
+  if (doc.checkpoints && doc.checkpoints.length > 0) {
+    return true;
+  }
+  
+  // Check if document has been updated after creation (more than 1 minute difference)
+  const created = new Date(doc.createdAt).getTime();
+  const updated = new Date(doc.updatedAt).getTime();
+  const oneMinute = 60 * 1000;
+  
+  return (updated - created) > oneMinute;
 }
 
 /**
@@ -755,6 +830,66 @@ function mapParsedDataToDocument(
 }
 
 /**
+ * Map AI-structured CV data to CVDocument structure
+ * This is the most reliable mapping as data is already clean
+ */
+function mapStructuredDataToDocument(
+  doc: CVDocument,
+  structured: StructuredCVFromAPI
+): CVDocument {
+  const now = new Date().toISOString();
+  
+  // Map professional intro
+  if (structured.professionalIntro) {
+    doc.rightColumn.professionalIntro.content = structured.professionalIntro;
+  }
+  
+  // Map experience
+  if (structured.experience && structured.experience.length > 0) {
+    doc.rightColumn.experience = structured.experience.map(exp => ({
+      id: generateId(),
+      title: exp.title || '',
+      company: exp.company || '',
+      location: exp.location,
+      startDate: exp.startDate || '',
+      endDate: exp.endDate,
+      keyMilestones: exp.keyMilestones || '',
+      bullets: exp.bullets?.map(b => createBulletItem(b)) || [],
+    }));
+    
+    // Sort by date (reverse chronological)
+    doc.rightColumn.experience.sort((a, b) => {
+      const dateA = a.startDate || '';
+      const dateB = b.startDate || '';
+      return dateB.localeCompare(dateA);
+    });
+  }
+  
+  // Map education
+  if (structured.education && structured.education.length > 0) {
+    doc.leftColumn.education = structured.education.map(edu => 
+      createEducationItem(edu.title || '', edu.institution || '', edu.year || '')
+    );
+  }
+  
+  // Map skills
+  if (structured.skills && structured.skills.length > 0) {
+    doc.leftColumn.skills = structured.skills.map(skill => createSkillItem(skill));
+  }
+  
+  // Map languages
+  if (structured.languages && structured.languages.length > 0) {
+    doc.leftColumn.languages = structured.languages.map(lang => 
+      createLanguageItem(lang.language, lang.level || 'intermediate')
+    );
+  }
+  
+  doc.updatedAt = now;
+  
+  return doc;
+}
+
+/**
  * Check if CV data exists (validation for editor access)
  */
 export function hasCVData(): boolean {
@@ -787,6 +922,7 @@ export function getRawCVData(): RawCVData | null {
       cvText: extraction.cvText || '',
       summary: extraction.summary,
       extracted: extraction.extracted,
+      structured: extraction.structured, // AI-structured data from /api/cv/structure
     };
   } catch {
     return null;

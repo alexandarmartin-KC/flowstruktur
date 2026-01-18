@@ -22,9 +22,34 @@ const STORAGE_KEYS = {
   QUESTIONNAIRE_SCORES: 'flowstruktur_questionnaire_scores',
 };
 
+// Structured CV data for editor
+interface StructuredCVData {
+  professionalIntro?: string;
+  experience: {
+    title: string;
+    company: string;
+    location?: string;
+    startDate: string;
+    endDate?: string;
+    keyMilestones?: string;
+    bullets: string[];
+  }[];
+  education: {
+    title: string;
+    institution: string;
+    year: string;
+  }[];
+  skills: string[];
+  languages: {
+    language: string;
+    level: 'native' | 'fluent' | 'advanced' | 'intermediate' | 'basic';
+  }[];
+}
+
 interface CVExtraction {
   summary: string;
   cvText: string;
+  structured?: StructuredCVData; // AI-strukturerede CV data til editor
 }
 
 // Step 1 output interface - kun tekst
@@ -408,6 +433,26 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
       }
 
       const data = await res.json();
+      
+      // After extraction, get structured CV data for the editor
+      if (data.cvText) {
+        try {
+          const structureRes = await fetch('/api/cv/structure', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cvText: data.cvText }),
+          });
+          
+          if (structureRes.ok) {
+            const structured = await structureRes.json();
+            data.structured = structured;
+          }
+        } catch (structureErr) {
+          console.error('Could not structure CV data:', structureErr);
+          // Continue without structured data - parser will try to handle raw text
+        }
+      }
+      
       setExtraction(data);
       
       // After extraction, automatically generate Step 1 data

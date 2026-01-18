@@ -190,28 +190,52 @@ export default function ProfilPage() {
 
   // Load saved profile data from localStorage on mount
   useEffect(() => {
-    try {
-      // Load CV extraction (raw upload data)
-      const savedExtraction = localStorage.getItem(STORAGE_KEYS.CV_EXTRACTION);
-      if (savedExtraction) {
-        const parsedExtraction = JSON.parse(savedExtraction);
-        setExtraction(parsedExtraction);
-      }
-      
-      // Load CV analysis (step1 data)
-      const savedCvAnalysis = localStorage.getItem(STORAGE_KEYS.CV_ANALYSIS);
-      if (savedCvAnalysis) {
-        const parsedCv = JSON.parse(savedCvAnalysis);
-        setStep1Data(parsedCv);
-        setCurrentStep('questionnaire'); // CV already done, go to questionnaire
-      }
-      
-      // Load questionnaire scores (partial progress)
-      const savedScores = localStorage.getItem(STORAGE_KEYS.QUESTIONNAIRE_SCORES);
-      if (savedScores) {
-        const parsedScores = JSON.parse(savedScores);
-        setScores(parsedScores);
-      }
+    const loadAndMigrateData = async () => {
+      try {
+        // Load CV extraction (raw upload data)
+        const savedExtraction = localStorage.getItem(STORAGE_KEYS.CV_EXTRACTION);
+        if (savedExtraction) {
+          const parsedExtraction = JSON.parse(savedExtraction);
+          
+          // Check if we need to migrate - if cvText exists but structured doesn't
+          if (parsedExtraction.cvText && !parsedExtraction.structured) {
+            console.log('Migrating CV data: adding structured extraction...');
+            try {
+              const structureRes = await fetch('/api/cv/structure', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cvText: parsedExtraction.cvText }),
+              });
+              
+              if (structureRes.ok) {
+                const structured = await structureRes.json();
+                parsedExtraction.structured = structured;
+                // Save migrated data
+                localStorage.setItem(STORAGE_KEYS.CV_EXTRACTION, JSON.stringify(parsedExtraction));
+                console.log('CV data migration complete:', structured);
+              }
+            } catch (structureErr) {
+              console.error('Could not migrate CV data:', structureErr);
+            }
+          }
+          
+          setExtraction(parsedExtraction);
+        }
+        
+        // Load CV analysis (step1 data)
+        const savedCvAnalysis = localStorage.getItem(STORAGE_KEYS.CV_ANALYSIS);
+        if (savedCvAnalysis) {
+          const parsedCv = JSON.parse(savedCvAnalysis);
+          setStep1Data(parsedCv);
+          setCurrentStep('questionnaire'); // CV already done, go to questionnaire
+        }
+        
+        // Load questionnaire scores (partial progress)
+        const savedScores = localStorage.getItem(STORAGE_KEYS.QUESTIONNAIRE_SCORES);
+        if (savedScores) {
+          const parsedScores = JSON.parse(savedScores);
+          setScores(parsedScores);
+        }
       
       // Load personality data (completed questionnaire)
       const savedPersonalityData = localStorage.getItem(STORAGE_KEYS.PERSONALITY_DATA);
@@ -236,6 +260,9 @@ export default function ProfilPage() {
     } catch (error) {
       console.error('Error loading saved profile data:', error);
     }
+    };
+    
+    loadAndMigrateData();
   }, []);
 
   // Save extraction to localStorage when it changes

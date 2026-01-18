@@ -687,6 +687,25 @@ export function CVEditorProvider({ children }: { children: ReactNode }) {
     // Get raw CV data from uploaded CV
     const rawCVData = getRawCVData();
     
+    // If we have structured CV data, we should use it unless user has made edits
+    if (rawCVData && rawCVData.structured) {
+      // Check if existing doc is empty (no user edits)
+      const existingIsEmpty = !existingDoc || (
+        existingDoc.rightColumn.experience.length === 0 &&
+        existingDoc.leftColumn.education.length === 0 &&
+        existingDoc.leftColumn.skills.length === 0 &&
+        !existingDoc.rightColumn.professionalIntro.content.trim()
+      );
+      
+      if (existingIsEmpty) {
+        // Force reload from structured data - delete old empty document
+        if (stored) {
+          localStorage.removeItem(key);
+        }
+        existingDoc = null;
+      }
+    }
+    
     // If we have raw CV data, normalize it and merge with existing
     if (rawCVData && rawCVData.cvText) {
       const normalizedDoc = normalizeCVData(jobId, rawCVData, existingDoc);

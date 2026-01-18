@@ -25,6 +25,7 @@ import {
   createEducationItem,
   createSkillItem,
   createLanguageItem,
+  sortExperienceByDate,
 } from './cv-types';
 
 /**
@@ -793,12 +794,8 @@ function mapParsedDataToDocument(
       return block;
     });
     
-    // Sort by date (reverse chronological) if we have dates
-    doc.rightColumn.experience.sort((a, b) => {
-      const dateA = a.startDate || '';
-      const dateB = b.startDate || '';
-      return dateB.localeCompare(dateA);
-    });
+    // Sort by date (reverse chronological) - HARD INVARIANT
+    doc.rightColumn.experience = sortExperienceByDate(doc.rightColumn.experience);
   }
   
   // Map education
@@ -857,12 +854,8 @@ function mapStructuredDataToDocument(
       bullets: exp.bullets?.map(b => createBulletItem(b)) || [],
     }));
     
-    // Sort by date (reverse chronological)
-    doc.rightColumn.experience.sort((a, b) => {
-      const dateA = a.startDate || '';
-      const dateB = b.startDate || '';
-      return dateB.localeCompare(dateA);
-    });
+    // Sort by date (reverse chronological) - HARD INVARIANT
+    doc.rightColumn.experience = sortExperienceByDate(doc.rightColumn.experience);
   }
   
   // Map education

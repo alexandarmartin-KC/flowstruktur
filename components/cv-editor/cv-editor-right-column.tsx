@@ -25,8 +25,6 @@ import {
   Check,
   Pencil,
   AlertTriangle,
-  ChevronUp,
-  ChevronDown,
   Loader2,
 } from 'lucide-react';
 
@@ -43,7 +41,6 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
     addExperience,
     updateExperience,
     removeExperience,
-    reorderExperience,
     addBullet,
     updateBullet,
     removeBullet,
@@ -81,7 +78,7 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
       
       {/* Experience Section */}
       <div className="mt-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <h2 
             className="font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider"
             style={{ fontSize: fontSize.heading }}
@@ -98,6 +95,11 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
             Tilføj stilling
           </Button>
         </div>
+        
+        {/* Auto-sort notice */}
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 no-print">
+          Erfaring sorteres automatisk efter dato (nyeste først)
+        </p>
         
         {rightColumn.experience.length === 0 ? (
           <div className="border-2 border-dashed border-amber-200 dark:border-amber-700 rounded-lg p-8 text-center bg-amber-50 dark:bg-amber-950/20">
@@ -131,20 +133,6 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
                 isLast={index === rightColumn.experience.length - 1}
                 onUpdate={(updates) => updateExperience(exp.id, updates)}
                 onRemove={() => removeExperience(exp.id)}
-                onMoveUp={() => {
-                  if (index > 0) {
-                    const newOrder = [...rightColumn.experience];
-                    [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-                    reorderExperience(newOrder);
-                  }
-                }}
-                onMoveDown={() => {
-                  if (index < rightColumn.experience.length - 1) {
-                    const newOrder = [...rightColumn.experience];
-                    [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
-                    reorderExperience(newOrder);
-                  }
-                }}
                 onAddBullet={() => addBullet(exp.id)}
                 onUpdateBullet={(bulletId, content) => updateBullet(exp.id, bulletId, content)}
                 onRemoveBullet={(bulletId) => removeBullet(exp.id, bulletId)}
@@ -430,8 +418,6 @@ interface ExperienceBlockProps {
   isLast: boolean;
   onUpdate: (updates: Partial<CVExperienceBlock>) => void;
   onRemove: () => void;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
   onAddBullet: () => void;
   onUpdateBullet: (bulletId: string, content: string) => void;
   onRemoveBullet: (bulletId: string) => void;
@@ -448,8 +434,6 @@ function ExperienceBlock({
   isLast,
   onUpdate,
   onRemove,
-  onMoveUp,
-  onMoveDown,
   onAddBullet,
   onUpdateBullet,
   onRemoveBullet,
@@ -511,18 +495,8 @@ function ExperienceBlock({
         <div className="border-t border-slate-200 dark:border-slate-700 my-6" />
       )}
       
-      {/* Remove and reorder buttons */}
+      {/* Remove button - no reorder buttons, experience is auto-sorted by date */}
       <div className="absolute -left-10 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1 no-print">
-        {!isFirst && (
-          <button onClick={onMoveUp} className="p-1 hover:bg-slate-100 rounded" title="Flyt op">
-            <ChevronUp className="h-4 w-4 text-slate-400" />
-          </button>
-        )}
-        {!isLast && (
-          <button onClick={onMoveDown} className="p-1 hover:bg-slate-100 rounded" title="Flyt ned">
-            <ChevronDown className="h-4 w-4 text-slate-400" />
-          </button>
-        )}
         <button onClick={onRemove} className="p-1 hover:bg-red-50 rounded" title="Fjern">
           <X className="h-4 w-4 text-red-500" />
         </button>

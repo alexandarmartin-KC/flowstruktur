@@ -335,3 +335,81 @@ export function countLines(text: string, charsPerLine: number = 80): number {
 export function exceedsLimit(text: string, maxLines: number, charsPerLine: number = 80): boolean {
   return countLines(text, charsPerLine) > maxLines;
 }
+
+/**
+ * Parse a date string into a comparable format
+ * Handles formats like: "January 2020", "Jan 2020", "2020", "01/2020"
+ * Returns { timestamp: number, isOngoing: boolean }
+ */
+function parseExperienceDate(dateStr: string | undefined): { timestamp: number; isOngoing: boolean } {
+  // Ongoing role = no end date, or marked as present/current
+  if (!dateStr || dateStr.trim() === '') {
+    return { timestamp: Infinity, isOngoing: true };
+  }
+  
+  const normalized = dateStr.toLowerCase().trim();
+  
+  // Check for "present", "current", "now", "nu", "nuværende"
+  if (['present', 'current', 'now', 'nu', 'nuværende', '-'].includes(normalized)) {
+    return { timestamp: Infinity, isOngoing: true };
+  }
+  
+  // Try to parse the date
+  const parsed = Date.parse(dateStr);
+  if (!isNaN(parsed)) {
+    return { timestamp: parsed, isOngoing: false };
+  }
+  
+  // Try year-only format
+  const yearMatch = dateStr.match(/(\d{4})/);
+  if (yearMatch) {
+    const year = parseInt(yearMatch[1], 10);
+    // January 1st of that year
+    return { timestamp: new Date(year, 0, 1).getTime(), isOngoing: false };
+  }
+  
+  // Undated - place at bottom
+  return { timestamp: -Infinity, isOngoing: false };
+}
+
+/**
+ * Sort experience blocks in reverse chronological order.
+ * This is a HARD INVARIANT - experience must always be sorted by date.
+ * 
+ * Rules:
+ * 1. Ongoing roles (no end date, or "Present") always come first
+ * 2. Finished roles are sorted by end date (descending), then start date (descending)
+ * 3. Undated experiences go to the bottom
+ * 
+ * This function must be called:
+ * - After parsing CV data
+ * - After mapping to editor
+ * - After any date field is edited
+ * - Before rendering
+ * - Before PDF generation
+ */
+export function sortExperienceByDate(experiences: CVExperienceBlock[]): CVExperienceBlock[] {
+  return [...experiences].sort((a, b) => {
+    const aEnd = parseExperienceDate(a.endDate);
+    const bEnd = parseExperienceDate(b.endDate);
+    const aStart = parseExperienceDate(a.startDate);
+    const bStart = parseExperienceDate(b.startDate);
+    
+    // Both ongoing: sort by start date descending (newer first)
+    if (aEnd.isOngoing && bEnd.isOngoing) {
+      return bStart.timestamp - aStart.timestamp;
+    }
+    
+    // One ongoing, one not: ongoing comes first
+    if (aEnd.isOngoing && !bEnd.isOngoing) return -1;
+    if (!aEnd.isOngoing && bEnd.isOngoing) return 1;
+    
+    // Both finished: sort by end date descending
+    if (aEnd.timestamp !== bEnd.timestamp) {
+      return bEnd.timestamp - aEnd.timestamp;
+    }
+    
+    // Same end date: sort by start date descending
+    return bStart.timestamp - aStart.timestamp;
+  });
+}

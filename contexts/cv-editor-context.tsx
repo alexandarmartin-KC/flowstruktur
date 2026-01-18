@@ -18,6 +18,7 @@ import {
   createSkillItem,
   createLanguageItem,
   generateId,
+  sortExperienceByDate,
 } from '@/lib/cv-types';
 import { normalizeCVData, getRawCVData, hasCVData } from '@/lib/cv-normalizer';
 
@@ -401,21 +402,32 @@ function cvEditorReducer(state: CVEditorState, action: CVEditorAction): CVEditor
         },
       };
       
-    case 'UPDATE_EXPERIENCE':
+    case 'UPDATE_EXPERIENCE': {
       if (!state.document) return state;
+      // First apply the update
+      const updatedExperience = state.document.rightColumn.experience.map(exp =>
+        exp.id === action.payload.id ? { ...exp, ...action.payload.updates } : exp
+      );
+      // Check if date fields were changed - if so, auto-sort
+      const dateFieldsChanged = 
+        'startDate' in action.payload.updates || 
+        'endDate' in action.payload.updates;
+      // Always sort to maintain chronological order (HARD INVARIANT)
+      const sortedExperience = dateFieldsChanged 
+        ? sortExperienceByDate(updatedExperience) 
+        : updatedExperience;
       return {
         ...state,
         document: {
           ...state.document,
           rightColumn: {
             ...state.document.rightColumn,
-            experience: state.document.rightColumn.experience.map(exp =>
-              exp.id === action.payload.id ? { ...exp, ...action.payload.updates } : exp
-            ),
+            experience: sortedExperience,
           },
           updatedAt: now,
         },
       };
+    }
       
     case 'REMOVE_EXPERIENCE':
       if (!state.document) return state;
@@ -431,16 +443,11 @@ function cvEditorReducer(state: CVEditorState, action: CVEditorAction): CVEditor
         },
       };
       
+    // REORDER_EXPERIENCE is intentionally a no-op - experience ordering is determined by dates only
+    // Manual reordering is NOT allowed (HARD INVARIANT)
     case 'REORDER_EXPERIENCE':
-      if (!state.document) return state;
-      return {
-        ...state,
-        document: {
-          ...state.document,
-          rightColumn: { ...state.document.rightColumn, experience: action.payload },
-          updatedAt: now,
-        },
-      };
+      // Do nothing - experience order is determined solely by dates
+      return state;
       
     case 'ADD_BULLET':
       if (!state.document) return state;

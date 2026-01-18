@@ -56,6 +56,12 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
   
   const { rightColumn } = document;
   
+  // Check if we have experience data to generate intro from
+  const hasExperienceData = rightColumn.experience.length > 0 && 
+    rightColumn.experience.some(exp => 
+      exp.bullets.length > 0 || exp.keyMilestones.trim().length > 0
+    );
+  
   return (
     <div 
       className="cv-right-column p-8"
@@ -70,6 +76,7 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
         setAiLoading={setAiLoading}
         jobDescription={jobDescription}
         fontSize={fontSize}
+        hasExperienceData={hasExperienceData}
       />
       
       {/* Experience Section */}
@@ -96,11 +103,14 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
           <div className="border-2 border-dashed border-amber-200 dark:border-amber-700 rounded-lg p-8 text-center bg-amber-50 dark:bg-amber-950/20">
             <AlertTriangle className="h-8 w-8 mx-auto mb-3 text-amber-500" />
             <p className="text-amber-800 dark:text-amber-200 text-sm font-medium mb-2">
-              Ingen stillinger fundet i dit CV
+              Ingen stillinger kunne udtrækkes fra dit CV
             </p>
             <p className="text-amber-700 dark:text-amber-300 text-xs mb-4">
-              Dit CV blev ikke automatisk parset med erfaringsdata. 
-              Du kan tilføje dine stillinger manuelt nedenfor.
+              Vi kunne ikke automatisk parse erfaringsdata fra dit CV-format. 
+              Du kan tilføje dine stillinger manuelt — de vil blive gemt og brugt til fremtidige ansøgninger.
+            </p>
+            <p className="text-amber-600 dark:text-amber-400 text-xs mb-4 italic">
+              Tip: Kontrollér at dit uploadede CV indeholder en tydelig &quot;Erfaring&quot; eller &quot;Experience&quot; sektion.
             </p>
             <Button 
               variant="outline" 
@@ -161,6 +171,7 @@ interface ProfessionalIntroSectionProps {
   setAiLoading: (loading: { sectionId: string; type: string } | null) => void;
   jobDescription?: string;
   fontSize: TextSizeOption;
+  hasExperienceData: boolean;
 }
 
 function ProfessionalIntroSection({
@@ -171,6 +182,7 @@ function ProfessionalIntroSection({
   setAiLoading,
   jobDescription,
   fontSize,
+  hasExperienceData,
 }: ProfessionalIntroSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -179,6 +191,9 @@ function ProfessionalIntroSection({
   const lineCount = countLines(intro.content);
   const isLoading = aiLoading?.sectionId === 'intro';
   const hasContent = intro.content.trim().length > 0;
+  
+  // AI can only suggest intro from experience if there IS experience data
+  // This follows spec Case 3: if no bullets and no narrative exist, AI must refuse
   
   // Optimize existing intro for job (only when content exists)
   const handleAiRewrite = async () => {
@@ -367,27 +382,37 @@ function ProfessionalIntroSection({
                 <p className="text-slate-400 italic">
                   Ingen profilbeskrivelse fundet i dit CV.
                 </p>
-                <p className="text-slate-500 text-xs">
-                  Du kan skrive en kort professionel beskrivelse manuelt, eller lade AI foreslå en baseret på din erfaring.
-                </p>
-                {jobDescription && !intro.aiSuggestion && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleGenerateFromExperience();
-                    }}
-                    disabled={isLoading}
-                    className="text-xs"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                    ) : (
-                      <Sparkles className="h-3 w-3 mr-1" />
+                {hasExperienceData ? (
+                  // Case 2: No intro, but experience data exists - offer AI suggestion
+                  <>
+                    <p className="text-slate-500 text-xs">
+                      Du kan skrive en kort professionel beskrivelse manuelt, eller lade AI foreslå en baseret på din erfaring.
+                    </p>
+                    {jobDescription && !intro.aiSuggestion && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleGenerateFromExperience();
+                        }}
+                        disabled={isLoading}
+                        className="text-xs"
+                      >
+                        {isLoading ? (
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                        ) : (
+                          <Sparkles className="h-3 w-3 mr-1" />
+                        )}
+                        Foreslå intro fra erfaring
+                      </Button>
                     )}
-                    Foreslå intro fra erfaring
-                  </Button>
+                  </>
+                ) : (
+                  // Case 3: No intro AND no experience data - AI cannot help, user must write
+                  <p className="text-slate-500 text-xs">
+                    Klik her for at skrive din professionelle beskrivelse. Tilføj gerne dine erfaringer først i sektionen nedenfor.
+                  </p>
                 )}
               </div>
             )}

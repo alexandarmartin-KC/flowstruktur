@@ -11,6 +11,7 @@ import {
   CVAISuggestion,
   generateId,
 } from '@/lib/cv-types';
+import { getRawCVData } from '@/lib/cv-normalizer';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -92,9 +93,14 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
         </div>
         
         {rightColumn.experience.length === 0 ? (
-          <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg p-8 text-center">
-            <p className="text-slate-500 text-sm mb-4">
-              Ingen stillinger tilføjet endnu
+          <div className="border-2 border-dashed border-amber-200 dark:border-amber-700 rounded-lg p-8 text-center bg-amber-50 dark:bg-amber-950/20">
+            <AlertTriangle className="h-8 w-8 mx-auto mb-3 text-amber-500" />
+            <p className="text-amber-800 dark:text-amber-200 text-sm font-medium mb-2">
+              Ingen stillinger fundet i dit CV
+            </p>
+            <p className="text-amber-700 dark:text-amber-300 text-xs mb-4">
+              Dit CV blev ikke automatisk parset med erfaringsdata. 
+              Du kan tilføje dine stillinger manuelt nedenfor.
             </p>
             <Button 
               variant="outline" 
@@ -172,7 +178,9 @@ function ProfessionalIntroSection({
   const isOverLimit = exceedsLimit(intro.content, CONTENT_LIMITS.professionalIntroLines);
   const lineCount = countLines(intro.content);
   const isLoading = aiLoading?.sectionId === 'intro';
+  const hasContent = intro.content.trim().length > 0;
   
+  // Optimize existing intro for job (only when content exists)
   const handleAiRewrite = async () => {
     if (!intro.content.trim() || !jobDescription) return;
     
@@ -208,6 +216,46 @@ function ProfessionalIntroSection({
     }
   };
   
+  // Generate intro from experience (only when no content exists)
+  const handleGenerateFromExperience = async () => {
+    if (!jobDescription) return;
+    
+    setAiLoading({ sectionId: 'intro', type: 'generate' });
+    
+    try {
+      // Get raw CV data to provide context
+      const rawCV = getRawCVData();
+      const cvSummary = rawCV?.summary || rawCV?.cvText?.slice(0, 2000) || '';
+      
+      const response = await fetch('/api/cv/ai-assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'generate-intro-from-experience',
+          jobDescription,
+          cvData: cvSummary,
+        }),
+      });
+      
+      if (!response.ok) throw new Error('AI request failed');
+      
+      const data = await response.json();
+      
+      onAiSuggestion({
+        id: generateId(),
+        originalContent: '',
+        suggestedContent: data.suggestion,
+        rationale: 'Genereret baseret på din erfaring fra dit CV',
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('AI generate error:', error);
+    } finally {
+      setAiLoading(null);
+    }
+  };
+  
   const handleAcceptSuggestion = () => {
     if (intro.aiSuggestion) {
       onUpdate(intro.aiSuggestion.suggestedContent);
@@ -229,12 +277,12 @@ function ProfessionalIntroSection({
           Profil
         </h2>
         
-        {!intro.aiSuggestion && (
+        {!intro.aiSuggestion && hasContent && (
           <Button
             variant="ghost"
             size="sm"
             onClick={handleAiRewrite}
-            disabled={!intro.content.trim() || !jobDescription || isLoading}
+            disabled={!jobDescription || isLoading}
             className="text-xs no-print"
           >
             {isLoading ? (
@@ -242,7 +290,7 @@ function ProfessionalIntroSection({
             ) : (
               <Sparkles className="h-3 w-3 mr-1" />
             )}
-            Optimer med AI
+            Optimer til jobbet
           </Button>
         )}
       </div>
@@ -315,9 +363,33 @@ function ProfessionalIntroSection({
         ) : (
           <div className="min-h-[80px] text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
             {intro.content || (
-              <span className="text-slate-400 italic">
-                Klik her for at skrive din professionelle beskrivelse...
-              </span>
+              <div className="space-y-3">
+                <p className="text-slate-400 italic">
+                  Ingen profilbeskrivelse fundet i dit CV.
+                </p>
+                <p className="text-slate-500 text-xs">
+                  Du kan skrive en kort professionel beskrivelse manuelt, eller lade AI foreslå en baseret på din erfaring.
+                </p>
+                {jobDescription && !intro.aiSuggestion && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleGenerateFromExperience();
+                    }}
+                    disabled={isLoading}
+                    className="text-xs"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-3 w-3 mr-1" />
+                    )}
+                    Foreslå intro fra erfaring
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -574,9 +646,27 @@ function ExperienceBlock({
             onClick={() => setEditingMilestones(true)}
           >
             {experience.keyMilestones || (
-              <span className="text-slate-400 italic">
-                Klik for at tilføje nøgleopgaver...
-              </span>
+              <div className="space-y-2">
+                {experience.bullets.length > 0 ? (
+                  <>
+                    <p className="text-slate-400 italic text-xs">
+                      Dit CV indeholdt punkter men ingen sammenfatning.
+                    </p>
+                    <p className="text-slate-500 text-xs">
+                      Klik for at skrive manuelt, eller brug &quot;Generer fra punkter&quot; ovenfor.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-slate-400 italic text-xs">
+                      Ingen nøgleopgaver fundet.
+                    </p>
+                    <p className="text-slate-500 text-xs">
+                      Klik her for at beskrive dine primære ansvarsområder og resultater.
+                    </p>
+                  </>
+                )}
+              </div>
             )}
           </div>
         )}

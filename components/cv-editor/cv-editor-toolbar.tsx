@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCVEditor } from '@/contexts/cv-editor-context';
 import { useUserProfile } from '@/contexts/user-profile-context';
 import { FONT_FAMILY_OPTIONS, TEXT_SIZE_OPTIONS, CVSettings } from '@/lib/cv-types';
+import { hasCVData } from '@/lib/cv-normalizer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -38,6 +39,7 @@ import {
   RotateCcw,
   Type,
   Palette,
+  FileCheck,
 } from 'lucide-react';
 
 interface CVEditorToolbarProps {
@@ -62,6 +64,12 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
   const [checkpointName, setCheckpointName] = useState('');
   const [showCheckpointDialog, setShowCheckpointDialog] = useState(false);
   const [showExportWarning, setShowExportWarning] = useState(false);
+  const [cvPreloaded, setCvPreloaded] = useState(false);
+  
+  // Check if CV was preloaded
+  useEffect(() => {
+    setCvPreloaded(hasCVData());
+  }, []);
   
   const document = state.document;
   const exportReqs = canExport();
@@ -99,6 +107,12 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             <h1 className="font-semibold text-lg truncate max-w-[200px] sm:max-w-[300px]">
               CV Editor
             </h1>
+            {cvPreloaded && (
+              <Badge variant="secondary" className="hidden sm:inline-flex gap-1 text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                <FileCheck className="h-3 w-3" />
+                Fra dit CV
+              </Badge>
+            )}
             {jobTitle && (
               <Badge variant="outline" className="hidden sm:inline-flex truncate max-w-[200px]">
                 {jobTitle}

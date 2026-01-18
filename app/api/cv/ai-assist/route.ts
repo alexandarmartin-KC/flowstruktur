@@ -6,10 +6,13 @@ const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   : null;
 
+// Storage key for CV extraction data
+const CV_EXTRACTION_KEY = 'flowstruktur_cv_extraction';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { type, content, bullets, title, company, jobDescription } = body;
+    const { type, content, bullets, title, company, jobDescription, cvData } = body;
     
     if (!openai) {
       // Return mock response for development
@@ -21,19 +24,19 @@ export async function POST(request: NextRequest) {
     
     switch (type) {
       case 'rewrite-intro':
-        systemPrompt = `Du er en professionel CV-skribent. Din opgave er at omskrive profilbeskrivelser så de er:
-- Klare og præcise
-- Relevante for den specifikke stilling
-- Professionelle i tonen
-- På dansk
+        systemPrompt = `Du er en CV-assistent der hjælper med at forfine profilbeskrivelser.
 
-VIGTIGT: 
+STRENGE REGLER:
 - Du må KUN omskrive og forbedre eksisterende indhold
-- Du må IKKE opfinde nye færdigheder, erfaringer eller kvalifikationer
+- Du må ALDRIG opfinde nye færdigheder, erfaringer, tal eller kvalifikationer
+- Alle fakta skal stamme direkte fra originalteksten
 - Hold beskrivelsen på 4-5 linjer
-- Bevar alle fakta fra originalen`;
+- Skriv på dansk
+- Fokuser på klarhed og relevans for jobbet`;
         
-        userPrompt = `Omskriv denne profilbeskrivelse så den er mere relevant for stillingen:
+        userPrompt = `Omskriv denne profilbeskrivelse så den er mere relevant for stillingen.
+
+DU MÅ KUN BRUGE INFORMATION FRA ORIGINALEN:
 
 ORIGINAL PROFIL:
 ${content}
@@ -44,48 +47,89 @@ ${jobDescription}
 Giv kun den omskrevne tekst, ingen forklaringer.`;
         break;
         
-      case 'generate-milestones':
-        systemPrompt = `Du er en professionel CV-skribent. Din opgave er at skrive en kort narrativ beskrivelse af nøgleopgaver baseret på eksisterende bullet points.
+      case 'generate-intro-from-experience':
+        systemPrompt = `Du er en CV-assistent. Din opgave er at skrive en kort professionel profilbeskrivelse.
 
-VIGTIGT:
-- Brug KUN information fra de givne bullet points
-- Opfind IKKE nye fakta, tal eller erfaringer
+STRENGE REGLER:
+- Du skal UDELUKKENDE basere teksten på CV-data der gives til dig
+- Du må ALDRIG opfinde fakta, tal, virksomheder eller kvalifikationer
+- Hvis der ikke er nok data, skriv en generisk men ærlig beskrivelse
+- Hold teksten på 4-5 linjer
+- Skriv på dansk
+- Fokuser på fakta der kan verificeres i CV'et`;
+        
+        userPrompt = `Skriv en kort profilbeskrivelse baseret på CV-data.
+
+CV-DATA (brug KUN dette):
+${cvData || 'Ingen specifik CV-data tilgængelig'}
+
+JOBOPSLAG (til kontekst - tilpas tonen, men opfind IKKE nye fakta):
+${jobDescription}
+
+Giv kun profilbeskrivelsen, ingen forklaringer.`;
+        break;
+        
+      case 'generate-milestones':
+        systemPrompt = `Du er en CV-assistent. Din opgave er at skrive en kort sammenfatning af nøgleopgaver.
+
+STRENGE REGLER:
+- Brug UDELUKKENDE information fra de givne bullet points
+- Opfind ALDRIG nye fakta, tal, resultater eller erfaringer
+- Hvis punkterne ikke indeholder specifikke tal, opfind dem IKKE
 - Skriv 2-3 sammenhængende sætninger
-- Fokuser på ansvar og scope
 - Skriv på dansk`;
         
-        userPrompt = `Skriv en kort nøgleopgave-beskrivelse for denne stilling baseret på følgende punkter:
+        userPrompt = `Skriv en kort sammenfatning baseret på følgende punkter.
+
+DU MÅ KUN BRUGE INFORMATION FRA DISSE PUNKTER:
 
 STILLING: ${title} hos ${company}
 
 PUNKTER:
 ${bullets?.map((b: string) => `• ${b}`).join('\n')}
 
-${jobDescription ? `JOBOPSLAG (til kontekst):\n${jobDescription}` : ''}
+${jobDescription ? `JOBOPSLAG (til tone, IKKE til nye fakta):\n${jobDescription}` : ''}
 
 Giv kun den genererede tekst, ingen forklaringer.`;
         break;
         
       case 'rewrite-bullet':
-        systemPrompt = `Du er en professionel CV-skribent. Din opgave er at omskrive CV-punkter så de er:
-- Handlingsorienterede (start med et stærkt verbum)
-- Kvantificerbare hvor muligt
-- Relevante for stillingen
-- Præcise og kortfattede
+        systemPrompt = `Du er en CV-assistent. Din opgave er at omskrive et CV-punkt.
 
-VIGTIGT:
+STRENGE REGLER:
 - Du må KUN omskrive eksisterende indhold
-- Du må IKKE tilføje nye tal, resultater eller fakta der ikke fremgår
-- Bevar alle originale fakta`;
+- Du må ALDRIG tilføje nye tal, resultater, teknologier eller fakta
+- Hvis originalen ikke har tal, OPFIND IKKE tal
+- Start gerne med et handlingsverbum
+- Hold det kortfattet
+- Skriv på dansk`;
         
-        userPrompt = `Omskriv dette CV-punkt så det er mere slagkraftigt:
+        userPrompt = `Omskriv dette CV-punkt så det er mere slagkraftigt.
+
+DU MÅ KUN BRUGE INFORMATION FRA ORIGINALEN:
 
 ORIGINAL:
 ${content}
 
-${jobDescription ? `JOBOPSLAG:\n${jobDescription}` : ''}
+${jobDescription ? `JOBOPSLAG (til tone):\n${jobDescription}` : ''}
 
 Giv kun det omskrevne punkt, ingen forklaringer.`;
+        break;
+        
+      case 'tighten-text':
+        systemPrompt = `Du er en redaktør. Din opgave er at forkorte og stramme tekst.
+
+STRENGE REGLER:
+- Fjern kun overflødige ord
+- Du må IKKE ændre fakta eller tilføje nyt indhold
+- Bevar al vigtig information
+- Skriv på dansk`;
+        
+        userPrompt = `Forkort denne tekst uden at miste vigtig information:
+
+${content}
+
+Giv kun den forkortede tekst.`;
         break;
         
       default:
@@ -98,19 +142,35 @@ Giv kun det omskrevne punkt, ingen forklaringer.`;
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
       ],
-      temperature: 0.7,
+      temperature: 0.5, // Lower temperature for more consistent, factual output
       max_tokens: 500,
     });
     
     const suggestion = completion.choices[0]?.message?.content?.trim() || '';
     
+    // Add rationale explaining the source of the content
+    let rationale = '';
+    switch (type) {
+      case 'rewrite-intro':
+        rationale = 'Optimeret baseret på din originale tekst';
+        break;
+      case 'generate-intro-from-experience':
+        rationale = 'Genereret fra din erfaring i CV\'et';
+        break;
+      case 'generate-milestones':
+        rationale = 'Sammenfattet fra dine eksisterende punkter';
+        break;
+      case 'rewrite-bullet':
+        rationale = 'Omskrevet for klarhed';
+        break;
+      case 'tighten-text':
+        rationale = 'Forkortet uden tab af information';
+        break;
+    }
+    
     return NextResponse.json({
       suggestion,
-      rationale: type === 'rewrite-intro' 
-        ? 'Optimeret for relevans og tydelighed'
-        : type === 'generate-milestones'
-        ? 'Genereret fra dine eksisterende punkter'
-        : undefined,
+      rationale,
     });
     
   } catch (error) {
@@ -130,7 +190,13 @@ function getMockResponse(type: string, content?: string, bullets?: string[]) {
         suggestion: content 
           ? `${content.split('.')[0]}. Med dokumenteret erfaring inden for området leverer jeg resultater gennem struktureret tilgang og stærkt samarbejde.`
           : 'Erfaren professionel med stærk track record inden for kernekompetencer.',
-        rationale: 'Optimeret for tydelighed og relevans',
+        rationale: 'Optimeret baseret på din originale tekst',
+      };
+      
+    case 'generate-intro-from-experience':
+      return {
+        suggestion: 'Erfaren professionel med solid baggrund inden for mit felt. Min erfaring omfatter håndtering af komplekse opgaver og samarbejde på tværs af teams.',
+        rationale: 'Genereret fra din erfaring i CV\'et',
       };
       
     case 'generate-milestones':
@@ -138,12 +204,19 @@ function getMockResponse(type: string, content?: string, bullets?: string[]) {
         suggestion: bullets && bullets.length > 0
           ? `Ansvarlig for ${bullets[0]?.toLowerCase().slice(0, 50) || 'kerneopgaver'}. Bidrog til at drive resultater gennem tværgående samarbejde og systematisk tilgang.`
           : 'Tilføj punkter først for at generere nøgleopgaver.',
-        rationale: 'Genereret fra dine eksisterende punkter',
+        rationale: 'Sammenfattet fra dine eksisterende punkter',
       };
       
     case 'rewrite-bullet':
       return {
         suggestion: content || 'Drev [handling] med [resultat]',
+        rationale: 'Omskrevet for klarhed',
+      };
+      
+    case 'tighten-text':
+      return {
+        suggestion: content ? content.split('.').slice(0, 2).join('. ') + '.' : '',
+        rationale: 'Forkortet uden tab af information',
       };
       
     default:

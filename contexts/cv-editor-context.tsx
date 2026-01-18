@@ -19,6 +19,7 @@ import {
   createLanguageItem,
   generateId,
 } from '@/lib/cv-types';
+import { normalizeCVData, getRawCVData, hasCVData } from '@/lib/cv-normalizer';
 
 // Storage key prefix
 const STORAGE_KEY_PREFIX = 'flowstruktur_cv_doc_';
@@ -673,14 +674,29 @@ export function CVEditorProvider({ children }: { children: ReactNode }) {
     const key = `${STORAGE_KEY_PREFIX}${jobId}`;
     const stored = localStorage.getItem(key);
     
+    // First, try to load existing document
+    let existingDoc: CVDocument | null = null;
     if (stored) {
       try {
-        const doc = JSON.parse(stored) as CVDocument;
-        dispatch({ type: 'LOAD_DOCUMENT', payload: doc });
+        existingDoc = JSON.parse(stored) as CVDocument;
       } catch {
-        dispatch({ type: 'CREATE_DOCUMENT', payload: { jobId } });
+        existingDoc = null;
       }
+    }
+    
+    // Get raw CV data from uploaded CV
+    const rawCVData = getRawCVData();
+    
+    // If we have raw CV data, normalize it and merge with existing
+    if (rawCVData && rawCVData.cvText) {
+      const normalizedDoc = normalizeCVData(jobId, rawCVData, existingDoc);
+      dispatch({ type: 'LOAD_DOCUMENT', payload: normalizedDoc });
+    } else if (existingDoc) {
+      // Fall back to existing document if no raw CV data
+      dispatch({ type: 'LOAD_DOCUMENT', payload: existingDoc });
     } else {
+      // No CV data available - create empty document
+      // Note: The editor should block access in this case via the CV gate
       dispatch({ type: 'CREATE_DOCUMENT', payload: { jobId } });
     }
   }, []);

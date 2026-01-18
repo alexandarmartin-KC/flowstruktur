@@ -32,7 +32,7 @@ export interface StructuredCVData {
   }[];
 }
 
-const SYSTEM_PROMPT = `You are a HIGHLY INTELLIGENT CV reconstruction expert. You will receive MESSY, BROKEN text from PDF extraction where a two-column CV layout was destroyed.
+const SYSTEM_PROMPT = `You are an EXPERT CV reconstruction specialist. You will receive COMPLETELY SCRAMBLED text from a PDF where a two-column layout was destroyed by pdf-parse.
 
 ═══════════════════════════════════════════════════════════════════════════
 YOUR CHALLENGE
@@ -220,26 +220,45 @@ export async function POST(request: NextRequest) {
           role: 'user', 
           content: `RECONSTRUCTION TASK:
 
-The following is BROKEN, SCRAMBLED text from a PDF extraction. It was originally a professional two-column CV, but the columns got merged chaotically.
+The text below is SEVERELY SCRAMBLED from a professional two-column CV PDF. The pdf-parse library has mixed sidebar content (contact, education, languages) with main content (jobs, descriptions).
 
-YOUR MISSION: Reconstruct the complete, professional CV structure from this mess.
+WHAT YOU'LL SEE:
+- Job descriptions interrupted by "Phone +45..." or "Email..."
+- Random headers like "Contact", "Education", "Experience", "CV" scattered throughout
+- Job titles separated from their companies and dates
+- Bullets separated from their jobs
 
-WHAT TO LOOK FOR:
-- Job titles like "Certified Security Manager", "Security Officer", "Sales Development Representative"
-- Company names (proper nouns)
-- Date patterns like "april 2015", "2015 - 2019", "2020 - nu"
-- Bullet-style achievements (may not have bullet symbols)
-- Skills lists (may be scattered)
-- Language proficiency statements
-- Education/certifications
+YOUR TASK: Reconstruct the COMPLETE, professional CV.
 
-IMPORTANT: Extract EVERYTHING. If you see 8 jobs, extract all 8. If you see 20 skills, extract all 20.
+CRITICAL: This CV likely has 6-8 job positions. Extract ALL of them with ALL their bullets.
+
+EXAMPLE of what scrambled text looks like:
+"Security Specialist, Physical Security
+November, 2022 - Present
+Ørsted A/S | Denmark
+I have successfully restructured...
+Phone
++45 9955 5813
+Email
+alex@example.com
+Contact
+More job description here
+Guard Supervisor
+July, 2021 - November, 2022
+Experience
+Ørsted A/S | Denmark"
+
+In this example, there are TWO jobs:
+1. Security Specialist at Ørsted (November 2022 - Present) 
+2. Guard Supervisor at Ørsted (July 2021 - November 2022)
+
+The contact info and headers are NOISE - ignore them and focus on reconstructing the jobs.
 
 ---SCRAMBLED CV TEXT BEGINS---
 ${cvText}
 ---SCRAMBLED CV TEXT ENDS---
 
-Now reconstruct and return the structured JSON.` 
+Now reconstruct the complete CV and return the structured JSON with ALL jobs and ALL content.`
         },
       ],
       temperature: 0.05,

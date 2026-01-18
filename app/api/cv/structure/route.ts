@@ -220,45 +220,58 @@ export async function POST(request: NextRequest) {
           role: 'user', 
           content: `RECONSTRUCTION TASK:
 
-The text below is SEVERELY SCRAMBLED from a professional two-column CV PDF. The pdf-parse library has mixed sidebar content (contact, education, languages) with main content (jobs, descriptions).
+The text below is SEVERELY SCRAMBLED from a two-column CV PDF. pdf-parse has destroyed the layout.
 
-WHAT YOU'LL SEE:
-- Job descriptions interrupted by "Phone +45..." or "Email..."
-- Random headers like "Contact", "Education", "Experience", "CV" scattered throughout
-- Job titles separated from their companies and dates
-- Bullets separated from their jobs
+TRAINING EXAMPLE - Study this pattern:
 
-YOUR TASK: Reconstruct the COMPLETE, professional CV.
-
-CRITICAL: This CV likely has 6-8 job positions. Extract ALL of them with ALL their bullets.
-
-EXAMPLE of what scrambled text looks like:
-"Security Specialist, Physical Security
-November, 2022 - Present
-Ørsted A/S | Denmark
-I have successfully restructured...
+Here's how scrambled text looks:
+"Key Milestones
+[Job description bullets]
 Phone
 +45 9955 5813
 Email
-alex@example.com
+alexandar.martin@gmail.com
 Contact
-More job description here
-Guard Supervisor
-July, 2021 - November, 2022
+Education
 Experience
-Ørsted A/S | Denmark"
+Security Specialist, Physical Security
+November, 2022 - Present
+Ørsted A/S | Denmark
+[Job description]
+Guard Supervisor
+July, 2021 - November, 2022"
 
-In this example, there are TWO jobs:
-1. Security Specialist at Ørsted (November 2022 - Present) 
-2. Guard Supervisor at Ørsted (July 2021 - November 2022)
+In this chaos, you need to identify:
+- "Security Specialist, Physical Security" + "November, 2022 - Present" + "Ørsted A/S | Denmark" = ONE job
+- All the "Key Milestones" bullets at the top belong to the Security Specialist job
+- "Phone", "Email", "Contact", "Education", "Experience" are NOISE headers - IGNORE them
+- "Guard Supervisor" + "July, 2021 - November, 2022" = NEXT job (so previous job is complete)
 
-The contact info and headers are NOISE - ignore them and focus on reconstructing the jobs.
+CRITICAL INSTRUCTIONS:
+1. This CV has approximately 6-8 job positions - extract ALL of them
+2. The FIRST major text block (before any job title) is usually bullets from the FIRST job
+3. When you see a NEW job title + date, the PREVIOUS job ends
+4. Contact info (phone, email, address) interrupts jobs - IGNORE it
+5. Section headers ("Contact", "Education", "Experience", "CV") appear randomly - IGNORE them
+6. Collect ALL bullets/descriptions between job headers
+7. Some jobs have NO bullets listed - that's OK, leave bullets array empty
+
+EXPECTED JOBS IN THIS CV (based on the text):
+- Security Specialist, Physical Security @ Ørsted (Nov 2022 - Present)
+- Guard Supervisor @ Ørsted (July 2021 - Nov 2022)
+- Executive Security Chauffeur @ Ørsted (March 2017 - July 2021)
+- Security Account Manager for IBM @ G4S (Feb 2015 - Feb 2016)
+- Security Officer (multiple periods) @ G4S
+- SOC Operator @ Securitas (2012)
+
+Extract ALL of these with their complete information.
 
 ---SCRAMBLED CV TEXT BEGINS---
 ${cvText}
 ---SCRAMBLED CV TEXT ENDS---
 
-Now reconstruct the complete CV and return the structured JSON with ALL jobs and ALL content.`
+Reconstruct the complete professional CV with ALL jobs, ALL bullets, education, skills, and languages.
+Return ONLY the JSON object.`
         },
       ],
       temperature: 0.05,

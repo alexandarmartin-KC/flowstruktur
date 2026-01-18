@@ -5,24 +5,14 @@ import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import { CVEditor } from '@/components/cv-editor';
 import { ProfileSoftGate } from '@/components/profile-soft-gate';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
-export default function CVPage() {
+export default function CVEditorPage() {
   const params = useParams();
   const router = useRouter();
-  const { savedJobs, setCvStatus, isLoaded } = useSavedJobs();
+  const { savedJobs, setCvStatus } = useSavedJobs();
   const jobId = params.jobId as string;
-  
-  // Wait for context to load
-  if (!isLoaded) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-pulse text-muted-foreground">Indlæser...</div>
-      </div>
-    );
-  }
   
   const job = savedJobs.find((j) => j.id === jobId);
   
@@ -41,34 +31,18 @@ export default function CVPage() {
   }
   
   return (
-    <div className="cv-page -mx-4 sm:-mx-6 lg:-mx-8 -my-8">
-      {/* Intro card */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
-        <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20 mb-4">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Info className="h-4 w-4" />
-              CV Editor
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="text-sm text-muted-foreground">
-              Rediger dit CV direkte i editoren nedenfor. Dit CV gemmes automatisk.
-              Brug AI-assistenten til at optimere individuelle sektioner.
-            </p>
-          </CardContent>
-        </Card>
-        
-        {/* Profile completeness soft gate */}
+    <div className="cv-editor-page">
+      {/* Profile completeness soft gate */}
+      <div className="max-w-5xl mx-auto px-4 py-4">
         <ProfileSoftGate context="cv" />
       </div>
       
-      {/* CV Editor - full width */}
+      {/* CV Editor */}
       <CVEditor jobId={jobId} />
       
       {/* Bottom navigation */}
       <div className="bg-white dark:bg-gray-950 border-t sticky bottom-0 z-40 print:hidden">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/app/gemte-jobs">
               <Button variant="ghost">

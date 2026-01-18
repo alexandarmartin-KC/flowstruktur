@@ -186,6 +186,9 @@ export default function ProfilPage() {
   // Track which dimension explanations are expanded
   const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set());
   
+  // Debug state for viewing raw extracted text
+  const [showDebug, setShowDebug] = useState(false);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load saved profile data from localStorage on mount
@@ -987,15 +990,58 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
                   Dit CV er gemt og analyseret
                 </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                className="text-blue-600 border-blue-300 hover:bg-blue-50"
-              >
-                Upload nyt CV
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDebug(!showDebug)}
+                  className="text-slate-600 border-slate-300 hover:bg-slate-50"
+                >
+                  {showDebug ? 'Skjul' : 'Debug'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                >
+                  Upload nyt CV
+                </Button>
+              </div>
             </div>
+          )}
+          
+          {/* Debug panel - show raw extracted text */}
+          {showDebug && extraction && (
+            <Card className="border-2 border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/20">
+              <CardHeader>
+                <CardTitle className="text-lg text-amber-900 dark:text-amber-100">🔍 Debug: Rå ekstraheret tekst fra PDF</CardTitle>
+                <p className="text-sm text-amber-700 dark:text-amber-300">
+                  Dette er den tekst der blev ekstraheret fra PDF'en af pdf-parse biblioteket.
+                  Dette er hvad AI-modellen bruger til at strukturere dit CV.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
+                  <pre className="text-xs font-mono whitespace-pre-wrap break-words max-h-96 overflow-y-auto text-slate-900 dark:text-slate-100">
+                    {extraction.cvText}
+                  </pre>
+                </div>
+                <div className="mt-4 text-xs text-amber-700 dark:text-amber-300">
+                  <p><strong>Længde:</strong> {extraction.cvText.length} tegn</p>
+                  <p><strong>Linjer:</strong> {(extraction.cvText.match(/\n/g) || []).length + 1}</p>
+                  {extraction.structured && (
+                    <div className="mt-2 space-y-1">
+                      <p className="font-semibold">Struktureret data fundet:</p>
+                      <p>• Jobs: {extraction.structured.experience.length}</p>
+                      <p>• Uddannelser: {extraction.structured.education.length}</p>
+                      <p>• Færdigheder: {extraction.structured.skills.length}</p>
+                      <p>• Sprog: {extraction.structured.languages.length}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Drag and drop area - only show if no extraction or user wants to upload new */}

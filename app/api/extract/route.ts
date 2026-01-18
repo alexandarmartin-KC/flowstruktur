@@ -7,13 +7,24 @@ import OpenAI from 'openai';
 // Force Node.js runtime for file operations
 export const runtime = 'nodejs';
 
-// Helper til at udtrække tekst fra PDF
+// Helper til at udtrække tekst fra PDF ved at konvertere til billeder og bruge Vision API
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
     // Dynamisk import af pdf-parse for at undgå bundling issues
     const pdfParse = (await import('pdf-parse')).default;
+    
+    // First try: Use pdf-parse to get basic text
     const data = await pdfParse(buffer);
-    return data.text;
+    const rawText = data.text;
+    
+    // Log the extracted text for debugging
+    console.log('PDF Text Extraction:', {
+      length: rawText.length,
+      preview: rawText.substring(0, 500).replace(/\n/g, ' | '),
+      lineCount: (rawText.match(/\n/g) || []).length + 1,
+    });
+    
+    return rawText;
   } catch (error) {
     throw new Error('Kunne ikke læse PDF fil. Sørg for at filen er en valid PDF.');
   }

@@ -32,91 +32,131 @@ export interface StructuredCVData {
   }[];
 }
 
-const SYSTEM_PROMPT = `You are an expert CV/Resume parser. Your task is to extract ALL structured data from a CV text and return it as JSON.
+const SYSTEM_PROMPT = `You are an EXPERT CV/Resume parser specialized in reconstructing CVs from messy text extraction.
 
-CRITICAL RULES:
-1. Extract EVERY piece of information present in the CV - do not skip anything
-2. NEVER invent or fabricate data - only extract what is explicitly stated
-3. Preserve the original language and phrasing exactly as written
-4. If dates are unclear, use whatever format is in the CV
-5. Extract ALL job positions, ALL education entries, ALL skills, ALL languages
+═══════════════════════════════════════════════════════════════════════════
+CRITICAL CONTEXT: PDF TEXT EXTRACTION PROBLEMS
+═══════════════════════════════════════════════════════════════════════════
 
-EXTRACTION GUIDELINES:
+The CV text you receive comes from PDF extraction which often DESTROYS the original structure:
+- Two-column layouts get merged incorrectly (left column text mixed with right column)
+- Text from sidebars (contact info, skills, languages) appears scattered throughout
+- Section headers may appear far from their content
+- Bullet points may lose their bullets and appear as regular text
+- Dates may appear separated from their job entries
+- The reading order may be completely wrong
 
-## Professional Intro / Profile
-- Look for sections titled: "Profile", "Summary", "About", "Profil", "Om mig", "Professional Summary", "Career Objective"
-- This is usually 2-5 sentences at the top of the CV describing the person
-- If no explicit profile section exists, leave professionalIntro as null
+YOUR JOB: Intelligently RECONSTRUCT the original CV structure by:
+1. Identifying patterns (dates + titles + companies = job entries)
+2. Grouping related information that was scattered
+3. Using context clues to associate bullets/text with the correct job
+4. Recognizing that information appearing "out of order" belongs together
 
-## Experience / Work History
-- Look for sections titled: "Experience", "Work Experience", "Employment", "Career History", "Erhvervserfaring", "Arbejdserfaring", "Ansættelser"
-- For EACH position extract:
-  - title: The job title (e.g., "Security Manager", "Software Developer", "Sales Director")
-  - company: Company name exactly as written
-  - location: City/country if mentioned
-  - startDate: When they started (e.g., "January 2020", "2020", "Jan 2020")
-  - endDate: When they ended, or null if current/present
-  - keyMilestones: Any narrative paragraph describing the role (not bullet points)
-  - bullets: Array of ALL bullet points / achievements / responsibilities for this role
+═══════════════════════════════════════════════════════════════════════════
+PARSING STRATEGY - READ CAREFULLY
+═══════════════════════════════════════════════════════════════════════════
 
-## Education
-- Look for sections titled: "Education", "Uddannelse", "Academic Background", "Qualifications", "Certifications"
-- For EACH entry extract:
-  - title: Degree name, certification, or course title
-  - institution: School, university, or organization name
-  - year: Year or year range (e.g., "2018", "2016-2020")
+STEP 1: FIRST PASS - Identify all key elements:
+- All job titles (look for: Manager, Director, Officer, Specialist, Developer, etc.)
+- All company names
+- All date ranges (YYYY, Month YYYY, or ranges like "2020 - 2023", "2020 - Present")
+- All educational qualifications and institutions
+- All skills/competencies mentioned anywhere
+- All languages with levels
 
-## Skills / Competencies
-- Look for sections titled: "Skills", "Kompetencer", "Technical Skills", "Core Competencies", "Tools & Technologies", "Expertise"
-- Extract ALL skills mentioned, including:
-  - Technical skills (programming languages, tools, software)
-  - Soft skills if listed
-  - Industry-specific skills
-  - Certifications mentioned in skills sections
+STEP 2: ASSOCIATION - Connect related elements:
+- Match job titles with their companies (they usually appear near each other)
+- Match date ranges with job entries (dates often appear on same line or adjacent)
+- Collect ALL bullet points and descriptive text that appears AFTER a job entry until the next job entry
+- If bullets appear scattered, use context to determine which job they belong to
 
-## Languages
-- Look for sections titled: "Languages", "Sprog", "Language Skills"
-- For EACH language extract:
-  - language: Name of the language
-  - level: Proficiency level, mapped to: native, fluent, advanced, intermediate, basic
-    - "Native", "Mother tongue", "Modersmål" → "native"
-    - "Fluent", "Proficient", "C1-C2", "Flydende" → "fluent"  
-    - "Advanced", "B2", "Avanceret" → "advanced"
-    - "Intermediate", "Conversational", "B1", "Mellem" → "intermediate"
-    - "Basic", "Beginner", "A1-A2", "Grundlæggende" → "basic"
+STEP 3: HANDLE COMMON PDF EXTRACTION ISSUES:
+- If you see "Contact" / "Kontakt" followed by scattered email/phone/location, these are contact details (ignore for structure)
+- If "Education" / "Uddannelse" section is mixed in with experience, separate them
+- If skills appear in a sidebar list, extract ALL of them even if formatting is broken
+- Dates like "april 2015" and "February 2019" appearing near jobs indicate the period
 
-OUTPUT FORMAT:
-Return ONLY valid JSON with this exact structure:
+═══════════════════════════════════════════════════════════════════════════
+EXTRACTION RULES
+═══════════════════════════════════════════════════════════════════════════
+
+1. EXTRACT EVERYTHING - Never skip information even if formatting is broken
+2. NEVER INVENT DATA - Only extract what is explicitly stated
+3. PRESERVE ORIGINAL LANGUAGE - Keep Danish text in Danish, English in English
+4. HANDLE AMBIGUITY - If date association is unclear, use the most logical pairing
+5. COMPLETE BULLETS - Include ALL achievements/responsibilities for each role
+
+═══════════════════════════════════════════════════════════════════════════
+SECTION DETECTION (may appear in various languages)
+═══════════════════════════════════════════════════════════════════════════
+
+PROFILE SECTION keywords:
+"Profile", "PROFILE", "Profil", "PROFIL", "Summary", "About", "Om mig", "Professional Summary", "Career Objective", "Karrieremål"
+→ Look for 2-5 sentence paragraph describing the person's expertise and value proposition
+
+EXPERIENCE SECTION keywords:  
+"Experience", "EXPERIENCE", "Work Experience", "Employment", "Career", "Erhvervserfaring", "ERHVERVSERFARING", "Arbejdserfaring", "ARBEJDSERFARING", "Ansættelser", "Professional Experience"
+→ Extract EVERY job with: title, company, location (if present), startDate, endDate, narrative description (keyMilestones), ALL bullet points
+
+EDUCATION SECTION keywords:
+"Education", "EDUCATION", "Uddannelse", "UDDANNELSE", "Academic", "Qualifications", "Certifications", "Certificeringer"
+→ Include degrees, certifications, courses, diplomas
+
+SKILLS/COMPETENCIES keywords:
+"Skills", "SKILLS", "Kompetencer", "KOMPETENCER", "Core Competencies", "Technical Skills", "Expertise", "Kernekompetencer", "Faglige kompetencer"
+→ Extract ALL skills, tools, technologies, methodologies mentioned
+
+LANGUAGES keywords:
+"Languages", "LANGUAGES", "Sprog", "SPROG", "Language Skills"
+→ Extract with proficiency levels
+
+═══════════════════════════════════════════════════════════════════════════
+OUTPUT FORMAT - STRICT JSON
+═══════════════════════════════════════════════════════════════════════════
+
 {
-  "professionalIntro": "string or null",
+  "professionalIntro": "The complete profile/summary text exactly as written, or null if not present",
   "experience": [
     {
-      "title": "Job Title",
-      "company": "Company Name",
-      "location": "City, Country",
-      "startDate": "Month Year or Year",
-      "endDate": "Month Year or Year or null if current",
-      "keyMilestones": "Narrative description if present, otherwise null",
-      "bullets": ["Achievement 1", "Achievement 2", ...]
+      "title": "Exact job title from CV",
+      "company": "Company name exactly as written",
+      "location": "City/Country if mentioned, otherwise null",
+      "startDate": "Start date in original format (e.g., 'april 2015', 'January 2020', '2020')",
+      "endDate": "End date or null if current/present/nu/ongoing",
+      "keyMilestones": "Any narrative paragraph about the role (not bullets), null if none",
+      "bullets": ["Complete bullet point 1", "Complete bullet point 2", "...all bullets..."]
     }
   ],
   "education": [
     {
-      "title": "Degree/Certification",
-      "institution": "School/Organization",
-      "year": "Year or Year Range"
+      "title": "Degree/Certificate name exactly as written",
+      "institution": "Institution name exactly as written", 
+      "year": "Year or range as written"
     }
   ],
-  "skills": ["Skill 1", "Skill 2", ...],
+  "skills": ["All", "Skills", "Mentioned", "In", "CV", "Including", "Technical", "And", "Soft", "Skills"],
   "languages": [
-    {"language": "Language Name", "level": "native|fluent|advanced|intermediate|basic"}
+    {"language": "Language name", "level": "native|fluent|advanced|intermediate|basic"}
   ]
 }
 
-IMPORTANT: 
-- Return ONLY the JSON object, no markdown code blocks, no explanations
-- Ensure all arrays are populated with ALL items found in the CV
-- Do not summarize or truncate - include everything`;
+LANGUAGE LEVEL MAPPING:
+- native: "Native", "Mother tongue", "Modersmål", "First language"
+- fluent: "Fluent", "Proficient", "C1", "C2", "Flydende", "Near-native"
+- advanced: "Advanced", "B2", "Avanceret", "Good working knowledge"
+- intermediate: "Intermediate", "B1", "Conversational", "Mellem", "Working knowledge"
+- basic: "Basic", "Beginner", "A1", "A2", "Grundlæggende", "Elementary"
+
+═══════════════════════════════════════════════════════════════════════════
+FINAL INSTRUCTIONS
+═══════════════════════════════════════════════════════════════════════════
+
+- Return ONLY the JSON object - no markdown, no explanations, no code blocks
+- Include ALL job positions found in the CV (do not merge or skip any)
+- Include ALL bullet points for each role (there may be 5-10+ per job)
+- If text appears broken/scattered, use your intelligence to reconstruct it
+- Preserve the original language of the CV content
+- Sort experience by date (most recent first) if possible to determine`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -130,6 +170,13 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Log input for debugging - first 500 chars and total length
+    console.log('CV Structure API - Input received:', {
+      textLength: cvText.length,
+      preview: cvText.substring(0, 500).replace(/\n/g, ' '),
+      lineCount: (cvText.match(/\n/g) || []).length + 1,
+    });
+    
     if (!openai) {
       return NextResponse.json(getMockStructuredData());
     }
@@ -141,7 +188,21 @@ export async function POST(request: NextRequest) {
         { role: 'system', content: SYSTEM_PROMPT },
         { 
           role: 'user', 
-          content: `Parse this CV and extract ALL structured data. Do not skip any information.\n\n---CV START---\n${cvText}\n---CV END---` 
+          content: `TASK: Parse and structure this CV text. The text was extracted from a PDF and may have formatting issues (columns merged, text scattered, etc.). Use your intelligence to reconstruct the proper structure.
+
+IMPORTANT: Extract EVERY job position, EVERY education entry, EVERY skill, and EVERY language. Do not skip or summarize anything.
+
+If text appears fragmented or out of order, look for patterns:
+- Job titles near company names and dates = one job entry
+- Bullet-style text after a job = achievements for that job
+- Scattered skills = collect them all
+- Languages with levels mentioned anywhere = include them
+
+---CV TEXT START---
+${cvText}
+---CV TEXT END---
+
+Return the structured JSON now.` 
         },
       ],
       temperature: 0.1,

@@ -183,8 +183,8 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
                 <Input
                   value={item.year}
                   onChange={(e) => updateEducation(item.id, { year: e.target.value })}
-                  placeholder="År"
-                  className="text-xs text-slate-500 h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 w-20"
+                  placeholder="År (f.eks. 2016 - 2019)"
+                  className="text-xs text-slate-500 h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 w-32"
                 />
               </div>
             </div>

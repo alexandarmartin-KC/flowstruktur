@@ -210,9 +210,9 @@ OUTPUT FORMAT - STRICT JSON
   ],
   "education": [
     {
-      "title": "Degree/Certificate name (e.g., 'AP Degree Courses', 'Certificated Security Manager, CFPA')",
-      "institution": "School name (e.g., 'Communication', 'Danish Institute for Fire & Security')",
-      "year": "COMPLETE year or range - '2016 - 2019' NOT '2016 - 20', preserve all 4 digits of both years"
+      "title": "FULL degree/certificate name - NO TRUNCATION - Must end with complete word, not mid-word like 'C' or 'Manage' or 'Examina'",
+      "institution": "FULL institution name - NO TRUNCATION - Must end with complete word, not mid-word like 'Busine' or 'Institute'",
+      "year": "COMPLETE 4-digit year range - e.g. '2016 - 2019' NOT '2016 - 20' - both start AND end year must have 4 digits"
     }
   ],
   "skills": ["Every", "Single", "Skill", "Mentioned"],
@@ -381,7 +381,7 @@ Return ONLY the JSON object.`
         },
       ],
       temperature: 0.05,
-      max_tokens: 12000,
+      max_tokens: 16000, // Increased to ensure no truncation
       response_format: { type: 'json_object' },
     });
     
@@ -401,6 +401,26 @@ Return ONLY the JSON object.`
         languagesCount: structured.languages?.length || 0,
       });
       
+      // Helper function to detect and warn about truncation
+      const detectTruncation = (text: string, field: string): string => {
+        if (!text || text.length === 0) return text;
+        
+        // Check if ends with incomplete word (single letter or truncated word)
+        const endsWithIncomplete = text.match(/\s+[A-Z]$/i) || // ends with single capital letter
+                                   text.match(/[a-z]{2,}[aeiou]$/i); // ends mid-word with vowel
+        
+        if (endsWithIncomplete) {
+          console.warn(`⚠️  TRUNCATION DETECTED in ${field}: "${text}"`);
+        }
+        
+        // Check for common truncated year patterns
+        if (text.includes(' - ') && text.match(/-\s*\d{2}\s*$/)) {
+          console.warn(`⚠️  TRUNCATED YEAR in ${field}: "${text}" - missing last 2 digits`);
+        }
+        
+        return text;
+      };
+      
       // Validate and clean the response
       const cleaned: StructuredCVData = {
         professionalIntro: structured.professionalIntro?.trim() || undefined,
@@ -412,10 +432,9 @@ Return ONLY the JSON object.`
               const startDate = exp.startDate?.replace(/,\s*/g, ' ').trim() || '';
               const endDate = exp.endDate?.replace(/,\s*/g, ' ').trim() || undefined;
               
-              // Warn about potential truncation
-              if (title.length > 0 && (title.endsWith(',') || title.match(/\w\s*$/))) {
-                console.warn('⚠️ Potential truncated title:', title);
-              }
+              // Detect truncation
+              detectTruncation(title, 'job title');
+              detectTruncation(company, 'company name');
               
               return {
                 title,
@@ -436,13 +455,10 @@ Return ONLY the JSON object.`
               const institution = edu.institution?.trim() || '';
               const year = edu.year?.toString().trim() || '';
               
-              // Warn about potential truncation in education
-              if (title.length > 0 && !title.match(/\w+$/)) {
-                console.warn('⚠️ Potential truncated education title:', title);
-              }
-              if (year.includes('-') && year.match(/-\s*\d{2}\s*$/)) {
-                console.warn('⚠️ Truncated year detected:', year, '- should have 4 digits');
-              }
+              // Detect truncation
+              detectTruncation(title, 'education title');
+              detectTruncation(institution, 'education institution');
+              detectTruncation(year, 'education year');
               
               return {
                 title,

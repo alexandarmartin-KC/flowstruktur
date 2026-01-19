@@ -164,9 +164,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(getMockStructuredData());
     }
     
-    // Use gpt-4o with increased token limit
+    // Use gpt-4-turbo for better instruction following (less truncation)
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4-turbo',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { 
@@ -175,10 +175,11 @@ export async function POST(request: NextRequest) {
 ${cvText}
 ---CV TEXT ENDS---
 
-Extract and structure this CV following the rules. Return ONLY valid JSON.`
+Extract and structure this CV. Copy ALL text EXACTLY and COMPLETELY - every single character.
+Do NOT truncate any words. Return ONLY valid JSON.`
         },
       ],
-      temperature: 0.05,
+      temperature: 0.1,
       max_tokens: 16000,
       response_format: { type: 'json_object' },
     });

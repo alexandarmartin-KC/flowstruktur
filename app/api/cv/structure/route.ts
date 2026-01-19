@@ -109,9 +109,16 @@ SPECIFIC PATTERNS TO LOOK FOR
 - Responsibility descriptions: "Ansvar for", "Varetog"
 
 **Education Patterns:**
-- Degree names followed by institution names
-- Often has years like "2012 - 2015"
-- Look for "Universitet", "University", "College", "Academy"
+- Look for degree/certification names: "Certificated Security Manager", "AP Degree", "Bachelor", "Master", "Higher Commercial Examination"
+- Institution names: "Danish Institute for Fire & Security", "Roskilde Business College", "University", "College"
+- Years: "2016 - 2019", "2013 - 2014", "1998 - 2001"
+- Education entries may appear as:
+  * "Certificated Security Manager, CFPA" on one line, then "2016 - 2019" on next, then institution
+  * OR mixed format with degree, year, and institution scattered
+- If degree and year are present but institution is unclear, use the closest proper noun or "Communication" if that word appears near the degree
+- PRESERVE COMPLETE degree names: "Certificated Security Manager, CFPA" NOT "Certificated Security Manager"
+- PRESERVE COMPLETE institution names: "Danish Institute for Fire & Security" NOT "Danish Institute"
+- PRESERVE COMPLETE years: "2016 - 2019" NOT "2016 - 20"
 
 **Skills Patterns:**
 - Comma-separated lists
@@ -255,6 +262,26 @@ CRITICAL INSTRUCTIONS:
 5. Section headers ("Contact", "Education", "Experience", "CV") appear randomly - IGNORE them
 6. Collect ALL bullets/descriptions between job headers
 7. Some jobs have NO bullets listed - that's OK, leave bullets array empty
+
+EDUCATION EXTRACTION - CRITICAL:
+The education section will appear scrambled like:
+"Certificated Security Manager, CFPA
+2016 - 2019
+Communication
+AP Degree Courses
+2013 - 2014
+Certificated Security Manager
+Danish Institute for Fire & Security
+1998 - 2001
+Higher Commercial Examination
+Roskilde Business College"
+
+Parse this as THREE separate education entries:
+1. Title: "Certificated Security Manager, CFPA", Institution: "Danish Institute for Fire & Security", Year: "2016 - 2019"
+2. Title: "Communication AP Degree Courses", Institution: "Communication" or educational institution if found, Year: "2013 - 2014"  
+3. Title: "Higher Commercial Examination", Institution: "Roskilde Business College", Year: "1998 - 2001"
+
+IMPORTANT: Keep COMPLETE degree names and COMPLETE years (e.g., "2016 - 2019" NOT "2016 - 20")
 
 EXPECTED JOBS IN THIS CV (based on the text):
 - Security Specialist, Physical Security @ Ørsted (Nov 2022 - Present)

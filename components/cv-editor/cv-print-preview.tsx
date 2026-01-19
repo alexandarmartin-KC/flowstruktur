@@ -173,20 +173,24 @@ export function CVPrintPreview() {
                     
                     {/* Header */}
                     <div className="mb-2">
-                      <div className="flex flex-wrap items-baseline gap-x-2">
-                        <span className="font-semibold" style={{ fontSize: sizeOption.heading }}>
-                          {exp.title}
-                        </span>
-                        <span className="text-slate-400">—</span>
+                      {/* Title on its own line */}
+                      <div className="font-semibold mb-1" style={{ fontSize: sizeOption.heading }}>
+                        {exp.title}
+                      </div>
+                      
+                      {/* Company and Location on same line */}
+                      <div className="flex items-baseline gap-x-2 text-sm">
                         <span>{exp.company}</span>
                         {exp.location && (
                           <>
-                            <span className="text-slate-400">|</span>
+                            <span className="text-slate-400">—</span>
                             <span className="text-slate-600">{exp.location}</span>
                           </>
                         )}
                       </div>
-                      <div className="text-sm text-slate-500">
+                      
+                      {/* Date range on its own line */}
+                      <div className="text-sm text-slate-500 mt-0.5">
                         {exp.startDate} – {exp.endDate || 'Nu'}
                       </div>
                     </div>

@@ -35,28 +35,45 @@ export interface StructuredCVData {
 
 const SYSTEM_PROMPT = `You are a VERBATIM CV EXTRACTION SYSTEM.
 
+╔═══════════════════════════════════════════════════════════════════════════╗
+║  CRITICAL: EVERY CHARACTER MATTERS - NO TRUNCATION ALLOWED               ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+Your ONLY job is to extract CV data and copy it CHARACTER FOR CHARACTER.
+The user MUST see their EXACT original CV text - not a shortened version.
+
+ABSOLUTE RULES:
+⛔ NEVER cut off words mid-way (e.g., "Manager" not "Manage")
+⛔ NEVER shorten institution names (e.g., "Security" not "Sec")
+⛔ NEVER abbreviate titles (e.g., "Examination" not "Examina")
+⛔ NEVER modify, reformat, translate, or "improve" anything
+⛔ NEVER truncate to save tokens - use ALL characters
+
+✅ Copy COMPLETE words - every letter matters
+✅ Copy FULL institution names - include everything
+✅ Copy ENTIRE degree titles - no shortening
+✅ Copy ALL characters exactly as they appear
+
 ═══════════════════════════════════════════════════════════════════════════
-CRITICAL RULE: COPY TEXT EXACTLY - NO MODIFICATIONS
+TRUNCATION ERRORS TO AVOID (REAL EXAMPLES)
 ═══════════════════════════════════════════════════════════════════════════
 
-Your ONLY job is to extract CV data and copy it EXACTLY as written.
-The user MUST see their original CV text - not your interpretation of it.
+❌ WRONG: "Certificated Security Manage"
+✅ CORRECT: "Certificated Security Manager" (include final 'r')
 
-⛔ DO NOT modify any text
-⛔ DO NOT reformat dates
-⛔ DO NOT translate anything
-⛔ DO NOT summarize or shorten
-⛔ DO NOT "improve" or "correct" anything
-⛔ DO NOT truncate - copy COMPLETE text
+❌ WRONG: "Danish Institute for Fire & Sec"
+✅ CORRECT: "Danish Institute for Fire & Security" (include 'urity')
 
-✅ Copy job titles EXACTLY as written
-✅ Copy company names EXACTLY as written
-✅ Copy education titles EXACTLY as written
-✅ Copy institution names EXACTLY as written
-✅ Copy dates EXACTLY as written (e.g., "November 2022" stays "November 2022")
-✅ Copy bullet points EXACTLY as written
-✅ Copy skills EXACTLY as written
-✅ Copy language levels EXACTLY as written
+❌ WRONG: "Higher Commercial Examina"
+✅ CORRECT: "Higher Commercial Examination" (include 'tion')
+
+❌ WRONG: "Roskilde Busine"
+✅ CORRECT: "Roskilde Business College" (include 'ss College')
+
+❌ WRONG: "2016 - 20"
+✅ CORRECT: "2016 - 2019" (include all 4 digits)
+
+The CV contains COMPLETE words. Extract COMPLETE words.
 
 ═══════════════════════════════════════════════════════════════════════════
 TEXT CLEANING (Only remove these artifacts)
@@ -67,90 +84,62 @@ Remove ONLY:
 - Page numbers (e.g. "1/3", "Page 2")
 - Footer/header noise (URLs, "Powered by...")
 
-Keep EVERYTHING else EXACTLY as written.
+Keep EVERYTHING else EXACTLY as written - every character.
 
 ═══════════════════════════════════════════════════════════════════════════
 OUTPUT SCHEMA
 ═══════════════════════════════════════════════════════════════════════════
 
 {
-  "professionalIntro": string | null (EXACT text from CV),
+  "professionalIntro": string | null,
   "experience": [
     {
-      "title": string (EXACT title from CV - not truncated, not modified),
-      "company": string (EXACT company name from CV),
-      "location": string | null (EXACT location if present),
-      "startDate": string (EXACT date text, e.g., "November 2022", "2020", "Jan 2019"),
-      "endDate": string | null (EXACT date text or null if "Nu"/"Present"/"Current"),
+      "title": string (COMPLETE - all characters),
+      "company": string (COMPLETE - all characters),
+      "location": string | null,
+      "startDate": string (EXACT as written),
+      "endDate": string | null,
       "keyMilestones": string | null,
-      "bullets": [string] (EXACT bullet text from CV)
+      "bullets": [string]
     }
   ],
   "education": [
     {
-      "title": string (EXACT degree/course name - COMPLETE, not truncated),
-      "institution": string (EXACT institution name - COMPLETE, not truncated),
-      "year": string (EXACT year text, e.g., "2016 - 2019", "2020")
+      "title": string (COMPLETE degree name - ALL characters, not truncated),
+      "institution": string (COMPLETE name - ALL characters, not truncated),
+      "year": string (COMPLETE - e.g., "2016 - 2019" not "2016 - 20")
     }
   ],
-  "skills": [string] (EXACT skill names from CV),
+  "skills": [string],
   "languages": [
     {
-      "language": string (EXACT language name),
-      "level": string (EXACT level text: "Modersmål", "Flydende", "Native", etc.)
+      "language": string,
+      "level": string (EXACT as written: "Modersmål", "Flydende", etc.)
     }
   ]
 }
-
-═══════════════════════════════════════════════════════════════════════════
-EXAMPLES OF CORRECT EXTRACTION (VERBATIM COPY)
-═══════════════════════════════════════════════════════════════════════════
-
-If CV says: "Security Specialist, Physical Security"
-Output: "Security Specialist, Physical Security"
-NOT: "Security Specialist, Physical" ❌
-
-If CV says: "November 2022"
-Output: "November 2022"
-NOT: "2022-11" ❌
-
-If CV says: "Dansk - Modersmål"
-Output: { "language": "Dansk", "level": "Modersmål" }
-NOT: { "language": "Danish", "level": "native" } ❌
-
-If CV says: "Higher Commercial Examination"
-Output: "Higher Commercial Examination"
-NOT: "Higher Commercial Examina" ❌
-
-If CV says: "2016 - 2019"
-Output: "2016 - 2019"
-NOT: "2016 - 20" ❌
-
-If CV says: "Roskilde Business College"
-Output: "Roskilde Business College"
-NOT: "Roskilde Busine" ❌
 
 ═══════════════════════════════════════════════════════════════════════════
 EXPERIENCE SORTING
 ═══════════════════════════════════════════════════════════════════════════
 
 Sort experience by:
-1. Current jobs (endDate contains "Nu"/"Present"/"Current" → null) first
+1. Current jobs (endDate = null) first
 2. Then by most recent end date
 3. Jobs without dates last
 
 ═══════════════════════════════════════════════════════════════════════════
-VALIDATION BEFORE OUTPUT
+FINAL CHECK BEFORE OUTPUT
 ═══════════════════════════════════════════════════════════════════════════
 
-Check each field:
-- [ ] Is this EXACTLY what was in the original CV?
-- [ ] Did I truncate anything? (NO truncation allowed)
-- [ ] Did I reformat anything? (NO reformatting allowed)
-- [ ] Did I translate anything? (NO translation allowed)
-- [ ] Is the complete word/phrase preserved?
+For EACH education and experience entry, verify:
+1. Does the title end with a COMPLETE word? (not mid-word)
+2. Does the institution name end with a COMPLETE word?
+3. Are all 4 digits present in years?
 
-Return ONLY the JSON object. No explanations, no markdown.`;
+If any text ends mid-word, go back and fix it.
+
+Return ONLY the JSON object. No explanations.`;
 
 export async function POST(request: NextRequest) {
   try {

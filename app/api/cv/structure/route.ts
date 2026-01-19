@@ -283,23 +283,20 @@ Danish Institute for Fire & Security
 Higher Commercial Examination
 Roskilde Business College"
 
-CRITICAL MATCHING RULES:
-- The FIRST line of each education entry is the DEGREE/TITLE
-- The NEXT line after a degree is usually the YEAR (if it matches a year pattern like "2016 - 2019")
-- Institution names come AFTER the year OR appear as standalone proper nouns
+WAIT - this is TRICKY! The ACTUAL pattern is:
+"2016 - 2019
+Communication
+AP Degree Courses"
+
+This means the YEAR appears BEFORE the title. So:
+- Line "2016 - 2019" → next lines are "Communication" then "AP Degree Courses" = Title is "Communication AP Degree Courses", Year is "2016 - 2019"
+- Line "2013 - 2014" → next lines are "Certificated Security Manager" then "Danish Institute for Fire & Security" = Title is "Certificated Security Manager", Institution is "Danish Institute for Fire & Security", Year is "2013 - 2014"  
+- Line "1998 - 2001" → next lines are "Higher Commercial Examination" then "Roskilde Business College" = Title is "Higher Commercial Examination", Institution is "Roskilde Business College", Year is "1998 - 2001"
 
 Parse this as THREE separate education entries:
-1. Title: "Certificated Security Manager, CFPA", Year: "2016 - 2019" (line right after title), Institution: "Danish Institute for Fire & Security" (find the institution that matches this certification - appears later)
-2. Title: "Communication AP Degree Courses" OR "AP Degree Courses", Year: "2013 - 2014" (line right after "AP Degree Courses"), Institution: "Communication" or similar educational body
-3. Title: "Higher Commercial Examination", Year: "1998 - 2001" (line right after title), Institution: "Roskilde Business College" (line right after year)
-
-YEAR MATCHING RULE - ABSOLUTELY CRITICAL:
-- Always use the year that appears IMMEDIATELY AFTER the degree title
-- "Certificated Security Manager, CFPA" → next line "2016 - 2019" = USE THIS YEAR
-- "AP Degree Courses" → next line "2013 - 2014" = USE THIS YEAR
-- "Higher Commercial Examination" → scan forward for "1998 - 2001" = USE THIS YEAR
-- DO NOT mix up years between different degrees
-- Preserve year format exactly: "2016 - 2019" NOT "2016 - 20" or "2016 - 2019" (no truncation)
+1. Title: "Communication AP Degree Courses", Year: "2016 - 2019", Institution: try to find or use "Communication"
+2. Title: "Certificated Security Manager, CFPA" (include CFPA if present), Year: "2013 - 2014", Institution: "Danish Institute for Fire & Security"
+3. Title: "Higher Commercial Examination", Year: "1998 - 2001", Institution: "Roskilde Business College"
 
 IMPORTANT: Keep COMPLETE degree names, COMPLETE institution names, and COMPLETE years.
 
@@ -311,12 +308,29 @@ EXPECTED JOBS IN THIS CV (based on the text):
 - Security Officer (multiple periods) @ G4S
 - SOC Operator @ Securitas (2012)
 
-EXPECTED EDUCATION (extract COMPLETE year ranges):
-- Title: "Communication AP Degree Courses" OR "AP Degree Courses", Institution: "Communication", Year: "2016 - 2019" (NOT "2016 - 20")
-- Title: "Certificated Security Manager, CFPA", Institution: "Danish Institute for Fire & Security", Year: "2013 - 2014" (NOT "2013 - 20") 
-- Title: "Higher Commercial Examination", Institution: "Roskilde Business College", Year: "1998 - 2001" (NOT "1998 - 20")
+EXPECTED EDUCATION (extract with CORRECT year matching - study carefully):
+1. "Communication AP Degree Courses" @ institution unclear, "2016 - 2019" (most recent)
+2. "Certificated Security Manager, CFPA" @ "Danish Institute for Fire & Security", "2013 - 2014"
+3. "Higher Commercial Examination" @ "Roskilde Business College", "1998 - 2001" (oldest)
 
-CRITICAL: When you extract years like "2016 - 2019", output EXACTLY "2016 - 2019" - do NOT truncate to "2016 - 20"
+CRITICAL YEAR MATCHING (based on actual CV):
+From the scrambled text pattern:
+"2016 - 2019 
+Communication
+AP Degree Courses
+2013 - 2014
+Certificated Security Manager
+Danish Institute for Fire & Security
+1998 - 2001
+Higher Commercial Examination
+Roskilde Business College"
+
+This means:
+- "2016 - 2019" goes with "Communication AP Degree Courses" (year appears BEFORE the title)
+- "2013 - 2014" goes with "Certificated Security Manager" (year appears BEFORE the title)
+- "1998 - 2001" goes with "Higher Commercial Examination" (year appears BEFORE the title)
+
+CRITICAL: Output EXACTLY "2016 - 2019" NOT "2016 - 20", "2013 - 2014" NOT "2013 - 20", etc.
 
 Extract ALL of these with their complete information.
 
@@ -370,7 +384,21 @@ Return ONLY the JSON object.`
               title: edu.title?.trim() || '',
               institution: edu.institution?.trim() || '',
               year: edu.year?.toString().trim() || '',
-            })).filter(edu => edu.title || edu.institution)
+            }))
+            .filter(edu => edu.title || edu.institution)
+            .sort((a, b) => {
+              // Sort education in reverse chronological order (newest first)
+              const getYearValue = (yearStr: string): number => {
+                // Extract first year from patterns like "2016 - 2019" or "2016"
+                const match = yearStr.match(/(\d{4})/);
+                return match ? parseInt(match[1], 10) : 0;
+              };
+              
+              const yearA = getYearValue(a.year);
+              const yearB = getYearValue(b.year);
+              
+              return yearB - yearA; // Descending order (newest first)
+            })
           : [],
         skills: Array.isArray(structured.skills)
           ? structured.skills.filter(s => s && typeof s === 'string' && s.trim()).map(s => s.trim())

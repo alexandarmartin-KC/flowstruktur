@@ -8,6 +8,7 @@ const openai = process.env.OPENAI_API_KEY
 
 /**
  * Structured CV data for the editor
+ * All text fields preserve EXACT original text from the uploaded CV
  */
 export interface StructuredCVData {
   professionalIntro?: string;
@@ -15,166 +16,139 @@ export interface StructuredCVData {
     title: string;
     company: string;
     location?: string;
-    startDate: string;
-    endDate?: string;
+    startDate: string;  // EXACT date text from CV, e.g., "November 2022", "2020"
+    endDate?: string;   // EXACT date text from CV, null if current position
     keyMilestones?: string;
     bullets: string[];
   }[];
   education: {
     title: string;
     institution: string;
-    year: string;
+    year: string;  // EXACT year text from CV, e.g., "2016 - 2019"
   }[];
   skills: string[];
   languages: {
     language: string;
-    level: 'native' | 'fluent' | 'advanced' | 'intermediate' | 'basic';
+    level: string;  // EXACT level text from CV, e.g., "Modersmål", "Flydende", "Native"
   }[];
 }
 
-const SYSTEM_PROMPT = `You are a TWO-STAGE CV EXTRACTION SYSTEM.
+const SYSTEM_PROMPT = `You are a VERBATIM CV EXTRACTION SYSTEM.
 
 ═══════════════════════════════════════════════════════════════════════════
-STAGE 1: TEXT CLEANING (Internal - not output)
+CRITICAL RULE: COPY TEXT EXACTLY - NO MODIFICATIONS
 ═══════════════════════════════════════════════════════════════════════════
 
-First, mentally clean the input text:
-- Remove print timestamps (HH:MM format, date+time patterns)
-- Remove page numbers (e.g. "1/3", "Page 2")
-- Remove footer/header noise (URLs, product names, "Powered by...")
-- Keep ALL CV content exactly as written
-- Do NOT rewrite, summarize, or interpret
-- Preserve original wording, section boundaries, groupings
+Your ONLY job is to extract CV data and copy it EXACTLY as written.
+The user MUST see their original CV text - not your interpretation of it.
+
+⛔ DO NOT modify any text
+⛔ DO NOT reformat dates
+⛔ DO NOT translate anything
+⛔ DO NOT summarize or shorten
+⛔ DO NOT "improve" or "correct" anything
+⛔ DO NOT truncate - copy COMPLETE text
+
+✅ Copy job titles EXACTLY as written
+✅ Copy company names EXACTLY as written
+✅ Copy education titles EXACTLY as written
+✅ Copy institution names EXACTLY as written
+✅ Copy dates EXACTLY as written (e.g., "November 2022" stays "November 2022")
+✅ Copy bullet points EXACTLY as written
+✅ Copy skills EXACTLY as written
+✅ Copy language levels EXACTLY as written
 
 ═══════════════════════════════════════════════════════════════════════════
-STAGE 2: STRUCTURED JSON EXTRACTION (Your Output)
+TEXT CLEANING (Only remove these artifacts)
 ═══════════════════════════════════════════════════════════════════════════
 
-CARDINAL RULES (VIOLATIONS = FAILURE):
+Remove ONLY:
+- Print timestamps (HH:MM format)
+- Page numbers (e.g. "1/3", "Page 2")
+- Footer/header noise (URLs, "Powered by...")
 
-1. ⛔ NO HALLUCINATION: Do NOT invent data
-2. ⛔ NO TRUNCATION: Extract COMPLETE text - full words, full names, full titles
-3. ⛔ NO GUESSING: If unclear or missing → use null
-4. ✅ CORRECTNESS > COMPLETENESS
-5. ✅ PRESERVE original language (Danish stays Danish)
+Keep EVERYTHING else EXACTLY as written.
 
 ═══════════════════════════════════════════════════════════════════════════
-OUTPUT SCHEMA (STRICT)
+OUTPUT SCHEMA
 ═══════════════════════════════════════════════════════════════════════════
 
 {
-  "professionalIntro": string | null,
+  "professionalIntro": string | null (EXACT text from CV),
   "experience": [
     {
-      "title": string (COMPLETE, not truncated),
-      "company": string (COMPLETE, not truncated),
-      "location": string | null,
-      "startDate": "YYYY-MM" format (e.g. "2015-04"),
-      "endDate": "YYYY-MM" | null (null if current),
+      "title": string (EXACT title from CV - not truncated, not modified),
+      "company": string (EXACT company name from CV),
+      "location": string | null (EXACT location if present),
+      "startDate": string (EXACT date text, e.g., "November 2022", "2020", "Jan 2019"),
+      "endDate": string | null (EXACT date text or null if "Nu"/"Present"/"Current"),
       "keyMilestones": string | null,
-      "bullets": [string] (each bullet complete)
+      "bullets": [string] (EXACT bullet text from CV)
     }
   ],
   "education": [
     {
-      "title": string (COMPLETE degree name - not "Communication AP Degree C" but "Communication AP Degree Courses"),
-      "institution": string (COMPLETE - not "Roskilde Busine" but "Roskilde Business College"),
-      "year": string (COMPLETE - "2016 - 2019" NOT "2016 - 20")
+      "title": string (EXACT degree/course name - COMPLETE, not truncated),
+      "institution": string (EXACT institution name - COMPLETE, not truncated),
+      "year": string (EXACT year text, e.g., "2016 - 2019", "2020")
     }
   ],
-  "skills": [string],
+  "skills": [string] (EXACT skill names from CV),
   "languages": [
     {
-      "language": string,
-      "level": "native" | "fluent" | "advanced" | "intermediate" | "basic"
+      "language": string (EXACT language name),
+      "level": string (EXACT level text: "Modersmål", "Flydende", "Native", etc.)
     }
   ]
 }
 
 ═══════════════════════════════════════════════════════════════════════════
-DATE NORMALIZATION (CRITICAL)
+EXAMPLES OF CORRECT EXTRACTION (VERBATIM COPY)
 ═══════════════════════════════════════════════════════════════════════════
 
-Input → Output:
-- "april 2015" → "2015-04"
-- "Apr 2015" → "2015-04"
-- "2015" → "2015-01"
-- "Present" / "Nu" / "Current" / "Now" → endDate = null
-- "November 2022" → "2022-11"
-- "November, 2022" → "2022-11" (remove commas)
+If CV says: "Security Specialist, Physical Security"
+Output: "Security Specialist, Physical Security"
+NOT: "Security Specialist, Physical" ❌
 
-Ignore timestamps with HH:MM format - those are print artifacts.
-Only use dates that clearly indicate job/education periods.
+If CV says: "November 2022"
+Output: "November 2022"
+NOT: "2022-11" ❌
 
-Month mappings:
-- jan/januar/january → 01
-- feb/februar/february → 02
-- mar/marts/march → 03
-- apr/april → 04
-- maj/may → 05
-- jun/juni/june → 06
-- jul/juli/july → 07
-- aug/august → 08
-- sep/september → 09
-- okt/oktober/october → 10
-- nov/november → 11
-- dec/december → 12
+If CV says: "Dansk - Modersmål"
+Output: { "language": "Dansk", "level": "Modersmål" }
+NOT: { "language": "Danish", "level": "native" } ❌
 
-═══════════════════════════════════════════════════════════════════════════
-EXPERIENCE SORTING (MANDATORY)
-═══════════════════════════════════════════════════════════════════════════
+If CV says: "Higher Commercial Examination"
+Output: "Higher Commercial Examination"
+NOT: "Higher Commercial Examina" ❌
 
-After extraction, SORT experience array:
-1. Current jobs (endDate = null) first
-2. Then by endDate descending (newest first)
-3. Then by startDate descending
-4. Jobs without dates last
+If CV says: "2016 - 2019"
+Output: "2016 - 2019"
+NOT: "2016 - 20" ❌
+
+If CV says: "Roskilde Business College"
+Output: "Roskilde Business College"
+NOT: "Roskilde Busine" ❌
 
 ═══════════════════════════════════════════════════════════════════════════
-ANTI-TRUNCATION EXAMPLES
+EXPERIENCE SORTING
 ═══════════════════════════════════════════════════════════════════════════
 
-❌ WRONG: "Security Specialist, Physical"
-✅ CORRECT: "Security Specialist, Physical Security"
-
-❌ WRONG: "Communication AP Degree C"
-✅ CORRECT: "Communication AP Degree Courses"
-
-❌ WRONG: "Higher Commercial Examina"
-✅ CORRECT: "Higher Commercial Examination"
-
-❌ WRONG: "Roskilde Busine"
-✅ CORRECT: "Roskilde Business College"
-
-❌ WRONG: "2016 - 20"
-✅ CORRECT: "2016 - 2019"
-
-❌ WRONG: "Danish Institute"
-✅ CORRECT: "Danish Institute for Fire & Security"
-
-Extract the COMPLETE text. If you see "Higher Commercial Examination" in the CV, output exactly that - not "Higher Commercial Examina".
+Sort experience by:
+1. Current jobs (endDate contains "Nu"/"Present"/"Current" → null) first
+2. Then by most recent end date
+3. Jobs without dates last
 
 ═══════════════════════════════════════════════════════════════════════════
-LANGUAGE LEVEL MAPPING
+VALIDATION BEFORE OUTPUT
 ═══════════════════════════════════════════════════════════════════════════
 
-- "Modersmål" / "Native" / "Mother tongue" → "native"
-- "Flydende" / "Fluent" / "Proficient" → "fluent"
-- "Avanceret" / "Advanced" → "advanced"
-- "Mellem" / "Intermediate" / "Conversational" → "intermediate"
-- "Grundlæggende" / "Basic" / "Beginner" → "basic"
-
-═══════════════════════════════════════════════════════════════════════════
-VALIDATION CHECKLIST
-═══════════════════════════════════════════════════════════════════════════
-
-Before outputting, verify:
-- [ ] All titles are COMPLETE (end with full word, not mid-word)
-- [ ] All years have 4 digits in both positions if range (e.g. "2016 - 2019")
-- [ ] All dates are "YYYY-MM" format
-- [ ] Experience is sorted correctly
-- [ ] No invented data
-- [ ] Output is valid JSON
+Check each field:
+- [ ] Is this EXACTLY what was in the original CV?
+- [ ] Did I truncate anything? (NO truncation allowed)
+- [ ] Did I reformat anything? (NO reformatting allowed)
+- [ ] Did I translate anything? (NO translation allowed)
+- [ ] Is the complete word/phrase preserved?
 
 Return ONLY the JSON object. No explanations, no markdown.`;
 
@@ -322,7 +296,7 @@ Extract and structure this CV following the rules. Return ONLY valid JSON.`
         languages: Array.isArray(structured.languages)
           ? structured.languages.map(lang => ({
               language: lang.language?.trim() || '',
-              level: validateLevel(lang.level),
+              level: lang.level?.trim() || '',  // Keep EXACT level text from CV
             })).filter(lang => lang.language)
           : [],
       };
@@ -354,19 +328,6 @@ Extract and structure this CV following the rules. Return ONLY valid JSON.`
       { status: 500 }
     );
   }
-}
-
-function validateLevel(level?: string): 'native' | 'fluent' | 'advanced' | 'intermediate' | 'basic' {
-  if (!level) return 'intermediate';
-  const normalized = level.toLowerCase().trim();
-  
-  if (['native', 'mother tongue', 'modersmål'].some(l => normalized.includes(l))) return 'native';
-  if (['fluent', 'proficient', 'c1', 'c2', 'flydende'].some(l => normalized.includes(l))) return 'fluent';
-  if (['advanced', 'b2', 'avanceret'].some(l => normalized.includes(l))) return 'advanced';
-  if (['intermediate', 'conversational', 'b1', 'mellem'].some(l => normalized.includes(l))) return 'intermediate';
-  if (['basic', 'beginner', 'elementary', 'a1', 'a2', 'grundlæggende'].some(l => normalized.includes(l))) return 'basic';
-  
-  return 'intermediate';
 }
 
 function getMockStructuredData(): StructuredCVData {

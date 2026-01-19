@@ -60,7 +60,7 @@ export interface StructuredCVFromAPI {
   skills: string[];
   languages: {
     language: string;
-    level: 'native' | 'fluent' | 'advanced' | 'intermediate' | 'basic';
+    level: string;  // Exact level text from CV
   }[];
 }
 
@@ -114,7 +114,7 @@ export interface ParsedEducation {
 
 export interface ParsedLanguage {
   language: string;
-  level?: 'native' | 'fluent' | 'advanced' | 'intermediate' | 'basic';
+  level?: string;  // Exact level text from CV
 }
 
 /**
@@ -133,7 +133,7 @@ const DATE_PATTERNS = [
 /**
  * Language level keywords for detection
  */
-const LANGUAGE_LEVEL_KEYWORDS: Record<string, CVLanguageItem['level']> = {
+const LANGUAGE_LEVEL_KEYWORDS: Record<string, string> = {
   // English
   'native': 'native',
   'mother tongue': 'native',
@@ -721,8 +721,8 @@ function extractLanguages(cvText: string): ParsedLanguage[] {
 function parseLanguageLine(line: string): ParsedLanguage | null {
   const cleanLine = cleanBulletText(line);
   
-  // Try to find level indicator
-  let level: CVLanguageItem['level'] = 'intermediate';
+  // Try to find level indicator - preserve original text when possible
+  let level: string = 'intermediate';
   let language = cleanLine;
   
   for (const [keyword, lvl] of Object.entries(LANGUAGE_LEVEL_KEYWORDS)) {

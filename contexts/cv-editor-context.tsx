@@ -624,7 +624,7 @@ interface CVEditorContextType {
   reorderSkills: (items: CVSkillItem[]) => void;
   
   // Languages
-  addLanguage: (language?: string, level?: CVLanguageItem['level']) => void;
+  addLanguage: (language?: string, level?: string) => void;
   updateLanguage: (id: string, updates: Partial<CVLanguageItem>) => void;
   removeLanguage: (id: string) => void;
   
@@ -795,7 +795,7 @@ export function CVEditorProvider({ children }: { children: ReactNode }) {
   }, [pushUndo]);
   
   // Languages
-  const addLanguage = useCallback((language = '', level: CVLanguageItem['level'] = 'intermediate') => {
+  const addLanguage = useCallback((language = '', level: string = 'intermediate') => {
     pushUndo();
     dispatch({ type: 'ADD_LANGUAGE', payload: createLanguageItem(language, level) });
   }, [pushUndo]);

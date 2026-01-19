@@ -125,11 +125,13 @@ export interface CVSkillItem {
 
 /**
  * Language item with level
+ * Level is stored as the EXACT text from the original CV
+ * Examples: "Modersmål", "Flydende", "Native", "Fluent", "Grundlæggende"
  */
 export interface CVLanguageItem {
   id: string;
   language: string;
-  level: 'native' | 'fluent' | 'advanced' | 'intermediate' | 'basic';
+  level: string;  // EXACT level text from CV
 }
 
 /**
@@ -166,14 +168,31 @@ export interface CVCheckpoint {
 }
 
 /**
- * Language level labels in Danish
+ * Language level options for dropdown (standardized)
+ * The key is the value stored/selected, the label is what's displayed
  */
-export const LANGUAGE_LEVEL_LABELS: Record<CVLanguageItem['level'], string> = {
+export const LANGUAGE_LEVEL_OPTIONS = [
+  { value: 'Modersmål', label: 'Modersmål' },
+  { value: 'Flydende', label: 'Flydende' },
+  { value: 'Avanceret', label: 'Avanceret' },
+  { value: 'Mellem', label: 'Mellem' },
+  { value: 'Grundlæggende', label: 'Grundlæggende' },
+] as const;
+
+/**
+ * Legacy labels for backward compatibility
+ */
+export const LANGUAGE_LEVEL_LABELS: Record<string, string> = {
   native: 'Modersmål',
   fluent: 'Flydende',
   advanced: 'Avanceret',
   intermediate: 'Mellem',
   basic: 'Grundlæggende',
+  'Modersmål': 'Modersmål',
+  'Flydende': 'Flydende',
+  'Avanceret': 'Avanceret',
+  'Mellem': 'Mellem',
+  'Grundlæggende': 'Grundlæggende',
 };
 
 /**
@@ -310,7 +329,7 @@ export function createSkillItem(name: string = ''): CVSkillItem {
  */
 export function createLanguageItem(
   language: string = '',
-  level: CVLanguageItem['level'] = 'intermediate'
+  level: string = 'intermediate'
 ): CVLanguageItem {
   return {
     id: generateId(),

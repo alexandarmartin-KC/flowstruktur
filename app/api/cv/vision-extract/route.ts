@@ -63,7 +63,7 @@ Return a JSON object with this structure:
   "languages": [
     {
       "language": "Language name",
-      "level": "native|fluent|advanced|intermediate|basic"
+      "level": "Level exactly as shown (e.g., 'Modersmål', 'Flydende', 'Native', 'Fluent')"
     }
   ]
 }`;

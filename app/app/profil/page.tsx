@@ -42,7 +42,7 @@ interface StructuredCVData {
   skills: string[];
   languages: {
     language: string;
-    level: 'native' | 'fluent' | 'advanced' | 'intermediate' | 'basic';
+    level: string;  // Exact level text from CV
   }[];
 }
 

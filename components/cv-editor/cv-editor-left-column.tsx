@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useCVEditor } from '@/contexts/cv-editor-context';
 import { UserProfile } from '@/contexts/user-profile-context';
-import { LANGUAGE_LEVEL_LABELS, CVLanguageItem, TextSizeOption } from '@/lib/cv-types';
+import { LANGUAGE_LEVEL_OPTIONS, LANGUAGE_LEVEL_LABELS, CVLanguageItem, TextSizeOption } from '@/lib/cv-types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -262,15 +262,15 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
               />
               <Select
                 value={item.level}
-                onValueChange={(value) => updateLanguage(item.id, { level: value as CVLanguageItem['level'] })}
+                onValueChange={(value) => updateLanguage(item.id, { level: value })}
               >
                 <SelectTrigger className="w-28 h-auto py-1 px-2 text-xs border-0 bg-transparent">
-                  <SelectValue />
+                  <SelectValue placeholder={item.level || 'Vælg niveau'} />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(LANGUAGE_LEVEL_LABELS).map(([value, label]) => (
-                    <SelectItem key={value} value={value} className="text-xs">
-                      {label}
+                  {LANGUAGE_LEVEL_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value} className="text-xs">
+                      {option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

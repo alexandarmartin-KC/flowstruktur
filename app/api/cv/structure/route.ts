@@ -164,9 +164,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(getMockStructuredData());
     }
     
-    // Use gpt-4-turbo for better instruction following (less truncation)
+    // Use gpt-4o with increased token limit
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo',
+      model: 'gpt-4o',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { 

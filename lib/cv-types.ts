@@ -354,6 +354,24 @@ function parseExperienceDate(dateStr: string | undefined): { timestamp: number; 
     return { timestamp: Infinity, isOngoing: true };
   }
   
+  // Danish month mapping
+  const danishMonths: Record<string, number> = {
+    'januar': 0, 'februar': 1, 'marts': 2, 'april': 3,
+    'maj': 4, 'juni': 5, 'juli': 6, 'august': 7,
+    'september': 8, 'oktober': 9, 'november': 10, 'december': 11
+  };
+  
+  // Try Danish month format "Januar 2022"
+  const monthYearMatch = normalized.match(/^(\w+)\s+(\d{4})$/);
+  if (monthYearMatch) {
+    const monthName = monthYearMatch[1];
+    const year = parseInt(monthYearMatch[2], 10);
+    const monthIndex = danishMonths[monthName];
+    if (monthIndex !== undefined) {
+      return { timestamp: new Date(year, monthIndex, 1).getTime(), isOngoing: false };
+    }
+  }
+  
   // Try to parse the date
   const parsed = Date.parse(dateStr);
   if (!isNaN(parsed)) {

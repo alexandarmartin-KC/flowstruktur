@@ -486,6 +486,41 @@ function parseDateRange(text: string): { start?: string; end?: string } {
 }
 
 /**
+ * Convert YYYY-MM format to human-readable "Month YYYY" format
+ */
+function formatDateForDisplay(dateStr?: string): string {
+  if (!dateStr) return '';
+  
+  // Already in readable format (has letters)
+  if (/[a-zA-Z]/.test(dateStr)) {
+    return dateStr.replace(/,\s*/g, ' ').trim();
+  }
+  
+  // YYYY-MM format
+  const match = dateStr.match(/^(\d{4})-(\d{2})$/);
+  if (match) {
+    const year = match[1];
+    const monthNum = parseInt(match[2], 10);
+    
+    const months: Record<number, string> = {
+      1: 'Januar', 2: 'Februar', 3: 'Marts', 4: 'April',
+      5: 'Maj', 6: 'Juni', 7: 'Juli', 8: 'August',
+      9: 'September', 10: 'Oktober', 11: 'November', 12: 'December'
+    };
+    
+    return `${months[monthNum] || ''} ${year}`.trim();
+  }
+  
+  // Just year
+  if (/^\d{4}$/.test(dateStr)) {
+    return dateStr;
+  }
+  
+  // Return as-is if unknown format
+  return dateStr.replace(/,\s*/g, ' ').trim();
+}
+
+/**
  * Normalize end date text
  * Converts various "present" terms to undefined and cleans formatting
  */
@@ -497,8 +532,8 @@ function normalizeEndDate(text?: string): string | undefined {
     return undefined; // undefined means "present"
   }
   
-  // Clean up formatting: remove commas, normalize whitespace
-  return text.replace(/,\s*/g, ' ').trim();
+  // Convert to display format
+  return formatDateForDisplay(text);
 }
 
 /**
@@ -851,7 +886,7 @@ function mapStructuredDataToDocument(
       title: exp.title || '',
       company: exp.company || '',
       location: exp.location,
-      startDate: (exp.startDate || '').replace(/,\s*/g, ' '), // Remove commas from dates
+      startDate: formatDateForDisplay(exp.startDate),
       endDate: normalizeEndDate(exp.endDate),
       keyMilestones: exp.keyMilestones || '',
       bullets: exp.bullets?.map(b => createBulletItem(b)) || [],

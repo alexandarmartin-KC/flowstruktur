@@ -40,6 +40,7 @@ import {
   Type,
   Palette,
   FileCheck,
+  RefreshCw,
 } from 'lucide-react';
 
 interface CVEditorToolbarProps {
@@ -54,6 +55,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
     canUndo, 
     canRedo, 
     saveDocument,
+    reloadFromOriginal,
     updateSettings,
     createCheckpoint,
     restoreCheckpoint,
@@ -64,6 +66,8 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
   const [checkpointName, setCheckpointName] = useState('');
   const [showCheckpointDialog, setShowCheckpointDialog] = useState(false);
   const [showExportWarning, setShowExportWarning] = useState(false);
+  const [showReloadDialog, setShowReloadDialog] = useState(false);
+  const [isReloading, setIsReloading] = useState(false);
   const [cvPreloaded, setCvPreloaded] = useState(false);
   
   // Check if CV was preloaded
@@ -96,6 +100,16 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
   
   const handleSizeChange = (textSize: CVSettings['textSize']) => {
     updateSettings({ textSize });
+  };
+  
+  const handleReload = async () => {
+    setIsReloading(true);
+    try {
+      await reloadFromOriginal();
+    } finally {
+      setIsReloading(false);
+      setShowReloadDialog(false);
+    }
   };
   
   return (
@@ -309,6 +323,17 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
               </DropdownMenuContent>
             </DropdownMenu>
             
+            {/* Reload from original */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setShowReloadDialog(true)} 
+              title="Genindlæs fra original CV"
+              disabled={isReloading}
+            >
+              <RefreshCw className={`h-4 w-4 ${isReloading ? 'animate-spin' : ''}`} />
+            </Button>
+            
             {/* Save */}
             <Button variant="ghost" size="icon" onClick={saveDocument} title="Gem">
               <Save className="h-4 w-4" />
@@ -343,6 +368,45 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             </Button>
             <Button onClick={() => window.location.href = '/app/profil'}>
               Gå til profil
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Reload confirmation dialog */}
+      <Dialog open={showReloadDialog} onOpenChange={setShowReloadDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Genindlæs fra original CV</DialogTitle>
+            <DialogDescription>
+              Dette vil genparsere dit originale CV og erstatte alle dine nuværende ændringer. 
+              Dine tidligere redigeringer vil gå tabt.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 px-1 text-sm text-muted-foreground">
+            <p className="mb-2">Brug denne funktion hvis:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Tekst er afkortet eller mangler</li>
+              <li>Datoer eller titler er forkerte</li>
+              <li>Du vil starte forfra med friske data</li>
+            </ul>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowReloadDialog(false)} disabled={isReloading}>
+              Annuller
+            </Button>
+            <Button onClick={handleReload} disabled={isReloading}>
+              {isReloading ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Genindlæser...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Genindlæs
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -598,6 +598,7 @@ interface CVEditorContextType {
   // Document management
   loadDocument: (jobId: string) => void;
   saveDocument: () => void;
+  reloadFromOriginal: () => Promise<void>;  // Force re-parse from original CV
   
   // Undo/redo
   undo: () => void;
@@ -733,6 +734,62 @@ export function CVEditorProvider({ children }: { children: ReactNode }) {
       const key = `${STORAGE_KEY_PREFIX}${state.document.jobId}`;
       localStorage.setItem(key, JSON.stringify(state.document));
       setTimeout(() => dispatch({ type: 'SET_SAVING', payload: false }), 300);
+    }
+  }, [state.document]);
+  
+  // Reload CV from original text - re-parse with current AI prompt
+  const reloadFromOriginal = useCallback(async () => {
+    if (!state.document) return;
+    
+    const jobId = state.document.jobId;
+    
+    // Get raw CV data
+    const rawData = getRawCVData();
+    if (!rawData?.cvText) {
+      console.error('No original CV text found');
+      return;
+    }
+    
+    dispatch({ type: 'SET_SAVING', payload: true });
+    
+    try {
+      // Call the structure API to re-parse the CV
+      const response = await fetch('/api/cv/structure', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cvText: rawData.cvText }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to re-parse CV');
+      }
+      
+      const structured = await response.json();
+      
+      // Update the stored extraction with new structured data
+      const extractionKey = 'flowstruktur_cv_extraction';
+      const existingExtraction = localStorage.getItem(extractionKey);
+      if (existingExtraction) {
+        const extraction = JSON.parse(existingExtraction);
+        extraction.structured = structured;
+        localStorage.setItem(extractionKey, JSON.stringify(extraction));
+      }
+      
+      // Clear the current document from storage to force reload
+      const docKey = `${STORAGE_KEY_PREFIX}${jobId}`;
+      localStorage.removeItem(docKey);
+      
+      // Reload the document with fresh data
+      const updatedRawData = { ...rawData, structured };
+      const normalizedDoc = normalizeCVData(jobId, updatedRawData, null);
+      dispatch({ type: 'LOAD_DOCUMENT', payload: normalizedDoc });
+      
+      console.log('CV reloaded from original with fresh parsing');
+      
+    } catch (error) {
+      console.error('Failed to reload CV:', error);
+    } finally {
+      dispatch({ type: 'SET_SAVING', payload: false });
     }
   }, [state.document]);
   
@@ -890,6 +947,7 @@ export function CVEditorProvider({ children }: { children: ReactNode }) {
     state,
     loadDocument,
     saveDocument,
+    reloadFromOriginal,
     undo,
     redo,
     canUndo: state.undoStack.length > 0,

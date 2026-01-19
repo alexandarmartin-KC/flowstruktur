@@ -37,6 +37,7 @@ interface CVPreviewProps {
 interface ParsedExperience {
   title: string;
   company?: string;
+  location?: string;
   period?: string;
   bullets: string[];
 }
@@ -58,7 +59,7 @@ export function CVPreview({ sections, profile, jobTitle }: CVPreviewProps) {
       const trimmed = line.trim();
       
       // Check if it's a bullet point
-      if (trimmed.startsWith('•') || trimmed.startsWith('-')) {
+      if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
         if (current) {
           const bullet = trimmed.substring(1).trim();
           if (bullet) {
@@ -72,10 +73,42 @@ export function CVPreview({ sections, profile, jobTitle }: CVPreviewProps) {
         if (current) items.push(current);
         
         const parts = trimmed.split('|').map(p => p.trim());
+        
+        // Flexible parsing based on number of parts
+        let title = parts[0] || '';
+        let company = '';
+        let location = undefined;
+        let period = '';
+        
+        if (parts.length === 2) {
+          // Format: "Title | Company" or "Title | Period"
+          // Check if second part is a date
+          if (parts[1].match(/\d{4}/)) {
+            period = parts[1];
+          } else {
+            company = parts[1];
+          }
+        } else if (parts.length === 3) {
+          // Format: "Title | Company | Period" or "Title | Company | Location"
+          company = parts[1];
+          // Check if third part is a date
+          if (parts[2].match(/\d{4}/) || parts[2].toLowerCase().match(/present|nu|current/)) {
+            period = parts[2];
+          } else {
+            location = parts[2];
+          }
+        } else if (parts.length >= 4) {
+          // Format: "Title | Company | Location | Period"
+          company = parts[1];
+          location = parts[2];
+          period = parts[3];
+        }
+        
         current = {
-          title: parts[0] || '',
-          company: parts[1] || '',
-          period: parts[2] || '',
+          title: title,
+          company: company,
+          location: location,
+          period: period,
           bullets: []
         };
       }
@@ -214,16 +247,38 @@ export function CVPreview({ sections, profile, jobTitle }: CVPreviewProps) {
                       }
                       
                       return experiences.map((exp, i) => (
-                        <div key={i} className="experience-item">
-                          <div className="flex justify-between items-baseline mb-2">
-                            <h3 className="font-semibold text-base text-gray-900">
-                              {exp.title}
-                              {exp.company && <span className="font-normal text-gray-700"> – {exp.company}</span>}
-                            </h3>
-                            {exp.period && (
-                              <span className="text-sm text-gray-600 ml-4 whitespace-nowrap">{exp.period}</span>
+                        <div key={i} className="experience-item mb-6">
+                          {/* Title on its own line */}
+                          <div className="font-semibold text-base text-gray-900 mb-1">
+                            {exp.title}
+                          </div>
+                          
+                          {/* Company and Location on same line */}
+                          <div className="flex items-baseline gap-x-2 text-sm mb-1">
+                            {exp.company && (
+                              <>
+                                <span className="text-gray-700">{exp.company}</span>
+                                {exp.location && (
+                                  <>
+                                    <span className="text-gray-400">—</span>
+                                    <span className="text-gray-600">{exp.location}</span>
+                                  </>
+                                )}
+                              </>
                             )}
                           </div>
+                          
+                          {/* Period on its own line */}
+                          {exp.period && (
+                            <div className="text-sm text-gray-500 mb-3">
+                              {exp.period
+                                .replace(/,\s*/g, ' ') // Remove commas
+                                .replace(/–|—/g, '-') // Normalize dashes to hyphen
+                                .replace(/\s+/g, ' ') // Normalize whitespace
+                                .trim()
+                              }
+                            </div>
+                          )}
                           
                           {exp.bullets.length > 0 ? (
                             <ul className="space-y-1.5 text-sm text-gray-800">
@@ -234,11 +289,7 @@ export function CVPreview({ sections, profile, jobTitle }: CVPreviewProps) {
                                 </li>
                               ))}
                             </ul>
-                          ) : (
-                            <p className="text-sm text-gray-500 italic ml-4">
-                              Ingen beskrivelse tilføjet
-                            </p>
-                          )}
+                          ) : null}
                         </div>
                       ));
                     })()}

@@ -161,8 +161,8 @@ OUTPUT FORMAT - STRICT JSON
       "title": "Exact job title",
       "company": "Exact company name",
       "location": "City/Country or null",
-      "startDate": "april 2015 (preserve exact format)",
-      "endDate": "oktober 2016 or null if current",
+      "startDate": "Month YYYY format - e.g. 'April 2015', 'april 2015', 'Apr 2015' - NO commas",
+      "endDate": "Month YYYY format or null if current - e.g. 'Oktober 2016', null - NO commas, use null instead of 'Present'",
       "keyMilestones": "Narrative paragraph if any (not bullets)",
       "bullets": [
         "Every single bullet point or achievement description",
@@ -249,17 +249,17 @@ Contact
 Education
 Experience
 Security Specialist, Physical Security
-November, 2022 - Present
+November 2022 - Present
 Ørsted A/S | Denmark
 [Job description]
 Guard Supervisor
-July, 2021 - November, 2022"
+July 2021 - November 2022"
 
 In this chaos, you need to identify:
-- "Security Specialist, Physical Security" + "November, 2022 - Present" + "Ørsted A/S | Denmark" = ONE job
+- "Security Specialist, Physical Security" + "November 2022 - Present" + "Ørsted A/S | Denmark" = ONE job
 - All the "Key Milestones" bullets at the top belong to the Security Specialist job
 - "Phone", "Email", "Contact", "Education", "Experience" are NOISE headers - IGNORE them
-- "Guard Supervisor" + "July, 2021 - November, 2022" = NEXT job (so previous job is complete)
+- "Guard Supervisor" + "July 2021 - November 2022" = NEXT job (so previous job is complete)
 
 CRITICAL INSTRUCTIONS:
 1. This CV has approximately 6-8 job positions - extract ALL of them

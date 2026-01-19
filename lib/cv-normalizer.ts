@@ -119,14 +119,15 @@ export interface ParsedLanguage {
 
 /**
  * Date patterns for parsing experience dates
+ * Handles various formats with or without commas, different dash types, etc.
  */
 const DATE_PATTERNS = [
-  // "Jan 2020 - Present", "January 2020 - Dec 2023"
-  /^(\w+\s*\d{4})\s*[-–—]\s*((?:\w+\s*\d{4})|(?:nu|present|current|now|i dag))$/i,
+  // "Jan 2020 - Present", "January 2020 - Dec 2023", "Jan, 2020 - Dec, 2023"
+  /^(\w+,?\s*\d{4})\s*[-–—]\s*((?:\w+,?\s*\d{4})|(?:nu|present|current|now|i dag))$/i,
   // "2020 - 2023", "2020 - Present"
   /^(\d{4})\s*[-–—]\s*((?:\d{4})|(?:nu|present|current|now|i dag))$/i,
   // "Jan 2020 -", "2020 -" (ongoing)
-  /^(\w*\s*\d{4})\s*[-–—]\s*$/,
+  /^(\w*,?\s*\d{4})\s*[-–—]\s*$/,
 ];
 
 /**
@@ -476,7 +477,7 @@ function parseDateRange(text: string): { start?: string; end?: string } {
     const match = text.match(pattern);
     if (match) {
       return {
-        start: match[1],
+        start: match[1].replace(/,\s*/g, ' ').trim(), // Clean start date: remove commas
         end: normalizeEndDate(match[2]),
       };
     }
@@ -486,16 +487,18 @@ function parseDateRange(text: string): { start?: string; end?: string } {
 
 /**
  * Normalize end date text
+ * Converts various "present" terms to undefined and cleans formatting
  */
 function normalizeEndDate(text?: string): string | undefined {
   if (!text) return undefined;
   
-  const presentTerms = ['present', 'current', 'now', 'nu', 'i dag'];
+  const presentTerms = ['present', 'current', 'now', 'nu', 'i dag', 'nutid'];
   if (presentTerms.some(t => text.toLowerCase().includes(t))) {
     return undefined; // undefined means "present"
   }
   
-  return text;
+  // Clean up formatting: remove commas, normalize whitespace
+  return text.replace(/,\s*/g, ' ').trim();
 }
 
 /**
@@ -848,8 +851,8 @@ function mapStructuredDataToDocument(
       title: exp.title || '',
       company: exp.company || '',
       location: exp.location,
-      startDate: exp.startDate || '',
-      endDate: exp.endDate,
+      startDate: (exp.startDate || '').replace(/,\s*/g, ' '), // Remove commas from dates
+      endDate: normalizeEndDate(exp.endDate),
       keyMilestones: exp.keyMilestones || '',
       bullets: exp.bullets?.map(b => createBulletItem(b)) || [],
     }));

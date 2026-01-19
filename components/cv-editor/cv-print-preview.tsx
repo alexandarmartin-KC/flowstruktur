@@ -88,9 +88,8 @@ export function CVPrintPreview() {
                 {leftColumn.education.map((item) => (
                   <div key={item.id}>
                     <div className="font-medium text-sm">{item.title}</div>
-                    <div className="text-xs text-slate-600">
-                      {item.institution} · {item.year}
-                    </div>
+                    <div className="text-xs text-slate-600">{item.institution}</div>
+                    <div className="text-xs text-slate-500">{item.year}</div>
                   </div>
                 ))}
               </div>
@@ -124,7 +123,7 @@ export function CVPrintPreview() {
                 {leftColumn.languages.map((item) => (
                   <div key={item.id} className="flex justify-between">
                     <span>{item.language}</span>
-                    <span className="text-slate-500">{LANGUAGE_LEVEL_LABELS[item.level]}</span>
+                    <span className="text-slate-500">{LANGUAGE_LEVEL_LABELS[item.level] || item.level}</span>
                   </div>
                 ))}
               </div>

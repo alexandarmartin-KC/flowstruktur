@@ -113,9 +113,9 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
         </h2>
         
         {profile?.email && (
-          <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
-            <Mail className="h-3.5 w-3.5 text-slate-400 flex-shrink-0" />
-            <span className="truncate">{profile.email}</span>
+          <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+            <Mail className="h-3.5 w-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+            <span className="break-all">{profile.email}</span>
           </div>
         )}
         
@@ -134,16 +134,16 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
         )}
         
         {profile?.linkedin && (
-          <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
-            <Linkedin className="h-3.5 w-3.5 text-slate-400 flex-shrink-0" />
-            <span className="truncate">{profile.linkedin}</span>
+          <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+            <Linkedin className="h-3.5 w-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+            <span className="break-all">{profile.linkedin}</span>
           </div>
         )}
         
         {profile?.portfolio && (
-          <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
-            <Globe className="h-3.5 w-3.5 text-slate-400 flex-shrink-0" />
-            <span className="truncate">{profile.portfolio}</span>
+          <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+            <Globe className="h-3.5 w-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+            <span className="break-all">{profile.portfolio}</span>
           </div>
         )}
       </div>
@@ -173,20 +173,18 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
                 placeholder="Uddannelse / Titel"
                 className="font-medium text-sm h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1"
               />
-              <div className="flex gap-2 mt-1">
-                <Input
-                  value={item.institution}
-                  onChange={(e) => updateEducation(item.id, { institution: e.target.value })}
-                  placeholder="Institution"
-                  className="text-xs text-slate-600 h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 flex-1"
-                />
-                <Input
-                  value={item.year}
-                  onChange={(e) => updateEducation(item.id, { year: e.target.value })}
-                  placeholder="År (f.eks. 2016 - 2019)"
-                  className="text-xs text-slate-500 h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 w-32"
-                />
-              </div>
+              <Input
+                value={item.institution}
+                onChange={(e) => updateEducation(item.id, { institution: e.target.value })}
+                placeholder="Institution"
+                className="text-xs text-slate-600 h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 mt-1"
+              />
+              <Input
+                value={item.year}
+                onChange={(e) => updateEducation(item.id, { year: e.target.value })}
+                placeholder="År (f.eks. 2016 - 2019)"
+                className="text-xs text-slate-500 h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 mt-1"
+              />
             </div>
           ))}
           

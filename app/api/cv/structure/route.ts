@@ -96,6 +96,17 @@ SPECIFIC PATTERNS TO LOOK FOR
 - Any line with both a professional title AND a date
 - Company names are often capitalized or standalone
 
+⚠️ CRITICAL JOB TITLE EXTRACTION - NO TRUNCATION:
+Extract COMPLETE job titles as they appear:
+✅ CORRECT: "Security Specialist, Physical Security"
+❌ WRONG: "Security Specialist, Physical"
+✅ CORRECT: "Executive Security Chauffeur"
+❌ WRONG: "Executive Security Chauffe"
+✅ CORRECT: "Security Account Manager for IBM"
+❌ WRONG: "Security Account Manager for I"
+
+DO NOT TRUNCATE job titles, company names, or locations. Extract the full text.
+
 **Date Patterns:**
 - "april 2015 - oktober 2016"
 - "2015 - 2019"
@@ -117,15 +128,31 @@ SPECIFIC PATTERNS TO LOOK FOR
   * OR year first: "2016 - 2019" then "Communication" then "AP Degree Courses"
   * OR year first: "2013 - 2014" then "Certificated Security Manager" then "Danish Institute for Fire & Security"
   * OR mixed format with degree, year, and institution scattered
-- CRITICAL: Extract COMPLETE year ranges - "2016 - 2019" NOT "2016 - 20" or just "2016"
-  * If you see "2013 - 2014", output EXACTLY "2013 - 2014"
-  * If you see "1998 - 2001", output EXACTLY "1998 - 2001"
-  * NEVER truncate years to 2 digits
-- If degree and year are present but institution is unclear, look for words like "Communication", "AP Degree Courses" as institution
-- PRESERVE COMPLETE degree names: "Certificated Security Manager, CFPA" NOT "Certificated Security Manager"
-- PRESERVE COMPLETE institution names: "Danish Institute for Fire & Security" NOT "Danish Institute"
-- For "Communication AP Degree Courses", institution is "Communication" and title is "AP Degree Courses"
-- PRESERVE COMPLETE years: "2016 - 2019" NOT "2016 - 20"
+
+⚠️ CRITICAL EDUCATION EXTRACTION RULES - READ CAREFULLY:
+1. COMPLETE TITLES: Extract FULL degree names - NO TRUNCATION
+   ✅ CORRECT: "Communication AP Degree Courses"
+   ❌ WRONG: "Communication AP Degree C"
+   ✅ CORRECT: "Certificated Security Manager"  
+   ❌ WRONG: "Certificated Security Manage"
+   ✅ CORRECT: "Higher Commercial Examination"
+   ❌ WRONG: "Higher Commercial Examina"
+
+2. COMPLETE YEARS: Extract ALL 4 digits of BOTH years - NO TRUNCATION
+   ✅ CORRECT: "2016 - 2019" (all 4 digits)
+   ❌ WRONG: "2016 - 20" (truncated)
+   ✅ CORRECT: "2013 - 2014" (all 4 digits)
+   ❌ WRONG: "2013 - 20" (truncated)
+   ✅ CORRECT: "1998 - 2001" (all 4 digits)
+   ❌ WRONG: "1998 - 20" (truncated)
+
+3. COMPLETE INSTITUTIONS: Extract FULL institution names - NO TRUNCATION
+   ✅ CORRECT: "Danish Institute for Fire & Security"
+   ❌ WRONG: "Danish Institute"
+   ✅ CORRECT: "Roskilde Business College"
+   ❌ WRONG: "Roskilde Busine"
+
+DO NOT TRUNCATE ANY TEXT. Extract the complete text as it appears in the CV.
 
 **Skills Patterns:**
 - Comma-separated lists
@@ -142,13 +169,24 @@ SPECIFIC PATTERNS TO LOOK FOR
 EXTRACTION RULES - ABSOLUTE
 ═══════════════════════════════════════════════════════════════════════════
 
+⚠️⚠️⚠️ CRITICAL: DO NOT TRUNCATE ANY TEXT ⚠️⚠️⚠️
+
+You MUST extract complete text - no abbreviations, no cutting off text.
+- Job titles must be COMPLETE: "Security Specialist, Physical Security" NOT "Security Specialist, Physical"  
+- Education titles must be COMPLETE: "Higher Commercial Examination" NOT "Higher Commercial Examina"
+- Institution names must be COMPLETE: "Roskilde Business College" NOT "Roskilde Busine"
+- Years must have ALL 4 DIGITS: "2016 - 2019" NOT "2016 - 20"
+
+If you truncate ANY text, the extraction has FAILED.
+
 1. Extract EVERYTHING - if you see 10 bullet points, include all 10
 2. NEVER invent data - only extract visible information
 3. PRESERVE original language (Danish stays Danish)
-4. If uncertain about date association, use closest logical match
-5. Include ALL jobs, even if formatting is broken
-6. Collect ALL skills mentioned anywhere
-7. Extract ALL languages with levels
+4. NEVER TRUNCATE - extract complete text for titles, names, years
+5. If uncertain about date association, use closest logical match
+6. Include ALL jobs, even if formatting is broken
+7. Collect ALL skills mentioned anywhere
+8. Extract ALL languages with levels
 
 ═══════════════════════════════════════════════════════════════════════════
 OUTPUT FORMAT - STRICT JSON
@@ -367,24 +405,51 @@ Return ONLY the JSON object.`
       const cleaned: StructuredCVData = {
         professionalIntro: structured.professionalIntro?.trim() || undefined,
         experience: Array.isArray(structured.experience) 
-          ? structured.experience.map(exp => ({
-              title: exp.title?.trim() || '',
-              company: exp.company?.trim() || '',
-              location: exp.location?.trim() || undefined,
-              startDate: exp.startDate?.trim() || '',
-              endDate: exp.endDate?.trim() || undefined,
-              keyMilestones: exp.keyMilestones?.trim() || undefined,
-              bullets: Array.isArray(exp.bullets) 
-                ? exp.bullets.filter(b => b && typeof b === 'string' && b.trim()).map(b => b.trim())
-                : [],
-            })).filter(exp => exp.title || exp.company)
+          ? structured.experience.map(exp => {
+              // Clean and validate
+              const title = exp.title?.trim() || '';
+              const company = exp.company?.trim() || '';
+              const startDate = exp.startDate?.replace(/,\s*/g, ' ').trim() || '';
+              const endDate = exp.endDate?.replace(/,\s*/g, ' ').trim() || undefined;
+              
+              // Warn about potential truncation
+              if (title.length > 0 && (title.endsWith(',') || title.match(/\w\s*$/))) {
+                console.warn('⚠️ Potential truncated title:', title);
+              }
+              
+              return {
+                title,
+                company,
+                location: exp.location?.trim() || undefined,
+                startDate,
+                endDate,
+                keyMilestones: exp.keyMilestones?.trim() || undefined,
+                bullets: Array.isArray(exp.bullets) 
+                  ? exp.bullets.filter(b => b && typeof b === 'string' && b.trim()).map(b => b.trim())
+                  : [],
+              };
+            }).filter(exp => exp.title || exp.company)
           : [],
         education: Array.isArray(structured.education)
-          ? structured.education.map(edu => ({
-              title: edu.title?.trim() || '',
-              institution: edu.institution?.trim() || '',
-              year: edu.year?.toString().trim() || '',
-            }))
+          ? structured.education.map(edu => {
+              const title = edu.title?.trim() || '';
+              const institution = edu.institution?.trim() || '';
+              const year = edu.year?.toString().trim() || '';
+              
+              // Warn about potential truncation in education
+              if (title.length > 0 && !title.match(/\w+$/)) {
+                console.warn('⚠️ Potential truncated education title:', title);
+              }
+              if (year.includes('-') && year.match(/-\s*\d{2}\s*$/)) {
+                console.warn('⚠️ Truncated year detected:', year, '- should have 4 digits');
+              }
+              
+              return {
+                title,
+                institution,
+                year,
+              };
+            })
             .filter(edu => edu.title || edu.institution)
             .sort((a, b) => {
               // Sort education in reverse chronological order (newest first)

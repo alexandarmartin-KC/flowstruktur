@@ -171,19 +171,19 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
                 value={item.title}
                 onChange={(e) => updateEducation(item.id, { title: e.target.value })}
                 placeholder="Uddannelse / Titel"
-                className="font-medium text-sm h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1"
+                className="font-medium text-xs h-auto py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1"
               />
               <Input
                 value={item.institution}
                 onChange={(e) => updateEducation(item.id, { institution: e.target.value })}
                 placeholder="Institution"
-                className="text-xs text-slate-600 h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 mt-1"
+                className="text-[11px] text-slate-600 h-auto py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1 mt-0.5"
               />
               <Input
                 value={item.year}
                 onChange={(e) => updateEducation(item.id, { year: e.target.value })}
                 placeholder="År (f.eks. 2016 - 2019)"
-                className="text-xs text-slate-500 h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 mt-1"
+                className="text-[11px] text-slate-500 h-auto py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1 mt-0.5"
               />
             </div>
           ))}

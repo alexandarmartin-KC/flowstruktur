@@ -84,12 +84,12 @@ export function CVPrintPreview() {
               <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 border-b border-slate-300 pb-1">
                 Uddannelse
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {leftColumn.education.map((item) => (
                   <div key={item.id}>
-                    <div className="font-medium text-sm">{item.title}</div>
-                    <div className="text-xs text-slate-600">{item.institution}</div>
-                    <div className="text-xs text-slate-500">{item.year}</div>
+                    <div className="font-medium text-xs">{item.title}</div>
+                    <div className="text-[11px] text-slate-600">{item.institution}</div>
+                    <div className="text-[11px] text-slate-500">{item.year}</div>
                   </div>
                 ))}
               </div>

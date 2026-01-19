@@ -32,213 +32,151 @@ export interface StructuredCVData {
   }[];
 }
 
-const SYSTEM_PROMPT = `You are an EXPERT CV reconstruction specialist. You will receive COMPLETELY SCRAMBLED text from a PDF where a two-column layout was destroyed by pdf-parse.
+const SYSTEM_PROMPT = `You are a TWO-STAGE CV EXTRACTION SYSTEM.
 
 ═══════════════════════════════════════════════════════════════════════════
-YOUR CHALLENGE
+STAGE 1: TEXT CLEANING (Internal - not output)
 ═══════════════════════════════════════════════════════════════════════════
 
-The CV you're parsing had this structure:
-- LEFT SIDEBAR (blue/colored): Contact info, Education, Profile/Social, Languages, Skills
-- RIGHT MAIN COLUMN (white): Job title header, profile paragraph, detailed work experience
-
-But pdf-parse has COMPLETELY SCRAMBLED IT. You will see:
-- Contact details mixed with job descriptions
-- Section headers far from their content
-- Bullet points scattered everywhere
-- Dates appearing randomly
-- Skills listed in weird places
-- Everything out of order
-
-YOUR JOB: Be a DETECTIVE. Reconstruct the original professional CV.
+First, mentally clean the input text:
+- Remove print timestamps (HH:MM format, date+time patterns)
+- Remove page numbers (e.g. "1/3", "Page 2")
+- Remove footer/header noise (URLs, product names, "Powered by...")
+- Keep ALL CV content exactly as written
+- Do NOT rewrite, summarize, or interpret
+- Preserve original wording, section boundaries, groupings
 
 ═══════════════════════════════════════════════════════════════════════════
-CRITICAL RECONSTRUCTION STRATEGIES
+STAGE 2: STRUCTURED JSON EXTRACTION (Your Output)
 ═══════════════════════════════════════════════════════════════════════════
 
-1. **FIND ALL JOB POSITIONS FIRST**
-   Look for these patterns (case-insensitive):
-   - Titles: "Security Manager", "Certified Security Manager", "Security Consultant", "Officer", "Specialist", "Director", "Developer", etc.
-   - Companies: Proper nouns after titles, or standalone company names
-   - Dates: "april 2015", "2015 - 2019", "January 2020", "2020 - nu", patterns like YYYY or Month YYYY
-   
-   When you find: [Some Title] + [Some Company Name] + [Date Range] = ONE JOB ENTRY
+CARDINAL RULES (VIOLATIONS = FAILURE):
 
-2. **COLLECT ALL BULLETS/DESCRIPTIONS**
-   After finding a job entry, scan forward until you hit the NEXT job entry
-   Collect ALL descriptive text, bullet points, achievements
-   They might NOT have bullet symbols - look for achievement-style sentences
-
-3. **IDENTIFY SIDEBAR CONTENT** (usually scattered at top or mixed in)
-   - "UDDANNELSE" / "EDUCATION" = education section
-   - "PROFIL & SOCIAL" / "PROFILE" = ignore or use as intro
-   - "SPROG" / "LANGUAGES" = languages
-   - "KOMPETENCER" / "SKILLS" = skills list
-   - "KONTAKT" / "CONTACT" = contact (ignore for structure)
-
-4. **LANGUAGE DETECTION**
-   If you see "Dansk - Modersmål", "Engelsk - Flydende" = Danish CV
-   Preserve the language exactly
-
-5. **ASSOCIATION LOGIC**
-   If you see random text like "Ledet sikkerhedsafdelingen med 15 medarbejdere"
-   → This is a bullet/description for the nearest job above it
-   
-   If you see "SAP MM, SAP SD, Microsoft Office"
-   → These are skills
+1. ⛔ NO HALLUCINATION: Do NOT invent data
+2. ⛔ NO TRUNCATION: Extract COMPLETE text - full words, full names, full titles
+3. ⛔ NO GUESSING: If unclear or missing → use null
+4. ✅ CORRECTNESS > COMPLETENESS
+5. ✅ PRESERVE original language (Danish stays Danish)
 
 ═══════════════════════════════════════════════════════════════════════════
-SPECIFIC PATTERNS TO LOOK FOR
-═══════════════════════════════════════════════════════════════════════════
-
-**Job Entry Patterns:**
-- "Certified Security Manager (CPP)" at "SIKKERHEDSAFDELINGEN" or similar
-- Any line with both a professional title AND a date
-- Company names are often capitalized or standalone
-
-⚠️ CRITICAL JOB TITLE EXTRACTION - NO TRUNCATION:
-Extract COMPLETE job titles as they appear:
-✅ CORRECT: "Security Specialist, Physical Security"
-❌ WRONG: "Security Specialist, Physical"
-✅ CORRECT: "Executive Security Chauffeur"
-❌ WRONG: "Executive Security Chauffe"
-✅ CORRECT: "Security Account Manager for IBM"
-❌ WRONG: "Security Account Manager for I"
-
-DO NOT TRUNCATE job titles, company names, or locations. Extract the full text.
-
-**Date Patterns:**
-- "april 2015 - oktober 2016"
-- "2015 - 2019"
-- "January 2020 - Present"
-- "2020 - nu"
-- Month can be lowercase: "april", "februar", "oktober"
-
-**Bullet Patterns:**
-- Lines starting with action verbs: "Ledet", "Implementeret", "Udviklede", "Ansvarlig for"
-- Achievement descriptions: "Reducerede", "Øgede", "Opnåede"
-- Responsibility descriptions: "Ansvar for", "Varetog"
-
-**Education Patterns:**
-- Look for degree/certification names: "Certificated Security Manager", "AP Degree", "Bachelor", "Master", "Higher Commercial Examination"
-- Institution names: "Danish Institute for Fire & Security", "Roskilde Business College", "University", "College", "AP Degree Courses"
-- Years: "2016 - 2019", "2013 - 2014", "1998 - 2001"
-- Education entries may appear as:
-  * "Certificated Security Manager, CFPA" on one line, then "2016 - 2019" on next, then institution
-  * OR year first: "2016 - 2019" then "Communication" then "AP Degree Courses"
-  * OR year first: "2013 - 2014" then "Certificated Security Manager" then "Danish Institute for Fire & Security"
-  * OR mixed format with degree, year, and institution scattered
-
-⚠️ CRITICAL EDUCATION EXTRACTION RULES - READ CAREFULLY:
-1. COMPLETE TITLES: Extract FULL degree names - NO TRUNCATION
-   ✅ CORRECT: "Communication AP Degree Courses"
-   ❌ WRONG: "Communication AP Degree C"
-   ✅ CORRECT: "Certificated Security Manager"  
-   ❌ WRONG: "Certificated Security Manage"
-   ✅ CORRECT: "Higher Commercial Examination"
-   ❌ WRONG: "Higher Commercial Examina"
-
-2. COMPLETE YEARS: Extract ALL 4 digits of BOTH years - NO TRUNCATION
-   ✅ CORRECT: "2016 - 2019" (all 4 digits)
-   ❌ WRONG: "2016 - 20" (truncated)
-   ✅ CORRECT: "2013 - 2014" (all 4 digits)
-   ❌ WRONG: "2013 - 20" (truncated)
-   ✅ CORRECT: "1998 - 2001" (all 4 digits)
-   ❌ WRONG: "1998 - 20" (truncated)
-
-3. COMPLETE INSTITUTIONS: Extract FULL institution names - NO TRUNCATION
-   ✅ CORRECT: "Danish Institute for Fire & Security"
-   ❌ WRONG: "Danish Institute"
-   ✅ CORRECT: "Roskilde Business College"
-   ❌ WRONG: "Roskilde Busine"
-
-DO NOT TRUNCATE ANY TEXT. Extract the complete text as it appears in the CV.
-
-**Skills Patterns:**
-- Comma-separated lists
-- Often ALL CAPS or Title Case
-- Tech terms: "SAP", "Microsoft Office", "CRM", etc.
-- Soft skills: "Communication", "Leadership", "Team Management"
-
-**Language Patterns:**
-- "Dansk - Modersmål" = Danish, native
-- "Engelsk - Flydende" = English, fluent
-- "Tysk - Mellem" = German, intermediate
-
-═══════════════════════════════════════════════════════════════════════════
-EXTRACTION RULES - ABSOLUTE
-═══════════════════════════════════════════════════════════════════════════
-
-⚠️⚠️⚠️ CRITICAL: DO NOT TRUNCATE ANY TEXT ⚠️⚠️⚠️
-
-You MUST extract complete text - no abbreviations, no cutting off text.
-- Job titles must be COMPLETE: "Security Specialist, Physical Security" NOT "Security Specialist, Physical"  
-- Education titles must be COMPLETE: "Higher Commercial Examination" NOT "Higher Commercial Examina"
-- Institution names must be COMPLETE: "Roskilde Business College" NOT "Roskilde Busine"
-- Years must have ALL 4 DIGITS: "2016 - 2019" NOT "2016 - 20"
-
-If you truncate ANY text, the extraction has FAILED.
-
-1. Extract EVERYTHING - if you see 10 bullet points, include all 10
-2. NEVER invent data - only extract visible information
-3. PRESERVE original language (Danish stays Danish)
-4. NEVER TRUNCATE - extract complete text for titles, names, years
-5. If uncertain about date association, use closest logical match
-6. Include ALL jobs, even if formatting is broken
-7. Collect ALL skills mentioned anywhere
-8. Extract ALL languages with levels
-
-═══════════════════════════════════════════════════════════════════════════
-OUTPUT FORMAT - STRICT JSON
+OUTPUT SCHEMA (STRICT)
 ═══════════════════════════════════════════════════════════════════════════
 
 {
-  "professionalIntro": "Profile paragraph text (2-5 sentences about the person)",
+  "professionalIntro": string | null,
   "experience": [
     {
-      "title": "Exact job title",
-      "company": "Exact company name",
-      "location": "City/Country or null",
-      "startDate": "Month YYYY format - e.g. 'April 2015', 'april 2015', 'Apr 2015' - NO commas",
-      "endDate": "Month YYYY format or null if current - e.g. 'Oktober 2016', null - NO commas, use null instead of 'Present'",
-      "keyMilestones": "Narrative paragraph if any (not bullets)",
-      "bullets": [
-        "Every single bullet point or achievement description",
-        "Include ALL of them"
-      ]
+      "title": string (COMPLETE, not truncated),
+      "company": string (COMPLETE, not truncated),
+      "location": string | null,
+      "startDate": "YYYY-MM" format (e.g. "2015-04"),
+      "endDate": "YYYY-MM" | null (null if current),
+      "keyMilestones": string | null,
+      "bullets": [string] (each bullet complete)
     }
   ],
   "education": [
     {
-      "title": "FULL degree/certificate name - NO TRUNCATION - Must end with complete word, not mid-word like 'C' or 'Manage' or 'Examina'",
-      "institution": "FULL institution name - NO TRUNCATION - Must end with complete word, not mid-word like 'Busine' or 'Institute'",
-      "year": "COMPLETE 4-digit year range - e.g. '2016 - 2019' NOT '2016 - 20' - both start AND end year must have 4 digits"
+      "title": string (COMPLETE degree name - not "Communication AP Degree C" but "Communication AP Degree Courses"),
+      "institution": string (COMPLETE - not "Roskilde Busine" but "Roskilde Business College"),
+      "year": string (COMPLETE - "2016 - 2019" NOT "2016 - 20")
     }
   ],
-  "skills": ["Every", "Single", "Skill", "Mentioned"],
+  "skills": [string],
   "languages": [
-    {"language": "Dansk", "level": "native"},
-    {"language": "Engelsk", "level": "fluent"}
+    {
+      "language": string,
+      "level": "native" | "fluent" | "advanced" | "intermediate" | "basic"
+    }
   ]
 }
 
-**Level Mapping:**
-- "Modersmål", "Native", "Mother tongue" → "native"
-- "Flydende", "Fluent", "Proficient" → "fluent"
-- "Avanceret", "Advanced" → "advanced"  
-- "Mellem", "Intermediate", "Conversational" → "intermediate"
-- "Grundlæggende", "Basic", "Beginner" → "basic"
-
 ═══════════════════════════════════════════════════════════════════════════
-FINAL REMINDER
+DATE NORMALIZATION (CRITICAL)
 ═══════════════════════════════════════════════════════════════════════════
 
-Think like a detective piecing together a shredded document.
-The CV is complete and professional - it just needs reconstruction.
-Use pattern recognition, context clues, and logical association.
-Extract EVERYTHING you can identify.
+Input → Output:
+- "april 2015" → "2015-04"
+- "Apr 2015" → "2015-04"
+- "2015" → "2015-01"
+- "Present" / "Nu" / "Current" / "Now" → endDate = null
+- "November 2022" → "2022-11"
+- "November, 2022" → "2022-11" (remove commas)
 
-Return ONLY the JSON object - no markdown, no explanations.`;
+Ignore timestamps with HH:MM format - those are print artifacts.
+Only use dates that clearly indicate job/education periods.
+
+Month mappings:
+- jan/januar/january → 01
+- feb/februar/february → 02
+- mar/marts/march → 03
+- apr/april → 04
+- maj/may → 05
+- jun/juni/june → 06
+- jul/juli/july → 07
+- aug/august → 08
+- sep/september → 09
+- okt/oktober/october → 10
+- nov/november → 11
+- dec/december → 12
+
+═══════════════════════════════════════════════════════════════════════════
+EXPERIENCE SORTING (MANDATORY)
+═══════════════════════════════════════════════════════════════════════════
+
+After extraction, SORT experience array:
+1. Current jobs (endDate = null) first
+2. Then by endDate descending (newest first)
+3. Then by startDate descending
+4. Jobs without dates last
+
+═══════════════════════════════════════════════════════════════════════════
+ANTI-TRUNCATION EXAMPLES
+═══════════════════════════════════════════════════════════════════════════
+
+❌ WRONG: "Security Specialist, Physical"
+✅ CORRECT: "Security Specialist, Physical Security"
+
+❌ WRONG: "Communication AP Degree C"
+✅ CORRECT: "Communication AP Degree Courses"
+
+❌ WRONG: "Higher Commercial Examina"
+✅ CORRECT: "Higher Commercial Examination"
+
+❌ WRONG: "Roskilde Busine"
+✅ CORRECT: "Roskilde Business College"
+
+❌ WRONG: "2016 - 20"
+✅ CORRECT: "2016 - 2019"
+
+❌ WRONG: "Danish Institute"
+✅ CORRECT: "Danish Institute for Fire & Security"
+
+Extract the COMPLETE text. If you see "Higher Commercial Examination" in the CV, output exactly that - not "Higher Commercial Examina".
+
+═══════════════════════════════════════════════════════════════════════════
+LANGUAGE LEVEL MAPPING
+═══════════════════════════════════════════════════════════════════════════
+
+- "Modersmål" / "Native" / "Mother tongue" → "native"
+- "Flydende" / "Fluent" / "Proficient" → "fluent"
+- "Avanceret" / "Advanced" → "advanced"
+- "Mellem" / "Intermediate" / "Conversational" → "intermediate"
+- "Grundlæggende" / "Basic" / "Beginner" → "basic"
+
+═══════════════════════════════════════════════════════════════════════════
+VALIDATION CHECKLIST
+═══════════════════════════════════════════════════════════════════════════
+
+Before outputting, verify:
+- [ ] All titles are COMPLETE (end with full word, not mid-word)
+- [ ] All years have 4 digits in both positions if range (e.g. "2016 - 2019")
+- [ ] All dates are "YYYY-MM" format
+- [ ] Experience is sorted correctly
+- [ ] No invented data
+- [ ] Output is valid JSON
+
+Return ONLY the JSON object. No explanations, no markdown.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -252,10 +190,10 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Log input for debugging - first 500 chars and total length
+    // Log input for debugging
     console.log('CV Structure API - Input received:', {
       textLength: cvText.length,
-      preview: cvText.substring(0, 500).replace(/\n/g, ' '),
+      preview: cvText.substring(0, 300).replace(/\n/g, ' '),
       lineCount: (cvText.match(/\n/g) || []).length + 1,
     });
     
@@ -263,125 +201,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(getMockStructuredData());
     }
     
-    // Use gpt-4o for better extraction quality with higher token limit
+    // Use gpt-4o with increased token limit
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { 
           role: 'user', 
-          content: `RECONSTRUCTION TASK:
-
-The text below is SEVERELY SCRAMBLED from a two-column CV PDF. pdf-parse has destroyed the layout.
-
-TRAINING EXAMPLE - Study this pattern:
-
-Here's how scrambled text looks:
-"Key Milestones
-[Job description bullets]
-Phone
-+45 9955 5813
-Email
-alexandar.martin@gmail.com
-Contact
-Education
-Experience
-Security Specialist, Physical Security
-November 2022 - Present
-Ørsted A/S | Denmark
-[Job description]
-Guard Supervisor
-July 2021 - November 2022"
-
-In this chaos, you need to identify:
-- "Security Specialist, Physical Security" + "November 2022 - Present" + "Ørsted A/S | Denmark" = ONE job
-- All the "Key Milestones" bullets at the top belong to the Security Specialist job
-- "Phone", "Email", "Contact", "Education", "Experience" are NOISE headers - IGNORE them
-- "Guard Supervisor" + "July 2021 - November 2022" = NEXT job (so previous job is complete)
-
-CRITICAL INSTRUCTIONS:
-1. This CV has approximately 6-8 job positions - extract ALL of them
-2. The FIRST major text block (before any job title) is usually bullets from the FIRST job
-3. When you see a NEW job title + date, the PREVIOUS job ends
-4. Contact info (phone, email, address) interrupts jobs - IGNORE it
-5. Section headers ("Contact", "Education", "Experience", "CV") appear randomly - IGNORE them
-6. Collect ALL bullets/descriptions between job headers
-7. Some jobs have NO bullets listed - that's OK, leave bullets array empty
-
-EDUCATION EXTRACTION - CRITICAL:
-The education section will appear scrambled like:
-"Certificated Security Manager, CFPA
-2016 - 2019
-Communication
-AP Degree Courses
-2013 - 2014
-Certificated Security Manager
-Danish Institute for Fire & Security
-1998 - 2001
-Higher Commercial Examination
-Roskilde Business College"
-
-WAIT - this is TRICKY! The ACTUAL pattern is:
-"2016 - 2019
-Communication
-AP Degree Courses"
-
-This means the YEAR appears BEFORE the title. So:
-- Line "2016 - 2019" → next lines are "Communication" then "AP Degree Courses" = Title is "Communication AP Degree Courses", Year is "2016 - 2019"
-- Line "2013 - 2014" → next lines are "Certificated Security Manager" then "Danish Institute for Fire & Security" = Title is "Certificated Security Manager", Institution is "Danish Institute for Fire & Security", Year is "2013 - 2014"  
-- Line "1998 - 2001" → next lines are "Higher Commercial Examination" then "Roskilde Business College" = Title is "Higher Commercial Examination", Institution is "Roskilde Business College", Year is "1998 - 2001"
-
-Parse this as THREE separate education entries:
-1. Title: "Communication AP Degree Courses", Year: "2016 - 2019", Institution: try to find or use "Communication"
-2. Title: "Certificated Security Manager, CFPA" (include CFPA if present), Year: "2013 - 2014", Institution: "Danish Institute for Fire & Security"
-3. Title: "Higher Commercial Examination", Year: "1998 - 2001", Institution: "Roskilde Business College"
-
-IMPORTANT: Keep COMPLETE degree names, COMPLETE institution names, and COMPLETE years.
-
-EXPECTED JOBS IN THIS CV (based on the text):
-- Security Specialist, Physical Security @ Ørsted (Nov 2022 - Present)
-- Guard Supervisor @ Ørsted (July 2021 - Nov 2022)
-- Executive Security Chauffeur @ Ørsted (March 2017 - July 2021)
-- Security Account Manager for IBM @ G4S (Feb 2015 - Feb 2016)
-- Security Officer (multiple periods) @ G4S
-- SOC Operator @ Securitas (2012)
-
-EXPECTED EDUCATION (extract with CORRECT year matching - study carefully):
-1. "Communication AP Degree Courses" @ institution unclear, "2016 - 2019" (most recent)
-2. "Certificated Security Manager, CFPA" @ "Danish Institute for Fire & Security", "2013 - 2014"
-3. "Higher Commercial Examination" @ "Roskilde Business College", "1998 - 2001" (oldest)
-
-CRITICAL YEAR MATCHING (based on actual CV):
-From the scrambled text pattern:
-"2016 - 2019 
-Communication
-AP Degree Courses
-2013 - 2014
-Certificated Security Manager
-Danish Institute for Fire & Security
-1998 - 2001
-Higher Commercial Examination
-Roskilde Business College"
-
-This means:
-- "2016 - 2019" goes with "Communication AP Degree Courses" (year appears BEFORE the title)
-- "2013 - 2014" goes with "Certificated Security Manager" (year appears BEFORE the title)
-- "1998 - 2001" goes with "Higher Commercial Examination" (year appears BEFORE the title)
-
-CRITICAL: Output EXACTLY "2016 - 2019" NOT "2016 - 20", "2013 - 2014" NOT "2013 - 20", etc.
-
-Extract ALL of these with their complete information.
-
----SCRAMBLED CV TEXT BEGINS---
+          content: `---CV TEXT BEGINS---
 ${cvText}
----SCRAMBLED CV TEXT ENDS---
+---CV TEXT ENDS---
 
-Reconstruct the complete professional CV with ALL jobs, ALL bullets, education, skills, and languages.
-Return ONLY the JSON object.`
+Extract and structure this CV following the rules. Return ONLY valid JSON.`
         },
       ],
       temperature: 0.05,
-      max_tokens: 16000, // Increased to ensure no truncation
+      max_tokens: 16000,
       response_format: { type: 'json_object' },
     });
     

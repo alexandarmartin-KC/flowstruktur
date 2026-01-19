@@ -504,31 +504,44 @@ function ExperienceBlock({
       
       {/* Role Header */}
       <div className="mb-3">
-        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        {/* Title on full width line */}
+        <div className="mb-1">
           <Input
             value={experience.title}
             onChange={(e) => onUpdate({ title: e.target.value })}
-            placeholder="Titel"
-            className="font-semibold text-base h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto inline-flex min-w-[100px]"
+            placeholder="Titel (f.eks. Security Specialist, Physical Security)"
+            className="font-semibold text-base h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-full"
             style={{ fontSize: fontSize.heading }}
           />
-          <span className="text-slate-400">—</span>
+        </div>
+        
+        {/* Company and Location on same line */}
+        <div className="flex items-baseline gap-x-2 gap-y-1 flex-wrap">
           <Input
             value={experience.company}
             onChange={(e) => onUpdate({ company: e.target.value })}
             placeholder="Virksomhed"
-            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto inline-flex min-w-[100px]"
+            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 flex-1 min-w-[150px]"
           />
           {experience.location && (
             <>
-              <span className="text-slate-400">|</span>
+              <span className="text-slate-400">—</span>
               <Input
                 value={experience.location}
                 onChange={(e) => onUpdate({ location: e.target.value })}
                 placeholder="Lokation"
-                className="text-slate-600 h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto inline-flex min-w-[80px]"
+                className="text-slate-600 h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 flex-1 min-w-[100px]"
               />
             </>
+          )}
+          {!experience.location && (
+            <button
+              type="button"
+              onClick={() => onUpdate({ location: '' })}
+              className="text-xs text-slate-400 hover:text-slate-600"
+            >
+              + Tilføj lokation
+            </button>
           )}
         </div>
         

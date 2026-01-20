@@ -178,11 +178,11 @@ export function CVPrintPreview() {
                       </div>
                       
                       {/* Company and Location on same line */}
-                      <div className="flex items-baseline gap-x-2 text-sm">
+                      <div className="text-sm">
                         <span>{exp.company}</span>
                         {exp.location && (
                           <>
-                            <span className="text-slate-400">—</span>
+                            <span className="text-slate-400 mx-1">·</span>
                             <span className="text-slate-600">{exp.location}</span>
                           </>
                         )}

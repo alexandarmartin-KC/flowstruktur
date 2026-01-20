@@ -516,21 +516,23 @@ function ExperienceBlock({
         </div>
         
         {/* Company and Location on same line */}
-        <div className="flex items-baseline gap-x-2 gap-y-1 flex-wrap">
+        <div className="flex items-baseline gap-x-1 gap-y-1 flex-wrap">
           <Input
             value={experience.company}
             onChange={(e) => onUpdate({ company: e.target.value })}
             placeholder="Virksomhed"
-            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 flex-1 min-w-[150px]"
+            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto"
+            style={{ width: `${Math.max(experience.company.length, 10)}ch` }}
           />
           {experience.location && (
             <>
-              <span className="text-slate-400">—</span>
+              <span className="text-slate-400 mx-0.5">·</span>
               <Input
                 value={experience.location}
                 onChange={(e) => onUpdate({ location: e.target.value })}
                 placeholder="Lokation"
-                className="text-slate-600 h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 flex-1 min-w-[100px]"
+                className="text-slate-600 h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto"
+                style={{ width: `${Math.max(experience.location.length, 8)}ch` }}
               />
             </>
           )}
@@ -538,26 +540,29 @@ function ExperienceBlock({
             <button
               type="button"
               onClick={() => onUpdate({ location: '' })}
-              className="text-xs text-slate-400 hover:text-slate-600"
+              className="text-xs text-slate-400 hover:text-slate-600 ml-2"
             >
-              + Tilføj lokation
+              + Lokation
             </button>
           )}
         </div>
         
-        <div className="flex items-center gap-2 mt-1">
+        {/* Dates on same line, closer together */}
+        <div className="flex items-center gap-1 mt-1 text-sm text-slate-500">
           <Input
             value={experience.startDate}
             onChange={(e) => onUpdate({ startDate: e.target.value })}
-            placeholder="Start (f.eks. Jan 2020)"
-            className="text-sm text-slate-500 h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto inline-flex min-w-[100px]"
+            placeholder="Start"
+            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto"
+            style={{ width: `${Math.max((experience.startDate || '').length, 6)}ch` }}
           />
           <span className="text-slate-400">–</span>
           <Input
             value={experience.endDate || ''}
             onChange={(e) => onUpdate({ endDate: e.target.value || undefined })}
             placeholder="Nu"
-            className="text-sm text-slate-500 h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto inline-flex min-w-[60px]"
+            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto"
+            style={{ width: `${Math.max((experience.endDate || 'Nu').length, 3)}ch` }}
           />
         </div>
       </div>

@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { fromBuffer } from 'pdf2pic';
-import { tmpdir } from 'os';
-import { join } from 'path';
-import { promises as fs } from 'fs';
 
 export const runtime = 'nodejs';
 
@@ -12,65 +8,72 @@ const openai = process.env.OPENAI_API_KEY
   : null;
 
 /**
- * Vision-based CV extraction - converts PDF to images and uses GPT-4 Vision
- * This is MUCH better for complex layouts like two-column CVs
+ * Vision-based CV extraction - uses GPT-4o's native PDF support
+ * This reads the PDF directly as an image for perfect layout handling
  */
 
-const VISION_PROMPT = `You are extracting data from a CV/Resume image. Your job is to copy text EXACTLY as shown.
+const VISION_PROMPT = `You are copying text from a CV/Resume document. Your ONLY job is to copy text EXACTLY - character for character.
 
-CRITICAL - DO NOT:
-- Shorten or abbreviate anything
-- Paraphrase or reword anything
-- Skip any information
-- Invent or assume anything
+## ABSOLUTE RULES - VIOLATIONS ARE FAILURES:
 
-CRITICAL - DO:
-- Copy every word EXACTLY as written
-- Preserve original language (Danish/English)
-- Include ALL bullet points completely
-- Capture ALL job positions, education, skills
+1. **COPY EXACTLY** - Every single word must be copied exactly as written
+2. **NO SHORTENING** - Never shorten "Manager" to "Manage", "Security" to "Sec", etc.
+3. **NO PARAPHRASING** - Do not rewrite or summarize anything
+4. **COMPLETE BULLETS** - Copy each bullet point in its entirety, even if long
+5. **ALL INFORMATION** - Include every job, every education entry, every skill
 
-For two-column layouts:
-- Left sidebar: Contact, Skills, Languages, Education
-- Right/main: Profile summary, Work Experience
+## LAYOUT HANDLING:
+- This is likely a two-column CV
+- LEFT SIDEBAR contains: Contact info, Skills, Languages, Education
+- RIGHT/MAIN contains: Profile/Summary, Work Experience with bullet points
+- Read EACH column completely
 
-Return ONLY this JSON structure:
+## EXACT OUTPUT FORMAT (JSON):
 {
   "contact": {
-    "name": "Full name exactly",
-    "email": "email@example.com",
-    "phone": "phone number",
-    "location": "city, country"
+    "name": "[COPY full name exactly]",
+    "email": "[COPY email exactly]",
+    "phone": "[COPY phone exactly]",
+    "location": "[COPY location exactly]"
   },
-  "professionalIntro": "Copy the profile/summary paragraph EXACTLY word-for-word",
+  "professionalIntro": "[COPY the entire profile/summary paragraph word-for-word, including all sentences]",
   "experience": [
     {
-      "title": "EXACT job title as written",
-      "company": "EXACT company name as written",
-      "location": "Location if shown",
-      "startDate": "Start date exactly as shown",
-      "endDate": "End date exactly as shown, or null if current",
-      "keyMilestones": "Any narrative paragraph copied exactly",
-      "bullets": ["Copy each bullet point EXACTLY and COMPLETELY"]
+      "title": "[COPY the complete job title - every word]",
+      "company": "[COPY company name exactly]",
+      "location": "[COPY location if shown]",
+      "startDate": "[COPY start date exactly as written]",
+      "endDate": "[COPY end date exactly, or null if current/Nu/Present]",
+      "keyMilestones": "[COPY any description paragraph exactly]",
+      "bullets": [
+        "[COPY bullet 1 completely - the ENTIRE sentence]",
+        "[COPY bullet 2 completely - the ENTIRE sentence]"
+      ]
     }
   ],
   "education": [
     {
-      "title": "EXACT degree/certification name",
-      "institution": "EXACT school/organization name",
-      "year": "Year exactly as shown"
+      "title": "[COPY degree/certification name exactly]",
+      "institution": "[COPY school/organization name exactly]",
+      "year": "[COPY year exactly]"
     }
   ],
-  "skills": ["Each skill exactly as written"],
+  "skills": ["[COPY each skill exactly as written]"],
   "languages": [
     {
-      "language": "Language name",
-      "level": "Level exactly as shown"
+      "language": "[COPY language name]",
+      "level": "[COPY level exactly - e.g. 'Modersmål', 'Flydende']"
     }
   ]
 }
 
-Return ONLY valid JSON. No explanations.`;
+## VERIFICATION BEFORE RESPONDING:
+- Is every job title COMPLETE? (not cut off mid-word)
+- Is every bullet point the FULL sentence from the CV?
+- Are all education institutions included?
+- Are all skills from the sidebar included?
+
+Return ONLY the JSON. No explanations.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -91,68 +94,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check file type
     const fileName = file.name.toLowerCase();
     if (!fileName.endsWith('.pdf')) {
       return NextResponse.json(
-        { error: 'Kun PDF filer understøttes af vision extraction' },
+        { error: 'Kun PDF filer understøttes' },
         { status: 400 }
       );
     }
 
-    console.log('Vision Extract: Starting PDF to image conversion');
+    console.log('Vision Extract: Processing PDF file:', file.name);
     
-    // Convert file to buffer
+    // Convert file to base64
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const base64 = buffer.toString('base64');
     
-    // Convert PDF pages to images
-    const options = {
-      density: 200,
-      saveFilename: "cv_page",
-      savePath: tmpdir(),
-      format: "png",
-      width: 1600,
-      height: 2200,
-    };
+    console.log('Vision Extract: PDF size:', buffer.length, 'bytes');
     
-    const convert = fromBuffer(buffer, options);
-    
-    // Convert first 3 pages (most CVs are 1-3 pages)
-    const images: string[] = [];
-    
-    for (let page = 1; page <= 3; page++) {
-      try {
-        const result = await convert(page, { responseType: "base64" });
-        if (result.base64) {
-          images.push(result.base64);
-          console.log(`Vision Extract: Converted page ${page}`);
-        }
-      } catch {
-        // No more pages
-        break;
-      }
-    }
-    
-    if (images.length === 0) {
-      return NextResponse.json(
-        { error: 'Kunne ikke konvertere PDF til billeder' },
-        { status: 500 }
-      );
-    }
-    
-    console.log(`Vision Extract: Sending ${images.length} page(s) to GPT-4 Vision`);
-    
-    // Prepare image content for GPT-4 Vision
-    const imageContent = images.map((base64, idx) => ({
-      type: "image_url" as const,
-      image_url: {
-        url: `data:image/png;base64,${base64}`,
-        detail: "high" as const,
-      },
-    }));
-    
-    // Call GPT-4 Vision
+    // GPT-4o can read PDFs directly via base64
+    // We send it as a file with the PDF mime type
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       max_tokens: 16000,
@@ -161,15 +121,25 @@ export async function POST(request: NextRequest) {
         {
           role: "user",
           content: [
-            { type: "text", text: VISION_PROMPT },
-            ...imageContent,
+            { 
+              type: "text", 
+              text: VISION_PROMPT 
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:application/pdf;base64,${base64}`,
+                detail: "high"
+              }
+            }
           ],
         },
       ],
     });
     
     const responseText = response.choices[0]?.message?.content || '';
-    console.log('Vision Extract: Got response, length:', responseText.length);
+    console.log('Vision Extract: Response length:', responseText.length);
+    console.log('Vision Extract: First 500 chars:', responseText.substring(0, 500));
     
     // Parse JSON response
     let jsonStr = responseText;
@@ -180,19 +150,30 @@ export async function POST(request: NextRequest) {
     
     const structured = JSON.parse(jsonStr.trim());
     
-    console.log('Vision Extract: Successfully parsed response', {
+    // Log what we got for debugging
+    console.log('Vision Extract: Parsed successfully', {
       hasContact: !!structured.contact,
       experienceCount: structured.experience?.length || 0,
       educationCount: structured.education?.length || 0,
       skillsCount: structured.skills?.length || 0,
+      languagesCount: structured.languages?.length || 0,
     });
+    
+    // Log first experience title to verify no truncation
+    if (structured.experience?.[0]) {
+      console.log('Vision Extract: First job title:', structured.experience[0].title);
+      console.log('Vision Extract: First job bullets count:', structured.experience[0].bullets?.length || 0);
+    }
     
     return NextResponse.json(structured);
     
   } catch (error) {
     console.error('Vision extract error:', error);
     return NextResponse.json(
-      { error: 'Vision extraction fejlede: ' + (error instanceof Error ? error.message : 'Ukendt fejl') },
+      { 
+        error: 'Vision extraction fejlede: ' + (error instanceof Error ? error.message : 'Ukendt fejl'),
+        fallbackToStandard: true 
+      },
       { status: 500 }
     );
   }

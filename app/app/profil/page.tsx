@@ -452,34 +452,64 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
     formData.append('file', file);
 
     try {
-      const res = await fetch('/api/extract', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Kunne ikke udtrække CV');
-      }
-
-      const data = await res.json();
+      let data: any = null;
       
-      // After extraction, get structured CV data for the editor
-      if (data.cvText) {
+      // For PDFs, try vision extraction first (much better for complex layouts)
+      if (file.name.toLowerCase().endsWith('.pdf')) {
+        console.log('Trying vision extraction for PDF...');
         try {
-          const structureRes = await fetch('/api/cv/structure', {
+          const visionRes = await fetch('/api/cv/vision-extract', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cvText: data.cvText }),
+            body: formData,
           });
           
-          if (structureRes.ok) {
-            const structured = await structureRes.json();
-            data.structured = structured;
+          if (visionRes.ok) {
+            const visionData = await visionRes.json();
+            // Vision API returns structured data directly
+            data = {
+              cvText: JSON.stringify(visionData, null, 2), // Store as reference
+              structured: visionData,
+              usedVision: true,
+            };
+            console.log('Vision extraction succeeded');
+          } else {
+            console.log('Vision extraction failed, falling back to text extraction');
           }
-        } catch (structureErr) {
-          console.error('Could not structure CV data:', structureErr);
-          // Continue without structured data - parser will try to handle raw text
+        } catch (visionErr) {
+          console.error('Vision extraction error:', visionErr);
+        }
+      }
+      
+      // Fallback to regular text extraction if vision didn't work
+      if (!data) {
+        const res = await fetch('/api/extract', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Kunne ikke udtrække CV');
+        }
+
+        data = await res.json();
+        
+        // After extraction, get structured CV data for the editor
+        if (data.cvText) {
+          try {
+            const structureRes = await fetch('/api/cv/structure', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ cvText: data.cvText }),
+            });
+            
+            if (structureRes.ok) {
+              const structured = await structureRes.json();
+              data.structured = structured;
+            }
+          } catch (structureErr) {
+            console.error('Could not structure CV data:', structureErr);
+          }
         }
       }
       

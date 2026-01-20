@@ -46,20 +46,44 @@ For each field, find the matching text in the CV and COPY IT EXACTLY:
 - If CV says "Certificated Security Manager" → copy "Certificated Security Manager" (all 28 characters)
 - If CV says "Danish Institute for Fire & Security" → copy "Danish Institute for Fire & Security" (all 36 characters)
 - If CV says "Higher Commercial Examination" → copy "Higher Commercial Examination" (all 29 characters)
+- If CV says "Roskilde Business College" → copy "Roskilde Business College" (all 25 characters)
 
 NEVER output partial words like:
 - "Manage" instead of "Manager" ❌
 - "Sec" instead of "Security" ❌
 - "Examina" instead of "Examination" ❌
 
-TEMPLATE TO FILL (copy text from CV into each field):
+EDUCATION SECTION - CRITICAL:
+In the CV, education entries typically appear as:
+- Degree/Title name
+- Institution name (school, college, organization)
+- Year or year range
+
+For EACH education entry, you MUST extract:
+1. title = The degree, certification, or course name
+2. institution = The school, college, or organization name (NEVER leave empty)
+3. year = The year or date range
+
+Example from CV:
+"Higher Commercial Examination
+Roskilde Business College
+1998 - 2001"
+
+Should become:
+{
+  "title": "Higher Commercial Examination",
+  "institution": "Roskilde Business College",
+  "year": "1998 - 2001"
+}
+
+TEMPLATE TO FILL:
 
 {
   "professionalIntro": "[COPY the profile/summary paragraph EXACTLY]",
   "experience": [
     {
-      "title": "[COPY job title EXACTLY - every character]",
-      "company": "[COPY company name EXACTLY - every character]",
+      "title": "[COPY job title EXACTLY]",
+      "company": "[COPY company name EXACTLY]",
       "location": "[COPY location if present, null if not]",
       "startDate": "[COPY start date EXACTLY as written]",
       "endDate": "[COPY end date EXACTLY, or null if current/Nu/Present]",
@@ -69,9 +93,9 @@ TEMPLATE TO FILL (copy text from CV into each field):
   ],
   "education": [
     {
-      "title": "[COPY degree/certification name EXACTLY - every character]",
-      "institution": "[COPY institution name EXACTLY - every character]",
-      "year": "[COPY year/range EXACTLY - e.g. '2016 - 2019']"
+      "title": "[COPY degree/certification name EXACTLY]",
+      "institution": "[COPY school/college/organization name EXACTLY - REQUIRED]",
+      "year": "[COPY year/range EXACTLY]"
     }
   ],
   "skills": ["[COPY each skill EXACTLY]"],
@@ -83,12 +107,12 @@ TEMPLATE TO FILL (copy text from CV into each field):
   ]
 }
 
-VERIFICATION CHECKLIST (check BEFORE outputting):
+VERIFICATION CHECKLIST:
+□ Every education entry has a non-empty institution field
 □ Every title ends with a COMPLETE word (not cut off mid-word)
 □ Every institution name ends with a COMPLETE word
-□ Every company name ends with a COMPLETE word
-□ Year ranges have 4 digits on both sides (e.g., "2016 - 2019" not "2016 - 20")
-□ No text is shortened or abbreviated from the original
+□ Year ranges have 4 digits on both sides
+□ No text is shortened or abbreviated
 
 Experience should be sorted with current jobs (endDate = null) first, then by most recent.
 
@@ -145,10 +169,22 @@ Fill the JSON template by copying text EXACTLY. Every character matters. Check t
     try {
       const structured = JSON.parse(responseText) as StructuredCVData;
       
-      // Log extraction results for debugging
+      // Log extraction results for debugging - DETAILED
       console.log('CV Structure API - Extracted:', {
         hasIntro: !!structured.professionalIntro,
         experienceCount: structured.experience?.length || 0,
+        educationCount: structured.education?.length || 0,
+        skillsCount: structured.skills?.length || 0,
+        languagesCount: structured.languages?.length || 0,
+      });
+      
+      // Log education details to debug missing institutions
+      if (structured.education) {
+        console.log('CV Structure API - Education entries:');
+        structured.education.forEach((edu, i) => {
+          console.log(`  [${i}] title: "${edu.title}", institution: "${edu.institution}", year: "${edu.year}"`);
+        });
+      }
         educationCount: structured.education?.length || 0,
         skillsCount: structured.skills?.length || 0,
         languagesCount: structured.languages?.length || 0,

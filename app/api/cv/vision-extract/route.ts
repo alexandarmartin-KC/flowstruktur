@@ -8,72 +8,129 @@ const openai = process.env.OPENAI_API_KEY
   : null;
 
 /**
- * Vision-based CV extraction - uses GPT-4o's native PDF support
- * This reads the PDF directly as an image for perfect layout handling
+ * Enhanced CV extraction using pdfjs-dist for better layout handling
+ * This preserves column structure better than pdf-parse
  */
 
-const VISION_PROMPT = `You are copying text from a CV/Resume document. Your ONLY job is to copy text EXACTLY - character for character.
+async function extractWithLayout(buffer: Buffer): Promise<{ text: string; hasColumns: boolean }> {
+  try {
+    const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    
+    // Load PDF
+    const data = new Uint8Array(buffer);
+    const loadingTask = pdfjsLib.getDocument({ data });
+    const pdf = await loadingTask.promise;
+    
+    console.log('PDF.js: Loaded PDF with', pdf.numPages, 'pages');
+    
+    let fullText = '';
+    let hasColumns = false;
+    
+    for (let pageNum = 1; pageNum <= Math.min(pdf.numPages, 3); pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const textContent = await page.getTextContent();
+      const viewport = page.getViewport({ scale: 1.0 });
+      
+      // Group text items by their approximate X position (for column detection)
+      const leftColumn: { y: number; text: string }[] = [];
+      const rightColumn: { y: number; text: string }[] = [];
+      const midPoint = viewport.width / 2;
+      
+      for (const item of textContent.items) {
+        if ('str' in item && item.str.trim()) {
+          const x = 'transform' in item ? item.transform[4] : 0;
+          const y = 'transform' in item ? viewport.height - item.transform[5] : 0;
+          
+          if (x < midPoint * 0.6) {
+            leftColumn.push({ y, text: item.str });
+          } else {
+            rightColumn.push({ y, text: item.str });
+          }
+        }
+      }
+      
+      // Sort by Y position (top to bottom)
+      leftColumn.sort((a, b) => a.y - b.y);
+      rightColumn.sort((a, b) => a.y - b.y);
+      
+      // Check if this looks like a two-column layout
+      if (leftColumn.length > 5 && rightColumn.length > 5) {
+        hasColumns = true;
+        
+        // Add column markers
+        fullText += `\n=== PAGE ${pageNum} - LEFT SIDEBAR ===\n`;
+        fullText += leftColumn.map(item => item.text).join('\n');
+        fullText += `\n\n=== PAGE ${pageNum} - MAIN CONTENT ===\n`;
+        fullText += rightColumn.map(item => item.text).join('\n');
+      } else {
+        // Single column - just extract in order
+        const allItems = [...leftColumn, ...rightColumn].sort((a, b) => a.y - b.y);
+        fullText += `\n=== PAGE ${pageNum} ===\n`;
+        fullText += allItems.map(item => item.text).join('\n');
+      }
+    }
+    
+    return { text: fullText, hasColumns };
+  } catch (error) {
+    console.error('PDF.js extraction error:', error);
+    // Fallback to pdf-parse
+    const pdfParse = (await import('pdf-parse')).default;
+    const data = await pdfParse(buffer);
+    return { text: data.text, hasColumns: false };
+  }
+}
 
-## ABSOLUTE RULES - VIOLATIONS ARE FAILURES:
+const SYSTEM_PROMPT = `You are extracting structured data from CV text. The text has been pre-processed to show LEFT SIDEBAR and MAIN CONTENT sections separately.
 
-1. **COPY EXACTLY** - Every single word must be copied exactly as written
-2. **NO SHORTENING** - Never shorten "Manager" to "Manage", "Security" to "Sec", etc.
-3. **NO PARAPHRASING** - Do not rewrite or summarize anything
-4. **COMPLETE BULLETS** - Copy each bullet point in its entirety, even if long
-5. **ALL INFORMATION** - Include every job, every education entry, every skill
+## CRITICAL RULES:
+1. COPY text EXACTLY as written - every word, every character
+2. NEVER shorten or abbreviate anything (not "Manage" instead of "Manager")
+3. Include ALL bullet points completely
+4. Include ALL skills, ALL languages, ALL education entries
 
-## LAYOUT HANDLING:
-- This is likely a two-column CV
-- LEFT SIDEBAR contains: Contact info, Skills, Languages, Education
-- RIGHT/MAIN contains: Profile/Summary, Work Experience with bullet points
-- Read EACH column completely
+## TYPICAL CV STRUCTURE:
+LEFT SIDEBAR usually contains:
+- Contact info (name, email, phone, location)
+- Skills list
+- Languages with levels
+- Education entries
 
-## EXACT OUTPUT FORMAT (JSON):
+MAIN CONTENT usually contains:
+- Professional summary/profile paragraph
+- Work experience with dates and bullet points
+
+## OUTPUT FORMAT (JSON only):
 {
   "contact": {
-    "name": "[COPY full name exactly]",
-    "email": "[COPY email exactly]",
-    "phone": "[COPY phone exactly]",
-    "location": "[COPY location exactly]"
+    "name": "Full name",
+    "email": "email",
+    "phone": "phone",
+    "location": "location"
   },
-  "professionalIntro": "[COPY the entire profile/summary paragraph word-for-word, including all sentences]",
+  "professionalIntro": "Complete profile/summary paragraph",
   "experience": [
     {
-      "title": "[COPY the complete job title - every word]",
-      "company": "[COPY company name exactly]",
-      "location": "[COPY location if shown]",
-      "startDate": "[COPY start date exactly as written]",
-      "endDate": "[COPY end date exactly, or null if current/Nu/Present]",
-      "keyMilestones": "[COPY any description paragraph exactly]",
-      "bullets": [
-        "[COPY bullet 1 completely - the ENTIRE sentence]",
-        "[COPY bullet 2 completely - the ENTIRE sentence]"
-      ]
+      "title": "Complete job title",
+      "company": "Company name",
+      "location": "Location if shown",
+      "startDate": "Start date as written",
+      "endDate": "End date or null",
+      "keyMilestones": "Description paragraph if any",
+      "bullets": ["Complete bullet 1", "Complete bullet 2"]
     }
   ],
   "education": [
     {
-      "title": "[COPY degree/certification name exactly]",
-      "institution": "[COPY school/organization name exactly]",
-      "year": "[COPY year exactly]"
+      "title": "Degree name",
+      "institution": "School name",
+      "year": "Year"
     }
   ],
-  "skills": ["[COPY each skill exactly as written]"],
+  "skills": ["skill1", "skill2"],
   "languages": [
-    {
-      "language": "[COPY language name]",
-      "level": "[COPY level exactly - e.g. 'Modersmål', 'Flydende']"
-    }
+    { "language": "Language", "level": "Level as written" }
   ]
-}
-
-## VERIFICATION BEFORE RESPONDING:
-- Is every job title COMPLETE? (not cut off mid-word)
-- Is every bullet point the FULL sentence from the CV?
-- Are all education institutions included?
-- Are all skills from the sidebar included?
-
-Return ONLY the JSON. No explanations.`;
+}`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -104,42 +161,29 @@ export async function POST(request: NextRequest) {
 
     console.log('Vision Extract: Processing PDF file:', file.name);
     
-    // Convert file to base64
+    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const base64 = buffer.toString('base64');
     
-    console.log('Vision Extract: PDF size:', buffer.length, 'bytes');
+    // Extract text with layout awareness
+    const { text, hasColumns } = await extractWithLayout(buffer);
     
-    // GPT-4o can read PDFs directly via base64
-    // We send it as a file with the PDF mime type
+    console.log('Vision Extract: Extracted text length:', text.length);
+    console.log('Vision Extract: Has columns:', hasColumns);
+    console.log('Vision Extract: First 500 chars:', text.substring(0, 500));
+    
+    // Send to GPT-4o for structuring
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       max_tokens: 16000,
       temperature: 0,
       messages: [
-        {
-          role: "user",
-          content: [
-            { 
-              type: "text", 
-              text: VISION_PROMPT 
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:application/pdf;base64,${base64}`,
-                detail: "high"
-              }
-            }
-          ],
-        },
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: `Extract structured data from this CV:\n\n${text}` },
       ],
     });
     
     const responseText = response.choices[0]?.message?.content || '';
-    console.log('Vision Extract: Response length:', responseText.length);
-    console.log('Vision Extract: First 500 chars:', responseText.substring(0, 500));
     
     // Parse JSON response
     let jsonStr = responseText;
@@ -150,20 +194,11 @@ export async function POST(request: NextRequest) {
     
     const structured = JSON.parse(jsonStr.trim());
     
-    // Log what we got for debugging
     console.log('Vision Extract: Parsed successfully', {
-      hasContact: !!structured.contact,
       experienceCount: structured.experience?.length || 0,
       educationCount: structured.education?.length || 0,
       skillsCount: structured.skills?.length || 0,
-      languagesCount: structured.languages?.length || 0,
     });
-    
-    // Log first experience title to verify no truncation
-    if (structured.experience?.[0]) {
-      console.log('Vision Extract: First job title:', structured.experience[0].title);
-      console.log('Vision Extract: First job bullets count:', structured.experience[0].bullets?.length || 0);
-    }
     
     return NextResponse.json(structured);
     
@@ -171,7 +206,7 @@ export async function POST(request: NextRequest) {
     console.error('Vision extract error:', error);
     return NextResponse.json(
       { 
-        error: 'Vision extraction fejlede: ' + (error instanceof Error ? error.message : 'Ukendt fejl'),
+        error: 'Extraction fejlede: ' + (error instanceof Error ? error.message : 'Ukendt fejl'),
         fallbackToStandard: true 
       },
       { status: 500 }

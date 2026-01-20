@@ -158,7 +158,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
           {leftColumn.education.map((item) => (
             <div 
               key={item.id} 
-              className="group relative bg-white dark:bg-slate-800 rounded-lg p-3 shadow-sm border border-slate-200 dark:border-slate-700"
+              className="group relative bg-white dark:bg-slate-800 rounded-lg p-3 shadow-sm border border-slate-200 dark:border-slate-700 overflow-visible"
             >
               <button
                 onClick={() => removeEducation(item.id)}
@@ -167,23 +167,44 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
                 <X className="h-3 w-3" />
               </button>
               
-              <Input
+              <textarea
                 value={item.title}
                 onChange={(e) => updateEducation(item.id, { title: e.target.value })}
                 placeholder="Uddannelse / Titel"
-                className="font-medium text-xs h-auto py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1"
+                rows={1}
+                className="w-full font-medium text-xs py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-blue-500 resize-none overflow-hidden"
+                style={{ minHeight: '1.5em' }}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = 'auto';
+                  target.style.height = target.scrollHeight + 'px';
+                }}
               />
-              <Input
+              <textarea
                 value={item.institution}
                 onChange={(e) => updateEducation(item.id, { institution: e.target.value })}
                 placeholder="Institution"
-                className="text-[11px] text-slate-600 h-auto py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1 mt-0.5"
+                rows={1}
+                className="w-full text-[11px] text-slate-600 py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-blue-500 resize-none overflow-hidden mt-0.5"
+                style={{ minHeight: '1.5em' }}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = 'auto';
+                  target.style.height = target.scrollHeight + 'px';
+                }}
               />
-              <Input
+              <textarea
                 value={item.year}
                 onChange={(e) => updateEducation(item.id, { year: e.target.value })}
                 placeholder="År (f.eks. 2016 - 2019)"
-                className="text-[11px] text-slate-500 h-auto py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1 mt-0.5"
+                rows={1}
+                className="w-full text-[11px] text-slate-500 py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-blue-500 resize-none overflow-hidden mt-0.5"
+                style={{ minHeight: '1.5em' }}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = 'auto';
+                  target.style.height = target.scrollHeight + 'px';
+                }}
               />
             </div>
           ))}

@@ -12,6 +12,7 @@ import { calculateAllDimensionScores } from '@/lib/scoring';
 import { getExplanation, getLevel, type DimensionKey } from '@/lib/dimensionExplanations';
 import { ProfileContactSection } from '@/components/profile-contact-section';
 import { ProfilePhotoSection } from '@/components/profile-photo-section';
+import { pdfToImages } from '@/lib/pdf-to-image';
 
 // Storage keys - same as used by other pages (muligheder, job)
 const STORAGE_KEYS = {
@@ -448,44 +449,52 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
     setLoading(true);
     setError(null);
 
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
       let data: any = null;
       
-      // For PDFs, try vision extraction first (much better for complex layouts)
+      // For PDFs, use OCR approach: render to images client-side, then send to Vision API
       if (file.name.toLowerCase().endsWith('.pdf')) {
-        console.log('Trying vision extraction for PDF...');
+        console.log('Converting PDF to images for OCR...');
         try {
+          // Step 1: Render PDF pages to images client-side
+          const pageImages = await pdfToImages(file, 3, 2.0); // max 3 pages, 2x scale for quality
+          console.log('Converted PDF to', pageImages.length, 'images');
+          
+          // Step 2: Send images to Vision API
           const visionRes = await fetch('/api/cv/vision-extract', {
             method: 'POST',
-            body: formData,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              images: pageImages.map(img => ({ base64: img.base64 }))
+            }),
           });
           
           if (visionRes.ok) {
             const visionData = await visionRes.json();
-            // Vision API returns structured data directly, plus the layout-aware raw text
-            const rawText = visionData._rawText || '';
-            delete visionData._rawText; // Remove from structured data
-            delete visionData._hasColumns;
             
             data = {
-              cvText: rawText, // Store the layout-aware text for re-parsing
+              cvText: '', // Not using text extraction anymore
               structured: visionData,
               usedVision: true,
             };
-            console.log('Vision extraction succeeded, rawText length:', rawText.length);
+            console.log('Vision OCR extraction succeeded');
+            console.log('Experience count:', visionData.experience?.length);
+            console.log('Education count:', visionData.education?.length);
           } else {
-            console.log('Vision extraction failed, falling back to text extraction');
+            const errBody = await visionRes.json();
+            console.log('Vision extraction failed:', errBody.error);
+            throw new Error(errBody.error || 'Vision extraction failed');
           }
         } catch (visionErr) {
           console.error('Vision extraction error:', visionErr);
+          // Don't silently fall back - let the user know
+          throw visionErr;
         }
-      }
-      
-      // Fallback to regular text extraction if vision didn't work
-      if (!data) {
+      } else {
+        // Non-PDF files: use text extraction
+        const formData = new FormData();
+        formData.append('file', file);
+        
         const res = await fetch('/api/extract', {
           method: 'POST',
           body: formData,
@@ -520,8 +529,9 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
       setExtraction(data);
       
       // After extraction, automatically generate Step 1 data
-      if (data.cvText) {
-        await generateStep1Data(data.cvText, data.extracted);
+      if (data.cvText || data.structured) {
+        const cvText = data.cvText || JSON.stringify(data.structured);
+        await generateStep1Data(cvText, data.structured);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Der opstod en fejl');

@@ -737,54 +737,31 @@ export function CVEditorProvider({ children }: { children: ReactNode }) {
     }
   }, [state.document]);
   
-  // Reload CV from original text - re-parse with current AI prompt
+  // Reload CV from original structured data
   const reloadFromOriginal = useCallback(async () => {
     if (!state.document) return;
     
     const jobId = state.document.jobId;
     
-    // Get raw CV data
+    // Get raw CV data from localStorage
     const rawData = getRawCVData();
-    if (!rawData?.cvText) {
-      console.error('No original CV text found');
+    if (!rawData?.structured) {
+      console.error('No original structured CV data found');
       return;
     }
     
     dispatch({ type: 'SET_SAVING', payload: true });
     
     try {
-      // Call the structure API to re-parse the CV
-      const response = await fetch('/api/cv/structure', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cvText: rawData.cvText }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to re-parse CV');
-      }
-      
-      const structured = await response.json();
-      
-      // Update the stored extraction with new structured data
-      const extractionKey = 'flowstruktur_cv_extraction';
-      const existingExtraction = localStorage.getItem(extractionKey);
-      if (existingExtraction) {
-        const extraction = JSON.parse(existingExtraction);
-        extraction.structured = structured;
-        localStorage.setItem(extractionKey, JSON.stringify(extraction));
-      }
-      
-      // Clear the current document from storage to force reload
+      // Clear the current document from storage to force reload from original
       const docKey = `${STORAGE_KEY_PREFIX}${jobId}`;
       localStorage.removeItem(docKey);
       
-      // Reload the document with fresh data
-      const updatedRawData = { ...rawData, structured };
-      const normalizedDoc = normalizeCVData(jobId, updatedRawData, null);
+      // Reload the document with the original structured data
+      const normalizedDoc = normalizeCVData(jobId, rawData, null);
       dispatch({ type: 'LOAD_DOCUMENT', payload: normalizedDoc });
       
-      console.log('CV reloaded from original with fresh parsing');
+      console.log('CV reloaded from original structured data');
       
     } catch (error) {
       console.error('Failed to reload CV:', error);

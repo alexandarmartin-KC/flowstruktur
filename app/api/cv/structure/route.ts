@@ -185,10 +185,6 @@ Fill the JSON template by copying text EXACTLY. Every character matters. Check t
           console.log(`  [${i}] title: "${edu.title}", institution: "${edu.institution}", year: "${edu.year}"`);
         });
       }
-        educationCount: structured.education?.length || 0,
-        skillsCount: structured.skills?.length || 0,
-        languagesCount: structured.languages?.length || 0,
-      });
       
       // POST-PROCESSING: Verify and fix truncated text by checking against original
       const verified = verifyAgainstOriginal(structured, cvText);

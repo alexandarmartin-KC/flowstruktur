@@ -465,13 +465,17 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
           
           if (visionRes.ok) {
             const visionData = await visionRes.json();
-            // Vision API returns structured data directly
+            // Vision API returns structured data directly, plus the layout-aware raw text
+            const rawText = visionData._rawText || '';
+            delete visionData._rawText; // Remove from structured data
+            delete visionData._hasColumns;
+            
             data = {
-              cvText: JSON.stringify(visionData, null, 2), // Store as reference
+              cvText: rawText, // Store the layout-aware text for re-parsing
               structured: visionData,
               usedVision: true,
             };
-            console.log('Vision extraction succeeded');
+            console.log('Vision extraction succeeded, rawText length:', rawText.length);
           } else {
             console.log('Vision extraction failed, falling back to text extraction');
           }

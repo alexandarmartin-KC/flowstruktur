@@ -200,7 +200,13 @@ export async function POST(request: NextRequest) {
       skillsCount: structured.skills?.length || 0,
     });
     
-    return NextResponse.json(structured);
+    // Return both the layout-aware text and structured data
+    // The text is needed for reload/re-parsing later
+    return NextResponse.json({
+      ...structured,
+      _rawText: text, // Include the layout-aware text for future re-parsing
+      _hasColumns: hasColumns,
+    });
     
   } catch (error) {
     console.error('Vision extract error:', error);

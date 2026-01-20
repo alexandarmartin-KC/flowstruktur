@@ -31,8 +31,9 @@ export async function pdfToImages(
   // Dynamic import pdfjs-dist to avoid SSR issues
   const pdfjsLib = await import('pdfjs-dist');
   
-  // Set worker path for pdfjs
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  // Use unpkg CDN which has the correct file structure for pdfjs 5.x
+  // The worker is needed for parsing PDFs in a separate thread
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
   
   // Read file as ArrayBuffer
   const arrayBuffer = await file.arrayBuffer();

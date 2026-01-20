@@ -252,58 +252,127 @@ Fill the JSON template by copying text EXACTLY. Every character matters. Check t
 
 /**
  * POST-PROCESSING: Verify extracted text against original CV text
- * If AI truncated a word, try to find and fix it from the original
+ * This is AGGRESSIVE - it replaces AI output with EXACT text from original CV
  */
 function verifyAgainstOriginal(structured: StructuredCVData, originalText: string): StructuredCVData {
   const result = JSON.parse(JSON.stringify(structured)) as StructuredCVData;
   
-  // Helper to find complete text in original
-  const findCompleteText = (truncated: string, fieldName: string): string => {
-    if (!truncated || truncated.length < 3) return truncated;
+  // Normalize text for comparison (lowercase, remove extra whitespace)
+  const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
+  
+  // Find the EXACT line from original that contains this text
+  const findExactFromOriginal = (aiText: string, fieldName: string): string => {
+    if (!aiText || aiText.length < 3) return aiText;
     
-    // Search for this text in the original (case-insensitive)
-    const searchTerm = truncated.substring(0, Math.min(20, truncated.length));
-    const lowerOriginal = originalText.toLowerCase();
-    const lowerSearch = searchTerm.toLowerCase();
+    // Split original into lines
+    const lines = originalText.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
     
-    const startIdx = lowerOriginal.indexOf(lowerSearch);
-    if (startIdx === -1) return truncated;
+    const normalizedAi = normalize(aiText);
     
-    // Extract from original, extending to complete word
-    let endIdx = startIdx + truncated.length;
-    
-    // Extend to complete word (include all alphanumeric characters)
-    while (endIdx < originalText.length && /[a-zA-ZæøåÆØÅ0-9\-]/.test(originalText[endIdx])) {
-      endIdx++;
+    // First: try to find an exact line match
+    for (const line of lines) {
+      if (normalize(line) === normalizedAi) {
+        console.log(`[${fieldName}] Exact match found`);
+        return line;
+      }
     }
     
-    const found = originalText.substring(startIdx, endIdx).trim();
-    
-    // Only use if it's longer than what we have
-    if (found.length > truncated.length) {
-      console.log(`[${fieldName}] Fixed truncation: "${truncated}" → "${found}"`);
-      return found;
+    // Second: find a line that CONTAINS the AI text (AI might have extracted partial)
+    for (const line of lines) {
+      if (normalize(line).includes(normalizedAi)) {
+        // AI extracted a substring - return the full line
+        console.log(`[${fieldName}] Extended: "${aiText}" → "${line}"`);
+        return line;
+      }
     }
     
-    return truncated;
+    // Third: find a line where AI text is a prefix (truncated)
+    const aiWords = normalizedAi.split(' ');
+    const firstFewWords = aiWords.slice(0, 3).join(' ');
+    
+    for (const line of lines) {
+      if (normalize(line).startsWith(firstFewWords)) {
+        console.log(`[${fieldName}] Found by prefix: "${aiText}" → "${line}"`);
+        return line;
+      }
+    }
+    
+    // Fourth: fuzzy match - find line with most word overlap
+    let bestMatch = aiText;
+    let bestScore = 0;
+    
+    for (const line of lines) {
+      const lineWords = normalize(line).split(' ');
+      const overlap = aiWords.filter(w => lineWords.includes(w)).length;
+      const score = overlap / Math.max(aiWords.length, 1);
+      
+      if (score > 0.6 && score > bestScore) {
+        bestScore = score;
+        bestMatch = line;
+      }
+    }
+    
+    if (bestScore > 0.6) {
+      console.log(`[${fieldName}] Fuzzy match (${Math.round(bestScore*100)}%): "${aiText}" → "${bestMatch}"`);
+      return bestMatch;
+    }
+    
+    return aiText;
   };
   
-  // Verify education titles and institutions
+  // Find exact bullet from original
+  const findExactBullet = (aiBullet: string, fieldName: string): string => {
+    if (!aiBullet || aiBullet.length < 5) return aiBullet;
+    
+    // Look for lines that start with bullet-like characters or match content
+    const lines = originalText.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
+    const normalizedAi = normalize(aiBullet);
+    
+    for (const line of lines) {
+      // Remove common bullet prefixes for comparison
+      const cleanLine = line.replace(/^[•\-\*\+\>\◦\●]\s*/, '');
+      
+      if (normalize(cleanLine) === normalizedAi) {
+        return cleanLine;
+      }
+      
+      // Check if AI shortened the bullet
+      if (normalize(cleanLine).startsWith(normalizedAi.substring(0, 30))) {
+        console.log(`[${fieldName}] Extended bullet`);
+        return cleanLine;
+      }
+    }
+    
+    return aiBullet;
+  };
+  
+  // Verify education
   if (result.education) {
     result.education = result.education.map((edu, idx) => ({
       ...edu,
-      title: findCompleteText(edu.title, `education[${idx}].title`),
-      institution: findCompleteText(edu.institution, `education[${idx}].institution`),
+      title: findExactFromOriginal(edu.title, `education[${idx}].title`),
+      institution: findExactFromOriginal(edu.institution, `education[${idx}].institution`),
+      year: findExactFromOriginal(edu.year, `education[${idx}].year`),
     }));
   }
   
-  // Verify experience titles and companies
+  // Verify experience
   if (result.experience) {
     result.experience = result.experience.map((exp, idx) => ({
       ...exp,
-      title: findCompleteText(exp.title, `experience[${idx}].title`),
-      company: findCompleteText(exp.company, `experience[${idx}].company`),
+      title: findExactFromOriginal(exp.title, `experience[${idx}].title`),
+      company: findExactFromOriginal(exp.company, `experience[${idx}].company`),
+      bullets: exp.bullets?.map((b, bIdx) => 
+        findExactBullet(b, `experience[${idx}].bullets[${bIdx}]`)
+      ),
     }));
+  }
+  
+  // Verify skills - each skill should match exactly from original
+  if (result.skills) {
+    result.skills = result.skills.map((skill, idx) => 
+      findExactFromOriginal(skill, `skills[${idx}]`)
+    );
   }
   
   return result;

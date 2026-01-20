@@ -252,127 +252,177 @@ Fill the JSON template by copying text EXACTLY. Every character matters. Check t
 
 /**
  * POST-PROCESSING: Verify extracted text against original CV text
- * This is AGGRESSIVE - it replaces AI output with EXACT text from original CV
+ * This is AGGRESSIVE - it finds truncated text and extends to complete words/phrases
  */
 function verifyAgainstOriginal(structured: StructuredCVData, originalText: string): StructuredCVData {
   const result = JSON.parse(JSON.stringify(structured)) as StructuredCVData;
   
-  // Normalize text for comparison (lowercase, remove extra whitespace)
+  // Normalize for searching
   const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
+  const originalLower = normalize(originalText);
   
-  // Find the EXACT line from original that contains this text
-  const findExactFromOriginal = (aiText: string, fieldName: string): string => {
+  /**
+   * Find and fix truncated text by searching in original
+   * If AI wrote "Security Mana", find "Security Manager" in original
+   */
+  const fixTruncatedText = (aiText: string, fieldName: string): string => {
     if (!aiText || aiText.length < 3) return aiText;
-    
-    // Split original into lines
-    const lines = originalText.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
     
     const normalizedAi = normalize(aiText);
     
-    // First: try to find an exact line match
-    for (const line of lines) {
-      if (normalize(line) === normalizedAi) {
-        console.log(`[${fieldName}] Exact match found`);
-        return line;
-      }
-    }
+    // Find where this text appears in the original
+    const startIdx = originalLower.indexOf(normalizedAi);
     
-    // Second: find a line that CONTAINS the AI text (AI might have extracted partial)
-    for (const line of lines) {
-      if (normalize(line).includes(normalizedAi)) {
-        // AI extracted a substring - return the full line
-        console.log(`[${fieldName}] Extended: "${aiText}" → "${line}"`);
-        return line;
-      }
-    }
-    
-    // Third: find a line where AI text is a prefix (truncated)
-    const aiWords = normalizedAi.split(' ');
-    const firstFewWords = aiWords.slice(0, 3).join(' ');
-    
-    for (const line of lines) {
-      if (normalize(line).startsWith(firstFewWords)) {
-        console.log(`[${fieldName}] Found by prefix: "${aiText}" → "${line}"`);
-        return line;
-      }
-    }
-    
-    // Fourth: fuzzy match - find line with most word overlap
-    let bestMatch = aiText;
-    let bestScore = 0;
-    
-    for (const line of lines) {
-      const lineWords = normalize(line).split(' ');
-      const overlap = aiWords.filter(w => lineWords.includes(w)).length;
-      const score = overlap / Math.max(aiWords.length, 1);
+    if (startIdx === -1) {
+      // Try with just the first few words (in case AI changed ending)
+      const words = normalizedAi.split(' ');
+      const searchPrefix = words.slice(0, Math.min(3, words.length)).join(' ');
+      const prefixIdx = originalLower.indexOf(searchPrefix);
       
-      if (score > 0.6 && score > bestScore) {
-        bestScore = score;
-        bestMatch = line;
+      if (prefixIdx === -1) {
+        return aiText; // Can't find it
       }
+      
+      // Found by prefix - extract until end of phrase
+      return extractCompletePhrase(prefixIdx, searchPrefix.length, fieldName);
     }
     
-    if (bestScore > 0.6) {
-      console.log(`[${fieldName}] Fuzzy match (${Math.round(bestScore*100)}%): "${aiText}" → "${bestMatch}"`);
-      return bestMatch;
+    // Found exact match - but check if it's truncated (ends mid-word)
+    const endIdx = startIdx + normalizedAi.length;
+    
+    // Check if there's more text after (word continues)
+    if (endIdx < originalLower.length && /[a-zA-ZæøåÆØÅ]/.test(originalLower[endIdx])) {
+      // Text was truncated - extend to complete word/phrase
+      return extractCompletePhrase(startIdx, normalizedAi.length, fieldName);
     }
     
-    return aiText;
+    return aiText; // Not truncated
   };
   
-  // Find exact bullet from original
-  const findExactBullet = (aiBullet: string, fieldName: string): string => {
-    if (!aiBullet || aiBullet.length < 5) return aiBullet;
+  /**
+   * Extract a complete phrase from originalText starting at startIdx
+   * Extends to include complete words and common suffixes
+   */
+  const extractCompletePhrase = (startIdx: number, minLength: number, fieldName: string): string => {
+    let endIdx = startIdx + minLength;
     
-    // Look for lines that start with bullet-like characters or match content
-    const lines = originalText.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
-    const normalizedAi = normalize(aiBullet);
+    // Extend to complete current word
+    while (endIdx < originalLower.length && /[a-zA-ZæøåÆØÅ0-9\-\/\(\)]/.test(originalLower[endIdx])) {
+      endIdx++;
+    }
     
+    // Include trailing parentheses like "(native)" or "(fluent)"
+    const remaining = originalLower.substring(endIdx, endIdx + 20);
+    const parenMatch = remaining.match(/^\s*\([^)]+\)/);
+    if (parenMatch) {
+      endIdx += parenMatch[0].length;
+    }
+    
+    // Now find this in the ORIGINAL (preserving case)
+    const extractedLower = originalLower.substring(startIdx, endIdx).trim();
+    
+    // Search in original text to get proper casing
+    const lines = originalText.split(/\n/);
     for (const line of lines) {
-      // Remove common bullet prefixes for comparison
-      const cleanLine = line.replace(/^[•\-\*\+\>\◦\●]\s*/, '');
-      
-      if (normalize(cleanLine) === normalizedAi) {
-        return cleanLine;
-      }
-      
-      // Check if AI shortened the bullet
-      if (normalize(cleanLine).startsWith(normalizedAi.substring(0, 30))) {
-        console.log(`[${fieldName}] Extended bullet`);
-        return cleanLine;
+      const lineLower = normalize(line);
+      const lineStartIdx = lineLower.indexOf(extractedLower);
+      if (lineStartIdx !== -1) {
+        // Extract from original line with proper casing
+        const result = line.substring(lineStartIdx, lineStartIdx + extractedLower.length + 5).trim();
+        // Clean up - remove trailing partial words
+        const cleaned = result.replace(/\s+\S{1,3}$/, '').trim();
+        if (cleaned.length > minLength) {
+          console.log(`[${fieldName}] Fixed: "${originalLower.substring(startIdx, startIdx + minLength)}" → "${cleaned}"`);
+          return cleaned;
+        }
+        return result;
       }
     }
     
-    return aiBullet;
+    return originalText.substring(startIdx, endIdx).trim();
   };
   
-  // Verify education
+  /**
+   * Fix language entries - specifically handle "(native)", "(fluent)" etc.
+   */
+  const fixLanguageLevel = (lang: string, level: string | undefined): string => {
+    if (level && level.length > 2) return level;
+    
+    // Search for language in original with level in parentheses
+    const patterns = [
+      new RegExp(`${lang}\\s*\\(([^)]+)\\)`, 'i'),
+      new RegExp(`${lang}\\s*-\\s*(\\w+)`, 'i'),
+      new RegExp(`${lang}\\s+(native|fluent|modersmål|flydende|god|basic)`, 'i'),
+    ];
+    
+    for (const pattern of patterns) {
+      const match = originalText.match(pattern);
+      if (match && match[1]) {
+        console.log(`[language.${lang}] Fixed level: "${level}" → "${match[1]}"`);
+        return match[1];
+      }
+    }
+    
+    return level || '';
+  };
+  
+  // Fix education entries
   if (result.education) {
-    result.education = result.education.map((edu, idx) => ({
-      ...edu,
-      title: findExactFromOriginal(edu.title, `education[${idx}].title`),
-      institution: findExactFromOriginal(edu.institution, `education[${idx}].institution`),
-      year: findExactFromOriginal(edu.year, `education[${idx}].year`),
-    }));
+    result.education = result.education.map((edu, idx) => {
+      const fixedTitle = fixTruncatedText(edu.title, `education[${idx}].title`);
+      let fixedInstitution = fixTruncatedText(edu.institution, `education[${idx}].institution`);
+      
+      // If institution is still generic/empty, try to find it
+      if (!fixedInstitution || fixedInstitution === 'Institution' || fixedInstitution.length < 5) {
+        // Look for institution near the education title in original
+        const titleIdx = originalText.toLowerCase().indexOf(edu.title.toLowerCase().substring(0, 20));
+        if (titleIdx !== -1) {
+          // Get the next few lines after title
+          const afterTitle = originalText.substring(titleIdx, titleIdx + 200);
+          const lines = afterTitle.split(/\n/).map(l => l.trim()).filter(l => l.length > 3);
+          // Second line is often the institution
+          if (lines.length >= 2 && !lines[1].match(/^\d{4}/)) {
+            fixedInstitution = lines[1];
+            console.log(`[education[${idx}].institution] Found near title: "${fixedInstitution}"`);
+          }
+        }
+      }
+      
+      return {
+        ...edu,
+        title: fixedTitle,
+        institution: fixedInstitution,
+      };
+    });
   }
   
-  // Verify experience
+  // Fix experience entries
   if (result.experience) {
     result.experience = result.experience.map((exp, idx) => ({
       ...exp,
-      title: findExactFromOriginal(exp.title, `experience[${idx}].title`),
-      company: findExactFromOriginal(exp.company, `experience[${idx}].company`),
+      title: fixTruncatedText(exp.title, `experience[${idx}].title`),
+      company: fixTruncatedText(exp.company, `experience[${idx}].company`),
+      keyMilestones: exp.keyMilestones ? fixTruncatedText(exp.keyMilestones, `experience[${idx}].keyMilestones`) : undefined,
       bullets: exp.bullets?.map((b, bIdx) => 
-        findExactBullet(b, `experience[${idx}].bullets[${bIdx}]`)
+        fixTruncatedText(b, `experience[${idx}].bullets[${bIdx}]`)
       ),
     }));
   }
   
-  // Verify skills - each skill should match exactly from original
+  // Fix skills
   if (result.skills) {
     result.skills = result.skills.map((skill, idx) => 
-      findExactFromOriginal(skill, `skills[${idx}]`)
+      fixTruncatedText(skill, `skills[${idx}]`)
     );
+  }
+  
+  // Fix languages - especially levels
+  if (result.languages) {
+    result.languages = result.languages.map((lang, idx) => ({
+      ...lang,
+      language: fixTruncatedText(lang.language, `languages[${idx}].language`),
+      level: fixLanguageLevel(lang.language, lang.level),
+    }));
   }
   
   return result;

@@ -22,6 +22,7 @@ CRITICAL RULES:
 4. If text says "Danish Institute for Fire & Security" - copy ALL of it
 5. Include ALL bullet points COMPLETELY
 6. Include ALL skills, ALL languages with levels, ALL education
+7. DETECT the language of the CV (look at headings, descriptions, etc.)
 
 LAYOUT:
 - This CV likely has two columns
@@ -30,6 +31,7 @@ LAYOUT:
 
 OUTPUT FORMAT (JSON only):
 {
+  "language": "en" or "da" (detect from CV content - headings, descriptions),
   "contact": {
     "name": "Full name exactly as written",
     "email": "email exactly",
@@ -61,11 +63,17 @@ OUTPUT FORMAT (JSON only):
   ]
 }
 
+LANGUAGE DETECTION:
+- If headings are "WORK EXPERIENCE", "EDUCATION", "SKILLS" → language: "en"
+- If headings are "ERFARING", "UDDANNELSE", "KOMPETENCER" → language: "da"
+- Look at the bullet points and descriptions for language clues
+
 VERIFICATION before responding:
 - Did I copy EVERY word from job titles? (not "Manager" → "Mana")
 - Did I copy EVERY word from institution names?
 - Did I include parenthetical info like "(CFPA)" or "(native)"?
 - Are all bullet points COMPLETE sentences?
+- Did I detect the correct language?
 
 Return ONLY valid JSON.`;
 

@@ -10,6 +10,9 @@ export interface CVDocument {
   createdAt: string;
   updatedAt: string;
   
+  // Language detected from original CV ('en' or 'da')
+  language: 'en' | 'da';
+  
   // Left column (sidebar) - factual information
   leftColumn: CVLeftColumn;
   
@@ -242,13 +245,14 @@ export function generateId(): string {
 /**
  * Create a new empty CV document
  */
-export function createEmptyCVDocument(jobId: string): CVDocument {
+export function createEmptyCVDocument(jobId: string, language: 'en' | 'da' = 'da'): CVDocument {
   const now = new Date().toISOString();
   return {
     id: generateId(),
     jobId,
     createdAt: now,
     updatedAt: now,
+    language,
     leftColumn: {
       showProfilePhoto: false,
       personalData: {},

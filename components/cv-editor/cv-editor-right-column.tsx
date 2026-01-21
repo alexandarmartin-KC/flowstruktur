@@ -12,6 +12,7 @@ import {
   generateId,
 } from '@/lib/cv-types';
 import { getRawCVData } from '@/lib/cv-normalizer';
+import { getTranslations, type CVLanguage } from '@/lib/cv-translations';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -52,6 +53,8 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
   if (!document) return null;
   
   const { rightColumn } = document;
+  const lang = (document.language || 'da') as CVLanguage;
+  const tr = getTranslations(lang);
   
   // Check if we have experience data to generate intro from
   const hasExperienceData = rightColumn.experience.length > 0 && 
@@ -83,7 +86,7 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
             className="font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider"
             style={{ fontSize: fontSize.heading }}
           >
-            Erfaring
+            {tr.experience}
           </h2>
           <Button
             variant="ghost"
@@ -92,13 +95,13 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
             className="text-xs no-print"
           >
             <Plus className="h-3 w-3 mr-1" />
-            Tilføj stilling
+            {tr.addJob}
           </Button>
         </div>
         
         {/* Auto-sort notice */}
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 no-print">
-          Erfaring sorteres automatisk efter dato (nyeste først)
+          {tr.experienceSortNote}
         </p>
         
         {rightColumn.experience.length === 0 ? (
@@ -141,6 +144,7 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
                 setAiLoading={setAiLoading}
                 jobDescription={jobDescription}
                 fontSize={fontSize}
+                language={lang}
               />
             ))}
           </div>
@@ -426,6 +430,7 @@ interface ExperienceBlockProps {
   setAiLoading: (loading: { sectionId: string; type: string } | null) => void;
   jobDescription?: string;
   fontSize: TextSizeOption;
+  language: CVLanguage;
 }
 
 function ExperienceBlock({
@@ -442,7 +447,9 @@ function ExperienceBlock({
   setAiLoading,
   jobDescription,
   fontSize,
+  language,
 }: ExperienceBlockProps) {
+  const tr = getTranslations(language);
   const [editingMilestones, setEditingMilestones] = useState(false);
   const [showAiMilestones, setShowAiMilestones] = useState(false);
   const [aiMilestonesSuggestion, setAiMilestonesSuggestion] = useState<string>('');
@@ -542,7 +549,7 @@ function ExperienceBlock({
               onClick={() => onUpdate({ location: '' })}
               className="text-xs text-slate-400 hover:text-slate-600 ml-2"
             >
-              + Lokation
+              {tr.addLocation}
             </button>
           )}
         </div>
@@ -559,7 +566,7 @@ function ExperienceBlock({
           <Input
             value={experience.endDate || ''}
             onChange={(e) => onUpdate({ endDate: e.target.value || undefined })}
-            placeholder="Nu"
+            placeholder={tr.present}
             className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-[7ch]"
           />
         </div>
@@ -569,7 +576,7 @@ function ExperienceBlock({
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
-            Nøgleopgaver
+            {tr.keyMilestones}
           </span>
           
           {!experience.keyMilestones && experience.bullets.length > 0 && !showAiMilestones && (

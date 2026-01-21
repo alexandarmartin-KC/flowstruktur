@@ -42,6 +42,7 @@ export interface RawCVData {
  * Structured CV data from the AI structure API
  */
 export interface StructuredCVFromAPI {
+  language?: 'en' | 'da';  // Detected language from CV
   professionalIntro?: string;
   experience: {
     title: string;
@@ -161,8 +162,11 @@ export function normalizeCVData(
   rawData: RawCVData,
   existingDocument?: CVDocument | null
 ): CVDocument {
-  // Create base document
-  const doc = createEmptyCVDocument(jobId);
+  // Detect language from structured data (default to Danish)
+  const language = rawData.structured?.language || 'da';
+  
+  // Create base document with detected language
+  const doc = createEmptyCVDocument(jobId, language);
   
   // Priority 1: Use AI-structured data if available (most reliable)
   // This takes precedence over existing document to ensure CV data is properly loaded
@@ -172,8 +176,8 @@ export function normalizeCVData(
     // If we have an existing document with user edits, we should preserve those
     // But only for the same job - otherwise use fresh structured data
     if (existingDocument && existingDocument.jobId === jobId && hasUserEdits(existingDocument)) {
-      // User has made edits - keep existing document
-      return existingDocument;
+      // User has made edits - keep existing document but preserve language
+      return { ...existingDocument, language };
     }
     
     return structuredDoc;
@@ -181,7 +185,7 @@ export function normalizeCVData(
   
   // If no structured data but we have existing document with content, use it
   if (existingDocument && hasExistingContent(existingDocument)) {
-    return existingDocument;
+    return { ...existingDocument, language };
   }
   
   // Priority 2: Use previously extracted structured data

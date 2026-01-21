@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useCVEditor } from '@/contexts/cv-editor-context';
 import { UserProfile } from '@/contexts/user-profile-context';
 import { LANGUAGE_LEVEL_OPTIONS, LANGUAGE_LEVEL_LABELS, CVLanguageItem, TextSizeOption } from '@/lib/cv-types';
+import { getTranslations, type CVLanguage } from '@/lib/cv-translations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -50,6 +51,8 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
   if (!document) return null;
   
   const { leftColumn } = document;
+  const lang = (document.language || 'da') as CVLanguage;
+  const tr = getTranslations(lang);
   const showPhoto = leftColumn.showProfilePhoto && profile?.profilePhoto?.dataUrl;
   
   return (
@@ -151,7 +154,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
       {/* Education */}
       <div className="mb-6">
         <h2 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
-          Uddannelse
+          {tr.education}
         </h2>
         
         <div className="space-y-3">
@@ -216,7 +219,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
             className="w-full text-xs text-slate-500 hover:text-slate-700 no-print"
           >
             <Plus className="h-3 w-3 mr-1" />
-            Tilføj uddannelse
+            {tr.addEducation}
           </Button>
         </div>
       </div>
@@ -224,7 +227,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
       {/* Skills */}
       <div className="mb-6">
         <h2 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
-          Kompetencer
+          {tr.skills}
         </h2>
         
         <div className="space-y-2">
@@ -241,7 +244,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
                   e.target.style.height = 'auto';
                   e.target.style.height = e.target.scrollHeight + 'px';
                 }}
-                placeholder="Kompetence"
+                placeholder={lang === 'en' ? 'Skill' : 'Kompetence'}
                 className="text-sm py-1 px-2 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-ring rounded flex-1 resize-none overflow-hidden min-h-[24px] leading-snug"
                 rows={1}
                 onFocus={(e) => {
@@ -265,7 +268,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
             className="w-full text-xs text-slate-500 hover:text-slate-700 no-print"
           >
             <Plus className="h-3 w-3 mr-1" />
-            Tilføj kompetence
+            {tr.addSkill}
           </Button>
         </div>
       </div>
@@ -273,7 +276,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
       {/* Languages */}
       <div className="mb-6">
         <h2 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
-          Sprog
+          {tr.languages}
         </h2>
         
         <div className="space-y-2">
@@ -285,7 +288,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
               <Input
                 value={item.language}
                 onChange={(e) => updateLanguage(item.id, { language: e.target.value })}
-                placeholder="Sprog"
+                placeholder={lang === 'en' ? 'Language' : 'Sprog'}
                 className="text-sm h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 flex-1"
               />
               <Select
@@ -293,7 +296,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
                 onValueChange={(value) => updateLanguage(item.id, { level: value })}
               >
                 <SelectTrigger className="w-28 h-auto py-1 px-2 text-xs border-0 bg-transparent">
-                  <SelectValue placeholder={item.level || 'Vælg niveau'} />
+                  <SelectValue placeholder={item.level || (lang === 'en' ? 'Select level' : 'Vælg niveau')} />
                 </SelectTrigger>
                 <SelectContent>
                   {LANGUAGE_LEVEL_OPTIONS.map((option) => (
@@ -319,7 +322,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
             className="w-full text-xs text-slate-500 hover:text-slate-700 no-print"
           >
             <Plus className="h-3 w-3 mr-1" />
-            Tilføj sprog
+            {tr.addLanguage}
           </Button>
         </div>
       </div>

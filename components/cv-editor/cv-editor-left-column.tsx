@@ -283,19 +283,27 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
           {leftColumn.languages.map((item) => (
             <div 
               key={item.id}
-              className="group flex items-center gap-2"
+              className="group"
             >
-              <Input
-                value={item.language}
-                onChange={(e) => updateLanguage(item.id, { language: e.target.value })}
-                placeholder={lang === 'en' ? 'Language' : 'Sprog'}
-                className="text-sm h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 flex-1"
-              />
+              <div className="flex items-center gap-1">
+                <Input
+                  value={item.language}
+                  onChange={(e) => updateLanguage(item.id, { language: e.target.value })}
+                  placeholder={lang === 'en' ? 'Language' : 'Sprog'}
+                  className="text-sm h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 flex-1 min-w-0"
+                />
+                <button
+                  onClick={() => removeLanguage(item.id)}
+                  className="p-1 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity no-print flex-shrink-0"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
               <Select
                 value={item.level}
                 onValueChange={(value) => updateLanguage(item.id, { level: value })}
               >
-                <SelectTrigger className="w-28 h-auto py-1 px-2 text-xs border-0 bg-transparent">
+                <SelectTrigger className="w-full h-auto py-0.5 px-2 text-xs border-0 bg-transparent text-slate-500">
                   <SelectValue placeholder={item.level || (lang === 'en' ? 'Select level' : 'Vælg niveau')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -306,12 +314,6 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
                   ))}
                 </SelectContent>
               </Select>
-              <button
-                onClick={() => removeLanguage(item.id)}
-                className="p-1 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity no-print"
-              >
-                <X className="h-3 w-3" />
-              </button>
             </div>
           ))}
           

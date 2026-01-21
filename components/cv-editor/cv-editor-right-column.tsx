@@ -704,11 +704,20 @@ function ExperienceBlock({
           {experience.bullets.map((bullet, idx) => (
             <li key={bullet.id} className="flex items-start gap-2 group/bullet">
               <span className="text-slate-400 mt-1.5 select-none">•</span>
-              <Input
+              <textarea
                 value={bullet.content}
-                onChange={(e) => onUpdateBullet(bullet.id, e.target.value)}
+                onChange={(e) => {
+                  onUpdateBullet(bullet.id, e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = e.target.scrollHeight + 'px';
+                }}
                 placeholder="Beskriv en konkret præstation eller ansvar..."
-                className="flex-1 text-sm h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1"
+                className="flex-1 text-sm py-1 px-2 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-ring rounded resize-none overflow-hidden min-h-[24px] leading-snug"
+                rows={1}
+                onFocus={(e) => {
+                  e.target.style.height = 'auto';
+                  e.target.style.height = e.target.scrollHeight + 'px';
+                }}
               />
               <button
                 onClick={() => onRemoveBullet(bullet.id)}

@@ -231,18 +231,27 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
           {leftColumn.skills.map((item) => (
             <div 
               key={item.id}
-              className="group flex items-center gap-2"
+              className="group flex items-start gap-2"
             >
-              <span className="text-slate-400 text-xs">•</span>
-              <Input
+              <span className="text-slate-400 text-xs mt-1.5">•</span>
+              <textarea
                 value={item.name}
-                onChange={(e) => updateSkill(item.id, { name: e.target.value })}
+                onChange={(e) => {
+                  updateSkill(item.id, { name: e.target.value });
+                  e.target.style.height = 'auto';
+                  e.target.style.height = e.target.scrollHeight + 'px';
+                }}
                 placeholder="Kompetence"
-                className="text-sm h-auto py-1 px-2 border-0 bg-transparent focus-visible:ring-1 flex-1"
+                className="text-sm py-1 px-2 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-ring rounded flex-1 resize-none overflow-hidden min-h-[24px] leading-snug"
+                rows={1}
+                onFocus={(e) => {
+                  e.target.style.height = 'auto';
+                  e.target.style.height = e.target.scrollHeight + 'px';
+                }}
               />
               <button
                 onClick={() => removeSkill(item.id)}
-                className="p-1 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity no-print"
+                className="p-1 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity no-print mt-0.5"
               >
                 <X className="h-3 w-3" />
               </button>

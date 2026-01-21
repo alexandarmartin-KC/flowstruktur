@@ -553,16 +553,16 @@ function ExperienceBlock({
             value={experience.startDate}
             onChange={(e) => onUpdate({ startDate: e.target.value })}
             placeholder="Start"
-            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto"
-            style={{ width: `${Math.max((experience.startDate || '').length, 6)}ch` }}
+            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1"
+            style={{ width: `${Math.max((experience.startDate || '').length + 2, 8)}ch` }}
           />
           <span className="text-slate-400">–</span>
           <Input
             value={experience.endDate || ''}
             onChange={(e) => onUpdate({ endDate: e.target.value || undefined })}
             placeholder="Nu"
-            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto"
-            style={{ width: `${Math.max((experience.endDate || 'Nu').length, 3)}ch` }}
+            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1"
+            style={{ width: `${Math.max((experience.endDate || '').length + 2, 6)}ch` }}
           />
         </div>
       </div>

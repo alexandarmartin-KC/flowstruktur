@@ -547,22 +547,20 @@ function ExperienceBlock({
           )}
         </div>
         
-        {/* Dates on same line, closer together */}
+        {/* Dates on same line - fixed widths for consistent layout */}
         <div className="flex items-center gap-1 mt-1 text-sm text-slate-500">
           <Input
             value={experience.startDate}
             onChange={(e) => onUpdate({ startDate: e.target.value })}
-            placeholder="Start"
-            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1"
-            style={{ width: `${Math.max((experience.startDate || '').length + 2, 8)}ch` }}
+            placeholder="2020"
+            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-[4.5ch] text-center"
           />
           <span className="text-slate-400">–</span>
           <Input
             value={experience.endDate || ''}
             onChange={(e) => onUpdate({ endDate: e.target.value || undefined })}
             placeholder="Nu"
-            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1"
-            style={{ width: `${Math.max((experience.endDate || '').length + 2, 6)}ch` }}
+            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-[7ch]"
           />
         </div>
       </div>

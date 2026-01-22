@@ -34,8 +34,8 @@ export default function CVEditorPage() {
   return (
     <CVRequiredGate>
       <div className="cv-editor-page">
-        {/* Profile completeness soft gate */}
-        <div className="max-w-5xl mx-auto px-4 py-4">
+        {/* Profile completeness soft gate - hidden in print */}
+        <div className="max-w-5xl mx-auto px-4 py-4 print:hidden">
           <ProfileSoftGate context="cv" />
         </div>
         

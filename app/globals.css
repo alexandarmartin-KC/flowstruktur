@@ -123,3 +123,87 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* CV Editor - Make inputs blend with background, only show styling on hover/focus */
+.cv-right-column input,
+.cv-right-column textarea,
+.cv-left-column input,
+.cv-left-column textarea {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.cv-right-column input:not(:focus):not(:hover),
+.cv-right-column textarea:not(:focus):not(:hover),
+.cv-left-column input:not(:focus):not(:hover),
+.cv-left-column textarea:not(:focus):not(:hover) {
+  border-color: transparent !important;
+}
+
+/* Print styles - hide editing UI and make everything clean for HR */
+@media print {
+  /* Page setup for professional A4 output */
+  @page {
+    size: A4;
+    margin: 15mm 10mm 15mm 10mm;
+  }
+  
+  /* Hide all editing UI elements */
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Hide browser-added headers and footers */
+  html {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Clean input styling for print */
+  .cv-right-column input,
+  .cv-right-column textarea,
+  .cv-left-column input,
+  .cv-left-column textarea {
+    border: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    outline: none !important;
+    color: inherit !important;
+  }
+  
+  /* Override dark mode backgrounds in print */
+  .dark .cv-right-column input,
+  .dark .cv-right-column textarea,
+  .dark .cv-left-column input,
+  .dark .cv-left-column textarea,
+  [class*="dark:bg-input"] {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  
+  /* Ensure proper page breaks */
+  .experience-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  /* Force light mode colors for print */
+  .cv-left-column,
+  .cv-right-column {
+    background: white !important;
+    color: #1e293b !important;
+  }
+  
+  .cv-left-column {
+    background: #f8fafc !important;
+  }
+}

@@ -182,8 +182,6 @@ function ProfessionalIntroSection({
   const [isEditing, setIsEditing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
-  const isOverLimit = exceedsLimit(intro.content, CONTENT_LIMITS.professionalIntroLines);
-  const lineCount = countLines(intro.content);
   const isLoading = aiLoading?.sectionId === 'intro';
   const hasContent = intro.content.trim().length > 0;
   
@@ -306,16 +304,6 @@ function ProfessionalIntroSection({
           </Button>
         )}
       </div>
-      
-      {/* Line count warning */}
-      {isOverLimit && (
-        <Alert className="mb-3 py-2 no-print" variant="default">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription className="text-xs">
-            Profilbeskrivelsen er {lineCount} linjer. Vi anbefaler maks {CONTENT_LIMITS.professionalIntroLines} linjer.
-          </AlertDescription>
-        </Alert>
-      )}
       
       {/* AI Suggestion */}
       {intro.aiSuggestion && intro.aiSuggestion.status === 'pending' && (
@@ -458,10 +446,10 @@ function ExperienceBlock({
   const [editingMilestones, setEditingMilestones] = useState(false);
   const [showAiMilestones, setShowAiMilestones] = useState(false);
   const [aiMilestonesSuggestion, setAiMilestonesSuggestion] = useState<string>('');
+  const [aiMilestonesRationale, setAiMilestonesRationale] = useState<string>('');
   
-  const isOverBulletLimit = experience.bullets.length > CONTENT_LIMITS.bulletsPerJob;
-  const isOverMilestonesLimit = exceedsLimit(experience.keyMilestones, CONTENT_LIMITS.keyMilestonesLines);
   const isLoadingMilestones = aiLoading?.sectionId === experience.id && aiLoading?.type === 'milestones';
+  const isLoadingOptimize = aiLoading?.sectionId === experience.id && aiLoading?.type === 'optimize-milestones';
   
   // Generate milestones from bullets using AI
   const handleGenerateMilestones = async () => {
@@ -495,10 +483,44 @@ function ExperienceBlock({
     }
   };
   
+  // Optimize existing milestones (shorten or improve for job relevance)
+  const handleOptimizeMilestones = async (mode: 'tighten' | 'optimize') => {
+    if (!experience.keyMilestones.trim()) return;
+    
+    setAiLoading({ sectionId: experience.id, type: 'optimize-milestones' });
+    
+    try {
+      const response = await fetch('/api/cv/ai-assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: mode === 'tighten' ? 'tighten-milestones' : 'optimize-milestones',
+          content: experience.keyMilestones,
+          title: experience.title,
+          company: experience.company,
+          jobDescription,
+          language,
+        }),
+      });
+      
+      if (!response.ok) throw new Error('AI request failed');
+      
+      const data = await response.json();
+      setAiMilestonesSuggestion(data.suggestion);
+      setAiMilestonesRationale(data.rationale || (mode === 'tighten' ? 'Forkortet til anbefalet længde' : 'Optimeret til jobbet'));
+      setShowAiMilestones(true);
+    } catch (error) {
+      console.error('AI optimize milestones error:', error);
+    } finally {
+      setAiLoading(null);
+    }
+  };
+  
   const handleAcceptMilestones = () => {
     onUpdate({ keyMilestones: aiMilestonesSuggestion });
     setShowAiMilestones(false);
     setAiMilestonesSuggestion('');
+    setAiMilestonesRationale('');
   };
   
   return (
@@ -587,41 +609,60 @@ function ExperienceBlock({
             {tr.keyMilestones}
           </span>
           
-          {!experience.keyMilestones && experience.bullets.length > 0 && !showAiMilestones && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleGenerateMilestones}
-              disabled={isLoadingMilestones}
-              className="text-xs no-print"
-            >
-              {isLoadingMilestones ? (
-                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-              ) : (
-                <Sparkles className="h-3 w-3 mr-1" />
-              )}
-              Generer fra punkter
-            </Button>
-          )}
+          <div className="flex items-center gap-1 no-print">
+            {/* Show "Generate from bullets" when no milestones exist */}
+            {!experience.keyMilestones && experience.bullets.length > 0 && !showAiMilestones && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGenerateMilestones}
+                disabled={isLoadingMilestones}
+                className="text-xs"
+              >
+                {isLoadingMilestones ? (
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3 w-3 mr-1" />
+                )}
+                Generer fra punkter
+              </Button>
+            )}
+            
+            {/* Show AI optimize button when milestones exist */}
+            {experience.keyMilestones && !showAiMilestones && jobDescription && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleOptimizeMilestones('optimize')}
+                disabled={isLoadingOptimize}
+                className="text-xs"
+              >
+                {isLoadingOptimize ? (
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3 w-3 mr-1" />
+                )}
+                Optimer til job
+              </Button>
+            )}
+          </div>
         </div>
-        
-        {isOverMilestonesLimit && (
-          <Alert className="mb-2 py-1 no-print" variant="default">
-            <AlertTriangle className="h-3 w-3" />
-            <AlertDescription className="text-xs">
-              Vi anbefaler maks {CONTENT_LIMITS.keyMilestonesLines} linjer.
-            </AlertDescription>
-          </Alert>
-        )}
         
         {/* AI Milestones Suggestion */}
         {showAiMilestones && aiMilestonesSuggestion && (
           <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800 no-print">
             <div className="flex items-start gap-2 mb-2">
               <Sparkles className="h-4 w-4 text-blue-600 mt-0.5" />
-              <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                Genereret fra dine punkter
-              </p>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                  AI forslag
+                </p>
+                {aiMilestonesRationale && (
+                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-0.5">
+                    {aiMilestonesRationale}
+                  </p>
+                )}
+              </div>
             </div>
             
             <div className="bg-white dark:bg-slate-900 rounded p-2 text-sm mb-3 whitespace-pre-wrap">
@@ -652,6 +693,7 @@ function ExperienceBlock({
                 onClick={() => {
                   setShowAiMilestones(false);
                   setAiMilestonesSuggestion('');
+                  setAiMilestonesRationale('');
                 }}
               >
                 <X className="h-3 w-3 mr-1" />
@@ -666,7 +708,7 @@ function ExperienceBlock({
             value={experience.keyMilestones}
             onChange={(e) => onUpdate({ keyMilestones: e.target.value })}
             onBlur={() => setEditingMilestones(false)}
-            placeholder="Beskriv dine nøgleopgaver og ansvar i 2-4 linjer..."
+            placeholder="Beskriv dine nøgleopgaver og ansvar..."
             className="text-sm leading-relaxed resize-none min-h-[80px]"
             autoFocus
           />
@@ -704,15 +746,6 @@ function ExperienceBlock({
       
       {/* Bullets */}
       <div>
-        {isOverBulletLimit && (
-          <Alert className="mb-2 py-1 no-print" variant="default">
-            <AlertTriangle className="h-3 w-3" />
-            <AlertDescription className="text-xs">
-              Vi anbefaler maks {CONTENT_LIMITS.bulletsPerJob} punkter.
-            </AlertDescription>
-          </Alert>
-        )}
-        
         <ul className="space-y-2">
           {experience.bullets.map((bullet, idx) => (
             <li key={bullet.id} className="flex items-start gap-2 group/bullet">

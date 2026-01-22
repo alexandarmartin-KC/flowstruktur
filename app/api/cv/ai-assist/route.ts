@@ -235,6 +235,92 @@ ${content}
 
 Giv kun den forkortede tekst.`;
         break;
+      
+      case 'tighten-milestones':
+        systemPrompt = language === 'en'
+          ? `You are a CV editor. Your task is to shorten a key responsibilities section to fit within 4 lines while preserving the most important points.
+
+STRICT RULES:
+- Condense the content to 2-4 concise lines maximum
+- Keep only the most impactful achievements and responsibilities
+- You may NOT invent new facts, numbers, or achievements
+- Preserve all important metrics and results that exist in the original
+- Write in English`
+          : `Du er en CV-redaktør. Din opgave er at forkorte en nøgleopgave-sektion til at passe inden for 4 linjer, mens du bevarer de vigtigste punkter.
+
+STRENGE REGLER:
+- Kondenser indholdet til maks 2-4 korte linjer
+- Behold kun de mest betydningsfulde resultater og ansvarsområder
+- Du må IKKE opfinde nye fakta, tal eller resultater
+- Bevar alle vigtige målinger og resultater der findes i originalen
+- Skriv på dansk`;
+        
+        userPrompt = language === 'en'
+          ? `Shorten this key responsibilities text to 2-4 lines maximum:
+
+POSITION: ${title} at ${company}
+
+ORIGINAL TEXT:
+${content}
+
+Provide only the shortened text, no explanations.`
+          : `Forkort denne nøgleopgave-tekst til maks 2-4 linjer:
+
+STILLING: ${title} hos ${company}
+
+ORIGINAL TEKST:
+${content}
+
+Giv kun den forkortede tekst, ingen forklaringer.`;
+        break;
+      
+      case 'optimize-milestones':
+        systemPrompt = language === 'en'
+          ? `You are a CV assistant. Your task is to rewrite a key responsibilities section to better match a job posting.
+
+STRICT RULES:
+- You may ONLY rewrite existing content
+- You may NEVER invent new facts, numbers, experiences, or achievements
+- Focus on rephrasing to highlight relevant skills for the target job
+- Keep the text to 2-4 lines maximum
+- Write in English`
+          : `Du er en CV-assistent. Din opgave er at omskrive en nøgleopgave-sektion så den passer bedre til et jobopslag.
+
+STRENGE REGLER:
+- Du må KUN omskrive eksisterende indhold
+- Du må ALDRIG opfinde nye fakta, tal, erfaringer eller resultater
+- Fokuser på at omformulere for at fremhæve relevante kompetencer til målstillingen
+- Hold teksten på maks 2-4 linjer
+- Skriv på dansk`;
+        
+        userPrompt = language === 'en'
+          ? `Rewrite this key responsibilities text to be more relevant for the target job.
+
+YOU MAY ONLY USE INFORMATION FROM THE ORIGINAL:
+
+POSITION: ${title} at ${company}
+
+ORIGINAL TEXT:
+${content}
+
+JOB POSTING:
+${jobDescription}
+
+Provide only the rewritten text, no explanations.`
+          : `Omskriv denne nøgleopgave-tekst så den er mere relevant for stillingen.
+
+DU MÅ KUN BRUGE INFORMATION FRA ORIGINALEN:
+
+STILLING: ${title} hos ${company}
+
+ORIGINAL TEKST:
+${content}
+
+JOBOPSLAG:
+${jobDescription}
+
+Giv kun den omskrevne tekst, ingen forklaringer.`;
+        break;
         
       default:
         return NextResponse.json({ error: 'Unknown type' }, { status: 400 });
@@ -269,6 +355,12 @@ Giv kun den forkortede tekst.`;
         break;
       case 'tighten-text':
         rationale = 'Forkortet uden tab af information';
+        break;
+      case 'tighten-milestones':
+        rationale = 'Forkortet til anbefalet længde';
+        break;
+      case 'optimize-milestones':
+        rationale = 'Optimeret til at matche jobopslaget';
         break;
     }
     
@@ -333,6 +425,24 @@ function getMockResponse(type: string, content?: string, bullets?: string[], lan
       return {
         suggestion: content ? content.split('.').slice(0, 2).join('. ') + '.' : '',
         rationale: isEnglish ? 'Shortened without losing information' : 'Forkortet uden tab af information',
+      };
+    
+    case 'tighten-milestones':
+      return {
+        suggestion: content 
+          ? content.split('.').slice(0, 2).join('. ').trim() + '.'
+          : '',
+        rationale: isEnglish ? 'Shortened to recommended length' : 'Forkortet til anbefalet længde',
+      };
+    
+    case 'optimize-milestones':
+      return {
+        suggestion: content 
+          ? isEnglish
+            ? `${content.split('.')[0]}. Delivered results aligned with organizational goals through structured approach.`
+            : `${content.split('.')[0]}. Leverede resultater i overensstemmelse med organisatoriske mål gennem struktureret tilgang.`
+          : '',
+        rationale: isEnglish ? 'Optimized to match the job posting' : 'Optimeret til at matche jobopslaget',
       };
       
     default:

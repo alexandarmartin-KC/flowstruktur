@@ -83,8 +83,20 @@ function CVEditorInner({ jobId }: CVEditorProps) {
         </div>
       </div>
       
+      {/* Print footer - contact info from user profile */}
+      <div className="cv-print-footer">
+        {profile?.name}
+        {profile?.email && <> &nbsp;&#47;&#47;&nbsp; {profile.email}</>}
+        {profile?.phone && <> &nbsp;&#47;&#47;&nbsp; {profile.phone}</>}
+      </div>
+      
       {/* Print styles */}
       <style jsx global>{`
+        /* Hide footer in screen mode */
+        .cv-print-footer {
+          display: none;
+        }
+        
         @media print {
           body * {
             visibility: hidden;
@@ -106,6 +118,26 @@ function CVEditorInner({ jobId }: CVEditorProps) {
           }
           .no-print {
             display: none !important;
+          }
+          
+          /* Page setup */
+          @page {
+            size: A4;
+            margin: 10mm 10mm 18mm 10mm;
+          }
+          
+          /* Print footer - fixed at bottom of every page */
+          .cv-print-footer {
+            display: block !important;
+            visibility: visible !important;
+            position: fixed;
+            bottom: 5mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 8pt;
+            color: #9ca3af;
+            letter-spacing: 0.02em;
           }
         }
       `}</style>

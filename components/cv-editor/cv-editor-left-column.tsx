@@ -61,19 +61,18 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
       style={{ fontSize: fontSize.body }}
     >
       {/* Profile Photo Toggle & Display */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-            Profilbillede
-          </span>
-          <Switch
-            checked={leftColumn.showProfilePhoto}
-            onCheckedChange={toggleProfilePhoto}
-            disabled={!profile?.profilePhoto?.dataUrl}
-          />
-        </div>
-        
-        {showPhoto ? (
+      {showPhoto ? (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3 no-print">
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+              Profilbillede
+            </span>
+            <Switch
+              checked={leftColumn.showProfilePhoto}
+              onCheckedChange={toggleProfilePhoto}
+              disabled={!profile?.profilePhoto?.dataUrl}
+            />
+          </div>
           <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-2 border-slate-300 dark:border-slate-600">
             <img
               src={profile.profilePhoto!.dataUrl}
@@ -81,18 +80,29 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
               className="w-full h-full object-cover"
             />
           </div>
-        ) : (
+        </div>
+      ) : (
+        <div className="mb-6 no-print">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+              Profilbillede
+            </span>
+            <Switch
+              checked={leftColumn.showProfilePhoto}
+              onCheckedChange={toggleProfilePhoto}
+              disabled={!profile?.profilePhoto?.dataUrl}
+            />
+          </div>
           <div className="w-24 h-24 mx-auto rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400">
             <ImageIcon className="h-8 w-8" />
           </div>
-        )}
-        
-        {!profile?.profilePhoto?.dataUrl && (
-          <p className="text-xs text-slate-400 text-center mt-2">
-            Upload foto i din profil
-          </p>
-        )}
-      </div>
+          {!profile?.profilePhoto?.dataUrl && (
+            <p className="text-xs text-slate-400 text-center mt-2">
+              Upload foto i din profil
+            </p>
+          )}
+        </div>
+      )}
       
       {/* Name & Title (from profile - read only) */}
       <div className="mb-6 text-center">

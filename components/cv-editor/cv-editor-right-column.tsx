@@ -554,22 +554,22 @@ function ExperienceBlock({
           )}
         </div>
         
-        {/* Dates on same line - auto-sizing to content */}
-        <div className="flex items-center gap-1 mt-1 text-sm text-slate-500">
+        {/* Dates on same line - professional layout */}
+        <div className="flex items-center mt-1 text-sm text-slate-500">
           <Input
             value={experience.startDate}
             onChange={(e) => onUpdate({ startDate: e.target.value })}
             placeholder="2020"
-            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1"
-            style={{ width: `${Math.max((experience.startDate || '').length + 2, 5)}ch` }}
+            className="h-auto py-0 px-0 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-offset-0 rounded-sm"
+            style={{ width: `${Math.max((experience.startDate || '2020').length, 4)}ch` }}
           />
-          <span className="text-slate-400 flex-shrink-0">–</span>
+          <span className="text-slate-400 mx-1.5">–</span>
           <Input
             value={experience.endDate || ''}
             onChange={(e) => onUpdate({ endDate: e.target.value || undefined })}
             placeholder={tr.present}
-            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1"
-            style={{ width: `${Math.max((experience.endDate || tr.present).length + 2, 5)}ch` }}
+            className="h-auto py-0 px-0 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-offset-0 rounded-sm"
+            style={{ width: `${Math.max((experience.endDate || tr.present).length, 4)}ch` }}
           />
         </div>
       </div>

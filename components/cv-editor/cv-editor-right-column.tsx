@@ -77,6 +77,7 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
         jobDescription={jobDescription}
         fontSize={fontSize}
         hasExperienceData={hasExperienceData}
+        language={lang}
       />
       
       {/* Experience Section */}
@@ -164,6 +165,7 @@ interface ProfessionalIntroSectionProps {
   jobDescription?: string;
   fontSize: TextSizeOption;
   hasExperienceData: boolean;
+  language: CVLanguage;
 }
 
 function ProfessionalIntroSection({
@@ -175,6 +177,7 @@ function ProfessionalIntroSection({
   jobDescription,
   fontSize,
   hasExperienceData,
+  language,
 }: ProfessionalIntroSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -201,6 +204,7 @@ function ProfessionalIntroSection({
           type: 'rewrite-intro',
           content: intro.content,
           jobDescription,
+          language,
         }),
       });
       
@@ -241,6 +245,7 @@ function ProfessionalIntroSection({
           type: 'generate-intro-from-experience',
           jobDescription,
           cvData: cvSummary,
+          language,
         }),
       });
       
@@ -474,6 +479,7 @@ function ExperienceBlock({
           title: experience.title,
           company: experience.company,
           jobDescription,
+          language,
         }),
       });
       

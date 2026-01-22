@@ -447,9 +447,40 @@ function ExperienceBlock({
   const [showAiMilestones, setShowAiMilestones] = useState(false);
   const [aiMilestonesSuggestion, setAiMilestonesSuggestion] = useState<string>('');
   const [aiMilestonesRationale, setAiMilestonesRationale] = useState<string>('');
+  const [aiLoadingBulletId, setAiLoadingBulletId] = useState<string | null>(null);
+  const [aiBulletSuggestion, setAiBulletSuggestion] = useState<{ bulletId: string; suggestion: string } | null>(null);
   
   const isLoadingMilestones = aiLoading?.sectionId === experience.id && aiLoading?.type === 'milestones';
   const isLoadingOptimize = aiLoading?.sectionId === experience.id && aiLoading?.type === 'optimize-milestones';
+  
+  // Optimize a single bullet point
+  const handleOptimizeBullet = async (bulletId: string, content: string) => {
+    if (!content.trim()) return;
+    
+    setAiLoadingBulletId(bulletId);
+    
+    try {
+      const response = await fetch('/api/cv/ai-assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'rewrite-bullet',
+          content,
+          jobDescription,
+          language,
+        }),
+      });
+      
+      if (!response.ok) throw new Error('AI request failed');
+      
+      const data = await response.json();
+      setAiBulletSuggestion({ bulletId, suggestion: data.suggestion });
+    } catch (error) {
+      console.error('AI bullet optimize error:', error);
+    } finally {
+      setAiLoadingBulletId(null);
+    }
+  };
   
   // Generate milestones from bullets using AI
   const handleGenerateMilestones = async () => {
@@ -629,7 +660,7 @@ function ExperienceBlock({
             )}
             
             {/* Show AI optimize button when milestones exist */}
-            {experience.keyMilestones && !showAiMilestones && jobDescription && (
+            {experience.keyMilestones && !showAiMilestones && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -642,7 +673,7 @@ function ExperienceBlock({
                 ) : (
                   <Sparkles className="h-3 w-3 mr-1" />
                 )}
-                Optimer til job
+                {jobDescription ? 'Optimer til job' : 'Optimer tekst'}
               </Button>
             )}
           </div>
@@ -748,29 +779,77 @@ function ExperienceBlock({
       <div>
         <ul className="space-y-2">
           {experience.bullets.map((bullet, idx) => (
-            <li key={bullet.id} className="flex items-start gap-2 group/bullet">
-              <span className="text-slate-400 mt-1.5 select-none">•</span>
-              <textarea
-                value={bullet.content}
-                onChange={(e) => {
-                  onUpdateBullet(bullet.id, e.target.value);
-                  e.target.style.height = 'auto';
-                  e.target.style.height = e.target.scrollHeight + 'px';
-                }}
-                placeholder="Beskriv en konkret præstation eller ansvar..."
-                className="flex-1 text-sm py-1 px-2 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-ring rounded resize-none overflow-hidden min-h-[24px] leading-snug"
-                rows={1}
-                onFocus={(e) => {
-                  e.target.style.height = 'auto';
-                  e.target.style.height = e.target.scrollHeight + 'px';
-                }}
-              />
-              <button
-                onClick={() => onRemoveBullet(bullet.id)}
-                className="p-1 text-red-500 opacity-0 group-hover/bullet:opacity-100 transition-opacity no-print"
-              >
-                <X className="h-3 w-3" />
-              </button>
+            <li key={bullet.id} className="group/bullet">
+              {/* AI suggestion for this bullet */}
+              {aiBulletSuggestion?.bulletId === bullet.id && (
+                <div className="mb-2 p-2 bg-blue-50 dark:bg-blue-950/30 rounded border border-blue-200 dark:border-blue-800 no-print">
+                  <div className="flex items-start gap-2 mb-2">
+                    <Sparkles className="h-3 w-3 text-blue-600 mt-0.5" />
+                    <p className="text-xs text-blue-700 dark:text-blue-300 flex-1">{aiBulletSuggestion.suggestion}</p>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button 
+                      size="sm" 
+                      className="h-6 text-xs px-2"
+                      onClick={() => {
+                        onUpdateBullet(bullet.id, aiBulletSuggestion.suggestion);
+                        setAiBulletSuggestion(null);
+                      }}
+                    >
+                      <Check className="h-3 w-3 mr-1" />
+                      Accepter
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      className="h-6 text-xs px-2"
+                      onClick={() => setAiBulletSuggestion(null)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex items-start gap-2">
+                <span className="text-slate-400 mt-1.5 select-none">•</span>
+                <textarea
+                  value={bullet.content}
+                  onChange={(e) => {
+                    onUpdateBullet(bullet.id, e.target.value);
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                  }}
+                  placeholder="Beskriv en konkret præstation eller ansvar..."
+                  className="flex-1 text-sm py-1 px-2 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-ring rounded resize-none overflow-hidden min-h-[24px] leading-snug"
+                  rows={1}
+                  onFocus={(e) => {
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                  }}
+                />
+                {/* AI optimize button */}
+                {bullet.content.trim() && (
+                  <button
+                    onClick={() => handleOptimizeBullet(bullet.id, bullet.content)}
+                    disabled={aiLoadingBulletId === bullet.id}
+                    className="p-1 text-blue-500 opacity-0 group-hover/bullet:opacity-100 transition-opacity no-print hover:bg-blue-50 rounded"
+                    title="Optimer med AI"
+                  >
+                    {aiLoadingBulletId === bullet.id ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-3 w-3" />
+                    )}
+                  </button>
+                )}
+                <button
+                  onClick={() => onRemoveBullet(bullet.id)}
+                  className="p-1 text-red-500 opacity-0 group-hover/bullet:opacity-100 transition-opacity no-print"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
             </li>
           ))}
         </ul>

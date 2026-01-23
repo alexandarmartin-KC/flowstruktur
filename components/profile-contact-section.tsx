@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { User, Mail, Phone, MapPin, Link as LinkIcon, CheckCircle2, AlertCircle } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Link as LinkIcon, CheckCircle2, AlertCircle, Check } from 'lucide-react';
 import { useUserProfile } from '@/contexts/user-profile-context';
 import { useRouter } from 'next/navigation';
 
@@ -16,6 +16,9 @@ export function ProfileContactSection() {
   const { profile, updateProfile, getCompleteness, canExport } = useUserProfile();
   const [localProfile, setLocalProfile] = useState(profile);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSaved, setShowSaved] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
   const completeness = getCompleteness();
   const exportReqs = canExport();
@@ -29,9 +32,31 @@ export function ProfileContactSection() {
     setHasChanges(isDifferent);
   }, [localProfile, profile]);
 
+  // Auto-save with debounce
+  const autoSave = useCallback(() => {
+    if (hasChanges) {
+      setIsSaving(true);
+      updateProfile(localProfile);
+      
+      // Show "Gemt" feedback
+      setTimeout(() => {
+        setIsSaving(false);
+        setShowSaved(true);
+        setHasChanges(false);
+        
+        // Hide "Gemt" after 2 seconds
+        setTimeout(() => {
+          setShowSaved(false);
+        }, 2000);
+      }, 300);
+    }
+  }, [localProfile, hasChanges, updateProfile]);
+
   const handleSave = () => {
     updateProfile(localProfile);
     setHasChanges(false);
+    setShowSaved(true);
+    setTimeout(() => setShowSaved(false), 2000);
     
     // Check if user came from a return path
     const returnPath = sessionStorage.getItem('profile_return_path');
@@ -43,7 +68,26 @@ export function ProfileContactSection() {
 
   const handleChange = (field: keyof typeof localProfile, value: string) => {
     setLocalProfile(prev => ({ ...prev, [field]: value }));
+    
+    // Clear existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    // Set new timeout for auto-save (1 second after last change)
+    saveTimeoutRef.current = setTimeout(() => {
+      autoSave();
+    }, 1000);
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <Card className="border-primary/20">
@@ -223,16 +267,25 @@ export function ProfileContactSection() {
 
         {/* Save button */}
         <div className="flex justify-end gap-2 pt-4">
-          {hasChanges && (
+          {hasChanges && !isSaving && !showSaved && (
             <Badge variant="secondary" className="mr-auto">
-              Ikke-gemte ændringer
+              Gemmer...
+            </Badge>
+          )}
+          {showSaved && (
+            <Badge variant="default" className="mr-auto gap-1 bg-green-500">
+              <Check className="h-3 w-3" />
+              Gemt
             </Badge>
           )}
           <Button
             onClick={handleSave}
-            disabled={!hasChanges}
+            disabled={!hasChanges && !showSaved}
+            variant={showSaved ? "default" : "default"}
+            className={showSaved ? "gap-2" : ""}
           >
-            {hasChanges ? 'Gem ændringer' : 'Gemt'}
+            {showSaved && <Check className="h-4 w-4" />}
+            {showSaved ? 'Gemt' : hasChanges ? 'Gem nu' : 'Gem'}
           </Button>
         </div>
 

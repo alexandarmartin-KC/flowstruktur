@@ -821,11 +821,26 @@ function ExperienceBlock({
                     e.target.style.height = e.target.scrollHeight + 'px';
                   }}
                   placeholder="Beskriv en konkret præstation eller ansvar..."
-                  className="flex-1 text-sm py-1 px-2 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-ring rounded resize-none overflow-hidden min-h-[24px] leading-snug"
+                  className="flex-1 text-sm py-1 px-2 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-ring rounded resize-none min-h-[24px] leading-relaxed"
+                  style={{ 
+                    height: 'auto',
+                    overflowY: 'hidden',
+                  }}
                   rows={1}
                   onFocus={(e) => {
                     e.target.style.height = 'auto';
                     e.target.style.height = e.target.scrollHeight + 'px';
+                  }}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = target.scrollHeight + 'px';
+                  }}
+                  ref={(el) => {
+                    if (el) {
+                      el.style.height = 'auto';
+                      el.style.height = el.scrollHeight + 'px';
+                    }
                   }}
                 />
                 {/* AI optimize button - always visible when there's content */}

@@ -571,33 +571,33 @@ function ExperienceBlock({
       {/* Role Header */}
       <div className="mb-3">
         {/* Title on full width line */}
-        <div className="mb-1">
+        <div>
           <Input
             value={experience.title}
             onChange={(e) => onUpdate({ title: e.target.value })}
             placeholder="Titel (f.eks. Security Specialist, Physical Security)"
-            className="font-semibold text-base h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-full"
+            className="font-semibold text-base h-auto py-0 px-0 border-0 bg-transparent focus-visible:ring-1 w-full leading-tight"
             style={{ fontSize: fontSize.heading }}
           />
         </div>
         
         {/* Company and Location on same line */}
-        <div className="flex items-baseline gap-x-1 gap-y-1 flex-wrap">
+        <div className="flex items-baseline gap-x-1 gap-y-1 flex-wrap mt-1">
           <Input
             value={experience.company}
             onChange={(e) => onUpdate({ company: e.target.value })}
             placeholder="Virksomhed"
-            className="h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto"
+            className="h-auto py-0 px-0 border-0 bg-transparent focus-visible:ring-1 w-auto text-sm leading-tight"
             style={{ width: `${Math.max(experience.company.length, 10)}ch` }}
           />
           {experience.location && (
             <>
-              <span className="text-slate-400 mx-0.5">·</span>
+              <span className="text-slate-400 mx-0.5 text-sm">·</span>
               <Input
                 value={experience.location}
                 onChange={(e) => onUpdate({ location: e.target.value })}
                 placeholder="Lokation"
-                className="text-slate-600 h-auto py-0 px-1 border-0 bg-transparent focus-visible:ring-1 w-auto"
+                className="text-slate-600 h-auto py-0 px-0 border-0 bg-transparent focus-visible:ring-1 w-auto text-sm leading-tight"
                 style={{ width: `${Math.max(experience.location.length, 8)}ch` }}
               />
             </>
@@ -614,7 +614,7 @@ function ExperienceBlock({
         </div>
         
         {/* Dates on same line - professional layout */}
-        <div className="flex items-center mt-1 text-sm text-slate-500">
+        <div className="flex items-center mt-1 text-sm text-slate-500 leading-tight">
           <Input
             value={experience.startDate}
             onChange={(e) => onUpdate({ startDate: e.target.value })}
@@ -812,7 +812,7 @@ function ExperienceBlock({
               )}
               
               <div className="flex items-start gap-2">
-                <span className="text-slate-400 mt-1.5 select-none">•</span>
+                <span className="text-slate-400 mt-[3px] select-none flex-shrink-0">•</span>
                 <textarea
                   value={bullet.content}
                   onChange={(e) => {
@@ -821,7 +821,7 @@ function ExperienceBlock({
                     e.target.style.height = e.target.scrollHeight + 'px';
                   }}
                   placeholder="Beskriv en konkret præstation eller ansvar..."
-                  className="flex-1 text-sm py-1 px-2 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-ring rounded resize-none min-h-[24px] leading-relaxed"
+                  className="flex-1 text-sm py-0.5 px-2 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-ring rounded resize-none min-h-[24px] leading-relaxed"
                   style={{ 
                     height: 'auto',
                     overflowY: 'hidden',

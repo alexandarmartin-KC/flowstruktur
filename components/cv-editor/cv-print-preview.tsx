@@ -105,8 +105,8 @@ export function CVPrintPreview() {
               <div className="space-y-1">
                 {leftColumn.skills.map((item) => (
                   <div key={item.id} className="flex items-start gap-2 text-sm">
-                    <span className="text-slate-400">•</span>
-                    <span>{item.name}</span>
+                    <span className="text-slate-400 mt-[2px] flex-shrink-0">•</span>
+                    <span className="leading-relaxed">{item.name}</span>
                   </div>
                 ))}
               </div>
@@ -141,7 +141,7 @@ export function CVPrintPreview() {
             >
               Profil
             </h2>
-            <div className="text-slate-700 leading-relaxed whitespace-pre-wrap">
+            <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
               {rightColumn.professionalIntro.content}
             </div>
           </div>
@@ -173,12 +173,12 @@ export function CVPrintPreview() {
                     {/* Header */}
                     <div className="mb-2">
                       {/* Title on its own line */}
-                      <div className="font-semibold mb-1" style={{ fontSize: sizeOption.heading }}>
+                      <div className="font-semibold leading-tight" style={{ fontSize: sizeOption.heading }}>
                         {exp.title}
                       </div>
                       
                       {/* Company and Location on same line */}
-                      <div className="text-sm">
+                      <div className="text-sm leading-tight mt-1">
                         <span>{exp.company}</span>
                         {exp.location && (
                           <>
@@ -189,25 +189,25 @@ export function CVPrintPreview() {
                       </div>
                       
                       {/* Date range on its own line */}
-                      <div className="text-sm text-slate-500 mt-0.5">
+                      <div className="text-sm text-slate-500 leading-tight mt-1">
                         {exp.startDate} – {exp.endDate || 'Nu'}
                       </div>
                     </div>
                     
                     {/* Key Milestones */}
                     {exp.keyMilestones && (
-                      <div className="mb-3 text-slate-700 leading-relaxed whitespace-pre-wrap">
+                      <div className="mb-3 text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
                         {exp.keyMilestones}
                       </div>
                     )}
                     
                     {/* Bullets */}
                     {exp.bullets.length > 0 && (
-                      <ul className="space-y-1">
+                      <ul className="space-y-1.5">
                         {exp.bullets.map((bullet) => (
                           <li key={bullet.id} className="flex items-start gap-2 text-sm">
-                            <span className="text-slate-400 mt-0.5">•</span>
-                            <span className="text-slate-700">{bullet.content}</span>
+                            <span className="text-slate-400 mt-[3px] flex-shrink-0">•</span>
+                            <span className="text-slate-700 leading-relaxed">{bullet.content}</span>
                           </li>
                         ))}
                       </ul>

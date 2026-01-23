@@ -49,13 +49,43 @@ R9) Brug neutralt, konstaterende sprog.
 R10) Variation i jobtitler eller brancher må ikke i sig selv føre til klassifikation som fragmenteret; klassifikation skal baseres på sammenhæng i arbejdsformer og fagligt domæne.
 
 ────────────────────────────────────────
+ANALYSERAMME - HVAD DU SKAL IDENTIFICERE
+────────────────────────────────────────
+
+OPGAVETYPER (hvad der udføres):
+- Udførende opgaver (hands-on, operationelle)
+- Koordinerende opgaver (samordning, planlægning)
+- Ledelsesopgaver (ansvar for andre, beslutninger)
+- Tekniske opgaver (systemer, tools, metoder)
+- Administrative opgaver (dokumentation, processer)
+- Strategiske opgaver (udvikling, design, policy)
+
+ANSVARSNIVEAUER:
+- Individuel udførelse
+- Team-koordinering
+- Projekt-ledelse
+- Funktions-ansvar
+- Afdelings-ansvar
+
+ARBEJDSFORMER:
+- Selvstændigt arbejde vs. teamarbejde
+- Rutinepræget vs. varieret
+- Reaktiv (løsning af akutte opgaver) vs. proaktiv (forebyggelse, udvikling)
+- Operationel (daglig drift) vs. strategisk (langsigtet)
+
+────────────────────────────────────────
 HVAD DU MÅ BESKRIVE
 ────────────────────────────────────────
-- Roller (titler)
-- Dokumenterede opgaver
-- Ansvarsniveauer
-- Arbejdsformer (udførende, koordinerende, ledende, tekniske, administrative osv.)
+- Roller (titler) - nævn alle hovedniveauer
+- Dokumenterede opgaver - specifikke aktiviteter fra bullets og beskrivelser
+- Ansvarsniveauer - fra udførende til strategisk
+- Arbejdsformer - mønstre i hvordan arbejdet udføres
+- Fagligt domæne - kerneområde(r) for arbejdet
 - Grad af sammenhæng eller variation i rollerne
+- Progression eller skift i ansvarsniveau
+
+EKSEMPEL PÅ GOD BESKRIVELSE:
+"CV'et dokumenterer roller som Security Specialist, Guard Supervisor, Security Account Manager og SOC Operator. De primære opgaver inkluderer overvågning af CCTV og adgangskontrolsystemer, design og implementering af sikkerhedsprocedurer, vendor management, håndtering af sikkerhedskampagner samt træning af personale. Ansvarsniveauerne spænder fra udførende overvågningsopgaver til koordinering af sikkerhedsteams og design af sikkerhedspolitikker. Arbejdsformerne omfatter både operationel drift (monitoring, respons) og strategisk udvikling (proceduredesign, kampagner)."
 
 ────────────────────────────────────────
 OBLIGATORISK KLASSIFIKATION
@@ -64,11 +94,18 @@ Afslut altid analysen med ÉN af følgende klassifikationer
 (baseret udelukkende på CV'ets indhold):
 
 A) Domænekonsistent med funktionsvariation
-B) Domænekonsistent med progression i ansvar
-C) Variation på tværs af domæner
-D) Fragmenteret eller overgangspræget forløb
+   (samme faglige domæne, men varierende funktioner/roller)
 
-Vælg kun én. Ingen forklaring udover én neutral sætning.
+B) Domænekonsistent med progression i ansvar
+   (samme faglige domæne, med tydelig progression i ansvarsniveau)
+
+C) Variation på tværs af domæner
+   (forskellige faglige domæner, men med sammenhængende arbejdsformer)
+
+D) Fragmenteret eller overgangspræget forløb
+   (lav sammenhæng i både domæne og arbejdsformer)
+
+Vælg kun én. Tilføj én neutral sætning der begrunder valget.
 
 ────────────────────────────────────────
 OUTPUTFORMAT (SKAL OVERHOLDES)
@@ -82,22 +119,26 @@ Step 1: Bekræftelse af CV-indhold
 
 [1–2 afsnit]
 Beskriv kort og faktuelt hvilke roller og hovedopgaver, der er dokumenteret i CV'et.
+Inkluder specifikke opgavetyper fra bullets.
 Beskriv arbejdsformer og ansvarsniveauer.
 Ingen arbejdsgivere, ingen fortolkning.
 
 [1 afsnit]
 Beskriv graden af sammenhæng eller variation i arbejdsformer og roller.
+Identificer mønstre i opgavetyper og ansvarsniveauer.
 Kun konstatering, ingen årsagsforklaring.
 
-[Klassifikation – én linje]
-CV'et klassificeres som: [A/B/C/D – indsæt tekst]
+[Klassifikation – 1-2 linjer]
+CV'et klassificeres som: [A/B/C/D – indsæt fuld tekst fra ovenstående]
 
 ────────────────────────────────────────
 SPROG
 ────────────────────────────────────────
 - Skriv på dansk
 - Brug neutralt, professionelt sprog
-- Ingen bullet points
+- Ingen bullet points i output
+- Ingen emojis
+- Brug fulde sætninger
 - Ingen emojis
 
 OUTPUT: Returnér KUN valid JSON: { "text": "den fulde tekst her" }`;
@@ -170,12 +211,12 @@ async function attemptDerivation(
 ): Promise<{ success: boolean; data?: Step1Output; rawResponse?: string }> {
   try {
     const completion = await client.chat.completions.create({
-      model: 'gpt-4o-mini',
-      temperature: 0.3,
+      model: 'gpt-4o', // Upgraded from gpt-4o-mini for better analysis quality
+      temperature: 0.2, // Lower temperature for more consistent, factual analysis
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0,
-      max_tokens: 1500,
+      max_tokens: 2000, // Increased for more detailed analysis
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: USER_PROMPT_TEMPLATE(cvText) }

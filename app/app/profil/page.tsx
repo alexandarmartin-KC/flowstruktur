@@ -152,6 +152,97 @@ const questions = [
   { id: 'Q40', dimension: 'Konflikt & Feedback', question: 'Jeg synes det er vigtigt at få regelmæssig feedback på mit arbejde.' },
 ];
 
+// Helper function to format structured data for analysis
+// Converts Vision API extraction to rich, narrative text that preserves all context
+function formatStructuredDataForAnalysis(structured: any): string {
+  const parts: string[] = [];
+  
+  // Professional intro - preserve exact wording
+  if (structured.professionalIntro) {
+    parts.push('═══════════════════════════════════════════════════════');
+    parts.push('PROFESSIONEL PROFIL');
+    parts.push('═══════════════════════════════════════════════════════');
+    parts.push(structured.professionalIntro);
+    parts.push('');
+  }
+  
+  // Experience - rich narrative format with ALL details preserved
+  if (structured.experience && structured.experience.length > 0) {
+    parts.push('═══════════════════════════════════════════════════════');
+    parts.push('ERHVERVSERFARING');
+    parts.push('═══════════════════════════════════════════════════════\n');
+    
+    structured.experience.forEach((exp: any, index: number) => {
+      // Position header
+      parts.push(`Stilling ${index + 1}: ${exp.title}`);
+      parts.push(`Virksomhed: ${exp.company}${exp.location ? ' · ' + exp.location : ''}`);
+      parts.push(`Periode: ${exp.startDate} – ${exp.endDate || 'Nuværende stilling'}`);
+      parts.push('');
+      
+      // Key milestones provide context about responsibilities
+      if (exp.keyMilestones) {
+        parts.push('Ansvarsområde og kontekst:');
+        parts.push(exp.keyMilestones);
+        parts.push('');
+      }
+      
+      // Bullets show specific tasks, achievements, and working methods
+      if (exp.bullets && exp.bullets.length > 0) {
+        parts.push('Opgaver og resultater:');
+        exp.bullets.forEach((bullet: string) => {
+          parts.push(`  • ${bullet}`);
+        });
+        parts.push('');
+      }
+      
+      // Add separator between positions
+      if (index < structured.experience.length - 1) {
+        parts.push('───────────────────────────────────────────────────────\n');
+      }
+    });
+  }
+  
+  // Education - with context about institutions
+  if (structured.education && structured.education.length > 0) {
+    parts.push('\n═══════════════════════════════════════════════════════');
+    parts.push('UDDANNELSE');
+    parts.push('═══════════════════════════════════════════════════════\n');
+    structured.education.forEach((edu: any) => {
+      parts.push(`${edu.title}`);
+      parts.push(`Institution: ${edu.institution}`);
+      parts.push(`År: ${edu.year}`);
+      parts.push('');
+    });
+  }
+  
+  // Skills - grouped and contextualized
+  if (structured.skills && structured.skills.length > 0) {
+    parts.push('═══════════════════════════════════════════════════════');
+    parts.push('KOMPETENCER OG FÆRDIGHEDER');
+    parts.push('═══════════════════════════════════════════════════════');
+    parts.push('Dokumenterede kompetencer:');
+    // Format skills in readable chunks (max 5 per line for readability)
+    for (let i = 0; i < structured.skills.length; i += 5) {
+      const chunk = structured.skills.slice(i, i + 5);
+      parts.push(`  ${chunk.join(' · ')}`);
+    }
+    parts.push('');
+  }
+  
+  // Languages - with proficiency levels
+  if (structured.languages && structured.languages.length > 0) {
+    parts.push('═══════════════════════════════════════════════════════');
+    parts.push('SPROGKOMPETENCER');
+    parts.push('═══════════════════════════════════════════════════════');
+    structured.languages.forEach((lang: any) => {
+      parts.push(`  ${lang.language}: ${lang.level}`);
+    });
+    parts.push('');
+  }
+  
+  return parts.join('\n');
+}
+
 export default function ProfilPage() {
   // CV Upload state
   const [file, setFile] = useState<File | null>(null);
@@ -472,8 +563,11 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
           if (visionRes.ok) {
             const visionData = await visionRes.json();
             
+            // Convert structured data to readable text format for Step 1 analysis
+            const formattedCvText = formatStructuredDataForAnalysis(visionData);
+            
             data = {
-              cvText: '', // Not using text extraction anymore
+              cvText: formattedCvText, // Formatted text from Vision extraction
               structured: visionData,
               usedVision: true,
             };

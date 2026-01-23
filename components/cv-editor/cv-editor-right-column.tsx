@@ -828,18 +828,18 @@ function ExperienceBlock({
                     e.target.style.height = e.target.scrollHeight + 'px';
                   }}
                 />
-                {/* AI optimize button */}
+                {/* AI optimize button - always visible when there's content */}
                 {bullet.content.trim() && (
                   <button
                     onClick={() => handleOptimizeBullet(bullet.id, bullet.content)}
                     disabled={aiLoadingBulletId === bullet.id}
-                    className="p-1 text-blue-500 opacity-0 group-hover/bullet:opacity-100 transition-opacity no-print hover:bg-blue-50 rounded"
-                    title="Optimer med AI"
+                    className="p-1.5 text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/30 dark:hover:bg-blue-950/50 rounded transition-colors no-print border border-blue-200 dark:border-blue-800"
+                    title={jobDescription ? "Optimer til job med AI" : "Optimer med AI"}
                   >
                     {aiLoadingBulletId === bullet.id ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     ) : (
-                      <Sparkles className="h-3 w-3" />
+                      <Sparkles className="h-3.5 w-3.5" />
                     )}
                   </button>
                 )}
@@ -853,6 +853,18 @@ function ExperienceBlock({
             </li>
           ))}
         </ul>
+        
+        {/* Info about AI optimization */}
+        {experience.bullets.length > 0 && experience.bullets.some(b => b.content.trim()) && (
+          <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-950/20 rounded border border-blue-200 dark:border-blue-800 no-print">
+            <div className="flex items-start gap-2">
+              <Sparkles className="h-3.5 w-3.5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                <strong>Tip:</strong> Klik på <Sparkles className="h-3 w-3 inline mx-0.5" /> ved hvert punkt for at få AI til at optimere formuleringen{jobDescription ? ' i forhold til jobbet' : ''}.
+              </p>
+            </div>
+          </div>
+        )}
         
         {experience.bullets.length < CONTENT_LIMITS.bulletsPerJob + 2 && (
           <Button

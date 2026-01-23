@@ -104,19 +104,14 @@ OBLIGATORISK KLASSIFIKATION
 Afslut altid analysen med ÉN af følgende klassifikationer
 (baseret udelukkende på CV'ets indhold):
 
-A) Domænekonsistent med funktionsvariation
-   (samme faglige domæne, men varierende funktioner/roller)
-
-B) Domænekonsistent med progression i ansvar
-   (samme faglige domæne, med tydelig progression i ansvarsniveau)
-
-C) Variation på tværs af domæner
-   (forskellige faglige domæner, men med sammenhængende arbejdsformer)
-
-D) Fragmenteret eller overgangspræget forløb
-   (lav sammenhæng i både domæne og arbejdsformer)
+- Domænekonsistent med funktionsvariation (samme faglige domæne, men varierende funktioner/roller)
+- Domænekonsistent med progression i ansvar (samme faglige domæne, med tydelig progression i ansvarsniveau)
+- Variation på tværs af domæner (forskellige faglige domæner, men med sammenhængende arbejdsformer)
+- Fragmenteret eller overgangspræget forløb (lav sammenhæng i både domæne og arbejdsformer)
 
 Vælg kun én. Tilføj én neutral sætning der begrunder valget.
+
+VIGTIGT: Brug IKKE bogstaver (A/B/C/D) i dit output - skriv kun den fulde tekst.
 
 ────────────────────────────────────────
 OUTPUTFORMAT (SKAL OVERHOLDES)
@@ -140,7 +135,7 @@ Identificer mønstre i opgavetyper og ansvarsniveauer.
 Kun konstatering, ingen årsagsforklaring.
 
 [Klassifikation – 1-2 linjer]
-CV'et klassificeres som: [A/B/C/D – indsæt fuld tekst fra ovenstående]
+CV'et klassificeres som: [Indsæt fuld klassifikationstekst UDEN bogstav - fx "Domænekonsistent med progression i ansvar"]
 
 ────────────────────────────────────────
 SPROG

@@ -89,10 +89,8 @@ export default function AnsøgningPage() {
       // Get job description
       const jobDescription = localStorage.getItem(`job_posting_${jobId}`) || job.description || '';
       
-      // Format CV text - this is the JOB-SPECIFIC tailored CV
-      const cvText = cv.sections
-        .map(s => `${s.name}:\n${s.suggestedText || ''}`)
-        .join('\n\n');
+      // Use the formatted CV text - this is the JOB-SPECIFIC tailored CV
+      const cvText = cv.text;
 
       // Get personality data
       let dimensionScores = {};

@@ -94,7 +94,7 @@ ${instructionText}
 Returner den komplette omskrevne ansøgning som ren tekst.`;
 
     const response = await getOpenAI().chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4.1',  // Better instruction following for precise rewriting
       messages: [
         {
           role: 'system',

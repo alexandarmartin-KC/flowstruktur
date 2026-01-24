@@ -242,7 +242,7 @@ ${JSON.stringify(dimensionScores, null, 2)}` : ''}
 Returner en JSON-analyse med matchPoints (min 3), gaps (min 1) og recommendedFraming.`;
 
     const analysisResponse = await getOpenAI().chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4.1',  // Better instruction following for precise analysis
       messages: [
         {
           role: 'system',
@@ -292,7 +292,7 @@ Ansøgningen skal afspejle dette ved at:
 Skriv en fuld ansøgning som ren tekst. Brug KUN dokumenteret erfaring fra CV'et og analysen.`;
 
     const writingResponse = await getOpenAI().chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4.1',  // Better instruction following for precise, non-inflated writing
       messages: [
         {
           role: 'system',

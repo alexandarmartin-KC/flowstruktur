@@ -146,7 +146,7 @@ ${cvAnalysis}
 Returnér JSON med sektioner og ikke-dækkede krav.`;
 
       const response = await getOpenAI().chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4.1',  // Better instruction following for CV tailoring
         messages: [
           {
             role: 'system',
@@ -194,7 +194,7 @@ ${combinedAnalysis}
 Producer nu en fuldstændig CV-match analyse.`;
 
     const response = await getOpenAI().chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4.1',  // Better instruction following for CV analysis
       messages: [
         {
           role: 'system',

@@ -98,89 +98,105 @@ function createHeader(userProfile: any, language: 'da' | 'en'): string {
 const APPLICATION_ANALYSIS_PROMPT = `DU ER EN ANALYTIKER DER MATCHER CV MOD JOBKRAV.
 
 KONTEKST:
-Det CV du modtager er ALLEREDE job-specifikt tilpasset. Det betyder at CV'et er optimeret til netop denne stilling.
-Din opgave er at identificere de stærkeste match-punkter og eventuelle gaps.
+Dit job er at analysere kandidatens faktiske erfaring ærligt og præcist.
+Vær realistisk - overdriv ikke, men undervurder heller ikke.
 
 OPGAVE:
-Før du skriver ansøgningen, skal du lave en systematisk analyse.
+Lav en systematisk og ærlig analyse.
 
-TRIN 1 - MATCH-PUNKTER (minimum 3, gerne flere):
-For hvert hovedkrav i jobbet, find DOKUMENTERET bevis fra det job-tilpassede CV:
+TRIN 1 - MATCH-PUNKTER (identificér kun DOKUMENTERET erfaring):
+For hvert hovedkrav i jobbet, find bevis fra CV'et:
 - Krav: [hvad jobbet kræver]
-- Bevis: [konkret erfaring fra CV der matcher]
+- Bevis: [specifik, dokumenteret erfaring - vær præcis om niveau og omfang]
+- Styrke: [direkte match / indirekte match / overførbar]
 
-FOKUSER PÅ:
-- Specifikke færdigheder og teknologier nævnt i jobbet
-- Ansvarsniveauer og roller der matcher
-- Relevante brancher eller domæner
-- Certificeringer eller uddannelser som matcher
+VÆR PRÆCIS:
+- "Vendor management" er IKKE det samme som "personalledelse"
+- "Koordinering" er IKKE det samme som "linjeansvar"
+- "Erfaring med systemer" er IKKE det samme som "omfattende erfaring"
+- Brug de faktiske ord fra CV'et, ikke opskaleringer
 
-TRIN 2 - GAPS/RISICI (minimum 1):
-Identificér krav hvor CV'et har begrænset eller indirekte match:
-- Krav: [hvad der mangler eller er svagt]
-- Note: [hvordan det kan adresseres i ansøgningen - f.eks. gennem overførbare kompetencer]
+TRIN 2 - GAPS/RISICI (vær ærlig):
+Identificér krav hvor kandidaten mangler direkte erfaring:
+- Krav: [hvad der mangler]
+- Realitet: [hvad kandidaten faktisk har i stedet]
+- Bro: [hvordan overførbar erfaring kan præsenteres ÆRLIGT]
 
 TRIN 3 - ANBEFALET VINKEL:
-Beskriv den bedste måde at frame ansøgerens styrker på for DENNE specifikke stilling.
-Hvad skal fremhæves? Hvilken tone? Hvilke aspekter af erfaring er mest relevante?
+Beskriv en ærlig og overbevisende framing:
+- Hvad er kandidatens FAKTISKE styrkeposition?
+- Hvilken erfaring bør IKKE overdrives?
+- Hvordan kan gaps adresseres modent og selvsikkert (ikke defensivt)?
+- Hvad er den overførbare værdi fra kandidatens baggrund?
 
 RETURNER JSON:
 {
   "matchPoints": [
-    {"requirement": "...", "evidence": "..."}
+    {"requirement": "...", "evidence": "...", "strength": "direct|indirect|transferable"}
   ],
   "gaps": [
-    {"requirement": "...", "note": "..."}
+    {"requirement": "...", "reality": "...", "bridge": "..."}
   ],
   "recommendedFraming": "..."
 }`;
 
 const APPLICATION_WRITING_PROMPT = `DU ER EN PROFESSIONEL ANSØGNINGSSKRIVER.
 
-KRITISK KONTEKST:
-Du modtager et CV der er SPECIFIKT TILPASSET til det job ansøgningen skal handle om.
-Dette betyder at CV'et allerede er optimeret til at fremhæve relevant erfaring for denne rolle.
-Din opgave er at skrive en ansøgning der forklarer HVORFOR kandidaten er det rigtige match.
+KRITISKE PRINCIPPER:
+1. PRÆCISION OVER OVERDRIVELSE - Brug nøjagtige formuleringer, ikke oppustede
+2. ÆRLIG SELVSIKKERHED - Vis styrker uden at overdrive niveau
+3. OVERFØRBARHED - Vis hvordan erfaring translater, ikke at den er identisk
+4. MODENHED - Adressér gaps selvsikkert, ikke defensivt
+
+ORDVALG DER SKAL UNDGÅS:
+❌ "omfattende erfaring" → ✅ "solid erfaring" eller "målrettet erfaring"
+❌ "stærk baggrund i" → ✅ "erfaring med" eller "dokumenteret arbejde med"  
+❌ "ekspert i" → ✅ "kompetent inden for" eller "erfaren med"
+❌ "Selvom jeg ikke har..." → ✅ "Min erfaring kommer primært fra X, hvilket giver..."
+❌ "Jeg er overbevist om at..." → ✅ Vis det gennem konkrete eksempler i stedet
+
+ORDVALG DER ER STÆRKE:
+✅ "har haft ansvar for" - specifikt og faktuelt
+✅ "i praksis" - viser hands-on erfaring
+✅ "konkret erfaring med" - præcist
+✅ "paralleller til" - viser overførbarhed uden at påstå identisk erfaring
+✅ "direkte relevans for" - linker til jobkrav
+
+HÅNDTERING AF GAPS:
+- Skriv IKKE "Selvom jeg ikke har X..." (defensivt)
+- Skriv I STEDET "Min erfaring fra Y giver direkte parallel til X, herunder..." (offensiv men ærlig)
+- Hvis erfaring er fra anden branche: EJ det og vis hvorfor det er stærkere/anderledes
+
+LEDELSE OG PEOPLE MANAGEMENT:
+Hvis jobbet kræver ledelse/management, vær PRÆCIS om hvad kandidaten har:
+- "Koordinering af leverandører" ≠ "personaleledelse" - sig det korrekt
+- "Daglig opfølgning" kan beskrives, men lad være med at kalde det "linjeansvar" hvis det ikke er det
+- Hvis der er team-koordinering uden formelt ansvar, beskriv det ærligt
 
 ABSOLUTTE REGLER:
-- Brug KUN information fra det job-tilpassede CV og analysen
-- Opfind IKKE erfaring, resultater, teknologier eller ansvar
-- Brug naturligt, professionelt sprog (dansk eller engelsk baseret på CV-sproget)
-- Ingen overdreven selvpromovering eller salgsretorik
-- Ansøgningen skal være konkret og relevant FOR DENNE SPECIFIKKE STILLING
-- Bevar faktuel korrekthed
-- Vis forståelse for stillingens krav og virksomhedens behov
-- Kobl dokumenteret erfaring DIREKTE til jobkrav
-
-OPGAVE:
-Skriv en målrettet ansøgning der demonstrerer fit mellem kandidat og rolle.
+- Brug KUN information fra CV'et og analysen
+- Opfind IKKE erfaring, resultater eller ansvar
+- Naturligt, professionelt sprog
+- Konkret og relevant for DENNE stilling
+- Lad dokumenteret erfaring tale - ikke salgsretorik
 
 FORMAT:
-- Skriv ansøgningen som ren tekst (IKKE markdown)
-- Start DIREKTE med teksten (ingen header, ingen "Dear Hiring Team" - det kommer separat)
-- Første afsnit: Åbning der viser motivation for DENNE specifikke stilling/virksomhed
-- 2-3 afsnit der kobler dokumenteret erfaring til SPECIFIKKE jobkrav
-- Afslut professionelt med interesse for næste skridt
-- Brug almindelige linjeskift mellem afsnit
-- Ingen overskrifter eller punktform
+- Ren tekst (IKKE markdown)
+- Start DIREKTE med brødtekst (ingen header)
+- Første afsnit: Motivation for denne stilling - konkret og specifik
+- 2-3 afsnit: Kobl dokumenteret erfaring til specifikke jobkrav
+- Afslutning: Professionel interesse for dialog
+- Almindelige linjeskift mellem afsnit
 - Længde: 250-400 ord
 
 TONE:
-- Professionel men personlig
-- Konkret og faktabaseret med specifikke eksempler
-- Engageret og motiveret for NETOP denne rolle
-- Ikke overdrevet - lad erfaringen tale for sig selv
+- Professionel, nøgtern, selvsikker
+- Konkret og faktabaseret
+- Ikke overdrevet eller underdrevet
+- Moden og realistisk
 
 SPROG:
-- Skriv på det sprog som CV'et er skrevet på
-- Hvis CV'et er på engelsk, skriv ansøgningen på engelsk
-- Hvis CV'et er på dansk, skriv ansøgningen på dansk
-
-FOKUSPUNKTER:
-- Reference til konkrete projekter, teknologier, eller resultater fra CV'et
-- Vis hvordan kandidatens erfaring løser virksomhedens behov
-- Demonstrer forståelse for stillingens ansvar og udfordringer
-- Fremhæv de mest relevante kompetencer fra det job-tilpassede CV`;
+- Skriv på det sprog som CV'et er skrevet på`;
 
 export async function POST(request: NextRequest) {
   try {

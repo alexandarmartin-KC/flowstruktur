@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import { CVDocument } from '@/lib/cv-types';
+import { getRawCVData } from '@/lib/cv-normalizer';
 
 interface UserProfile {
   name?: string;
@@ -166,14 +167,6 @@ export function useResolvedCv(jobId: string): UseResolvedCvResult {
       const cvDocKey = `flowstruktur_cv_doc_${jobId}`;
       const storedDoc = localStorage.getItem(cvDocKey);
       
-      if (!storedDoc) {
-        setError('Ingen CV-data fundet. Gå til CV-siden og færdiggør dit CV først.');
-        setIsLoading(false);
-        return;
-      }
-
-      const cvDocument: CVDocument = JSON.parse(storedDoc);
-
       // Load user profile from localStorage
       const storedProfile = localStorage.getItem('flowstruktur_user_profile');
       let profile: UserProfile = {};
@@ -182,8 +175,41 @@ export function useResolvedCv(jobId: string): UseResolvedCvResult {
         profile = JSON.parse(storedProfile);
       }
 
-      // Convert CVDocument to text format
-      const cvText = cvDocumentToText(cvDocument, profile);
+      let cvText = '';
+
+      if (storedDoc) {
+        const cvDocument: CVDocument = JSON.parse(storedDoc);
+        
+        // Check if CVDocument has actual content
+        const hasExperience = cvDocument.rightColumn?.experience?.length > 0 && 
+          cvDocument.rightColumn.experience.some(exp => exp.title || exp.company);
+        const hasIntro = cvDocument.rightColumn?.professionalIntro?.content;
+        
+        if (hasExperience || hasIntro) {
+          // Use CVDocument data
+          cvText = cvDocumentToText(cvDocument, profile);
+        }
+      }
+      
+      // If CVDocument is empty or missing, fall back to raw CV data
+      if (!cvText || cvText.trim().length < 100) {
+        const rawData = getRawCVData();
+        
+        if (rawData) {
+          // Try structured data first (AI-parsed), then raw text
+          if (rawData.structured) {
+            cvText = formatStructuredData(rawData.structured, profile);
+          } else if (rawData.cvText) {
+            cvText = rawData.cvText;
+          }
+        }
+      }
+      
+      if (!cvText || cvText.trim().length < 50) {
+        setError('Ingen CV-data fundet. Gå til CV-siden og færdiggør dit CV først.');
+        setIsLoading(false);
+        return;
+      }
 
       setCv({
         text: cvText,
@@ -200,4 +226,125 @@ export function useResolvedCv(jobId: string): UseResolvedCvResult {
   }, [jobId, savedJobs, isLoaded]);
 
   return { cv, isLoading, error };
+}
+
+/**
+ * Format structured CV data (from AI parsing) to text
+ */
+function formatStructuredData(structured: any, profile: UserProfile): string {
+  const lines: string[] = [];
+  
+  // Header
+  if (profile.name) lines.push(profile.name.toUpperCase());
+  if (profile.title) lines.push(profile.title);
+  lines.push('');
+  
+  // Contact
+  const contactParts: string[] = [];
+  if (profile.email) contactParts.push(profile.email);
+  if (profile.phone) contactParts.push(profile.phone);
+  if (contactParts.length > 0) lines.push(contactParts.join(' // '));
+  if (profile.city || profile.location) lines.push(profile.city || profile.location || '');
+  lines.push('');
+  lines.push('═'.repeat(60));
+  lines.push('');
+  
+  // Professional intro/summary
+  if (structured.professional_summary || structured.summary || structured.profile) {
+    lines.push('PROFESSIONEL PROFIL');
+    lines.push('');
+    lines.push(structured.professional_summary || structured.summary || structured.profile);
+    lines.push('');
+    lines.push('─'.repeat(60));
+    lines.push('');
+  }
+  
+  // Experience
+  const experience = structured.experience || structured.work_experience || structured.jobs || [];
+  if (experience.length > 0) {
+    lines.push('ERHVERVSERFARING');
+    lines.push('');
+    
+    experience.forEach((exp: any) => {
+      const title = exp.title || exp.position || exp.role || '';
+      const company = exp.company || exp.employer || exp.organization || '';
+      const location = exp.location || '';
+      const startDate = exp.start_date || exp.startDate || exp.from || '';
+      const endDate = exp.end_date || exp.endDate || exp.to || 'Nutid';
+      
+      if (title || company) {
+        lines.push(`${title}${company ? ` | ${company}` : ''}`);
+        if (location) lines.push(location);
+        if (startDate) lines.push(`${startDate} - ${endDate}`);
+        lines.push('');
+      }
+      
+      // Key achievements/milestones
+      const milestones = exp.key_milestones || exp.milestones || exp.achievements || exp.summary || '';
+      if (milestones) {
+        lines.push(typeof milestones === 'string' ? milestones : milestones.join('\n'));
+        lines.push('');
+      }
+      
+      // Bullets/responsibilities
+      const bullets = exp.bullets || exp.responsibilities || exp.duties || [];
+      if (Array.isArray(bullets) && bullets.length > 0) {
+        bullets.forEach((bullet: any) => {
+          const text = typeof bullet === 'string' ? bullet : bullet.content || bullet.text || '';
+          if (text) lines.push(`• ${text}`);
+        });
+        lines.push('');
+      }
+    });
+    
+    lines.push('─'.repeat(60));
+    lines.push('');
+  }
+  
+  // Education
+  const education = structured.education || structured.qualifications || [];
+  if (education.length > 0) {
+    lines.push('UDDANNELSE');
+    lines.push('');
+    
+    education.forEach((edu: any) => {
+      const title = edu.title || edu.degree || edu.qualification || '';
+      const institution = edu.institution || edu.school || edu.university || '';
+      const year = edu.year || edu.date || edu.graduation_year || '';
+      
+      if (title) lines.push(title);
+      if (institution || year) lines.push(`${institution}${year ? ` - ${year}` : ''}`);
+      lines.push('');
+    });
+    
+    lines.push('─'.repeat(60));
+    lines.push('');
+  }
+  
+  // Skills
+  const skills = structured.skills || structured.competencies || structured.technical_skills || [];
+  if (skills.length > 0) {
+    lines.push('KOMPETENCER');
+    lines.push('');
+    const skillNames = skills.map((s: any) => typeof s === 'string' ? s : s.name || s.skill || '').filter(Boolean);
+    lines.push(skillNames.join(' • '));
+    lines.push('');
+    lines.push('─'.repeat(60));
+    lines.push('');
+  }
+  
+  // Languages
+  const languages = structured.languages || [];
+  if (languages.length > 0) {
+    lines.push('SPROG');
+    lines.push('');
+    languages.forEach((lang: any) => {
+      const name = typeof lang === 'string' ? lang : lang.language || lang.name || '';
+      const level = typeof lang === 'string' ? '' : lang.level || lang.proficiency || '';
+      if (name) lines.push(level ? `${name}: ${level}` : name);
+    });
+    lines.push('');
+  }
+  
+  return lines.join('\n');
 }

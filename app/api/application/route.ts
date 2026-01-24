@@ -11,6 +11,90 @@ function getOpenAI() {
   return openai;
 }
 
+// Detect language from CV content
+function detectLanguage(cvText: string): 'da' | 'en' {
+  const danishKeywords = ['erfaring', 'uddannelse', 'kompetencer', 'ansvar', 'virksomhed', 'stilling'];
+  const englishKeywords = ['experience', 'education', 'skills', 'responsibility', 'company', 'position'];
+  
+  let danishCount = 0;
+  let englishCount = 0;
+  
+  const lowerText = cvText.toLowerCase();
+  
+  danishKeywords.forEach(keyword => {
+    if (lowerText.includes(keyword)) danishCount++;
+  });
+  
+  englishKeywords.forEach(keyword => {
+    if (lowerText.includes(keyword)) englishCount++;
+  });
+  
+  return englishCount > danishCount ? 'en' : 'da';
+}
+
+// Format date based on language
+function formatDate(date: Date, language: 'da' | 'en'): string {
+  if (language === 'en') {
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                   'July', 'August', 'September', 'October', 'November', 'December'];
+    const day = date.getDate();
+    const suffix = day === 1 || day === 21 || day === 31 ? 'st' 
+                 : day === 2 || day === 22 ? 'nd' 
+                 : day === 3 || day === 23 ? 'rd' 
+                 : 'th';
+    return `${months[date.getMonth()]} ${day}${suffix}, ${date.getFullYear()}`;
+  } else {
+    const months = ['januar', 'februar', 'marts', 'april', 'maj', 'juni',
+                   'juli', 'august', 'september', 'oktober', 'november', 'december'];
+    return `${date.getDate()}. ${months[date.getMonth()]} ${date.getFullYear()}`;
+  }
+}
+
+// Create application header
+function createHeader(userProfile: any, language: 'da' | 'en'): string {
+  const { name, title, email, phone, location, city, country } = userProfile || {};
+  
+  const header: string[] = [];
+  
+  // Name (uppercase)
+  if (name) {
+    header.push(name.toUpperCase());
+  }
+  
+  // Title
+  if (title) {
+    header.push(title);
+  }
+  
+  header.push(''); // Empty line
+  
+  // Contact info line
+  const contactParts: string[] = [];
+  if (email) contactParts.push(email);
+  if (phone) contactParts.push(phone);
+  if (contactParts.length > 0) {
+    header.push(contactParts.join(' // '));
+  }
+  
+  header.push(''); // Empty line
+  header.push(''); // Extra empty line
+  
+  // City + Date
+  const today = new Date();
+  const formattedDate = formatDate(today, language);
+  
+  if (city) {
+    header.push(`${city}, ${formattedDate}`);
+  } else {
+    header.push(formattedDate);
+  }
+  
+  header.push(''); // Empty line
+  header.push(''); // Extra empty line
+  
+  return header.join('\n');
+}
+
 const APPLICATION_ANALYSIS_PROMPT = `DU ER EN ANALYTIKER DER MATCHER CV MOD JOBKRAV.
 
 OPGAVE:
@@ -45,7 +129,7 @@ const APPLICATION_WRITING_PROMPT = `DU ER EN PROFESSIONEL ANSØGNINGSSKRIVER.
 ABSOLUTTE REGLER:
 - Brug KUN information fra det tilpassede CV og analysen
 - Opfind IKKE erfaring, resultater, teknologier eller ansvar
-- Brug naturligt, professionelt dansk
+- Brug naturligt, professionelt sprog (dansk eller engelsk baseret på instruktion)
 - Ingen overdreven selvpromovering eller salgsretorik
 - Ansøgningen skal være konkret og relevant
 - Bevar faktuel korrekthed
@@ -55,7 +139,8 @@ Skriv en professionel ansøgning baseret på analysen og CV'et.
 
 FORMAT:
 - Skriv ansøgningen som ren tekst (IKKE markdown)
-- Start med en stærk åbning der viser motivation
+- Start DIREKTE med teksten (ingen header, ingen "Dear Hiring Team" - det kommer separat)
+- Første afsnit: Åbning der viser motivation for stillingen
 - 2-3 afsnit der kobler dokumenteret erfaring til jobkrav
 - Afslut professionelt
 - Brug almindelige linjeskift mellem afsnit
@@ -65,7 +150,12 @@ FORMAT:
 TONE:
 - Professionel men personlig
 - Konkret og faktabaseret
-- Engageret uden at være overdrevet`;
+- Engageret uden at være overdrevet
+
+SPROG:
+- Skriv på det sprog som CV'et er skrevet på
+- Hvis CV'et er på engelsk, skriv ansøgningen på engelsk
+- Hvis CV'et er på dansk, skriv ansøgningen på dansk`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -82,6 +172,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Detect language from CV content
+    const cvLanguage = detectLanguage(resolvedCv);
+    const isEnglish = cvLanguage === 'en';
 
     // Step 1: Analyze CV vs Job to find matches and gaps
     const analysisMessage = `Analysér dette CV mod jobopslaget:
@@ -159,8 +253,12 @@ Skriv en fuld ansøgning som ren tekst. Brug KUN dokumenteret erfaring fra CV'et
       throw new Error('Ingen tekstrespons fra AI');
     }
 
+    // Add header with contact info and date
+    const header = createHeader(userProfile, isEnglish ? 'en' : 'da');
+    const fullApplication = header + textContent;
+
     return NextResponse.json({
-      application: textContent,
+      application: fullApplication,
       analysis: {
         matchPoints: analysis.matchPoints || [],
         gaps: analysis.gaps || [],

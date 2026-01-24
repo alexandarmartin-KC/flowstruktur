@@ -8,6 +8,7 @@ export interface UserProfile {
   email?: string;
   phone?: string;
   location?: string;
+  city?: string;
   country?: string;
   title?: string;
   
@@ -60,7 +61,7 @@ const UserProfileContext = createContext<UserProfileContextType | undefined>(und
 const STORAGE_KEY = 'flowstruktur_user_profile';
 
 // All possible fields for completeness calculation
-const ALL_FIELDS = ['name', 'email', 'phone', 'location', 'title', 'linkedin', 'portfolio'];
+const ALL_FIELDS = ['name', 'email', 'phone', 'location', 'city', 'title', 'linkedin', 'portfolio'];
 
 // Required fields for export (hard gate)
 const REQUIRED_FOR_EXPORT = ['name', 'email', 'phone'];
@@ -71,6 +72,7 @@ const FIELD_LABELS: Record<string, string> = {
   email: 'Email',
   phone: 'Telefon',
   location: 'Adresse',
+  city: 'By',
   title: 'Jobtitel',
   linkedin: 'LinkedIn',
   portfolio: 'Portfolio/hjemmeside',

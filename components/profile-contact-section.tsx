@@ -197,13 +197,26 @@ export function ProfileContactSection() {
             <div className="space-y-2">
               <Label htmlFor="location" className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
-                Adresse / By
+                Adresse
               </Label>
               <Input
                 id="location"
                 value={localProfile.location || ''}
                 onChange={(e) => handleChange('location', e.target.value)}
-                placeholder="København, Danmark"
+                placeholder="Buddingevej 72D 1tv"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="city" className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                By
+              </Label>
+              <Input
+                id="city"
+                value={localProfile.city || ''}
+                onChange={(e) => handleChange('city', e.target.value)}
+                placeholder="København"
               />
             </div>
 

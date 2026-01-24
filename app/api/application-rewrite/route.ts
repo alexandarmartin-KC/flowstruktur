@@ -44,9 +44,11 @@ Omskriv den eksisterende ansøgning i henhold til brugerens ønske.
 
 ABSOLUTTE REGLER:
 - Behold ALT faktuelt indhold - opfind IKKE ny erfaring
-- Ansøgningen skal stadig være på dansk
+- Bevar sproget (dansk eller engelsk) fra original-ansøgningen
+- Bevar header-sektionen PRÆCIST som den er (navn, kontakt, dato)
+- Omskriv KUN brødteksten (efter header)
 - Bevar den samme grundstruktur (åbning, hoveddele, afslutning)
-- Returner den komplette omskrevne ansøgning som ren tekst
+- Returner den komplette omskrevne ansøgning (header + ny brødtekst) som ren tekst
 - Ingen markdown, ingen overskrifter
 - Brug almindelige linjeskift mellem afsnit
 

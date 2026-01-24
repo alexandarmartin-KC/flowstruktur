@@ -89,7 +89,7 @@ export default function AnsøgningPage() {
       // Get job description
       const jobDescription = localStorage.getItem(`job_posting_${jobId}`) || job.description || '';
       
-      // Format CV text
+      // Format CV text - this is the JOB-SPECIFIC tailored CV
       const cvText = cv.sections
         .map(s => `${s.name}:\n${s.suggestedText || ''}`)
         .join('\n\n');
@@ -111,6 +111,8 @@ export default function AnsøgningPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jobDescription,
+          jobTitle: job.title,
+          companyName: job.company,
           resolvedCv: cvText,
           userProfile: cv.profile,
           dimensionScores,

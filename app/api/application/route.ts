@@ -97,21 +97,32 @@ function createHeader(userProfile: any, language: 'da' | 'en'): string {
 
 const APPLICATION_ANALYSIS_PROMPT = `DU ER EN ANALYTIKER DER MATCHER CV MOD JOBKRAV.
 
+KONTEKST:
+Det CV du modtager er ALLEREDE job-specifikt tilpasset. Det betyder at CV'et er optimeret til netop denne stilling.
+Din opgave er at identificere de stærkeste match-punkter og eventuelle gaps.
+
 OPGAVE:
 Før du skriver ansøgningen, skal du lave en systematisk analyse.
 
-TRIN 1 - MATCH-PUNKTER (minimum 3):
-For hvert hovedkrav i jobbet, find DOKUMENTERET bevis fra CV'et:
+TRIN 1 - MATCH-PUNKTER (minimum 3, gerne flere):
+For hvert hovedkrav i jobbet, find DOKUMENTERET bevis fra det job-tilpassede CV:
 - Krav: [hvad jobbet kræver]
 - Bevis: [konkret erfaring fra CV der matcher]
 
+FOKUSER PÅ:
+- Specifikke færdigheder og teknologier nævnt i jobbet
+- Ansvarsniveauer og roller der matcher
+- Relevante brancher eller domæner
+- Certificeringer eller uddannelser som matcher
+
 TRIN 2 - GAPS/RISICI (minimum 1):
-Identificér krav hvor CV'et har begrænset match:
+Identificér krav hvor CV'et har begrænset eller indirekte match:
 - Krav: [hvad der mangler eller er svagt]
-- Note: [hvordan det kan adresseres i ansøgningen]
+- Note: [hvordan det kan adresseres i ansøgningen - f.eks. gennem overførbare kompetencer]
 
 TRIN 3 - ANBEFALET VINKEL:
-Beskriv den bedste måde at frame ansøgerens styrker på.
+Beskriv den bedste måde at frame ansøgerens styrker på for DENNE specifikke stilling.
+Hvad skal fremhæves? Hvilken tone? Hvilke aspekter af erfaring er mest relevante?
 
 RETURNER JSON:
 {
@@ -126,41 +137,57 @@ RETURNER JSON:
 
 const APPLICATION_WRITING_PROMPT = `DU ER EN PROFESSIONEL ANSØGNINGSSKRIVER.
 
+KRITISK KONTEKST:
+Du modtager et CV der er SPECIFIKT TILPASSET til det job ansøgningen skal handle om.
+Dette betyder at CV'et allerede er optimeret til at fremhæve relevant erfaring for denne rolle.
+Din opgave er at skrive en ansøgning der forklarer HVORFOR kandidaten er det rigtige match.
+
 ABSOLUTTE REGLER:
-- Brug KUN information fra det tilpassede CV og analysen
+- Brug KUN information fra det job-tilpassede CV og analysen
 - Opfind IKKE erfaring, resultater, teknologier eller ansvar
-- Brug naturligt, professionelt sprog (dansk eller engelsk baseret på instruktion)
+- Brug naturligt, professionelt sprog (dansk eller engelsk baseret på CV-sproget)
 - Ingen overdreven selvpromovering eller salgsretorik
-- Ansøgningen skal være konkret og relevant
+- Ansøgningen skal være konkret og relevant FOR DENNE SPECIFIKKE STILLING
 - Bevar faktuel korrekthed
+- Vis forståelse for stillingens krav og virksomhedens behov
+- Kobl dokumenteret erfaring DIREKTE til jobkrav
 
 OPGAVE:
-Skriv en professionel ansøgning baseret på analysen og CV'et.
+Skriv en målrettet ansøgning der demonstrerer fit mellem kandidat og rolle.
 
 FORMAT:
 - Skriv ansøgningen som ren tekst (IKKE markdown)
 - Start DIREKTE med teksten (ingen header, ingen "Dear Hiring Team" - det kommer separat)
-- Første afsnit: Åbning der viser motivation for stillingen
-- 2-3 afsnit der kobler dokumenteret erfaring til jobkrav
-- Afslut professionelt
+- Første afsnit: Åbning der viser motivation for DENNE specifikke stilling/virksomhed
+- 2-3 afsnit der kobler dokumenteret erfaring til SPECIFIKKE jobkrav
+- Afslut professionelt med interesse for næste skridt
 - Brug almindelige linjeskift mellem afsnit
 - Ingen overskrifter eller punktform
 - Længde: 250-400 ord
 
 TONE:
 - Professionel men personlig
-- Konkret og faktabaseret
-- Engageret uden at være overdrevet
+- Konkret og faktabaseret med specifikke eksempler
+- Engageret og motiveret for NETOP denne rolle
+- Ikke overdrevet - lad erfaringen tale for sig selv
 
 SPROG:
 - Skriv på det sprog som CV'et er skrevet på
 - Hvis CV'et er på engelsk, skriv ansøgningen på engelsk
-- Hvis CV'et er på dansk, skriv ansøgningen på dansk`;
+- Hvis CV'et er på dansk, skriv ansøgningen på dansk
+
+FOKUSPUNKTER:
+- Reference til konkrete projekter, teknologier, eller resultater fra CV'et
+- Vis hvordan kandidatens erfaring løser virksomhedens behov
+- Demonstrer forståelse for stillingens ansvar og udfordringer
+- Fremhæv de mest relevante kompetencer fra det job-tilpassede CV`;
 
 export async function POST(request: NextRequest) {
   try {
     const { 
       jobDescription,
+      jobTitle,
+      companyName,
       resolvedCv,
       userProfile,
       dimensionScores,
@@ -178,18 +205,22 @@ export async function POST(request: NextRequest) {
     const isEnglish = cvLanguage === 'en';
 
     // Step 1: Analyze CV vs Job to find matches and gaps
-    const analysisMessage = `Analysér dette CV mod jobopslaget:
+    const analysisMessage = `Analysér dette job-tilpassede CV mod jobopslaget:
+
+STILLINGSINFORMATION:
+${jobTitle ? `Stilling: ${jobTitle}` : ''}
+${companyName ? `Virksomhed: ${companyName}` : ''}
 
 STILLINGSOPSLAG:
 ${jobDescription}
 
-CV-INDHOLD:
+JOB-TILPASSET CV (dette CV er allerede optimeret til dette specifikke job):
 ${resolvedCv}
 
 ${userProfile ? `KANDIDAT-PROFIL:
 ${JSON.stringify(userProfile, null, 2)}` : ''}
 
-${dimensionScores && Object.keys(dimensionScores).length > 0 ? `ARBEJDSSTIL:
+${dimensionScores && Object.keys(dimensionScores).length > 0 ? `ARBEJDSSTIL-PROFIL:
 ${JSON.stringify(dimensionScores, null, 2)}` : ''}
 
 Returner en JSON-analyse med matchPoints (min 3), gaps (min 1) og recommendedFraming.`;
@@ -221,14 +252,26 @@ Returner en JSON-analyse med matchPoints (min 3), gaps (min 1) og recommendedFra
     // Step 2: Write application based on analysis
     const writingMessage = `Skriv en professionel ansøgning baseret på denne analyse:
 
+STILLINGSINFORMATION:
+${jobTitle ? `Stilling: ${jobTitle}` : ''}
+${companyName ? `Virksomhed: ${companyName}` : ''}
+
 STILLINGSOPSLAG:
 ${jobDescription}
 
-CV-INDHOLD:
+JOB-TILPASSET CV (dette CV er allerede optimeret til netop denne stilling):
 ${resolvedCv}
 
-ANALYSE:
+ANALYSE AF MATCH MELLEM CV OG JOB:
 ${JSON.stringify(analysis, null, 2)}
+
+VIGTIG INSTRUKTION:
+Dette CV er SPECIFIKT tilpasset til ${jobTitle || 'denne stilling'}${companyName ? ` hos ${companyName}` : ''}.
+Ansøgningen skal afspejle dette ved at:
+1. Referere til de specifikke erfaringer fra CV'et der matcher jobbet
+2. Vise forståelse for stillingens krav
+3. Koble kandidatens dokumenterede kompetencer direkte til jobopslaget
+4. Demonstrere motivation for netop denne rolle og virksomhed
 
 Skriv en fuld ansøgning som ren tekst. Brug KUN dokumenteret erfaring fra CV'et og analysen.`;
 

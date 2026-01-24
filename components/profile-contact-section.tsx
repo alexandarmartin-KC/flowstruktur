@@ -18,7 +18,7 @@ export function ProfileContactSection() {
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const completeness = getCompleteness();
   const exportReqs = canExport();

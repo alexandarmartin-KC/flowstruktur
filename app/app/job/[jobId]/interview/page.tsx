@@ -79,10 +79,8 @@ export default function InterviewPreparationPage() {
         }
       }
 
-      // Format CV for the API
-      const cvText = cv.sections
-        .map(s => `${s.name}:\n${s.suggestedText || ''}`)
-        .join('\n\n');
+      // Use the formatted CV text directly
+      const cvText = cv.text;
 
       const response = await fetch('/api/interview-analysis', {
         method: 'POST',

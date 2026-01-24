@@ -78,9 +78,7 @@ export default function InterviewSimulation({
           question: currentQuestion.question,
           userAnswer: userAnswer.trim(),
           jobPosting: job.description || '',
-          resolvedCv: cv.sections
-            .map((s: any) => `${s.name}:\n${s.suggestedText || ''}`)
-            .join('\n\n'),
+          resolvedCv: cv.text,
           previousFeedback: feedback,
           questionIndex: currentQuestionIdx,
           totalQuestions: questions.length,

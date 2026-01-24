@@ -39,7 +39,7 @@ export default function AnsøgningPage() {
   const [showHardGate, setShowHardGate] = useState(false);
   
   const job = savedJobs.find((j) => j.id === jobId);
-  const { cv, isLoading: cvLoading } = useResolvedCv(jobId);
+  const { cv, isLoading: cvLoading, error: cvError } = useResolvedCv(jobId);
   
   const [application, setApplication] = useState<string>('');
   const [originalApplication, setOriginalApplication] = useState<string>('');
@@ -219,12 +219,27 @@ export default function AnsøgningPage() {
     );
   }
 
-  if (!cv) {
+  if (cvError || !cv) {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          Kunne ikke indlæse CV data. Gå tilbage og færdiggør CV-tilpasningen først.
+          <div className="space-y-3">
+            <p className="font-medium">
+              {cvError || 'Kunne ikke indlæse CV data'}
+            </p>
+            <p className="text-sm">
+              Du skal først tilpasse dit CV til dette specifikke job, før du kan skrive en ansøgning.
+            </p>
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={() => router.push(`/app/job/${jobId}/cv`)}
+              className="mt-2"
+            >
+              Gå til CV-tilpasning
+            </Button>
+          </div>
         </AlertDescription>
       </Alert>
     );

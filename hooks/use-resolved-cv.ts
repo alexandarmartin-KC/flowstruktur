@@ -17,6 +17,8 @@ interface UserProfile {
   linkedin?: string;
   portfolio?: string;
   location?: string;
+  city?: string;
+  country?: string;
   profileImage?: string;
   title?: string;
   profilePhoto?: {
@@ -84,10 +86,8 @@ export function useResolvedCv(jobId: string): UseResolvedCvResult {
       
       if (storedProfile) {
         profile = JSON.parse(storedProfile);
-      } else {
-        // Fallback: Use mock profile for demo/development
-        profile = getMockProfile();
       }
+      // No fallback to mock profile - use real data only
 
       setCv({
         sections,
@@ -154,18 +154,4 @@ Scrum Master Certificering (CSM) - 2018`,
       status: 'approved',
     },
   ];
-}
-
-/**
- * Mock profile for demo/development purposes
- */
-function getMockProfile(): UserProfile {
-  return {
-    name: 'Maria Jensen',
-    email: 'maria.jensen@email.dk',
-    phone: '+45 20 34 56 78',
-    linkedin: 'linkedin.com/in/mariajensen',
-    location: 'København',
-    title: 'Senior Projektleder',
-  };
 }

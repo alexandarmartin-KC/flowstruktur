@@ -76,8 +76,10 @@ export function useResolvedCv(jobId: string): UseResolvedCvResult {
       if (storedSections) {
         sections = JSON.parse(storedSections);
       } else {
-        // Fallback: Use mock CV sections for demo/development
-        sections = getMockCVSections();
+        // No CV data found - user needs to create CV first
+        setError('Ingen CV-data fundet. Gå til CV-siden og færdiggør dit CV først.');
+        setIsLoading(false);
+        return;
       }
 
       // Load user profile from localStorage
@@ -104,54 +106,4 @@ export function useResolvedCv(jobId: string): UseResolvedCvResult {
   }, [jobId, savedJobs, isLoaded]);
 
   return { cv, isLoading, error };
-}
-
-/**
- * Mock CV sections for demo/development purposes
- */
-function getMockCVSections(): CVSection[] {
-  return [
-    {
-      id: 'profil',
-      name: 'Profil',
-      suggestedText: 'Erfaren projektleder med stærk baggrund i agil udvikling og digital transformation. Dokumenteret erfaring med at lede tværfaglige teams og levere komplekse projekter til tiden.',
-      status: 'approved',
-    },
-    {
-      id: 'erfaring',
-      name: 'Erhvervserfaring',
-      suggestedText: `Senior Projektleder | Tech Innovation A/S | 2020-2024
-• Ledede 5+ strategiske digitale transformationsprojekter med budgetter op til 15 mio. kr.
-• Implementerede agile arbejdsmetoder og øgede team-effektivitet med 40%
-• Styrede cross-funktionelle teams på op til 15 personer
-• Ansvarlig for stakeholder management på C-niveau
-
-Projektleder | Digital Solutions ApS | 2017-2020
-• Koordinerede udvikling af cloud-baserede løsninger for finanssektoren
-• Faciliterede sprint planning og retrospektiver for 3 scrum teams
-• Reducerede time-to-market med 30% gennem optimerede processer`,
-      status: 'approved',
-    },
-    {
-      id: 'uddannelse',
-      name: 'Uddannelse',
-      suggestedText: `Cand.merc. IT Management, CBS - 2017
-HD i Organisation og Ledelse, CBS - 2015
-PMP Certificering - 2019
-Scrum Master Certificering (CSM) - 2018`,
-      status: 'approved',
-    },
-    {
-      id: 'kompetencer',
-      name: 'Nøglekompetencer',
-      suggestedText: `• Projektledelse (Agile, Scrum, Waterfall)
-• Stakeholder management
-• Risikostyring og budgetstyring
-• Digital transformation
-• Change management
-• Team leadership
-• Product ownership`,
-      status: 'approved',
-    },
-  ];
 }

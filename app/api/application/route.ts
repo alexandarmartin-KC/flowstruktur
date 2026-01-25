@@ -11,10 +11,25 @@ function getOpenAI() {
   return openai;
 }
 
-// Detect language from CV content
+// Detect language from CV content - improved detection
 function detectLanguage(cvText: string): 'da' | 'en' {
-  const danishKeywords = ['erfaring', 'uddannelse', 'kompetencer', 'ansvar', 'virksomhed', 'stilling'];
-  const englishKeywords = ['experience', 'education', 'skills', 'responsibility', 'company', 'position'];
+  // Extended keyword lists for better detection
+  const danishKeywords = [
+    'erfaring', 'uddannelse', 'kompetencer', 'ansvar', 'virksomhed', 'stilling',
+    'arbejde', 'opgaver', 'projekter', 'ledelse', 'udvikling', 'ansvarlig',
+    'gennemført', 'implementeret', 'koordineret', 'samarbejde', 'kunde',
+    'resultat', 'mål', 'strategi', 'analyse', 'rapport', 'dansk', 'engelsk',
+    'modersmål', 'flydende', 'år', 'måneder', 'nutid', 'tidligere',
+    'faglige', 'professionel', 'erhvervserfaring', 'nøglekompetencer'
+  ];
+  const englishKeywords = [
+    'experience', 'education', 'skills', 'responsibility', 'company', 'position',
+    'work', 'tasks', 'projects', 'leadership', 'development', 'responsible',
+    'completed', 'implemented', 'coordinated', 'collaboration', 'customer',
+    'result', 'goal', 'strategy', 'analysis', 'report', 'danish', 'english',
+    'native', 'fluent', 'years', 'months', 'present', 'previous',
+    'professional', 'summary', 'achievements', 'key', 'qualifications'
+  ];
   
   let danishCount = 0;
   let englishCount = 0;
@@ -22,12 +37,20 @@ function detectLanguage(cvText: string): 'da' | 'en' {
   const lowerText = cvText.toLowerCase();
   
   danishKeywords.forEach(keyword => {
-    if (lowerText.includes(keyword)) danishCount++;
+    // Count occurrences, not just presence
+    const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+    const matches = lowerText.match(regex);
+    if (matches) danishCount += matches.length;
   });
   
   englishKeywords.forEach(keyword => {
-    if (lowerText.includes(keyword)) englishCount++;
+    const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+    const matches = lowerText.match(regex);
+    if (matches) englishCount += matches.length;
   });
+  
+  // Log for debugging
+  console.log(`Language detection: Danish=${danishCount}, English=${englishCount}`);
   
   return englishCount > danishCount ? 'en' : 'da';
 }
@@ -273,7 +296,13 @@ Returner en JSON-analyse med matchPoints (min 3), gaps (min 1) og recommendedFra
     const analysis = JSON.parse(analysisContent);
 
     // Step 2: Write application based on analysis
-    const writingMessage = `Skriv en professionel ansøgning baseret på denne analyse:
+    const languageInstruction = cvLanguage === 'en' 
+      ? 'LANGUAGE: Write this application in ENGLISH - the CV is in English.'
+      : 'SPROG: Skriv denne ansøgning på DANSK - CV\'et er på dansk.';
+
+    const writingMessage = `${languageInstruction}
+
+Skriv en professionel ansøgning baseret på denne analyse:
 
 STILLINGSINFORMATION:
 ${jobTitle ? `Stilling: ${jobTitle}` : ''}

@@ -41,7 +41,10 @@ import {
   Palette,
   FileCheck,
   RefreshCw,
+  Loader2,
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 interface CVEditorToolbarProps {
   jobTitle?: string;
@@ -61,13 +64,14 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
     restoreCheckpoint,
     deleteCheckpoint,
   } = useCVEditor();
-  const { canExport } = useUserProfile();
+  const { canExport, profile } = useUserProfile();
   
   const [checkpointName, setCheckpointName] = useState('');
   const [showCheckpointDialog, setShowCheckpointDialog] = useState(false);
   const [showExportWarning, setShowExportWarning] = useState(false);
   const [showReloadDialog, setShowReloadDialog] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [cvPreloaded, setCvPreloaded] = useState(false);
   
   // Check if CV was preloaded
@@ -78,12 +82,105 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
   const document = state.document;
   const exportReqs = canExport();
   
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     if (!exportReqs.canExport) {
       setShowExportWarning(true);
       return;
     }
-    window.print();
+    
+    setIsExporting(true);
+    
+    try {
+      // Find the CV preview element
+      const cvElement = window.document.querySelector('.cv-preview') as HTMLElement;
+      if (!cvElement) {
+        console.error('CV preview element not found');
+        // Fallback to window.print()
+        window.print();
+        setIsExporting(false);
+        return;
+      }
+      
+      // Create a clone to avoid modifying the original
+      const clone = cvElement.cloneNode(true) as HTMLElement;
+      clone.style.position = 'absolute';
+      clone.style.left = '-9999px';
+      clone.style.top = '0';
+      clone.style.width = '210mm'; // A4 width
+      clone.style.backgroundColor = 'white';
+      
+      // Remove any elements that shouldn't be in the PDF
+      const noPrintElements = clone.querySelectorAll('.print\\:hidden, .no-print');
+      noPrintElements.forEach(el => el.remove());
+      
+      window.document.body.appendChild(clone);
+      
+      // Use html2canvas to capture the CV
+      const canvas = await html2canvas(clone, {
+        scale: 2, // Higher quality
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        windowWidth: 794, // A4 width in pixels at 96 DPI
+      });
+      
+      // Remove the clone
+      window.document.body.removeChild(clone);
+      
+      // Create PDF
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      // Calculate dimensions to fit A4
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 0;
+      
+      // Check if we need multiple pages
+      const scaledHeight = imgHeight * (pdfWidth / imgWidth);
+      
+      if (scaledHeight <= pdfHeight) {
+        // Single page
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
+      } else {
+        // Multiple pages
+        let remainingHeight = scaledHeight;
+        let position = 0;
+        let page = 0;
+        
+        while (remainingHeight > 0) {
+          if (page > 0) {
+            pdf.addPage();
+          }
+          
+          pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, scaledHeight);
+          
+          remainingHeight -= pdfHeight;
+          position += pdfHeight;
+          page++;
+        }
+      }
+      
+      // Generate filename from user's name
+      const userName = profile?.name?.replace(/[^a-zA-Z0-9æøåÆØÅ\s]/g, '').replace(/\s+/g, '_') || 'CV';
+      pdf.save(`CV_${userName}.pdf`);
+      
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      // Fallback to window.print()
+      window.print();
+    } finally {
+      setIsExporting(false);
+    }
   };
   
   const handleCreateCheckpoint = () => {
@@ -340,9 +437,13 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             </Button>
             
             {/* Export PDF */}
-            <Button onClick={handleExportPDF} className="gap-2">
-              <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Download PDF</span>
+            <Button onClick={handleExportPDF} className="gap-2" disabled={isExporting}>
+              {isExporting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              <span className="hidden sm:inline">{isExporting ? 'Eksporterer...' : 'Download PDF'}</span>
             </Button>
           </div>
         </div>

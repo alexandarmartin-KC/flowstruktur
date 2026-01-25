@@ -143,10 +143,22 @@
 
 /* Print styles - hide editing UI and make everything clean for HR */
 @media print {
-  /* Page setup for professional A4 output */
+  /* Page setup for professional A4 output - no browser headers/footers */
   @page {
     size: A4;
     margin: 15mm 10mm 15mm 10mm;
+    /* Attempt to hide browser header/footer (Chrome/Edge) */
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  /* First and last page - attempt to remove header/footer space */
+  @page :first {
+    margin-top: 15mm;
+  }
+  
+  @page :last {
+    margin-bottom: 15mm;
   }
   
   /* Hide all editing UI elements */
@@ -164,6 +176,8 @@
     background: white !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    /* Add padding to compensate for removed margins */
+    padding: 15mm 10mm !important;
   }
   
   /* Clean input styling for print */

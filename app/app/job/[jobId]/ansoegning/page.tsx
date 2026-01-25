@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Sparkles, Copy, Check, Wand2, AlertCircle, Edit3, ChevronDown, ChevronUp } from 'lucide-react';
+import { Loader2, Sparkles, Copy, Check, Wand2, AlertCircle, Edit3, ChevronDown, ChevronUp, Download } from 'lucide-react';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import { useResolvedCv } from '@/hooks/use-resolved-cv';
 import { ProfileSoftGate } from '@/components/profile-soft-gate';
 import { useUserProfile } from '@/contexts/user-profile-context';
 import { ProfileHardGate } from '@/components/profile-hard-gate';
+import { jsPDF } from 'jspdf';
 
 interface MatchPoint {
   requirement: string;
@@ -201,6 +202,71 @@ export default function AnsøgningPage() {
       setTimeout(() => setIsCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    const exportReqs = canExport();
+    if (!exportReqs.canExport) {
+      setShowHardGate(true);
+      return;
+    }
+    
+    try {
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+      
+      // Set font
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      
+      // Page dimensions
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const marginLeft = 25;
+      const marginRight = 25;
+      const marginTop = 25;
+      const marginBottom = 25;
+      const textWidth = pageWidth - marginLeft - marginRight;
+      
+      let yPosition = marginTop;
+      
+      // Split text into lines
+      const lines = application.split('\n');
+      
+      for (const line of lines) {
+        // Handle empty lines (paragraph breaks)
+        if (line.trim() === '') {
+          yPosition += 5;
+          continue;
+        }
+        
+        // Wrap text to fit page width
+        const wrappedLines = doc.splitTextToSize(line, textWidth);
+        
+        for (const wrappedLine of wrappedLines) {
+          // Check if we need a new page
+          if (yPosition > pageHeight - marginBottom) {
+            doc.addPage();
+            yPosition = marginTop;
+          }
+          
+          doc.text(wrappedLine, marginLeft, yPosition);
+          yPosition += 5.5; // Line height
+        }
+      }
+      
+      // Generate filename
+      const companyName = job?.company?.replace(/[^a-zA-Z0-9æøåÆØÅ]/g, '_') || 'job';
+      const fileName = `Ansøgning_${companyName}.pdf`;
+      
+      doc.save(fileName);
+    } catch (err) {
+      console.error('Failed to generate PDF:', err);
+      setError('Kunne ikke generere PDF');
     }
   };
 
@@ -426,23 +492,33 @@ export default function AnsøgningPage() {
                       : 'AI-genereret udkast baseret på dit CV'}
                   </CardDescription>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopyToClipboard}
-                >
-                  {isCopied ? (
-                    <>
-                      <Check className="mr-2 h-4 w-4" />
-                      Kopieret
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="mr-2 h-4 w-4" />
-                      Kopier
-                    </>
-                  )}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopyToClipboard}
+                  >
+                    {isCopied ? (
+                      <>
+                        <Check className="mr-2 h-4 w-4" />
+                        Kopieret
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="mr-2 h-4 w-4" />
+                        Kopier
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDownloadPDF}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Download PDF
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">

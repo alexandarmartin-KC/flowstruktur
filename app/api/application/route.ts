@@ -118,6 +118,32 @@ function createHeader(userProfile: any, language: 'da' | 'en'): string {
   return header.join('\n');
 }
 
+// Create application signature/closing
+function createSignature(userProfile: any, language: 'da' | 'en'): string {
+  const { name } = userProfile || {};
+  
+  const signature: string[] = [];
+  
+  signature.push(''); // Empty line before closing
+  signature.push(''); // Extra empty line
+  
+  // Closing phrase
+  if (language === 'en') {
+    signature.push('Best regards,');
+  } else {
+    signature.push('Med venlig hilsen');
+  }
+  
+  signature.push(''); // Empty line before name
+  
+  // Name
+  if (name) {
+    signature.push(name);
+  }
+  
+  return signature.join('\n');
+}
+
 const APPLICATION_ANALYSIS_PROMPT = `DU ER EN ANALYTIKER DER MATCHER CV MOD JOBKRAV.
 
 KONTEKST:
@@ -215,7 +241,8 @@ FORMAT:
 - Start DIREKTE med brødtekst (ingen header)
 - Første afsnit: Motivation for denne stilling - konkret og specifik
 - 2-3 afsnit: Kobl dokumenteret erfaring til specifikke jobkrav
-- Afslutning: Professionel interesse for dialog
+- Afslutning: Professionel interesse for dialog/samtale
+- SLUT IKKE MED "Med venlig hilsen" eller navn - dette tilføjes automatisk
 - Almindelige linjeskift mellem afsnit
 - Længde: 250-400 ord
 
@@ -350,9 +377,10 @@ Skriv en fuld ansøgning som ren tekst. Brug KUN dokumenteret erfaring fra CV'et
       throw new Error('Ingen tekstrespons fra AI');
     }
 
-    // Add header with contact info and date
+    // Add header with contact info and date, and signature at the end
     const header = createHeader(userProfile, isEnglish ? 'en' : 'da');
-    const fullApplication = header + textContent;
+    const signature = createSignature(userProfile, isEnglish ? 'en' : 'da');
+    const fullApplication = header + textContent + signature;
 
     return NextResponse.json({
       application: fullApplication,

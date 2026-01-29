@@ -43,7 +43,6 @@ import {
   RefreshCw,
   Loader2,
 } from 'lucide-react';
-import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
 interface CVEditorToolbarProps {
@@ -91,6 +90,9 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
     setIsExporting(true);
     
     try {
+      // Dynamic import of html2canvas to avoid SSR issues
+      const html2canvas = (await import('html2canvas')).default;
+      
       // Find the CV preview element
       const cvElement = window.document.querySelector('.cv-preview') as HTMLElement;
       if (!cvElement) {

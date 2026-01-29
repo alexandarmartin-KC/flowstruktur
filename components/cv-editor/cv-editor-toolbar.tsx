@@ -93,13 +93,11 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       // Dynamic import of html2canvas to avoid SSR issues
       const html2canvas = (await import('html2canvas')).default;
       
-      // Find the CV preview element (try both possible classes)
-      const cvElement = (
-        window.document.querySelector('.cv-print-preview') || 
-        window.document.querySelector('.cv-preview')
-      ) as HTMLElement;
+      // Find the CV document element
+      const cvElement = window.document.querySelector('.cv-document') as HTMLElement;
       if (!cvElement) {
-        console.error('CV preview element not found');
+        console.error('CV document element not found');
+        alert('Kunne ikke finde CV elementet. Prøv at genindlæse siden.');
         setIsExporting(false);
         return;
       }

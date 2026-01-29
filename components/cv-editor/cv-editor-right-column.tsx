@@ -592,7 +592,7 @@ function ExperienceBlock({
           />
           {experience.location && (
             <>
-              <span className="text-slate-400 mx-0.5 text-sm">·</span>
+              <span className="text-slate-400 mx-1 text-sm">-</span>
               <Input
                 value={experience.location}
                 onChange={(e) => onUpdate({ location: e.target.value })}

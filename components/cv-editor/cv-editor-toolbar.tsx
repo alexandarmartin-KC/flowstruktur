@@ -41,9 +41,7 @@ import {
   Palette,
   FileCheck,
   RefreshCw,
-  Loader2,
 } from 'lucide-react';
-import { jsPDF } from 'jspdf';
 
 interface CVEditorToolbarProps {
   jobTitle?: string;
@@ -70,7 +68,6 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
   const [showExportWarning, setShowExportWarning] = useState(false);
   const [showReloadDialog, setShowReloadDialog] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
   const [cvPreloaded, setCvPreloaded] = useState(false);
   
   // Check if CV was preloaded
@@ -81,124 +78,15 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
   const document = state.document;
   const exportReqs = canExport();
   
-  const handleExportPDF = async () => {
+  const handleExportPDF = () => {
     if (!exportReqs.canExport) {
       setShowExportWarning(true);
       return;
     }
     
-    setIsExporting(true);
-    
-    try {
-      // Dynamic import of html2canvas to avoid SSR issues
-      const html2canvas = (await import('html2canvas')).default;
-      
-      // Find the CV document element
-      const cvElement = window.document.querySelector('.cv-document') as HTMLElement;
-      if (!cvElement) {
-        console.error('CV document element not found');
-        alert('Kunne ikke finde CV elementet. Prøv at genindlæse siden.');
-        setIsExporting(false);
-        return;
-      }
-      
-      // Store original styles
-      const originalOverflow = cvElement.style.overflow;
-      const originalHeight = cvElement.style.height;
-      
-      // Temporarily expand element to full height
-      cvElement.style.overflow = 'visible';
-      cvElement.style.height = 'auto';
-      
-      // Hide elements that shouldn't be in the PDF
-      const noPrintElements = cvElement.querySelectorAll('.no-print, [class*="print:hidden"]');
-      noPrintElements.forEach(el => (el as HTMLElement).style.visibility = 'hidden');
-      
-      // Use html2canvas to capture the CV directly
-      const canvas = await html2canvas(cvElement, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: true, // Enable logging for debugging
-        backgroundColor: '#ffffff',
-        onclone: (clonedDoc) => {
-          // In the cloned document, ensure no-print elements are hidden
-          const clonedNoPrint = clonedDoc.querySelectorAll('.no-print, [class*="print:hidden"]');
-          clonedNoPrint.forEach(el => (el as HTMLElement).style.display = 'none');
-        }
-      });
-      
-      // Restore original styles
-      cvElement.style.overflow = originalOverflow;
-      cvElement.style.height = originalHeight;
-      noPrintElements.forEach(el => (el as HTMLElement).style.visibility = '');
-      
-      // Create PDF
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-      });
-      
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      
-      // Calculate dimensions to fit A4 width
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const scaledHeight = (imgHeight * pdfWidth) / imgWidth;
-      
-      if (scaledHeight <= pdfHeight) {
-        // Single page
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight);
-      } else {
-        // Multiple pages - slice the image
-        const pageCanvas = window.document.createElement('canvas');
-        const ctx = pageCanvas.getContext('2d');
-        if (!ctx) throw new Error('Could not get canvas context');
-        
-        const sourceWidth = canvas.width;
-        const sourceHeight = canvas.height;
-        const pageHeightInSource = (pdfHeight / pdfWidth) * sourceWidth;
-        
-        let sourceY = 0;
-        let pageNum = 0;
-        
-        while (sourceY < sourceHeight) {
-          const sliceHeight = Math.min(pageHeightInSource, sourceHeight - sourceY);
-          
-          pageCanvas.width = sourceWidth;
-          pageCanvas.height = sliceHeight;
-          
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, sourceWidth, sliceHeight);
-          ctx.drawImage(canvas, 0, sourceY, sourceWidth, sliceHeight, 0, 0, sourceWidth, sliceHeight);
-          
-          const pageImgData = pageCanvas.toDataURL('image/jpeg', 0.95);
-          const pageScaledHeight = (sliceHeight * pdfWidth) / sourceWidth;
-          
-          if (pageNum > 0) {
-            pdf.addPage();
-          }
-          
-          pdf.addImage(pageImgData, 'JPEG', 0, 0, pdfWidth, pageScaledHeight);
-          
-          sourceY += pageHeightInSource;
-          pageNum++;
-        }
-      }
-      
-      // Generate filename from user's name
-      const userName = profile?.name?.replace(/[^a-zA-Z0-9æøåÆØÅ\s]/g, '').replace(/\s+/g, '_') || 'CV';
-      pdf.save(`CV_${userName}.pdf`);
-      
-    } catch (error: any) {
-      console.error('Error exporting PDF:', error);
-      alert(`Der opstod en fejl ved PDF-generering: ${error?.message || 'Ukendt fejl'}. Prøv igen.`);
-    } finally {
-      setIsExporting(false);
-    }
+    // Use browser print dialog - instruct user to disable headers/footers
+    // This is the most reliable way to get a clean PDF with proper layout
+    window.print();
   };
   
   const handleCreateCheckpoint = () => {
@@ -455,13 +343,9 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             </Button>
             
             {/* Export PDF */}
-            <Button onClick={handleExportPDF} className="gap-2" disabled={isExporting}>
-              {isExporting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Download className="h-4 w-4" />
-              )}
-              <span className="hidden sm:inline">{isExporting ? 'Eksporterer...' : 'Download PDF'}</span>
+            <Button onClick={handleExportPDF} className="gap-2">
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Download PDF</span>
             </Button>
           </div>
         </div>

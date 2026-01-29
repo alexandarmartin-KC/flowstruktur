@@ -42,6 +42,8 @@ import {
   FileCheck,
   RefreshCw,
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import { LANGUAGE_LEVEL_LABELS } from '@/lib/cv-types';
 
 interface CVEditorToolbarProps {
   jobTitle?: string;
@@ -84,9 +86,273 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       return;
     }
     
-    // Use browser print dialog - instruct user to disable headers/footers
-    // This is the most reliable way to get a clean PDF with proper layout
-    window.print();
+    if (!document) {
+      alert('Intet CV dokument at eksportere');
+      return;
+    }
+    
+    try {
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+      
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      // Layout constants
+      const leftColumnWidth = 65;
+      const rightColumnStart = leftColumnWidth + 5;
+      const rightColumnWidth = pageWidth - rightColumnStart - 10;
+      const marginTop = 15;
+      const marginLeft = 10;
+      const lineHeight = 5;
+      
+      let leftY = marginTop;
+      let rightY = marginTop;
+      
+      // Draw left column background
+      pdf.setFillColor(248, 250, 252); // slate-50
+      pdf.rect(0, 0, leftColumnWidth, pageHeight, 'F');
+      
+      // === LEFT COLUMN ===
+      
+      // Name
+      if (profile?.name) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(14);
+        pdf.setTextColor(30, 41, 59); // slate-800
+        const nameLines = pdf.splitTextToSize(profile.name, leftColumnWidth - 15);
+        pdf.text(nameLines, marginLeft, leftY);
+        leftY += nameLines.length * 6 + 2;
+      }
+      
+      // Title
+      if (profile?.title) {
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        pdf.setTextColor(71, 85, 105); // slate-500
+        const titleLines = pdf.splitTextToSize(profile.title, leftColumnWidth - 15);
+        pdf.text(titleLines, marginLeft, leftY);
+        leftY += titleLines.length * 4 + 6;
+      }
+      
+      // Contact section
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 116, 139); // slate-500
+      pdf.text('KONTAKT', marginLeft, leftY);
+      leftY += 5;
+      
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(9);
+      pdf.setTextColor(51, 65, 85); // slate-700
+      
+      if (profile?.email) {
+        pdf.text(profile.email, marginLeft, leftY);
+        leftY += lineHeight;
+      }
+      if (profile?.phone) {
+        pdf.text(profile.phone, marginLeft, leftY);
+        leftY += lineHeight;
+      }
+      if (profile?.city) {
+        pdf.text(profile.city, marginLeft, leftY);
+        leftY += lineHeight;
+      }
+      
+      leftY += 5;
+      
+      // Skills
+      if (document.leftColumn.skills.length > 0) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8);
+        pdf.setTextColor(100, 116, 139);
+        pdf.text('KOMPETENCER', marginLeft, leftY);
+        leftY += 5;
+        
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        pdf.setTextColor(51, 65, 85);
+        
+        for (const skill of document.leftColumn.skills) {
+          if (skill.skill) {
+            pdf.text('• ' + skill.skill, marginLeft, leftY);
+            leftY += lineHeight;
+          }
+        }
+        leftY += 3;
+      }
+      
+      // Languages
+      if (document.leftColumn.languages.length > 0) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8);
+        pdf.setTextColor(100, 116, 139);
+        pdf.text('SPROG', marginLeft, leftY);
+        leftY += 5;
+        
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        pdf.setTextColor(51, 65, 85);
+        
+        for (const lang of document.leftColumn.languages) {
+          if (lang.language) {
+            const levelLabel = LANGUAGE_LEVEL_LABELS[lang.level] || lang.level;
+            pdf.text(lang.language, marginLeft, leftY);
+            pdf.setTextColor(100, 116, 139);
+            pdf.text(levelLabel, marginLeft, leftY + 4);
+            pdf.setTextColor(51, 65, 85);
+            leftY += 10;
+          }
+        }
+        leftY += 3;
+      }
+      
+      // Education
+      if (document.leftColumn.education.length > 0) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8);
+        pdf.setTextColor(100, 116, 139);
+        pdf.text('UDDANNELSE', marginLeft, leftY);
+        leftY += 5;
+        
+        for (const edu of document.leftColumn.education) {
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(9);
+          pdf.setTextColor(51, 65, 85);
+          if (edu.degree) {
+            const degreeLines = pdf.splitTextToSize(edu.degree, leftColumnWidth - 15);
+            pdf.text(degreeLines, marginLeft, leftY);
+            leftY += degreeLines.length * 4;
+          }
+          
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(8);
+          pdf.setTextColor(100, 116, 139);
+          if (edu.institution) {
+            pdf.text(edu.institution, marginLeft, leftY);
+            leftY += 4;
+          }
+          if (edu.year) {
+            pdf.text(edu.year, marginLeft, leftY);
+            leftY += 4;
+          }
+          leftY += 3;
+        }
+      }
+      
+      // === RIGHT COLUMN ===
+      
+      // Profile/Summary
+      if (document.rightColumn.profileSummary) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(10);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('PROFIL', rightColumnStart, rightY);
+        rightY += 6;
+        
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        pdf.setTextColor(51, 65, 85);
+        const summaryLines = pdf.splitTextToSize(document.rightColumn.profileSummary, rightColumnWidth);
+        pdf.text(summaryLines, rightColumnStart, rightY);
+        rightY += summaryLines.length * 4 + 8;
+      }
+      
+      // Experience
+      if (document.rightColumn.experiences.length > 0) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(10);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text('ERFARING', rightColumnStart, rightY);
+        rightY += 6;
+        
+        for (const exp of document.rightColumn.experiences) {
+          // Check if we need a new page
+          if (rightY > pageHeight - 40) {
+            pdf.addPage();
+            rightY = marginTop;
+            // Redraw left column background on new page
+            pdf.setFillColor(248, 250, 252);
+            pdf.rect(0, 0, leftColumnWidth, pageHeight, 'F');
+          }
+          
+          // Title
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(10);
+          pdf.setTextColor(30, 41, 59);
+          if (exp.title) {
+            pdf.text(exp.title, rightColumnStart, rightY);
+            rightY += 5;
+          }
+          
+          // Company and location
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(9);
+          pdf.setTextColor(71, 85, 105);
+          let companyLine = exp.company || '';
+          if (exp.location) companyLine += ' - ' + exp.location;
+          if (companyLine) {
+            pdf.text(companyLine, rightColumnStart, rightY);
+            rightY += 4;
+          }
+          
+          // Dates
+          pdf.setFontSize(8);
+          pdf.setTextColor(100, 116, 139);
+          let dateLine = exp.startDate || '';
+          if (exp.endDate) dateLine += ' - ' + exp.endDate;
+          else if (dateLine) dateLine += ' - Nu';
+          if (dateLine) {
+            pdf.text(dateLine, rightColumnStart, rightY);
+            rightY += 5;
+          }
+          
+          // Key milestones
+          if (exp.keyMilestones) {
+            pdf.setFont('helvetica', 'italic');
+            pdf.setFontSize(9);
+            pdf.setTextColor(51, 65, 85);
+            const milestoneLines = pdf.splitTextToSize(exp.keyMilestones, rightColumnWidth);
+            pdf.text(milestoneLines, rightColumnStart, rightY);
+            rightY += milestoneLines.length * 4 + 2;
+          }
+          
+          // Bullets
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(9);
+          pdf.setTextColor(51, 65, 85);
+          for (const bullet of exp.bullets) {
+            if (bullet.content) {
+              const bulletLines = pdf.splitTextToSize('• ' + bullet.content, rightColumnWidth);
+              
+              // Check if we need a new page
+              if (rightY + bulletLines.length * 4 > pageHeight - 15) {
+                pdf.addPage();
+                rightY = marginTop;
+                pdf.setFillColor(248, 250, 252);
+                pdf.rect(0, 0, leftColumnWidth, pageHeight, 'F');
+              }
+              
+              pdf.text(bulletLines, rightColumnStart, rightY);
+              rightY += bulletLines.length * 4 + 1;
+            }
+          }
+          
+          rightY += 5;
+        }
+      }
+      
+      // Save
+      const userName = profile?.name?.replace(/[^a-zA-Z0-9æøåÆØÅ\s]/g, '').replace(/\s+/g, '_') || 'CV';
+      pdf.save(`CV_${userName}.pdf`);
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Der opstod en fejl ved PDF-generering. Prøv igen.');
+    }
   };
   
   const handleCreateCheckpoint = () => {

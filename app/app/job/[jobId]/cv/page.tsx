@@ -1,19 +1,53 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSavedJobs } from '@/contexts/saved-jobs-context';
 import { CVEditor } from '@/components/cv-editor';
 import { ProfileSoftGate } from '@/components/profile-soft-gate';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, ArrowRight, Info, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+
+// Validate CV data before proceeding
+function validateCVData(jobId: string): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  try {
+    const cvDataStr = localStorage.getItem(`cv_document_${jobId}`);
+    if (!cvDataStr) {
+      return { valid: true, errors: [] }; // No data yet, allow proceeding
+    }
+    
+    const cvData = JSON.parse(cvDataStr);
+    
+    // Check languages have levels
+    if (cvData.leftColumn?.languages) {
+      const languagesWithoutLevel = cvData.leftColumn.languages.filter(
+        (lang: { language: string; level: string }) => 
+          lang.language && lang.language.trim() !== '' && (!lang.level || lang.level.trim() === '')
+      );
+      
+      if (languagesWithoutLevel.length > 0) {
+        const langNames = languagesWithoutLevel.map((l: { language: string }) => l.language).join(', ');
+        errors.push(`Vælg niveau for: ${langNames}`);
+      }
+    }
+  } catch (e) {
+    console.error('Error validating CV data:', e);
+  }
+  
+  return { valid: errors.length === 0, errors };
+}
 
 export default function CVPage() {
   const params = useParams();
   const router = useRouter();
   const { savedJobs, setCvStatus, isLoaded } = useSavedJobs();
   const jobId = params.jobId as string;
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   
   // Wait for context to load
   if (!isLoaded) {
@@ -69,6 +103,21 @@ export default function CVPage() {
       {/* Bottom navigation */}
       <div className="bg-white dark:bg-gray-950 border-t sticky bottom-0 z-40 print:hidden">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {/* Validation errors */}
+          {validationErrors.length > 0 && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Udfyld venligst:</strong>
+                <ul className="list-disc list-inside mt-1">
+                  {validationErrors.map((error, idx) => (
+                    <li key={idx}>{error}</li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <div className="flex items-center justify-between">
             <Link href="/app/gemte-jobs">
               <Button variant="ghost">
@@ -81,6 +130,12 @@ export default function CVPage() {
               <Button
                 variant="outline"
                 onClick={() => {
+                  const validation = validateCVData(jobId);
+                  if (!validation.valid) {
+                    setValidationErrors(validation.errors);
+                    return;
+                  }
+                  setValidationErrors([]);
                   setCvStatus(jobId, 'DRAFT');
                 }}
               >
@@ -89,6 +144,12 @@ export default function CVPage() {
               
               <Button
                 onClick={() => {
+                  const validation = validateCVData(jobId);
+                  if (!validation.valid) {
+                    setValidationErrors(validation.errors);
+                    return;
+                  }
+                  setValidationErrors([]);
                   setCvStatus(jobId, 'FINAL');
                   router.push(`/app/job/${jobId}/ansoegning`);
                 }}

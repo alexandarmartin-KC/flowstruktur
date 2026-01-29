@@ -102,22 +102,36 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
         return;
       }
       
+      // Store original styles
+      const originalOverflow = cvElement.style.overflow;
+      const originalHeight = cvElement.style.height;
+      
+      // Temporarily expand element to full height
+      cvElement.style.overflow = 'visible';
+      cvElement.style.height = 'auto';
+      
       // Hide elements that shouldn't be in the PDF
       const noPrintElements = cvElement.querySelectorAll('.no-print, [class*="print:hidden"]');
-      noPrintElements.forEach(el => (el as HTMLElement).style.display = 'none');
+      noPrintElements.forEach(el => (el as HTMLElement).style.visibility = 'hidden');
       
       // Use html2canvas to capture the CV directly
       const canvas = await html2canvas(cvElement, {
-        scale: 2, // Higher quality
+        scale: 2,
         useCORS: true,
-        logging: false,
+        allowTaint: true,
+        logging: true, // Enable logging for debugging
         backgroundColor: '#ffffff',
-        width: cvElement.scrollWidth,
-        height: cvElement.scrollHeight,
+        onclone: (clonedDoc) => {
+          // In the cloned document, ensure no-print elements are hidden
+          const clonedNoPrint = clonedDoc.querySelectorAll('.no-print, [class*="print:hidden"]');
+          clonedNoPrint.forEach(el => (el as HTMLElement).style.display = 'none');
+        }
       });
       
-      // Restore hidden elements
-      noPrintElements.forEach(el => (el as HTMLElement).style.display = '');
+      // Restore original styles
+      cvElement.style.overflow = originalOverflow;
+      cvElement.style.height = originalHeight;
+      noPrintElements.forEach(el => (el as HTMLElement).style.visibility = '');
       
       // Create PDF
       const pdf = new jsPDF({
@@ -126,7 +140,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
         format: 'a4',
       });
       
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
@@ -136,8 +150,8 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       const scaledHeight = (imgHeight * pdfWidth) / imgWidth;
       
       if (scaledHeight <= pdfHeight) {
-        // Single page - center vertically if needed
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
+        // Single page
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight);
       } else {
         // Multiple pages - slice the image
         const pageCanvas = window.document.createElement('canvas');
@@ -161,14 +175,14 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
           ctx.fillRect(0, 0, sourceWidth, sliceHeight);
           ctx.drawImage(canvas, 0, sourceY, sourceWidth, sliceHeight, 0, 0, sourceWidth, sliceHeight);
           
-          const pageImgData = pageCanvas.toDataURL('image/png');
+          const pageImgData = pageCanvas.toDataURL('image/jpeg', 0.95);
           const pageScaledHeight = (sliceHeight * pdfWidth) / sourceWidth;
           
           if (pageNum > 0) {
             pdf.addPage();
           }
           
-          pdf.addImage(pageImgData, 'PNG', 0, 0, pdfWidth, pageScaledHeight);
+          pdf.addImage(pageImgData, 'JPEG', 0, 0, pdfWidth, pageScaledHeight);
           
           sourceY += pageHeightInSource;
           pageNum++;
@@ -179,9 +193,9 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       const userName = profile?.name?.replace(/[^a-zA-Z0-9æøåÆØÅ\s]/g, '').replace(/\s+/g, '_') || 'CV';
       pdf.save(`CV_${userName}.pdf`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error exporting PDF:', error);
-      alert('Der opstod en fejl ved PDF-generering. Prøv igen.');
+      alert(`Der opstod en fejl ved PDF-generering: ${error?.message || 'Ukendt fejl'}. Prøv igen.`);
     } finally {
       setIsExporting(false);
     }

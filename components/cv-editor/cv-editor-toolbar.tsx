@@ -177,8 +177,8 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
         pdf.setTextColor(51, 65, 85);
         
         for (const skill of document.leftColumn.skills) {
-          if (skill.skill) {
-            pdf.text('• ' + skill.skill, marginLeft, leftY);
+          if (skill.name) {
+            pdf.text('• ' + skill.name, marginLeft, leftY);
             leftY += lineHeight;
           }
         }

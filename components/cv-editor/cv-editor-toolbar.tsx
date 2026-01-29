@@ -95,37 +95,26 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       const cvElement = window.document.querySelector('.cv-preview') as HTMLElement;
       if (!cvElement) {
         console.error('CV preview element not found');
-        // Fallback to window.print()
-        window.print();
         setIsExporting(false);
         return;
       }
       
-      // Create a clone to avoid modifying the original
-      const clone = cvElement.cloneNode(true) as HTMLElement;
-      clone.style.position = 'absolute';
-      clone.style.left = '-9999px';
-      clone.style.top = '0';
-      clone.style.width = '210mm'; // A4 width
-      clone.style.backgroundColor = 'white';
+      // Hide elements that shouldn't be in the PDF
+      const noPrintElements = cvElement.querySelectorAll('.no-print, [class*="print:hidden"]');
+      noPrintElements.forEach(el => (el as HTMLElement).style.display = 'none');
       
-      // Remove any elements that shouldn't be in the PDF
-      const noPrintElements = clone.querySelectorAll('.print\\:hidden, .no-print');
-      noPrintElements.forEach(el => el.remove());
-      
-      window.document.body.appendChild(clone);
-      
-      // Use html2canvas to capture the CV
-      const canvas = await html2canvas(clone, {
+      // Use html2canvas to capture the CV directly
+      const canvas = await html2canvas(cvElement, {
         scale: 2, // Higher quality
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        windowWidth: 794, // A4 width in pixels at 96 DPI
+        width: cvElement.scrollWidth,
+        height: cvElement.scrollHeight,
       });
       
-      // Remove the clone
-      window.document.body.removeChild(clone);
+      // Restore hidden elements
+      noPrintElements.forEach(el => (el as HTMLElement).style.display = '');
       
       // Create PDF
       const pdf = new jsPDF({
@@ -138,35 +127,48 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // Calculate dimensions to fit A4
+      // Calculate dimensions to fit A4 width
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
-      
-      // Check if we need multiple pages
-      const scaledHeight = imgHeight * (pdfWidth / imgWidth);
+      const scaledHeight = (imgHeight * pdfWidth) / imgWidth;
       
       if (scaledHeight <= pdfHeight) {
-        // Single page
+        // Single page - center vertically if needed
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
       } else {
-        // Multiple pages
-        let remainingHeight = scaledHeight;
-        let position = 0;
-        let page = 0;
+        // Multiple pages - slice the image
+        const pageCanvas = window.document.createElement('canvas');
+        const ctx = pageCanvas.getContext('2d');
+        if (!ctx) throw new Error('Could not get canvas context');
         
-        while (remainingHeight > 0) {
-          if (page > 0) {
+        const sourceWidth = canvas.width;
+        const sourceHeight = canvas.height;
+        const pageHeightInSource = (pdfHeight / pdfWidth) * sourceWidth;
+        
+        let sourceY = 0;
+        let pageNum = 0;
+        
+        while (sourceY < sourceHeight) {
+          const sliceHeight = Math.min(pageHeightInSource, sourceHeight - sourceY);
+          
+          pageCanvas.width = sourceWidth;
+          pageCanvas.height = sliceHeight;
+          
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, sourceWidth, sliceHeight);
+          ctx.drawImage(canvas, 0, sourceY, sourceWidth, sliceHeight, 0, 0, sourceWidth, sliceHeight);
+          
+          const pageImgData = pageCanvas.toDataURL('image/png');
+          const pageScaledHeight = (sliceHeight * pdfWidth) / sourceWidth;
+          
+          if (pageNum > 0) {
             pdf.addPage();
           }
           
-          pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, scaledHeight);
+          pdf.addImage(pageImgData, 'PNG', 0, 0, pdfWidth, pageScaledHeight);
           
-          remainingHeight -= pdfHeight;
-          position += pdfHeight;
-          page++;
+          sourceY += pageHeightInSource;
+          pageNum++;
         }
       }
       
@@ -176,8 +178,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       
     } catch (error) {
       console.error('Error exporting PDF:', error);
-      // Fallback to window.print()
-      window.print();
+      alert('Der opstod en fejl ved PDF-generering. Prøv igen.');
     } finally {
       setIsExporting(false);
     }

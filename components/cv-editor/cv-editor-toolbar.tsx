@@ -93,8 +93,11 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       // Dynamic import of html2canvas to avoid SSR issues
       const html2canvas = (await import('html2canvas')).default;
       
-      // Find the CV preview element
-      const cvElement = window.document.querySelector('.cv-preview') as HTMLElement;
+      // Find the CV preview element (try both possible classes)
+      const cvElement = (
+        window.document.querySelector('.cv-print-preview') || 
+        window.document.querySelector('.cv-preview')
+      ) as HTMLElement;
       if (!cvElement) {
         console.error('CV preview element not found');
         setIsExporting(false);

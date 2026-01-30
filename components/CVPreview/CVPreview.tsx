@@ -260,7 +260,7 @@ export function CVPreview({ sections, profile, jobTitle }: CVPreviewProps) {
                                 <span className="text-gray-700">{exp.company}</span>
                                 {exp.location && (
                                   <>
-                                    <span className="text-gray-400 mx-1">-</span>
+                                    <span className="text-gray-400 mx-1.5">–</span>
                                     <span className="text-gray-600">{exp.location}</span>
                                   </>
                                 )}

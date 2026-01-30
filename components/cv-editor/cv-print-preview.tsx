@@ -182,7 +182,7 @@ export function CVPrintPreview() {
                         <span>{exp.company}</span>
                         {exp.location && (
                           <>
-                            <span className="text-slate-400 mx-1">-</span>
+                            <span className="text-slate-400 mx-1.5">–</span>
                             <span className="text-slate-600">{exp.location}</span>
                           </>
                         )}

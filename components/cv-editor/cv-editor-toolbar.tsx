@@ -222,10 +222,10 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
           pdf.setFont('helvetica', 'bold');
           pdf.setFontSize(9);
           pdf.setTextColor(51, 65, 85);
-          if (edu.degree) {
-            const degreeLines = pdf.splitTextToSize(edu.degree, leftColumnWidth - 15);
-            pdf.text(degreeLines, marginLeft, leftY);
-            leftY += degreeLines.length * 4;
+          if (edu.title) {
+            const titleLines = pdf.splitTextToSize(edu.title, leftColumnWidth - 15);
+            pdf.text(titleLines, marginLeft, leftY);
+            leftY += titleLines.length * 4;
           }
           
           pdf.setFont('helvetica', 'normal');
@@ -246,7 +246,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       // === RIGHT COLUMN ===
       
       // Profile/Summary
-      if (document.rightColumn.profileSummary) {
+      if (document.rightColumn.professionalIntro.content) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(10);
         pdf.setTextColor(30, 41, 59);
@@ -256,20 +256,20 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(9);
         pdf.setTextColor(51, 65, 85);
-        const summaryLines = pdf.splitTextToSize(document.rightColumn.profileSummary, rightColumnWidth);
+        const summaryLines = pdf.splitTextToSize(document.rightColumn.professionalIntro.content, rightColumnWidth);
         pdf.text(summaryLines, rightColumnStart, rightY);
         rightY += summaryLines.length * 4 + 8;
       }
       
       // Experience
-      if (document.rightColumn.experiences.length > 0) {
+      if (document.rightColumn.experience.length > 0) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(10);
         pdf.setTextColor(30, 41, 59);
         pdf.text('ERFARING', rightColumnStart, rightY);
         rightY += 6;
         
-        for (const exp of document.rightColumn.experiences) {
+        for (const exp of document.rightColumn.experience) {
           // Check if we need a new page
           if (rightY > pageHeight - 40) {
             pdf.addPage();

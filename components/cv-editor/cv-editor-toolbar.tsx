@@ -118,6 +118,29 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       
       // === LEFT COLUMN ===
       
+      // Profile Photo
+      if (document.leftColumn.showProfilePhoto && profile?.profilePhoto?.dataUrl) {
+        const photoSize = 25; // mm
+        const photoX = marginLeft + (leftColumnWidth - marginLeft - photoSize) / 2;
+        const photoY = leftY;
+        
+        try {
+          // Add the image (dataUrl is base64)
+          pdf.addImage(
+            profile.profilePhoto.dataUrl,
+            'JPEG',
+            photoX,
+            photoY,
+            photoSize,
+            photoSize
+          );
+          leftY += photoSize + 5;
+        } catch (e) {
+          console.error('Error adding profile photo to PDF:', e);
+          // Continue without photo if it fails
+        }
+      }
+      
       // Name
       if (profile?.name) {
         pdf.setFont('helvetica', 'bold');

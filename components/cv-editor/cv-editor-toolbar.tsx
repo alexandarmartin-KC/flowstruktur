@@ -118,22 +118,70 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       
       // === LEFT COLUMN ===
       
-      // Profile Photo
+      // Profile Photo (rounded/circular)
       if (document.leftColumn.showProfilePhoto && profile?.profilePhoto?.dataUrl) {
         const photoSize = 25; // mm
         const photoX = marginLeft + (leftColumnWidth - marginLeft - photoSize) / 2;
         const photoY = leftY;
         
         try {
-          // Add the image (dataUrl is base64)
-          pdf.addImage(
-            profile.profilePhoto.dataUrl,
-            'JPEG',
-            photoX,
-            photoY,
-            photoSize,
-            photoSize
-          );
+          // Create a circular version of the image using canvas
+          const img = new Image();
+          img.src = profile.profilePhoto.dataUrl;
+          
+          // Wait for image to load
+          await new Promise<void>((resolve, reject) => {
+            img.onload = () => resolve();
+            img.onerror = () => reject(new Error('Failed to load image'));
+            // If already loaded
+            if (img.complete) resolve();
+          });
+          
+          // Create canvas for circular crop
+          const canvas = window.document.createElement('canvas');
+          const size = 200; // px - high res for quality
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          
+          if (ctx) {
+            // Draw circular clip
+            ctx.beginPath();
+            ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip();
+            
+            // Draw image centered and covering the circle
+            const aspectRatio = img.width / img.height;
+            let drawWidth = size;
+            let drawHeight = size;
+            let offsetX = 0;
+            let offsetY = 0;
+            
+            if (aspectRatio > 1) {
+              drawWidth = size * aspectRatio;
+              offsetX = -(drawWidth - size) / 2;
+            } else {
+              drawHeight = size / aspectRatio;
+              offsetY = -(drawHeight - size) / 2;
+            }
+            
+            ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+            
+            // Get circular image as PNG (supports transparency)
+            const circularDataUrl = canvas.toDataURL('image/png');
+            
+            // Add circular image to PDF
+            pdf.addImage(
+              circularDataUrl,
+              'PNG',
+              photoX,
+              photoY,
+              photoSize,
+              photoSize
+            );
+          }
+          
           leftY += photoSize + 5;
         } catch (e) {
           console.error('Error adding profile photo to PDF:', e);

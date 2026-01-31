@@ -11,9 +11,9 @@ import {
   User,
   Compass,
   Settings,
-  Sparkles,
   Bookmark,
 } from 'lucide-react';
+import { JobmoraLogo } from '@/components/jobmora-logo';
 import { cn } from '@/lib/utils';
 
 const navigation = [
@@ -34,10 +34,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <AppSidebar />
-      <div className="lg:pl-64">
+      <div className="lg:pl-56">
         <AppHeader onMenuClick={() => setMobileMenuOpen(true)} />
-        <main className="py-8">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <main className="py-6">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             {children}
           </div>
         </main>
@@ -45,16 +45,16 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
       {/* Mobile navigation */}
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <SheetContent side="left" className="w-64 p-0">
-          <div className="flex h-full flex-col gap-y-5 overflow-y-auto bg-card px-6 pb-4">
-            <div className="flex h-16 shrink-0 items-center">
+        <SheetContent side="left" className="w-56 p-0">
+          <div className="flex h-full flex-col gap-y-5 overflow-y-auto bg-background px-4 pb-4">
+            <div className="flex h-14 shrink-0 items-center">
               <Link href="/app" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                <Sparkles className="h-7 w-7 text-primary" />
-                <span className="text-xl font-semibold">FlowStruktur</span>
+                <JobmoraLogo size={24} />
+                <span className="text-base font-medium text-foreground">Jobmora</span>
               </Link>
             </div>
             <nav className="flex flex-1 flex-col">
-              <ul role="list" className="flex flex-1 flex-col gap-y-7">
+              <ul role="list" className="flex flex-1 flex-col gap-y-6">
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
                     {navigation.map((item) => {
@@ -67,12 +67,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
                             onClick={() => setMobileMenuOpen(false)}
                             className={cn(
                               isActive
-                                ? 'bg-accent text-accent-foreground'
-                                : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
-                              'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors'
+                                ? 'bg-muted text-foreground'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                              'group flex gap-x-3 rounded px-2 py-1.5 text-sm font-normal transition-colors'
                             )}
                           >
-                            <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                            <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                             {item.name}
                           </Link>
                         </li>
@@ -92,12 +92,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
                             onClick={() => setMobileMenuOpen(false)}
                             className={cn(
                               isActive
-                                ? 'bg-accent text-accent-foreground'
-                                : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
-                              'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors'
+                                ? 'bg-muted text-foreground'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                              'group flex gap-x-3 rounded px-2 py-1.5 text-sm font-normal transition-colors'
                             )}
                           >
-                            <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                            <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                             {item.name}
                           </Link>
                         </li>

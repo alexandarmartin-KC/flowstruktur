@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Menu, User, Sparkles } from 'lucide-react';
+import { Menu, User } from 'lucide-react';
 import Link from 'next/link';
 import { JobmoraLogo } from '@/components/jobmora-logo';
 
@@ -24,14 +24,14 @@ export function AppHeader({ onMenuClick }: AppHeaderProps) {
   const { plan, setPlan, isProUser } = usePlan();
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b bg-card px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-x-4 border-b bg-background px-4 sm:gap-x-6 sm:px-6 lg:px-8">
       <Button
         variant="ghost"
         size="icon"
         className="lg:hidden"
         onClick={onMenuClick}
       >
-        <Menu className="h-6 w-6" />
+        <Menu className="h-5 w-5" />
         <span className="sr-only">Åben menu</span>
       </Button>
 
@@ -39,23 +39,24 @@ export function AppHeader({ onMenuClick }: AppHeaderProps) {
       <div className="flex lg:hidden">
         <Link href="/app" className="flex items-center gap-2">
           <JobmoraLogo size={24} />
-          <span className="font-semibold">Jobmora</span>
+          <span className="text-base font-medium">Jobmora</span>
         </Link>
       </div>
 
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 justify-end">
-        <div className="flex items-center gap-x-4 lg:gap-x-6">
+        <div className="flex items-center gap-x-3">
           {/* Plan toggle */}
           <div className="flex items-center gap-2">
             <Badge variant={isProUser ? 'default' : 'secondary'}>
-              {isProUser ? 'PRO Plan' : 'Light Plan'}
+              {isProUser ? 'Pro' : 'Light'}
             </Badge>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setPlan(isProUser ? 'light' : 'pro')}
+              className="text-xs"
             >
-              {isProUser ? 'Skift til Light' : 'Opgrader til Pro'}
+              {isProUser ? 'Light' : 'Opgrader'}
             </Button>
           </div>
 
@@ -75,7 +76,7 @@ export function AppHeader({ onMenuClick }: AppHeaderProps) {
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">Demo Bruger</p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    demo@flowstruktur.dk
+                    demo@jobmora.dk
                   </p>
                 </div>
               </DropdownMenuLabel>

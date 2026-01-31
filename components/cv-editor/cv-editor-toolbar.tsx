@@ -80,7 +80,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
   const document = state.document;
   const exportReqs = canExport();
   
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     if (!exportReqs.canExport) {
       setShowExportWarning(true);
       return;

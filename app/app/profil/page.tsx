@@ -1025,43 +1025,36 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
   }, [scores]);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="space-y-6">
       {/* Contact Information Section - Always visible at top */}
       <ProfileContactSection />
 
       {/* Profile Photo Section */}
       <ProfilePhotoSection />
 
-      {/* Premium Header Section */}
-      <div className="space-y-3 mb-8">
-        <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-            {activeStep === 'cv' && <Upload className="h-6 w-6 text-white" />}
-            {activeStep === 'questionnaire' && <Brain className="h-6 w-6 text-white" />}
-            {activeStep === 'results' && <User className="h-6 w-6 text-white" />}
-          </div>
-          <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
-            {activeStep === 'cv' && 'CV Analyse'}
-            {activeStep === 'questionnaire' && 'Personlighedsprofil'}
-            {activeStep === 'results' && 'Din Profil'}
-          </h1>
-        </div>
-        <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
-          {activeStep === 'cv' && 'Upload dit CV og få en AI-drevet analyse af dine kompetencer'}
+      {/* Page Header - Clean, minimal */}
+      <div className="space-y-1 mb-6">
+        <h1 className="text-2xl font-semibold text-foreground">
+          {activeStep === 'cv' && 'CV Analyse'}
+          {activeStep === 'questionnaire' && 'Arbejdspræferencer'}
+          {activeStep === 'results' && 'Din Profil'}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {activeStep === 'cv' && 'Upload dit CV for at komme i gang'}
           {activeStep === 'questionnaire' && 'Besvar spørgsmål om dine arbejdspræferencer'}
-          {activeStep === 'results' && 'Se din komplette karriereprofil'}
+          {activeStep === 'results' && 'Overblik over din profil'}
         </p>
       </div>
 
       {/* ============ TEST MODE BUTTON - REMOVE BEFORE PRODUCTION ============ */}
       {!personalityProfile && (
-        <div className="mb-6 flex gap-2">
+        <div className="mb-4">
           <Button
             onClick={loadTestData}
             variant="outline"
-            className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950"
+            size="sm"
           >
-            ⚠️ Load Test Data (Dev Mode)
+            Test data (dev)
           </Button>
         </div>
       )}
@@ -1069,71 +1062,64 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
 
       {/* Reset Profile Button - shown when there's saved data */}
       {(step1Data || personalityProfile) && (
-        <div className="mb-6">
+        <div className="mb-4">
           <Button
             onClick={resetProfile}
             variant="outline"
-            className="border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+            size="sm"
           >
-            🔄 Start forfra (nulstil profil)
+            Start forfra
           </Button>
         </div>
       )}
 
-      {/* Step Indicator */}
-      <div className="flex items-center gap-2 mb-8">
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-          activeStep === 'cv' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 
-          cvConfirmed ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 
-          'bg-slate-100 dark:bg-slate-800 text-slate-500'
+      {/* Step Indicator - Minimal */}
+      <div className="flex items-center gap-2 mb-6 text-sm">
+        <div className={`flex items-center gap-1.5 px-3 py-1 rounded ${
+          activeStep === 'cv' ? 'bg-muted text-foreground' : 
+          cvConfirmed ? 'text-foreground' : 
+          'text-muted-foreground'
         }`}>
-          {cvConfirmed ? <CheckCircle2 className="h-4 w-4" /> : <span className="h-5 w-5 rounded-full bg-current/20 flex items-center justify-center text-xs">1</span>}
-          CV Analyse
+          {cvConfirmed && <CheckCircle2 className="h-3.5 w-3.5" />}
+          <span>1. CV</span>
         </div>
-        <div className="h-px w-8 bg-slate-300 dark:bg-slate-600" />
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-          activeStep === 'questionnaire' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 
-          personalityProfile ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 
-          'bg-slate-100 dark:bg-slate-800 text-slate-500'
+        <span className="text-muted-foreground">→</span>
+        <div className={`flex items-center gap-1.5 px-3 py-1 rounded ${
+          activeStep === 'questionnaire' ? 'bg-muted text-foreground' : 
+          personalityProfile ? 'text-foreground' : 
+          'text-muted-foreground'
         }`}>
-          {personalityProfile ? <CheckCircle2 className="h-4 w-4" /> : <span className="h-5 w-5 rounded-full bg-current/20 flex items-center justify-center text-xs">2</span>}
-          Personlighedsprofil
+          {personalityProfile && <CheckCircle2 className="h-3.5 w-3.5" />}
+          <span>2. Præferencer</span>
         </div>
-        <div className="h-px w-8 bg-slate-300 dark:bg-slate-600" />
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-          activeStep === 'results' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 
-          'bg-slate-100 dark:bg-slate-800 text-slate-500'
+        <span className="text-muted-foreground">→</span>
+        <div className={`flex items-center gap-1.5 px-3 py-1 rounded ${
+          activeStep === 'results' ? 'bg-muted text-foreground' : 
+          'text-muted-foreground'
         }`}>
-          <span className="h-5 w-5 rounded-full bg-current/20 flex items-center justify-center text-xs">3</span>
-          Resultater
+          <span>3. Resultat</span>
         </div>
       </div>
 
       {/* Upload sektion */}
-      <Card className="border border-slate-200 dark:border-slate-800 shadow-lg hover:shadow-xl transition-shadow duration-300">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-xl">Upload dit CV</CardTitle>
-          <p className="text-sm text-muted-foreground mt-2">Understøtter PDF, DOCX og TXT filer</p>
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-medium">Upload dit CV</CardTitle>
+          <p className="text-sm text-muted-foreground">PDF, DOCX eller TXT</p>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           {/* Show saved CV info if extraction exists but no file selected */}
           {extraction && !file && (
-            <div className="flex items-center gap-3 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4">
-              <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
-                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-              </div>
+            <div className="flex items-center gap-3 rounded bg-muted p-3">
+              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm text-foreground">CV allerede uploadet</p>
-                <p className="text-xs text-muted-foreground">
-                  Dit CV er gemt og analyseret
-                </p>
+                <p className="text-sm text-foreground">CV uploadet</p>
               </div>
               <div className="flex gap-2">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => setShowDebug(!showDebug)}
-                  className="text-slate-600 border-slate-300 hover:bg-slate-50"
                 >
                   {showDebug ? 'Skjul' : 'Debug'}
                 </Button>
@@ -1141,9 +1127,8 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
                   variant="outline"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-blue-600 border-blue-300 hover:bg-blue-50"
                 >
-                  Upload nyt CV
+                  Upload nyt
                 </Button>
               </div>
             </div>
@@ -1151,31 +1136,22 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
           
           {/* Debug panel - show raw extracted text */}
           {showDebug && extraction && (
-            <Card className="border-2 border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/20">
-              <CardHeader>
-                <CardTitle className="text-lg text-amber-900 dark:text-amber-100">🔍 Debug: Rå ekstraheret tekst fra PDF</CardTitle>
-                <p className="text-sm text-amber-700 dark:text-amber-300">
-                  Dette er den tekst der blev ekstraheret fra PDF'en af pdf-parse biblioteket.
-                  Dette er hvad AI-modellen bruger til at strukturere dit CV.
-                </p>
+            <Card className="border-dashed">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Debug: Ekstraheret tekst</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
-                  <pre className="text-xs font-mono whitespace-pre-wrap break-words max-h-96 overflow-y-auto text-slate-900 dark:text-slate-100">
+                <div className="bg-muted rounded p-3">
+                  <pre className="text-xs font-mono whitespace-pre-wrap break-words max-h-64 overflow-y-auto">
                     {extraction.cvText}
                   </pre>
                 </div>
-                <div className="mt-4 text-xs text-amber-700 dark:text-amber-300">
-                  <p><strong>Længde:</strong> {extraction.cvText.length} tegn</p>
-                  <p><strong>Linjer:</strong> {(extraction.cvText.match(/\n/g) || []).length + 1}</p>
+                <div className="mt-3 text-xs text-muted-foreground space-y-0.5">
+                  <p>Længde: {extraction.cvText.length} tegn</p>
                   {extraction.structured && (
-                    <div className="mt-2 space-y-1">
-                      <p className="font-semibold">Struktureret data fundet:</p>
-                      <p>• Jobs: {extraction.structured.experience.length}</p>
-                      <p>• Uddannelser: {extraction.structured.education.length}</p>
-                      <p>• Færdigheder: {extraction.structured.skills.length}</p>
-                      <p>• Sprog: {extraction.structured.languages.length}</p>
-                    </div>
+                    <>
+                      <p>Jobs: {extraction.structured.experience.length} · Uddannelser: {extraction.structured.education.length}</p>
+                    </>
                   )}
                 </div>
               </CardContent>
@@ -1195,15 +1171,12 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={loading}
-                className="w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full border border-dashed border-border rounded p-6 hover:border-foreground/50 hover:bg-muted/50 transition-colors disabled:opacity-50"
               >
-                <div className="flex flex-col items-center gap-3">
-                  <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                    <Upload className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                  </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Upload className="h-5 w-5 text-muted-foreground" />
                   <div className="text-center">
-                    <p className="font-semibold text-foreground">Træk din CV her eller klik for at vælge</p>
-                    <p className="text-sm text-muted-foreground mt-1">PDF, DOCX eller TXT</p>
+                    <p className="text-sm text-foreground">Vælg fil eller træk hertil</p>
                   </div>
                 </div>
               </button>
@@ -1223,14 +1196,12 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
 
           {/* Selected file info */}
           {file && (
-            <div className="flex items-center gap-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-4">
-              <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
-                <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                  {file.name.split('.').pop()?.toUpperCase()}
-                </span>
+            <div className="flex items-center gap-3 rounded bg-muted p-3">
+              <div className="text-xs font-medium text-muted-foreground uppercase">
+                {file.name.split('.').pop()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm text-foreground truncate">{file.name}</p>
+                <p className="text-sm text-foreground truncate">{file.name}</p>
                 <p className="text-xs text-muted-foreground">
                   {(file.size / 1024).toFixed(1)} KB
                 </p>
@@ -1244,7 +1215,6 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
                   setStep1Data(null);
                   setAgreement(null);
                 }}
-                className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
               >
                 Fjern
               </Button>
@@ -1256,21 +1226,18 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
             <Button 
               onClick={handleUpload} 
               disabled={loading} 
-              className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold"
+              className="w-full"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? 'Analyserer CV...' : 'Analysér CV'}
+              {loading ? 'Analyserer...' : 'Analysér CV'}
             </Button>
           )}
 
           {/* Error state */}
           {error && (
-            <div className="flex items-start gap-3 rounded-lg bg-red-50 dark:bg-red-950/20 p-4 border border-red-200 dark:border-red-800">
-              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-red-800 dark:text-red-300">Fejl</p>
-                <p className="text-sm text-red-700 dark:text-red-400 mt-1">{error}</p>
-              </div>
+            <div className="flex items-start gap-2 rounded bg-destructive/10 p-3 text-sm">
+              <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
+              <p className="text-destructive">{error}</p>
             </div>
           )}
         </CardContent>
@@ -1278,14 +1245,14 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
 
       {/* Step 1: Hvad vi udleder af dit CV */}
       {step1Data && (
-        <div className="space-y-8">
+        <div className="space-y-4">
           {/* Step 1 Loading State */}
           {loadingStep1 && (
-            <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">
-              <CardContent className="py-12">
-                <div className="flex flex-col items-center gap-4">
-                  <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-                  <p className="text-lg font-medium text-muted-foreground">Analyserer dit CV...</p>
+            <Card>
+              <CardContent className="py-8">
+                <div className="flex flex-col items-center gap-3">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">Analyserer dit CV...</p>
                 </div>
               </CardContent>
             </Card>
@@ -1294,26 +1261,23 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
           {/* Step 1 Main Card */}
           {!loadingStep1 && (
             <>
-              <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">
-                <CardHeader className="pb-6 border-b border-slate-200 dark:border-slate-800">
+              <Card>
+                <CardHeader className="pb-3 border-b">
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                        Hvad vi udleder af dit CV
+                      <CardTitle className="text-base font-medium">
+                        CV-analyse
                       </CardTitle>
-                      <p className="text-sm text-muted-foreground mt-2">Step 1: Bekræftelse af CV-indhold</p>
+                      <p className="text-sm text-muted-foreground mt-1">Hvad vi udleder af dit CV</p>
                     </div>
-                    <Badge className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                      ✓ Færdiggjort
+                    <Badge variant="secondary">
+                      Færdig
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-8 pt-8">
-                  {/* Step 1 Text - Prose format */}
-                  <div className="prose prose-slate dark:prose-invert max-w-none">
-                    <div className="text-base leading-relaxed text-foreground whitespace-pre-wrap">
-                      {step1Data.text}
-                    </div>
+                <CardContent className="pt-4">
+                  <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
+                    {step1Data.text}
                   </div>
                 </CardContent>
               </Card>
@@ -1321,10 +1285,10 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
               {/* Continue to questionnaire button */}
               <Button
                 onClick={() => setCurrentStep('questionnaire')}
-                className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold"
+                className="w-full"
               >
-                Fortsæt til Personlighedsprofil
-                <ArrowRight className="ml-2 h-5 w-5" />
+                Fortsæt til arbejdspræferencer
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </>
           )}
@@ -1333,65 +1297,63 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
 
       {/* STEP 2: Personality Questionnaire */}
       {currentStep === 'questionnaire' && cvConfirmed && !personalityProfile && (
-        <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">
-          <CardHeader className="pb-4 border-b border-slate-200 dark:border-slate-800">
+        <Card>
+          <CardHeader className="pb-3 border-b">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-xl">Arbejdspræferencer</CardTitle>
-                <p className="text-sm text-muted-foreground mt-2">
+                <CardTitle className="text-base font-medium">Arbejdspræferencer</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
                   Spørgsmål {currentQuestionIndex + 1} af {questions.length}
                 </p>
               </div>
-              <Badge variant="outline" className="text-sm">
-                {Object.keys(scores).filter(k => scores[k] > 0).length}/{questions.length} besvaret
+              <Badge variant="secondary">
+                {Object.keys(scores).filter(k => scores[k] > 0).length}/{questions.length}
               </Badge>
             </div>
             <Progress 
               value={(Object.keys(scores).filter(k => scores[k] > 0).length / questions.length) * 100} 
-              className="mt-4 h-2"
+              className="mt-3 h-1.5"
             />
           </CardHeader>
-          <CardContent className="pt-8 space-y-8">
+          <CardContent className="pt-6 space-y-6">
             {/* Current question */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="text-center space-y-2">
-                <Badge variant="secondary" className="mb-2">{questions[currentQuestionIndex].dimension}</Badge>
-                <h3 className="text-xl font-semibold text-foreground">
+                <Badge variant="outline" className="text-xs">{questions[currentQuestionIndex].dimension}</Badge>
+                <h3 className="text-base font-medium text-foreground">
                   {questions[currentQuestionIndex].question}
                 </h3>
               </div>
 
               {/* Score selection */}
-              <div className="space-y-4">
-                <div className="flex justify-center gap-3">
+              <div className="space-y-3">
+                <div className="flex justify-center gap-2">
                   {[1, 2, 3, 4, 5].map((score) => (
                     <button
                       key={score}
                       onClick={() => handleScoreSelect(questions[currentQuestionIndex].id, score)}
-                      className={`w-14 h-14 rounded-xl text-lg font-semibold transition-all ${
+                      className={`w-10 h-10 rounded text-sm font-medium transition-colors ${
                         scores[questions[currentQuestionIndex].id] === score
-                          ? 'bg-blue-600 text-white scale-110 shadow-lg'
-                          : 'bg-slate-100 dark:bg-slate-800 text-foreground hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:scale-105'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-foreground hover:bg-muted/80'
                       }`}
                     >
                       {score}
                     </button>
                   ))}
                 </div>
-                <div className="flex justify-center gap-1 text-xs text-muted-foreground">
-                  <span>1 = Meget uenig</span>
-                  <span>•</span>
-                  <span>3 = Delvist enig</span>
-                  <span>•</span>
-                  <span>5 = Meget enig</span>
+                <div className="flex justify-center gap-4 text-xs text-muted-foreground">
+                  <span>1 = Uenig</span>
+                  <span>5 = Enig</span>
                 </div>
               </div>
             </div>
 
             {/* Navigation */}
-            <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex justify-between pt-4 border-t">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={handlePrevQuestion}
                 disabled={currentQuestionIndex === 0}
               >
@@ -1400,37 +1362,37 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
               
               {currentQuestionIndex < questions.length - 1 ? (
                 <Button
+                  size="sm"
                   onClick={handleNextQuestion}
                   disabled={!scores[questions[currentQuestionIndex].id] || scores[questions[currentQuestionIndex].id] === 0}
-                  className="bg-blue-600 hover:bg-blue-700"
                 >
                   Næste
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                 </Button>
               ) : (
                 <Button
+                  size="sm"
                   onClick={handleSubmitPersonality}
                   disabled={!allQuestionsAnswered || analyzingPersonality}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                 >
-                  {analyzingPersonality && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {analyzingPersonality ? 'Analyserer...' : 'Se din profil'}
+                  {analyzingPersonality && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+                  {analyzingPersonality ? 'Analyserer...' : 'Se profil'}
                 </Button>
               )}
             </div>
 
             {/* Quick navigation dots */}
-            <div className="flex justify-center gap-2 pt-2 flex-wrap">
+            <div className="flex justify-center gap-1.5 pt-2 flex-wrap">
               {questions.map((q, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentQuestionIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-all ${
+                  className={`w-2 h-2 rounded-full transition-colors ${
                     index === currentQuestionIndex
-                      ? 'bg-blue-600 scale-125'
+                      ? 'bg-foreground'
                       : scores[q.id] && scores[q.id] > 0
-                      ? 'bg-green-500'
-                      : 'bg-slate-300 dark:bg-slate-600'
+                      ? 'bg-foreground/40'
+                      : 'bg-muted-foreground/30'
                   }`}
                   title={`Spørgsmål ${index + 1}`}
                 />
@@ -1439,12 +1401,9 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
 
             {/* Error state */}
             {error && (
-              <div className="flex items-start gap-3 rounded-lg bg-red-50 dark:bg-red-950/20 p-4 border border-red-200 dark:border-red-800">
-                <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-red-800 dark:text-red-300">Fejl</p>
-                  <p className="text-sm text-red-700 dark:text-red-400 mt-1">{error}</p>
-                </div>
+              <div className="flex items-start gap-2 rounded bg-destructive/10 p-3 text-sm">
+                <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
+                <p className="text-destructive">{error}</p>
               </div>
             )}
           </CardContent>
@@ -1453,62 +1412,62 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
 
       {/* STEP 3: Results */}
       {personalityProfile && (
-        <div className="space-y-8">
+        <div className="space-y-4">
           {/* Personality Profile Results */}
-          <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">
-            <CardHeader className="pb-6 border-b border-slate-200 dark:border-slate-800">
+          <Card>
+            <CardHeader className="pb-3 border-b">
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-2xl bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
-                    Din Arbejdsprofil
+                  <CardTitle className="text-base font-medium">
+                    Din arbejdsprofil
                   </CardTitle>
-                  <p className="text-sm text-muted-foreground mt-2">Baseret på dine arbejdspræferencer</p>
+                  <p className="text-sm text-muted-foreground mt-1">Baseret på dine præferencer</p>
                 </div>
-                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                  ✓ Færdiggjort
+                <Badge variant="secondary">
+                  Færdig
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="pt-8 space-y-8">
+            <CardContent className="pt-4 space-y-6">
               {/* Score visualization */}
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg text-foreground">Dine Dimensionsscorer</h3>
-                <div className="grid grid-cols-1 gap-4">
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-foreground">Dimensionsscorer</h3>
+                <div className="space-y-3">
                   {dimensionScores.map((dim) => (
-                    <div key={dim.dimension} className="space-y-2 p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+                    <div key={dim.dimension} className="space-y-1.5 p-3 rounded bg-muted/50">
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 flex-1">
-                          <span className="font-medium text-sm">{dim.dimension}</span>
+                        <div className="flex items-center gap-1.5 flex-1">
+                          <span className="text-sm">{dim.dimension}</span>
                           <button
                             onClick={() => toggleDimensionExplanation(dim.dimension)}
-                            className="text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-0.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700"
+                            className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
                             aria-label={`Vis forklaring for ${dim.dimension}`}
                           >
-                            <Info className="h-4 w-4" />
+                            <Info className="h-3.5 w-3.5" />
                           </button>
                         </div>
                         {dim.missingAnswers ? (
-                          <span className="text-red-500 text-sm">Manglende svar</span>
+                          <span className="text-destructive text-xs">Mangler svar</span>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
+                            <span className="text-xs text-muted-foreground">
                               {getLevel(dim.score)}
-                            </Badge>
-                            <span className="text-muted-foreground text-sm font-mono">{dim.score.toFixed(1)}/5.0</span>
+                            </span>
+                            <span className="text-xs font-mono text-muted-foreground">{dim.score.toFixed(1)}</span>
                           </div>
                         )}
                       </div>
-                      <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-border rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all"
+                          className="h-full bg-foreground/60 rounded-full transition-all"
                           style={{ width: `${(dim.score / 5) * 100}%` }}
                         />
                       </div>
                       
                       {/* Explanation (toggleable) */}
                       {expandedDimensions.has(dim.dimension) && (
-                        <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                        <div className="mt-2 pt-2 border-t">
+                          <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
                             {getExplanation(dim.dimension as DimensionKey, dim.score)}
                           </p>
                         </div>
@@ -1520,46 +1479,25 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
 
               {/* Parsed profile sections */}
               {parsePersonalityProfile(personalityProfile.profile).map((section, index) => (
-                <div key={index} className="space-y-3">
-                  <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
-                    {section.title === 'OVERORDNET ARBEJDSPROFIL' && '📋'}
-                    {section.title === 'ARBEJDSMØNSTRE' && '⚙️'}
-                    {section.title === 'POTENTIELLE STYRKER I ARBEJDSKONTEKST' && '💪'}
-                    {section.title === 'POTENTIELLE FRIKTIONSPUNKTER' && '⚠️'}
-                    {section.title === 'RAMMER HVOR PROFILEN TYPISK TRIVES' && '🌟'}
-                    {section.title === 'RAMMER HVOR DER KAN OPSTÅ UDFORDRINGER' && '🔄'}
-                    {section.title === 'AFSLUTTENDE NOTE' && 'ℹ️'}
+                <div key={index} className="space-y-2">
+                  <h3 className="text-sm font-medium text-foreground">
                     {section.title.charAt(0) + section.title.slice(1).toLowerCase()}
                   </h3>
                   
                   {section.content && (
-                    <div className={`rounded-lg p-5 ${
-                      section.title === 'POTENTIELLE STYRKER I ARBEJDSKONTEKST' 
-                        ? 'bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800'
-                        : section.title === 'POTENTIELLE FRIKTIONSPUNKTER'
-                        ? 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800'
-                        : section.title === 'AFSLUTTENDE NOTE'
-                        ? 'bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800'
-                        : 'bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800'
-                    }`}>
-                      <p className="text-base leading-relaxed">{section.content.trim()}</p>
+                    <div className="rounded bg-muted/50 p-3">
+                      <p className="text-sm leading-relaxed">{section.content.trim()}</p>
                     </div>
                   )}
                   
                   {section.bullets.length > 0 && (
-                    <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 ${!section.content ? 'mt-0' : ''}`}>
+                    <div className="space-y-1.5">
                       {section.bullets.map((bullet, bulletIndex) => (
                         <div 
                           key={bulletIndex}
-                          className={`rounded-lg p-4 ${
-                            section.title === 'POTENTIELLE STYRKER I ARBEJDSKONTEKST'
-                              ? 'bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800'
-                              : section.title === 'POTENTIELLE FRIKTIONSPUNKTER'
-                              ? 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800'
-                              : 'bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800'
-                          }`}
+                          className="rounded bg-muted/30 p-2.5"
                         >
-                          <p className="text-sm font-medium">{bullet}</p>
+                          <p className="text-sm">{bullet}</p>
                         </div>
                       ))}
                     </div>
@@ -1571,24 +1509,24 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
 
           {/* Combined Analysis Card */}
           {combinedAnalysis ? (
-            <Card className="border-2 border-indigo-200 dark:border-indigo-800 shadow-lg bg-gradient-to-br from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/20 dark:to-purple-950/20">
-              <CardHeader className="pb-6 border-b border-indigo-200 dark:border-indigo-800">
+            <Card>
+              <CardHeader className="pb-3 border-b">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-2xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                    <CardTitle className="text-base font-medium">
                       Samlet analyse
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground mt-2">Sammenstilling af CV og arbejdspræferencer</p>
+                    <p className="text-sm text-muted-foreground mt-1">CV og arbejdspræferencer samlet</p>
                   </div>
-                  <Badge className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                    {combinedAnalysis.response.ui_state === 'analysis_only' ? '✓ Komplet' : '📋 Afventer svar'}
+                  <Badge variant="secondary">
+                    {combinedAnalysis.response.ui_state === 'analysis_only' ? 'Færdig' : 'Afventer'}
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="pt-8 space-y-6">
+              <CardContent className="pt-4 space-y-4">
                 {/* Show analysis text if ui_state is analysis_only */}
                 {combinedAnalysis.response.ui_state === 'analysis_only' && combinedAnalysis.response.analysis_text && (
-                  <div className="rounded-lg p-5 bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700">
+                  <div className="rounded bg-muted/50 p-3">
                     <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                       {combinedAnalysis.response.analysis_text}
                     </p>
@@ -1598,28 +1536,25 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
                 {/* Show clarifying questions if ui_state is clarifications_only */}
                 {combinedAnalysis.response.ui_state === 'clarifications_only' && 
                  combinedAnalysis.response.clarifications.length > 0 && (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">📝</span>
-                      <h3 className="font-semibold text-base">Tillægsspørgsmål baseret på dit CV</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      For at give en mere præcis analyse har vi brug for et par afklaringer:
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium">Tillægsspørgsmål</h3>
+                    <p className="text-xs text-muted-foreground">
+                      For en mere præcis analyse har vi brug for afklaringer:
                     </p>
                     
-                    <div className="grid gap-3">
+                    <div className="space-y-2">
                       {combinedAnalysis.response.clarifications.map((question) => (
-                        <div key={question.id} className="flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                          <span className="text-sm flex-shrink-0 sm:w-72">{question.title}</span>
+                        <div key={question.id} className="flex flex-col gap-1.5 p-2.5 rounded bg-muted/50">
+                          <span className="text-sm">{question.title}</span>
                           {question.type === 'single_choice' ? (
-                            <div className="flex flex-wrap gap-1.5">
+                            <div className="flex flex-wrap gap-1">
                               {question.options.map(option => (
                                 <Button
                                   key={option}
                                   type="button"
                                   variant={clarifyingAnswers[question.id] === option ? 'default' : 'outline'}
                                   size="sm"
-                                  className="h-7 px-2.5 text-xs"
+                                  className="h-7 px-2 text-xs"
                                   onClick={() => setClarifyingAnswers(prev => ({
                                     ...prev,
                                     [question.id]: option
@@ -1631,13 +1566,13 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
                             </div>
                           ) : (
                             <Textarea
-                              placeholder="Kort kommentar (valgfrit)..."
+                              placeholder="Kommentar (valgfrit)..."
                               value={clarifyingAnswers[question.id] || ''}
                               onChange={(e) => setClarifyingAnswers(prev => ({
                                 ...prev,
                                 [question.id]: e.target.value || null
                               }))}
-                              className="min-h-[50px] text-sm flex-1"
+                              className="min-h-[40px] text-sm"
                             />
                           )}
                         </div>
@@ -1648,18 +1583,16 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
                     <Button
                       onClick={updateAnalysisWithAnswers}
                       disabled={updatingAnalysis || !Object.values(clarifyingAnswers).some(v => v && v !== '')}
-                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                      className="w-full"
+                      size="sm"
                     >
                       {updatingAnalysis ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Opdaterer analyse...
+                          <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                          Opdaterer...
                         </>
                       ) : (
-                        <>
-                          <ArrowRight className="mr-2 h-4 w-4" />
-                          Opdater analyse med svar
-                        </>
+                        'Opdater analyse'
                       )}
                     </Button>
                   </div>
@@ -1667,11 +1600,11 @@ Relationen mellem de dokumenterede arbejdsformer og de angivne præferenceniveau
               </CardContent>
             </Card>
           ) : analyzingCombined ? (
-            <Card className="border border-slate-200 dark:border-slate-800 shadow-lg">
-              <CardContent className="pt-8 pb-8">
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-                  <p className="text-sm text-muted-foreground">Genererer samlet analyse...</p>
+            <Card>
+              <CardContent className="py-6">
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">Genererer analyse...</p>
                 </div>
               </CardContent>
             </Card>

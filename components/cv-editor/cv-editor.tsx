@@ -98,12 +98,16 @@ function CVEditorInner({ jobId }: CVEditorProps) {
         }
         
         @media print {
+          /* Reset - hide everything first */
           body * {
             visibility: hidden;
           }
+          
+          /* Show CV document and all its contents */
           .cv-document, .cv-document * {
             visibility: visible;
           }
+          
           .cv-document {
             position: absolute;
             left: 0;
@@ -112,6 +116,8 @@ function CVEditorInner({ jobId }: CVEditorProps) {
             max-width: none !important;
             box-shadow: none !important;
           }
+          
+          /* Hide toolbar and no-print elements */
           .cv-editor-toolbar,
           .print\\:hidden {
             display: none !important;
@@ -120,17 +126,31 @@ function CVEditorInner({ jobId }: CVEditorProps) {
             display: none !important;
           }
           
-          /* Ensure profile photo prints correctly */
-          .cv-left-column img {
+          /* CRITICAL: Force profile photo to print */
+          .cv-profile-photo {
+            display: block !important;
             visibility: visible !important;
+            overflow: hidden !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
             color-adjust: exact !important;
           }
           
-          /* Ensure rounded photo container prints */
-          .cv-left-column .rounded-full {
-            overflow: visible !important;
+          .cv-profile-photo img {
+            display: block !important;
+            visibility: visible !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            max-width: 100% !important;
+            height: auto !important;
+          }
+          
+          /* Left column background */
+          .cv-left-column {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            background-color: #f8fafc !important;
           }
           
           /* Page setup */

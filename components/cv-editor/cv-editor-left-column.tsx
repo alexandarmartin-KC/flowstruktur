@@ -73,11 +73,12 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
               disabled={!profile?.profilePhoto?.dataUrl}
             />
           </div>
-          <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-2 border-slate-300 dark:border-slate-600">
+          <div className="cv-profile-photo w-24 h-24 mx-auto rounded-full overflow-hidden border-2 border-slate-300 dark:border-slate-600">
             <img
               src={profile.profilePhoto!.dataUrl}
               alt={profile.name || 'Profilbillede'}
               className="w-full h-full object-cover"
+              style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
             />
           </div>
         </div>

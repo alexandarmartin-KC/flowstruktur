@@ -120,6 +120,19 @@ function CVEditorInner({ jobId }: CVEditorProps) {
             display: none !important;
           }
           
+          /* Ensure profile photo prints correctly */
+          .cv-left-column img {
+            visibility: visible !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          
+          /* Ensure rounded photo container prints */
+          .cv-left-column .rounded-full {
+            overflow: visible !important;
+          }
+          
           /* Page setup */
           @page {
             size: A4;

@@ -590,7 +590,7 @@ function ExperienceBlock({
             className="h-auto py-0 px-0 border-0 bg-transparent focus-visible:ring-1 w-auto text-sm leading-tight"
             style={{ width: `${Math.max(experience.company.length, 10)}ch` }}
           />
-          {experience.location && (
+          {experience.location !== undefined && (
             <>
               <span className="text-slate-400 mx-1.5 text-sm">–</span>
               <Input
@@ -598,11 +598,12 @@ function ExperienceBlock({
                 onChange={(e) => onUpdate({ location: e.target.value })}
                 placeholder="Lokation"
                 className="text-slate-600 h-auto py-0 px-0 border-0 bg-transparent focus-visible:ring-1 w-auto text-sm leading-tight"
-                style={{ width: `${Math.max(experience.location.length, 8)}ch` }}
+                style={{ width: `${Math.max((experience.location || '').length, 8)}ch` }}
+                autoFocus={experience.location === ''}
               />
             </>
           )}
-          {!experience.location && (
+          {experience.location === undefined && (
             <button
               type="button"
               onClick={() => onUpdate({ location: '' })}

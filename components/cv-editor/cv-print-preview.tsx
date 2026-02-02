@@ -43,7 +43,7 @@ export function CVPrintPreview() {
             <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-slate-300">
               <img
                 src={profile.profilePhoto!.dataUrl}
-                alt={profile?.name || 'Profilbillede'}
+                alt={profile?.name || 'Profile photo'}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -55,7 +55,7 @@ export function CVPrintPreview() {
               className="font-bold text-slate-900 mb-1"
               style={{ fontSize: sizeOption.name }}
             >
-              {profile?.name || 'Dit navn'}
+              {profile?.name || 'Your name'}
             </h1>
             {profile?.title && (
               <p className="text-slate-600" style={{ fontSize: sizeOption.heading }}>
@@ -67,7 +67,7 @@ export function CVPrintPreview() {
           {/* Contact */}
           <div className="mb-6">
             <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 border-b border-slate-300 pb-1">
-              Kontakt
+              Contact
             </h2>
             <div className="space-y-1 text-sm text-slate-700">
               {profile?.email && <div>{profile.email}</div>}
@@ -82,7 +82,7 @@ export function CVPrintPreview() {
           {leftColumn.education.length > 0 && (
             <div className="mb-6">
               <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 border-b border-slate-300 pb-1">
-                Uddannelse
+                Education
               </h2>
               <div className="space-y-2">
                 {leftColumn.education.map((item) => (
@@ -100,7 +100,7 @@ export function CVPrintPreview() {
           {leftColumn.skills.length > 0 && (
             <div className="mb-6">
               <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 border-b border-slate-300 pb-1">
-                Kompetencer
+                Skills
               </h2>
               <div className="space-y-1">
                 {leftColumn.skills.map((item) => (
@@ -117,7 +117,7 @@ export function CVPrintPreview() {
           {leftColumn.languages.length > 0 && (
             <div className="mb-6">
               <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 border-b border-slate-300 pb-1">
-                Sprog
+                Languages
               </h2>
               <div className="space-y-1 text-sm">
                 {leftColumn.languages.map((item) => (
@@ -139,7 +139,7 @@ export function CVPrintPreview() {
               className="font-bold text-slate-900 uppercase tracking-wider mb-3 pb-1 border-b border-slate-300"
               style={{ fontSize: sizeOption.heading }}
             >
-              Profil
+              Profile
             </h2>
             <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
               {rightColumn.professionalIntro.content}

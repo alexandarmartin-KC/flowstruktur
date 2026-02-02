@@ -32,7 +32,7 @@ function validateCVData(jobId: string): { valid: boolean; errors: string[] } {
       
       if (languagesWithoutLevel.length > 0) {
         const langNames = languagesWithoutLevel.map((l: { language: string }) => l.language).join(', ');
-        errors.push(`Vælg niveau for: ${langNames}`);
+        errors.push(`Select level for: ${langNames}`);
       }
     }
   } catch (e) {
@@ -53,7 +53,7 @@ export default function CVPage() {
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-pulse text-muted-foreground">Indlæser...</div>
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
       </div>
     );
   }
@@ -63,11 +63,11 @@ export default function CVPage() {
   if (!job) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <p className="text-muted-foreground">Job ikke fundet.</p>
+        <p className="text-muted-foreground">Job not found.</p>
         <Link href="/app/gemte-jobs">
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Tilbage til gemte jobs
+            Back to saved jobs
           </Button>
         </Link>
       </div>
@@ -87,8 +87,8 @@ export default function CVPage() {
           </CardHeader>
           <CardContent className="pt-0">
             <p className="text-sm text-muted-foreground">
-              Rediger dit CV direkte i editoren nedenfor. Dit CV gemmes automatisk.
-              Brug AI-assistenten til at optimere individuelle sektioner.
+              Edit your CV directly in the editor below. Your CV is saved automatically.
+              Use the AI assistant to optimize individual sections.
             </p>
           </CardContent>
         </Card>
@@ -108,7 +108,7 @@ export default function CVPage() {
             <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Udfyld venligst:</strong>
+                <strong>Please fill in:</strong>
                 <ul className="list-disc list-inside mt-1">
                   {validationErrors.map((error, idx) => (
                     <li key={idx}>{error}</li>
@@ -122,7 +122,7 @@ export default function CVPage() {
             <Link href="/app/gemte-jobs">
               <Button variant="ghost">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Gemte jobs
+                Saved jobs
               </Button>
             </Link>
             
@@ -139,7 +139,7 @@ export default function CVPage() {
                   setCvStatus(jobId, 'DRAFT');
                 }}
               >
-                Gem kladde
+                Save draft
               </Button>
               
               <Button
@@ -154,7 +154,7 @@ export default function CVPage() {
                   router.push(`/app/job/${jobId}/ansoegning`);
                 }}
               >
-                Fortsæt til ansøgning
+                Continue to application
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>

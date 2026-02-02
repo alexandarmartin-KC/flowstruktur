@@ -175,27 +175,33 @@ export interface CVCheckpoint {
  * The key is the value stored/selected, the label is what's displayed
  */
 export const LANGUAGE_LEVEL_OPTIONS = [
-  { value: 'Modersmål', label: 'Modersmål' },
-  { value: 'Flydende', label: 'Flydende' },
-  { value: 'Avanceret', label: 'Avanceret' },
-  { value: 'Mellem', label: 'Mellem' },
-  { value: 'Grundlæggende', label: 'Grundlæggende' },
+  { value: 'Native', label: 'Native' },
+  { value: 'Fluent', label: 'Fluent' },
+  { value: 'Advanced', label: 'Advanced' },
+  { value: 'Intermediate', label: 'Intermediate' },
+  { value: 'Basic', label: 'Basic' },
 ] as const;
 
 /**
  * Legacy labels for backward compatibility
  */
 export const LANGUAGE_LEVEL_LABELS: Record<string, string> = {
-  native: 'Modersmål',
-  fluent: 'Flydende',
-  advanced: 'Avanceret',
-  intermediate: 'Mellem',
-  basic: 'Grundlæggende',
-  'Modersmål': 'Modersmål',
-  'Flydende': 'Flydende',
-  'Avanceret': 'Avanceret',
-  'Mellem': 'Mellem',
-  'Grundlæggende': 'Grundlæggende',
+  native: 'Native',
+  fluent: 'Fluent',
+  advanced: 'Advanced',
+  intermediate: 'Intermediate',
+  basic: 'Basic',
+  'Native': 'Native',
+  'Fluent': 'Fluent',
+  'Advanced': 'Advanced',
+  'Intermediate': 'Intermediate',
+  'Basic': 'Basic',
+  // Legacy Danish labels - map to English
+  'Modersmål': 'Native',
+  'Flydende': 'Fluent',
+  'Avanceret': 'Advanced',
+  'Mellem': 'Intermediate',
+  'Grundlæggende': 'Basic',
 };
 
 /**

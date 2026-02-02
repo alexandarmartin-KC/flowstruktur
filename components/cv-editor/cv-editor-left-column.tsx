@@ -65,7 +65,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3 no-print">
             <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Profilbillede
+              Profile photo
             </span>
             <Switch
               checked={leftColumn.showProfilePhoto}
@@ -76,7 +76,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
           <div className="cv-profile-photo w-24 h-24 mx-auto rounded-full overflow-hidden border-2 border-slate-300 dark:border-slate-600">
             <img
               src={profile.profilePhoto!.dataUrl}
-              alt={profile.name || 'Profilbillede'}
+              alt={profile.name || 'Profile photo'}
               className="w-full h-full object-cover"
               style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
             />
@@ -86,7 +86,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
         <div className="mb-6 no-print">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Profilbillede
+              Profile photo
             </span>
             <Switch
               checked={leftColumn.showProfilePhoto}
@@ -99,7 +99,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
           </div>
           {!profile?.profilePhoto?.dataUrl && (
             <p className="text-xs text-slate-400 text-center mt-2">
-              Upload foto i din profil
+              Upload photo in your profile
             </p>
           )}
         </div>
@@ -111,7 +111,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
           className="font-bold text-slate-900 dark:text-slate-100 mb-1"
           style={{ fontSize: fontSize.name }}
         >
-          {profile?.name || 'Dit navn'}
+          {profile?.name || 'Your name'}
         </h1>
         {profile?.title && (
           <p className="text-slate-600 dark:text-slate-400" style={{ fontSize: fontSize.heading }}>
@@ -123,7 +123,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
       {/* Contact Details (from profile - read only) */}
       <div className="mb-6 space-y-2">
         <h2 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
-          Kontakt
+          Contact
         </h2>
         
         {profile?.email && (
@@ -184,7 +184,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
               <textarea
                 value={item.title}
                 onChange={(e) => updateEducation(item.id, { title: e.target.value })}
-                placeholder="Uddannelse / Titel"
+                placeholder="Education / Title"
                 rows={1}
                 className="w-full font-medium text-xs py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-blue-500 resize-none overflow-hidden"
                 style={{ minHeight: '1.5em' }}
@@ -210,7 +210,7 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
               <textarea
                 value={item.year}
                 onChange={(e) => updateEducation(item.id, { year: e.target.value })}
-                placeholder="År (f.eks. 2016 - 2019)"
+                placeholder="Year (e.g. 2016 - 2019)"
                 rows={1}
                 className="w-full text-[11px] text-slate-500 py-0.5 px-1 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-blue-500 resize-none overflow-hidden mt-0.5"
                 style={{ minHeight: '1.5em' }}

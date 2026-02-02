@@ -213,7 +213,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(8);
       pdf.setTextColor(100, 116, 139); // slate-500
-      pdf.text('KONTAKT', marginLeft, leftY);
+      pdf.text('CONTACT', marginLeft, leftY);
       leftY += 5;
       
       pdf.setFont('helvetica', 'normal');
@@ -240,7 +240,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(8);
         pdf.setTextColor(100, 116, 139);
-        pdf.text('KOMPETENCER', marginLeft, leftY);
+        pdf.text('SKILLS', marginLeft, leftY);
         leftY += 5;
         
         pdf.setFont('helvetica', 'normal');
@@ -261,7 +261,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(8);
         pdf.setTextColor(100, 116, 139);
-        pdf.text('SPROG', marginLeft, leftY);
+        pdf.text('LANGUAGES', marginLeft, leftY);
         leftY += 5;
         
         pdf.setFont('helvetica', 'normal');
@@ -286,7 +286,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(8);
         pdf.setTextColor(100, 116, 139);
-        pdf.text('UDDANNELSE', marginLeft, leftY);
+        pdf.text('EDUCATION', marginLeft, leftY);
         leftY += 5;
         
         for (const edu of document.leftColumn.education) {
@@ -321,7 +321,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(10);
         pdf.setTextColor(30, 41, 59);
-        pdf.text('PROFIL', rightColumnStart, rightY);
+        pdf.text('PROFILE', rightColumnStart, rightY);
         rightY += 6;
         
         pdf.setFont('helvetica', 'normal');
@@ -337,7 +337,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(10);
         pdf.setTextColor(30, 41, 59);
-        pdf.text('ERFARING', rightColumnStart, rightY);
+        pdf.text('EXPERIENCE', rightColumnStart, rightY);
         rightY += 6;
         
         for (const exp of document.rightColumn.experience) {
@@ -375,7 +375,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
           pdf.setTextColor(100, 116, 139);
           let dateLine = exp.startDate || '';
           if (exp.endDate) dateLine += ' - ' + exp.endDate;
-          else if (dateLine) dateLine += ' - Nu';
+          else if (dateLine) dateLine += ' - Present';
           if (dateLine) {
             pdf.text(dateLine, rightColumnStart, rightY);
             rightY += 5;

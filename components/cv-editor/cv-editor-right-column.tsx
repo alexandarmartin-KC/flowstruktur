@@ -109,14 +109,14 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
           <div className="border-2 border-dashed border-amber-200 dark:border-amber-700 rounded-lg p-8 text-center bg-amber-50 dark:bg-amber-950/20">
             <AlertTriangle className="h-8 w-8 mx-auto mb-3 text-amber-500" />
             <p className="text-amber-800 dark:text-amber-200 text-sm font-medium mb-2">
-              Ingen stillinger kunne udtrækkes fra dit CV
+              No positions could be extracted from your CV
             </p>
             <p className="text-amber-700 dark:text-amber-300 text-xs mb-4">
-              Vi kunne ikke automatisk parse erfaringsdata fra dit CV-format. 
-              Du kan tilføje dine stillinger manuelt — de vil blive gemt og brugt til fremtidige ansøgninger.
+              We could not automatically parse experience data from your CV format. 
+              You can add your positions manually — they will be saved and used for future applications.
             </p>
             <p className="text-amber-600 dark:text-amber-400 text-xs mb-4 italic">
-              Tip: Kontrollér at dit uploadede CV indeholder en tydelig &quot;Erfaring&quot; eller &quot;Experience&quot; sektion.
+              Tip: Check that your uploaded CV contains a clear &quot;Experience&quot; or &quot;Erfaring&quot; section.
             </p>
             <Button 
               variant="outline" 
@@ -124,7 +124,7 @@ export function CVEditorRightColumn({ fontSize, jobDescription }: CVEditorRightC
               onClick={() => addExperience()}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Tilføj din første stilling
+              Add your first position
             </Button>
           </div>
         ) : (
@@ -284,7 +284,7 @@ function ProfessionalIntroSection({
           className="font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider"
           style={{ fontSize: fontSize.heading }}
         >
-          Profil
+          Profile
         </h2>
         
         {!intro.aiSuggestion && hasContent && (
@@ -300,7 +300,7 @@ function ProfessionalIntroSection({
             ) : (
               <Sparkles className="h-3 w-3 mr-1" />
             )}
-            Optimer til jobbet
+            Optimize for job
           </Button>
         )}
       </div>
@@ -311,7 +311,7 @@ function ProfessionalIntroSection({
           <div className="flex items-start gap-2 mb-3">
             <Sparkles className="h-4 w-4 text-blue-600 mt-0.5" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-blue-900 dark:text-blue-100">AI forslag</p>
+              <p className="text-sm font-medium text-blue-900 dark:text-blue-100">AI suggestion</p>
               {intro.aiSuggestion.rationale && (
                 <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
                   {intro.aiSuggestion.rationale}
@@ -327,7 +327,7 @@ function ProfessionalIntroSection({
           <div className="flex gap-2">
             <Button size="sm" onClick={handleAcceptSuggestion}>
               <Check className="h-3 w-3 mr-1" />
-              Accepter
+              Accept
             </Button>
             <Button size="sm" variant="outline" onClick={() => {
               onUpdate(intro.aiSuggestion!.suggestedContent);
@@ -335,11 +335,11 @@ function ProfessionalIntroSection({
               setIsEditing(true);
             }}>
               <Pencil className="h-3 w-3 mr-1" />
-              Rediger
+              Edit
             </Button>
             <Button size="sm" variant="ghost" onClick={handleRejectSuggestion}>
               <X className="h-3 w-3 mr-1" />
-              Afvis
+              Reject
             </Button>
           </div>
         </div>
@@ -356,7 +356,7 @@ function ProfessionalIntroSection({
             value={intro.content}
             onChange={(e) => onUpdate(e.target.value)}
             onBlur={() => setIsEditing(false)}
-            placeholder="Skriv en kort professionel beskrivelse på 4-5 linjer. Fokuser på din kernekompetence og hvad du kan tilbyde."
+            placeholder="Write a short professional description of 4-5 lines. Focus on your core competence and what you can offer."
             className="min-h-[120px] text-sm leading-relaxed resize-none border-slate-300 focus:border-blue-500"
             autoFocus
           />
@@ -365,13 +365,13 @@ function ProfessionalIntroSection({
             {intro.content || (
               <div className="space-y-3">
                 <p className="text-slate-400 italic">
-                  Ingen profilbeskrivelse fundet i dit CV.
+                  No profile description found in your CV.
                 </p>
                 {hasExperienceData ? (
                   // Case 2: No intro, but experience data exists - offer AI suggestion
                   <>
                     <p className="text-slate-500 text-xs">
-                      Du kan skrive en kort professionel beskrivelse manuelt, eller lade AI foreslå en baseret på din erfaring.
+                      You can write a short professional description manually, or let AI suggest one based on your experience.
                     </p>
                     {jobDescription && !intro.aiSuggestion && (
                       <Button
@@ -389,14 +389,14 @@ function ProfessionalIntroSection({
                         ) : (
                           <Sparkles className="h-3 w-3 mr-1" />
                         )}
-                        Foreslå intro fra erfaring
+                        Suggest intro from experience
                       </Button>
                     )}
                   </>
                 ) : (
                   // Case 3: No intro AND no experience data - AI cannot help, user must write
                   <p className="text-slate-500 text-xs">
-                    Klik her for at skrive din professionelle beskrivelse. Tilføj gerne dine erfaringer først i sektionen nedenfor.
+                    Click here to write your professional description. Consider adding your experience first in the section below.
                   </p>
                 )}
               </div>
@@ -538,7 +538,7 @@ function ExperienceBlock({
       
       const data = await response.json();
       setAiMilestonesSuggestion(data.suggestion);
-      setAiMilestonesRationale(data.rationale || (mode === 'tighten' ? 'Forkortet til anbefalet længde' : 'Optimeret til jobbet'));
+      setAiMilestonesRationale(data.rationale || (mode === 'tighten' ? 'Shortened to recommended length' : 'Optimized for job'));
       setShowAiMilestones(true);
     } catch (error) {
       console.error('AI optimize milestones error:', error);
@@ -656,7 +656,7 @@ function ExperienceBlock({
                 ) : (
                   <Sparkles className="h-3 w-3 mr-1" />
                 )}
-                Generer fra punkter
+                Generate from bullets
               </Button>
             )}
             
@@ -674,7 +674,7 @@ function ExperienceBlock({
                 ) : (
                   <Sparkles className="h-3 w-3 mr-1" />
                 )}
-                {jobDescription ? 'Optimer til job' : 'Optimer tekst'}
+                {jobDescription ? 'Optimize for job' : 'Optimize text'}
               </Button>
             )}
           </div>
@@ -687,7 +687,7 @@ function ExperienceBlock({
               <Sparkles className="h-4 w-4 text-blue-600 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                  AI forslag
+                  AI suggestion
                 </p>
                 {aiMilestonesRationale && (
                   <p className="text-xs text-blue-700 dark:text-blue-300 mt-0.5">
@@ -704,7 +704,7 @@ function ExperienceBlock({
             <div className="flex gap-2">
               <Button size="sm" onClick={handleAcceptMilestones}>
                 <Check className="h-3 w-3 mr-1" />
-                Accepter
+                Accept
               </Button>
               <Button 
                 size="sm" 
@@ -717,7 +717,7 @@ function ExperienceBlock({
                 }}
               >
                 <Pencil className="h-3 w-3 mr-1" />
-                Rediger
+                Edit
               </Button>
               <Button 
                 size="sm" 
@@ -729,7 +729,7 @@ function ExperienceBlock({
                 }}
               >
                 <X className="h-3 w-3 mr-1" />
-                Afvis
+                Reject
               </Button>
             </div>
           </div>
@@ -740,7 +740,7 @@ function ExperienceBlock({
             value={experience.keyMilestones}
             onChange={(e) => onUpdate({ keyMilestones: e.target.value })}
             onBlur={() => setEditingMilestones(false)}
-            placeholder="Beskriv dine nøgleopgaver og ansvar..."
+            placeholder="Describe your key responsibilities and duties..."
             className="text-sm leading-relaxed resize-none min-h-[80px]"
             autoFocus
           />
@@ -821,7 +821,7 @@ function ExperienceBlock({
                     e.target.style.height = 'auto';
                     e.target.style.height = e.target.scrollHeight + 'px';
                   }}
-                  placeholder="Beskriv en konkret præstation eller ansvar..."
+                  placeholder="Describe a specific achievement or responsibility..."
                   className="flex-1 text-sm py-0.5 px-2 border-0 bg-transparent focus-visible:ring-1 focus-visible:ring-ring rounded resize-none min-h-[24px] leading-relaxed"
                   style={{ 
                     height: 'auto',
@@ -850,7 +850,7 @@ function ExperienceBlock({
                     onClick={() => handleOptimizeBullet(bullet.id, bullet.content)}
                     disabled={aiLoadingBulletId === bullet.id}
                     className="p-1.5 text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/30 dark:hover:bg-blue-950/50 rounded transition-colors no-print border border-blue-200 dark:border-blue-800"
-                    title={jobDescription ? "Optimer til job med AI" : "Optimer med AI"}
+                    title={jobDescription ? "Optimize for job with AI" : "Optimize with AI"}
                   >
                     {aiLoadingBulletId === bullet.id ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -876,7 +876,7 @@ function ExperienceBlock({
             <div className="flex items-start gap-2">
               <Sparkles className="h-3.5 w-3.5 text-blue-600 mt-0.5 flex-shrink-0" />
               <p className="text-xs text-blue-700 dark:text-blue-300">
-                <strong>Tip:</strong> Klik på <Sparkles className="h-3 w-3 inline mx-0.5" /> ved hvert punkt for at få AI til at optimere formuleringen{jobDescription ? ' i forhold til jobbet' : ''}.
+                <strong>Tip:</strong> Click on <Sparkles className="h-3 w-3 inline mx-0.5" /> next to each bullet to have AI optimize the wording{jobDescription ? ' in relation to the job' : ''}.
               </p>
             </div>
           </div>
@@ -890,7 +890,7 @@ function ExperienceBlock({
             className="mt-2 text-xs text-slate-500 hover:text-slate-700 no-print"
           >
             <Plus className="h-3 w-3 mr-1" />
-            Tilføj punkt
+            Add bullet
           </Button>
         )}
       </div>

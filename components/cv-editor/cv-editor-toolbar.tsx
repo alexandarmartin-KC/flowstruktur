@@ -145,25 +145,26 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       };
       
       // Helper function to add footer (page 2+ only)
-      // Footer: Name on top, email centered below, page number on right
+      // Footer: Name and email centered in left column, page number on right
       const addFooter = (pageNum: number) => {
         if (pageNum > 1 && profile?.name) {
           const footerBottomY = pageHeight - 10;
+          const leftColumnCenter = leftColumnWidth / 2; // Center of left column
           
-          // Name - centered at top of footer area
+          // Name - centered in left column
           pdf.setFont('helvetica', 'normal');
           pdf.setFontSize(7);
           pdf.setTextColor(150, 150, 150); // Light gray
-          pdf.text(profile.name, pageWidth / 2, footerBottomY, { align: 'center' });
+          pdf.text(profile.name, leftColumnCenter, footerBottomY, { align: 'center' });
           
-          // Email - centered below name
+          // Email - centered below name in left column
           if (profile.email) {
             pdf.setFontSize(6.5);
             pdf.setTextColor(170, 170, 170); // Slightly lighter
-            pdf.text(profile.email, pageWidth / 2, footerBottomY + 3.5, { align: 'center' });
+            pdf.text(profile.email, leftColumnCenter, footerBottomY + 3.5, { align: 'center' });
           }
           
-          // Page number - right side, between name and email vertically
+          // Page number - right side of page
           pdf.setFontSize(6.5);
           pdf.setTextColor(180, 180, 180);
           pdf.text(`${pageNum}`, pageWidth - 12, footerBottomY + 1.5, { align: 'right' });

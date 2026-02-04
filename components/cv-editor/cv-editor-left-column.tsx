@@ -27,6 +27,24 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 
+// Normalize legacy Danish language levels to English
+const LEVEL_NORMALIZATION: Record<string, string> = {
+  'Modersmål': 'Native',
+  'Flydende': 'Fluent',
+  'Avanceret': 'Advanced',
+  'Mellem': 'Intermediate',
+  'Grundlæggende': 'Basic',
+  'native': 'Native',
+  'fluent': 'Fluent',
+  'advanced': 'Advanced',
+  'intermediate': 'Intermediate',
+  'basic': 'Basic',
+};
+
+function normalizeLevel(level: string): string {
+  return LEVEL_NORMALIZATION[level] || level;
+}
+
 interface CVEditorLeftColumnProps {
   profile: UserProfile;
   fontSize: TextSizeOption;
@@ -311,11 +329,11 @@ export function CVEditorLeftColumn({ profile, fontSize }: CVEditorLeftColumnProp
                 </button>
               </div>
               <Select
-                value={item.level}
+                value={normalizeLevel(item.level)}
                 onValueChange={(value) => updateLanguage(item.id, { level: value })}
               >
                 <SelectTrigger className="w-full h-auto py-0.5 px-2 text-xs border-0 bg-transparent text-slate-500">
-                  <SelectValue placeholder={item.level || (lang === 'en' ? 'Select level' : 'Vælg niveau')} />
+                  <SelectValue placeholder={lang === 'en' ? 'Select level' : 'Vælg niveau'} />
                 </SelectTrigger>
                 <SelectContent>
                   {LANGUAGE_LEVEL_OPTIONS.map((option) => (

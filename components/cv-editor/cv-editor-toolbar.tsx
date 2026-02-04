@@ -534,7 +534,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             {cvPreloaded && (
               <Badge variant="secondary" className="hidden sm:inline-flex gap-1 text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
                 <FileCheck className="h-3 w-3" />
-                Fra dit CV
+                From your CV
               </Badge>
             )}
             {jobTitle && (
@@ -544,7 +544,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             )}
             {state.isSaving && (
               <Badge variant="secondary" className="text-xs">
-                Gemmer...
+                Saving...
               </Badge>
             )}
           </div>
@@ -557,7 +557,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
               size="icon"
               onClick={undo}
               disabled={!canUndo}
-              title="Fortryd (Ctrl+Z)"
+              title="Undo (Ctrl+Z)"
             >
               <Undo2 className="h-4 w-4" />
             </Button>
@@ -566,7 +566,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
               size="icon"
               onClick={redo}
               disabled={!canRedo}
-              title="Gentag (Ctrl+Y)"
+              title="Redo (Ctrl+Y)"
             >
               <Redo2 className="h-4 w-4" />
             </Button>
@@ -578,11 +578,11 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2">
                   <Type className="h-4 w-4" />
-                  <span className="hidden sm:inline">Skrifttype</span>
+                  <span className="hidden sm:inline">Font</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel>Skrifttype</DropdownMenuLabel>
+                <DropdownMenuLabel>Font</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {FONT_FAMILY_OPTIONS.map(font => (
                   <DropdownMenuItem 
@@ -604,11 +604,11 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2">
                   <Palette className="h-4 w-4" />
-                  <span className="hidden sm:inline">Størrelse</span>
+                  <span className="hidden sm:inline">Size</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel>Tekststørrelse</DropdownMenuLabel>
+                <DropdownMenuLabel>Text size</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {(['small', 'normal', 'large'] as const).map(size => (
                   <DropdownMenuItem 
@@ -617,9 +617,9 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
                     className="flex items-center justify-between"
                   >
                     <span>
-                      {size === 'small' && 'Lille'}
+                      {size === 'small' && 'Small'}
                       {size === 'normal' && 'Normal'}
-                      {size === 'large' && 'Stor'}
+                      {size === 'large' && 'Large'}
                     </span>
                     {document?.settings.textSize === size && (
                       <Check className="h-4 w-4 ml-2" />
@@ -635,17 +635,17 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             {/* Checkpoints */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" title="Versioner">
+                <Button variant="ghost" size="icon" title="Versions">
                   <History className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuLabel>Gemte versioner</DropdownMenuLabel>
+                <DropdownMenuLabel>Saved versions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 
                 {document?.checkpoints.length === 0 ? (
                   <div className="px-2 py-3 text-sm text-muted-foreground text-center">
-                    Ingen gemte versioner endnu
+                    No saved versions yet
                   </div>
                 ) : (
                   document?.checkpoints.map(cp => (
@@ -656,7 +656,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
                       <div className="flex-1 truncate">
                         <div className="font-medium text-sm">{cp.name}</div>
                         <div className="text-xs text-muted-foreground">
-                          {new Date(cp.createdAt).toLocaleDateString('da-DK', {
+                          {new Date(cp.createdAt).toLocaleDateString('en-US', {
                             day: 'numeric',
                             month: 'short',
                             hour: '2-digit',
@@ -673,7 +673,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
                             e.stopPropagation();
                             restoreCheckpoint(cp.id);
                           }}
-                          title="Gendan"
+                          title="Restore"
                         >
                           <RotateCcw className="h-3 w-3" />
                         </Button>
@@ -685,7 +685,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
                             e.stopPropagation();
                             deleteCheckpoint(cp.id);
                           }}
-                          title="Slet"
+                          title="Delete"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -699,33 +699,33 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
                   <DialogTrigger asChild>
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                       <Bookmark className="h-4 w-4 mr-2" />
-                      Gem version
+                      Save version
                     </DropdownMenuItem>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Gem version</DialogTitle>
+                      <DialogTitle>Save version</DialogTitle>
                       <DialogDescription>
-                        Giv denne version et navn, så du kan finde den igen senere.
+                        Give this version a name so you can find it later.
                       </DialogDescription>
                     </DialogHeader>
                     <div className="py-4">
-                      <Label htmlFor="checkpoint-name">Navn</Label>
+                      <Label htmlFor="checkpoint-name">Name</Label>
                       <Input
                         id="checkpoint-name"
                         value={checkpointName}
                         onChange={(e) => setCheckpointName(e.target.value)}
-                        placeholder="f.eks. 'Før AI ændringer'"
+                        placeholder="e.g. 'Before AI changes'"
                         className="mt-2"
                         onKeyDown={(e) => e.key === 'Enter' && handleCreateCheckpoint()}
                       />
                     </div>
                     <DialogFooter>
                       <Button variant="outline" onClick={() => setShowCheckpointDialog(false)}>
-                        Annuller
+                        Cancel
                       </Button>
                       <Button onClick={handleCreateCheckpoint} disabled={!checkpointName.trim()}>
-                        Gem
+                        Save
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -738,15 +738,16 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
               variant="ghost" 
               size="icon" 
               onClick={() => setShowReloadDialog(true)} 
-              title="Genindlæs fra original CV"
+              title="Reload from original CV"
               disabled={isReloading}
             >
               <RefreshCw className={`h-4 w-4 ${isReloading ? 'animate-spin' : ''}`} />
             </Button>
             
             {/* Save */}
-            <Button variant="ghost" size="icon" onClick={saveDocument} title="Gem">
+            <Button variant="ghost" size="icon" onClick={saveDocument} title="Save">
               <Save className="h-4 w-4" />
+            </Button>
             </Button>
             
             {/* Export PDF */}

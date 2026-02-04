@@ -760,7 +760,6 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             <Button variant="ghost" size="icon" onClick={saveDocument} title="Save">
               <Save className="h-4 w-4" />
             </Button>
-            </Button>
             
             {/* Export PDF */}
             <Button onClick={handleExportPDF} className="gap-2">

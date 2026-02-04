@@ -484,15 +484,8 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             }
           }
           
-          // Add subtle visual separator between roles (space)
-          rightY += 6;
-          
-          // Draw a very subtle thin line between experiences (except after last one)
-          if (expIndex < document.rightColumn.experience.length - 1) {
-            pdf.setDrawColor(220, 220, 220); // Very light gray
-            pdf.setLineWidth(0.2);
-            pdf.line(rightColumnStart, rightY - 2, rightColumnStart + rightColumnWidth * 0.3, rightY - 2);
-          }
+          // Add visual separation between roles using whitespace only (no lines)
+          rightY += 8;
         }
       }
       

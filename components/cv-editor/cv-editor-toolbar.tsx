@@ -69,6 +69,8 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
   const [showCheckpointDialog, setShowCheckpointDialog] = useState(false);
   const [showExportWarning, setShowExportWarning] = useState(false);
   const [showReloadDialog, setShowReloadDialog] = useState(false);
+  const [showLanguageLevelWarning, setShowLanguageLevelWarning] = useState(false);
+  const [missingLanguageLevels, setMissingLanguageLevels] = useState<string[]>([]);
   const [isReloading, setIsReloading] = useState(false);
   const [cvPreloaded, setCvPreloaded] = useState(false);
   
@@ -80,6 +82,20 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
   const document = state.document;
   const exportReqs = canExport();
   
+  // Validate language levels before export
+  const validateLanguageLevels = (): { valid: boolean; missing: string[] } => {
+    if (!document) return { valid: true, missing: [] };
+    
+    const languagesWithoutLevel = document.leftColumn.languages.filter(
+      (lang) => lang.language && lang.language.trim() !== '' && (!lang.level || lang.level.trim() === '')
+    );
+    
+    return {
+      valid: languagesWithoutLevel.length === 0,
+      missing: languagesWithoutLevel.map((l) => l.language),
+    };
+  };
+  
   const handleExportPDF = async () => {
     if (!exportReqs.canExport) {
       setShowExportWarning(true);
@@ -87,7 +103,15 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
     }
     
     if (!document) {
-      alert('Intet CV dokument at eksportere');
+      alert('No CV document to export');
+      return;
+    }
+    
+    // Validate language levels
+    const languageValidation = validateLanguageLevels();
+    if (!languageValidation.valid) {
+      setMissingLanguageLevels(languageValidation.missing);
+      setShowLanguageLevelWarning(true);
       return;
     }
     
@@ -692,9 +716,9 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       <Dialog open={showExportWarning} onOpenChange={setShowExportWarning}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Manglende profiloplysninger</DialogTitle>
+            <DialogTitle>Missing profile information</DialogTitle>
             <DialogDescription>
-              Før du kan eksportere dit CV, skal du udfylde følgende oplysninger i din profil:
+              Before you can export your CV, please fill in the following information in your profile:
             </DialogDescription>
           </DialogHeader>
           <ul className="list-disc list-inside space-y-1 py-4">
@@ -704,10 +728,35 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
           </ul>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowExportWarning(false)}>
-              Luk
+              Close
             </Button>
             <Button onClick={() => window.location.href = '/app/profil'}>
-              Gå til profil
+              Go to profile
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Language level warning dialog */}
+      <Dialog open={showLanguageLevelWarning} onOpenChange={setShowLanguageLevelWarning}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Missing language levels</DialogTitle>
+            <DialogDescription>
+              Please select a proficiency level for each language before downloading your CV.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-2">The following languages need a level:</p>
+            <ul className="list-disc list-inside space-y-1">
+              {missingLanguageLevels.map((lang, i) => (
+                <li key={i} className="text-sm font-medium">{lang}</li>
+              ))}
+            </ul>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowLanguageLevelWarning(false)}>
+              OK
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -717,34 +766,34 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       <Dialog open={showReloadDialog} onOpenChange={setShowReloadDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Genindlæs fra original CV</DialogTitle>
+            <DialogTitle>Reload from original CV</DialogTitle>
             <DialogDescription>
-              Dette vil genparsere dit originale CV og erstatte alle dine nuværende ændringer. 
-              Dine tidligere redigeringer vil gå tabt.
+              This will re-parse your original CV and replace all your current changes. 
+              Your previous edits will be lost.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 px-1 text-sm text-muted-foreground">
-            <p className="mb-2">Brug denne funktion hvis:</p>
+            <p className="mb-2">Use this feature if:</p>
             <ul className="list-disc list-inside space-y-1">
-              <li>Tekst er afkortet eller mangler</li>
-              <li>Datoer eller titler er forkerte</li>
-              <li>Du vil starte forfra med friske data</li>
+              <li>Text is truncated or missing</li>
+              <li>Dates or titles are incorrect</li>
+              <li>You want to start over with fresh data</li>
             </ul>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowReloadDialog(false)} disabled={isReloading}>
-              Annuller
+              Cancel
             </Button>
             <Button onClick={handleReload} disabled={isReloading}>
               {isReloading ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Genindlæser...
+                  Reloading...
                 </>
               ) : (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Genindlæs
+                  Reload
                 </>
               )}
             </Button>

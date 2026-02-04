@@ -125,27 +125,48 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       
-      // Layout constants
-      const leftColumnWidth = 65;
-      const rightColumnStart = leftColumnWidth + 5;
-      const rightColumnWidth = pageWidth - rightColumnStart - 10;
-      const marginTop = 15;
-      const marginLeft = 10;
-      const lineHeight = 5;
+      // Professional layout constants - refined spacing
+      const leftColumnWidth = 62;
+      const rightColumnStart = leftColumnWidth + 8;
+      const rightColumnWidth = pageWidth - rightColumnStart - 12;
+      const marginTop = 18;
+      const marginLeft = 12;
+      const sectionSpacing = 8;
+      const itemSpacing = 4;
       
       let leftY = marginTop;
       let rightY = marginTop;
+      let currentPage = 1;
+      
+      // Helper function to draw left column background
+      const drawLeftColumnBg = () => {
+        pdf.setFillColor(250, 250, 250); // Very subtle gray - more professional
+        pdf.rect(0, 0, leftColumnWidth, pageHeight, 'F');
+      };
+      
+      // Helper function to add footer (page 2+ only)
+      const addFooter = (pageNum: number) => {
+        if (pageNum > 1 && profile?.name) {
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(7);
+          pdf.setTextColor(160, 160, 160); // Light gray
+          const footerY = pageHeight - 8;
+          const footerText = `${profile.name}${profile.email ? '  •  ' + profile.email : ''}`;
+          pdf.text(footerText, marginLeft, footerY);
+          // Page number on right
+          pdf.text(`${pageNum}`, pageWidth - 15, footerY);
+        }
+      };
       
       // Draw left column background
-      pdf.setFillColor(248, 250, 252); // slate-50
-      pdf.rect(0, 0, leftColumnWidth, pageHeight, 'F');
+      drawLeftColumnBg();
       
-      // === LEFT COLUMN ===
+      // === LEFT COLUMN (Page 1) ===
       
-      // Profile Photo (rounded/circular)
+      // Profile Photo (rounded/circular) - medium size, not dominant
       if (document.leftColumn.showProfilePhoto && profile?.profilePhoto?.dataUrl) {
-        const photoSize = 25; // mm
-        const photoX = marginLeft + (leftColumnWidth - marginLeft - photoSize) / 2;
+        const photoSize = 28; // mm - medium size
+        const photoX = marginLeft;
         const photoY = leftY;
         
         try {
@@ -206,229 +227,243 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             );
           }
           
-          leftY += photoSize + 5;
+          // CRITICAL: Add clear vertical spacing between photo and name (6mm = ~17px)
+          leftY += photoSize + 6;
         } catch (e) {
           console.error('Error adding profile photo to PDF:', e);
           // Continue without photo if it fails
         }
       }
       
-      // Name
+      // === HEADER SECTION (Name is largest text on page) ===
+      
+      // Full Name - largest text on the page, visually stands on its own
       if (profile?.name) {
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(14);
-        pdf.setTextColor(30, 41, 59); // slate-800
-        const nameLines = pdf.splitTextToSize(profile.name, leftColumnWidth - 15);
+        pdf.setFontSize(16); // Largest on page
+        pdf.setTextColor(25, 25, 25); // Near black
+        const nameLines = pdf.splitTextToSize(profile.name, leftColumnWidth - 14);
         pdf.text(nameLines, marginLeft, leftY);
-        leftY += nameLines.length * 6 + 2;
+        leftY += nameLines.length * 6 + 3;
       }
       
-      // Title
+      // Professional Title - smaller, muted
       if (profile?.title) {
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(9);
-        pdf.setTextColor(71, 85, 105); // slate-500
-        const titleLines = pdf.splitTextToSize(profile.title, leftColumnWidth - 15);
+        pdf.setTextColor(100, 100, 100); // Muted gray
+        const titleLines = pdf.splitTextToSize(profile.title, leftColumnWidth - 14);
         pdf.text(titleLines, marginLeft, leftY);
-        leftY += titleLines.length * 4 + 6;
+        leftY += titleLines.length * 4 + sectionSpacing;
       }
       
-      // Contact section
+      // === CONTACT SECTION ===
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(8);
-      pdf.setTextColor(100, 116, 139); // slate-500
+      pdf.setTextColor(80, 80, 80); // Dark gray for section headers
       pdf.text('CONTACT', marginLeft, leftY);
       leftY += 5;
       
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(9);
-      pdf.setTextColor(51, 65, 85); // slate-700
+      pdf.setTextColor(50, 50, 50); // Dark gray for content
       
       if (profile?.email) {
         pdf.text(profile.email, marginLeft, leftY);
-        leftY += lineHeight;
+        leftY += 4.5;
       }
       if (profile?.phone) {
         pdf.text(profile.phone, marginLeft, leftY);
-        leftY += lineHeight;
+        leftY += 4.5;
       }
       if (profile?.city) {
         pdf.text(profile.city, marginLeft, leftY);
-        leftY += lineHeight;
+        leftY += 4.5;
       }
       
-      leftY += 5;
+      leftY += sectionSpacing;
       
-      // Skills
+      // === SKILLS SECTION ===
       if (document.leftColumn.skills.length > 0) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(8);
-        pdf.setTextColor(100, 116, 139);
+        pdf.setTextColor(80, 80, 80);
         pdf.text('SKILLS', marginLeft, leftY);
         leftY += 5;
         
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(9);
-        pdf.setTextColor(51, 65, 85);
+        pdf.setTextColor(50, 50, 50);
         
         for (const skill of document.leftColumn.skills) {
           if (skill.name) {
             pdf.text('• ' + skill.name, marginLeft, leftY);
-            leftY += lineHeight;
+            leftY += 4.5;
           }
         }
-        leftY += 3;
+        leftY += sectionSpacing;
       }
       
-      // Languages
+      // === LANGUAGES SECTION ===
       if (document.leftColumn.languages.length > 0) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(8);
-        pdf.setTextColor(100, 116, 139);
+        pdf.setTextColor(80, 80, 80);
         pdf.text('LANGUAGES', marginLeft, leftY);
         leftY += 5;
-        
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(9);
-        pdf.setTextColor(51, 65, 85);
         
         for (const lang of document.leftColumn.languages) {
           if (lang.language) {
             const levelLabel = LANGUAGE_LEVEL_LABELS[lang.level] || lang.level;
+            // Language name - normal weight
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(9);
+            pdf.setTextColor(50, 50, 50);
             pdf.text(lang.language, marginLeft, leftY);
-            pdf.setTextColor(100, 116, 139);
-            pdf.text(levelLabel, marginLeft, leftY + 4);
-            pdf.setTextColor(51, 65, 85);
-            leftY += 10;
+            // Level - muted
+            pdf.setFontSize(8);
+            pdf.setTextColor(120, 120, 120);
+            pdf.text(levelLabel, marginLeft, leftY + 3.5);
+            leftY += 9;
           }
         }
-        leftY += 3;
+        leftY += sectionSpacing;
       }
       
-      // Education
+      // === EDUCATION SECTION ===
       if (document.leftColumn.education.length > 0) {
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(8);
-        pdf.setTextColor(100, 116, 139);
+        pdf.setTextColor(80, 80, 80);
         pdf.text('EDUCATION', marginLeft, leftY);
         leftY += 5;
         
         for (const edu of document.leftColumn.education) {
+          // Education title - bold (this is a section title within education)
           pdf.setFont('helvetica', 'bold');
           pdf.setFontSize(9);
-          pdf.setTextColor(51, 65, 85);
+          pdf.setTextColor(50, 50, 50);
           if (edu.title) {
-            const titleLines = pdf.splitTextToSize(edu.title, leftColumnWidth - 15);
+            const titleLines = pdf.splitTextToSize(edu.title, leftColumnWidth - 14);
             pdf.text(titleLines, marginLeft, leftY);
             leftY += titleLines.length * 4;
           }
           
+          // Institution - normal weight, muted
           pdf.setFont('helvetica', 'normal');
           pdf.setFontSize(8);
-          pdf.setTextColor(100, 116, 139);
+          pdf.setTextColor(100, 100, 100);
           if (edu.institution) {
             pdf.text(edu.institution, marginLeft, leftY);
-            leftY += 4;
+            leftY += 3.5;
           }
+          // Year - muted gray (dates never bold)
           if (edu.year) {
+            pdf.setTextColor(130, 130, 130);
             pdf.text(edu.year, marginLeft, leftY);
-            leftY += 4;
+            leftY += 3.5;
           }
-          leftY += 3;
+          leftY += itemSpacing;
         }
       }
       
       // === RIGHT COLUMN ===
       
-      // Profile/Summary
+      // Profile/Summary - short (3-4 lines max), calm, factual, professional
       if (document.rightColumn.professionalIntro.content) {
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(10);
-        pdf.setTextColor(30, 41, 59);
+        pdf.setFontSize(9);
+        pdf.setTextColor(80, 80, 80);
         pdf.text('PROFILE', rightColumnStart, rightY);
-        rightY += 6;
+        rightY += 5;
         
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(9);
-        pdf.setTextColor(51, 65, 85);
+        pdf.setTextColor(50, 50, 50);
         const summaryLines = pdf.splitTextToSize(document.rightColumn.professionalIntro.content, rightColumnWidth);
         pdf.text(summaryLines, rightColumnStart, rightY);
-        rightY += summaryLines.length * 4 + 8;
+        rightY += summaryLines.length * 4 + sectionSpacing + 2;
       }
       
-      // Experience
+      // === EXPERIENCE SECTION ===
       if (document.rightColumn.experience.length > 0) {
         pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(10);
-        pdf.setTextColor(30, 41, 59);
+        pdf.setFontSize(9);
+        pdf.setTextColor(80, 80, 80);
         pdf.text('EXPERIENCE', rightColumnStart, rightY);
         rightY += 6;
         
-        for (const exp of document.rightColumn.experience) {
+        for (let expIndex = 0; expIndex < document.rightColumn.experience.length; expIndex++) {
+          const exp = document.rightColumn.experience[expIndex];
+          
           // Check if we need a new page
           if (rightY > pageHeight - 40) {
+            // Add footer to current page before creating new one
+            addFooter(currentPage);
             pdf.addPage();
+            currentPage++;
             rightY = marginTop;
             // Redraw left column background on new page
-            pdf.setFillColor(248, 250, 252);
-            pdf.rect(0, 0, leftColumnWidth, pageHeight, 'F');
+            drawLeftColumnBg();
           }
           
-          // Title
+          // Job Title - bold (only job titles get bold)
           pdf.setFont('helvetica', 'bold');
           pdf.setFontSize(10);
-          pdf.setTextColor(30, 41, 59);
+          pdf.setTextColor(30, 30, 30);
           if (exp.title) {
             pdf.text(exp.title, rightColumnStart, rightY);
-            rightY += 5;
+            rightY += 4.5;
           }
           
-          // Company and location
+          // Company, location, period - normal weight (never bold)
           pdf.setFont('helvetica', 'normal');
           pdf.setFontSize(9);
-          pdf.setTextColor(71, 85, 105);
+          pdf.setTextColor(70, 70, 70);
           let companyLine = exp.company || '';
-          if (exp.location) companyLine += ' - ' + exp.location;
+          if (exp.location) companyLine += ', ' + exp.location;
           if (companyLine) {
             pdf.text(companyLine, rightColumnStart, rightY);
             rightY += 4;
           }
           
-          // Dates
+          // Dates - normal weight, muted color (dates never bold)
           pdf.setFontSize(8);
-          pdf.setTextColor(100, 116, 139);
+          pdf.setTextColor(130, 130, 130); // Light gray for dates
           let dateLine = exp.startDate || '';
-          if (exp.endDate) dateLine += ' - ' + exp.endDate;
-          else if (dateLine) dateLine += ' - Present';
+          if (exp.endDate) dateLine += ' – ' + exp.endDate;
+          else if (dateLine) dateLine += ' – Present';
           if (dateLine) {
             pdf.text(dateLine, rightColumnStart, rightY);
             rightY += 5;
           }
           
-          // Key milestones
+          // Key milestones / narrative paragraph - italic for context
           if (exp.keyMilestones) {
             pdf.setFont('helvetica', 'italic');
             pdf.setFontSize(9);
-            pdf.setTextColor(51, 65, 85);
+            pdf.setTextColor(60, 60, 60);
             const milestoneLines = pdf.splitTextToSize(exp.keyMilestones, rightColumnWidth);
             pdf.text(milestoneLines, rightColumnStart, rightY);
-            rightY += milestoneLines.length * 4 + 2;
+            rightY += milestoneLines.length * 4 + 3;
           }
           
-          // Bullets
+          // Bullets - normal weight (never bold), action-oriented
           pdf.setFont('helvetica', 'normal');
           pdf.setFontSize(9);
-          pdf.setTextColor(51, 65, 85);
+          pdf.setTextColor(50, 50, 50);
           for (const bullet of exp.bullets) {
             if (bullet.content) {
               const bulletLines = pdf.splitTextToSize('• ' + bullet.content, rightColumnWidth);
               
               // Check if we need a new page
-              if (rightY + bulletLines.length * 4 > pageHeight - 15) {
+              if (rightY + bulletLines.length * 4 > pageHeight - 20) {
+                // Add footer to current page
+                addFooter(currentPage);
                 pdf.addPage();
+                currentPage++;
                 rightY = marginTop;
-                pdf.setFillColor(248, 250, 252);
-                pdf.rect(0, 0, leftColumnWidth, pageHeight, 'F');
+                drawLeftColumnBg();
               }
               
               pdf.text(bulletLines, rightColumnStart, rightY);
@@ -436,9 +471,20 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
             }
           }
           
-          rightY += 5;
+          // Add subtle visual separator between roles (space)
+          rightY += 6;
+          
+          // Draw a very subtle thin line between experiences (except after last one)
+          if (expIndex < document.rightColumn.experience.length - 1) {
+            pdf.setDrawColor(220, 220, 220); // Very light gray
+            pdf.setLineWidth(0.2);
+            pdf.line(rightColumnStart, rightY - 2, rightColumnStart + rightColumnWidth * 0.3, rightY - 2);
+          }
         }
       }
+      
+      // Add footer to last page if it's page 2 or later
+      addFooter(currentPage);
       
       // Save
       const userName = profile?.name?.replace(/[^a-zA-Z0-9æøåÆØÅ\s]/g, '').replace(/\s+/g, '_') || 'CV';
@@ -446,7 +492,7 @@ export function CVEditorToolbar({ jobTitle }: CVEditorToolbarProps) {
       
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Der opstod en fejl ved PDF-generering. Prøv igen.');
+      alert('An error occurred while generating PDF. Please try again.');
     }
   };
   

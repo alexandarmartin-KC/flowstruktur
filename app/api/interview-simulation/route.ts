@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     if (!question || !userAnswer || !jobPosting || !resolvedCv) {
       return NextResponse.json(
-        { error: 'Alle påkrævet felter skal være udfyldt' },
+        { error: 'All required fields must be filled' },
         { status: 400 }
       );
     }
@@ -51,26 +51,26 @@ export async function POST(request: NextRequest) {
     let systemMessage = STEP_PROMPTS.INTERVIEW_SIMULATION;
 
     // Build user message
-    let userMessage = `Du er nu i gang med en jobsamtale.
+    let userMessage = `You are conducting a job interview.
 
-SPØRGSMÅL:
+QUESTION:
 "${question}"
 
-KANDIDATENS SVAR:
+CANDIDATE'S ANSWER:
 "${userAnswer}"
 
-KONTEKST - JOBOPSLAG:
+CONTEXT - JOB POSTING:
 ${jobPosting}
 
-KANDIDATENS CV:
+CANDIDATE'S CV:
 ${resolvedCv}
 
 INTERVIEW STATUS:
-- Spørgsmål ${questionIndex + 1} af ${totalQuestions}
-${previousFeedback ? `- Tidligere feedback: ${previousFeedback.feedback}` : ''}
+- Question ${questionIndex + 1} of ${totalQuestions}
+${previousFeedback ? `- Previous feedback: ${previousFeedback.feedback}` : ''}
 
-Giv feedback på svaret. Vær konstruktiv og hjælpsom.
-Output som JSON med præcis struktur som angivet.`;
+Provide feedback on the answer. Be constructive and helpful.
+Output as JSON with exact structure as specified.`;
 
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
@@ -90,7 +90,7 @@ Output som JSON med præcis struktur som angivet.`;
 
     const textContent = response.choices[0]?.message?.content;
     if (!textContent) {
-      throw new Error('Ingen respons fra AI');
+      throw new Error('No response from AI');
     }
 
     // Parse JSON from response
@@ -104,9 +104,9 @@ Output som JSON med præcis struktur som angivet.`;
         // Fallback structure
         feedback = {
           feedback: textContent,
-          strengths: 'Dit svar havde gode elementer',
-          improvement: 'Prøv at være mere konkret med eksempler fra din erfaring',
-          cvReference: 'Se dine arbejdserfaringer',
+          strengths: 'Your answer had good elements',
+          improvement: 'Try to be more specific with examples from your experience',
+          cvReference: 'See your work experience',
           nextQuestion: null,
         };
       }
@@ -115,8 +115,8 @@ Output som JSON med præcis struktur som angivet.`;
       // Return basic structure if parsing fails
       feedback = {
         feedback: textContent,
-        strengths: 'Dit svar havde positive elementer',
-        improvement: 'Kontinuer med næste spørgsmål',
+        strengths: 'Your answer had positive elements',
+        improvement: 'Continue with the next question',
         cvReference: '',
         nextQuestion: null,
       };
@@ -128,7 +128,7 @@ Output som JSON med præcis struktur som angivet.`;
   } catch (err) {
     console.error('Error in interview-simulation:', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Kunne ikke processere feedback' },
+      { error: err instanceof Error ? err.message : 'Could not process feedback' },
       { status: 500 }
     );
   }

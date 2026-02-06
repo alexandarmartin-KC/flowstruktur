@@ -63,7 +63,7 @@ export default function InterviewSimulation({
 
   const handleSubmitAnswer = async () => {
     if (!userAnswer.trim()) {
-      setError('Venligst skriv et svar');
+      setError('Please write an answer');
       return;
     }
 
@@ -102,7 +102,7 @@ export default function InterviewSimulation({
       ]);
     } catch (err) {
       console.error('Error submitting answer:', err);
-      setError(err instanceof Error ? err.message : 'En fejl opstod');
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -138,16 +138,16 @@ export default function InterviewSimulation({
     return (
       <div className="space-y-8">
         <div className="space-y-2">
-          <h2 className="text-3xl font-bold">Tillykke! 🎉</h2>
+          <h2 className="text-3xl font-bold">Congratulations! 🎉</h2>
           <p className="text-muted-foreground">
-            Du har gennemgået interview-træningen for {job.title}
+            You have completed the interview training for {job.title}
           </p>
         </div>
 
         <Card className="border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20">
           <CardHeader>
             <CardTitle className="text-green-900 dark:text-green-100">
-              Trænings-opsummering
+              Training Summary
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -156,18 +156,18 @@ export default function InterviewSimulation({
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {answers.length}
                 </div>
-                <div className="text-sm text-muted-foreground">Spørgsmål besvaret</div>
+                <div className="text-sm text-muted-foreground">Questions answered</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {Math.round((answers.filter(a => a.feedback.strengths).length / answers.length) * 100)}%
                 </div>
-                <div className="text-sm text-muted-foreground">Styrker identificeret</div>
+                <div className="text-sm text-muted-foreground">Strengths identified</div>
               </div>
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-semibold">Vigtige takeaways:</h4>
+              <h4 className="font-semibold">Key takeaways:</h4>
               <ul className="space-y-2 text-sm">
                 {answers
                   .filter((a) => a.feedback.improvement)
@@ -183,7 +183,7 @@ export default function InterviewSimulation({
 
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
-                Husk: Den bedste forberedelse er at være autentisk og holde dig til dine egne erfaringer.
+                Remember: The best preparation is to be authentic and stick to your own experiences.
               </p>
             </div>
           </CardContent>
@@ -200,13 +200,13 @@ export default function InterviewSimulation({
               setAnswers([]);
             }}
           >
-            Start forfra
+            Start over
           </Button>
           <Button
             onClick={onExit}
             className="flex-1"
           >
-            Tilbage til forberedelse
+            Back to preparation
           </Button>
         </div>
       </div>
@@ -218,13 +218,13 @@ export default function InterviewSimulation({
       {/* Header with progress */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Interview-træning</h2>
+          <h2 className="text-2xl font-bold">Interview Training</h2>
           <Badge variant="secondary">
-            Spørgsmål {currentQuestionIdx + 1} af {questions.length}
+            Question {currentQuestionIdx + 1} of {questions.length}
           </Badge>
         </div>
         <p className="text-muted-foreground">
-          Besvar spørgsmålene, som hvis det var en rigtig jobsamtale
+          Answer the questions as if it were a real job interview
         </p>
       </div>
 
@@ -250,14 +250,14 @@ export default function InterviewSimulation({
           <CardDescription className="space-y-2 mt-2">
             <p>{currentQuestion.context}</p>
             <p className="text-xs text-muted-foreground mt-2">
-              💡 Tilgang: {currentQuestion.suggestedApproach}
+              💡 Approach: {currentQuestion.suggestedApproach}
             </p>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea
             ref={textareaRef}
-            placeholder="Skriv dit svar her..."
+            placeholder="Write your answer here..."
             value={userAnswer}
             onChange={(e) => setUserAnswer(e.target.value)}
             disabled={isLoading || !!feedback}
@@ -275,12 +275,12 @@ export default function InterviewSimulation({
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Analyserer svar...
+                  Analyzing answer...
                 </>
               ) : (
                 <>
                   <Send className="h-4 w-4" />
-                  Indsend svar
+                  Submit answer
                 </>
               )}
             </Button>
@@ -294,18 +294,18 @@ export default function InterviewSimulation({
           <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
             <CardHeader className="pb-3">
               <CardTitle className="text-base text-blue-900 dark:text-blue-100">
-                Feedback på dit svar
+                Feedback on your answer
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div>
-                <p className="font-semibold text-blue-900 dark:text-blue-100">Hvad var godt:</p>
+                <p className="font-semibold text-blue-900 dark:text-blue-100">What worked well:</p>
                 <p className="text-blue-800 dark:text-blue-200 mt-1">{feedback.strengths}</p>
               </div>
 
               <div>
                 <p className="font-semibold text-blue-900 dark:text-blue-100">
-                  Forbedring:
+                  Areas for improvement:
                 </p>
                 <p className="text-blue-800 dark:text-blue-200 mt-1">{feedback.improvement}</p>
               </div>
@@ -313,7 +313,7 @@ export default function InterviewSimulation({
               {feedback.cvReference && (
                 <div>
                   <p className="font-semibold text-blue-900 dark:text-blue-100">
-                    Fra dit CV:
+                    From your CV:
                   </p>
                   <p className="text-blue-800 dark:text-blue-200 mt-1">
                     {feedback.cvReference}
@@ -336,14 +336,14 @@ export default function InterviewSimulation({
               className="gap-2"
             >
               <ChevronLeft className="h-4 w-4" />
-              Forrige
+              Previous
             </Button>
 
             <Button
               onClick={handleNextQuestion}
               className="flex-1 gap-2"
             >
-              {currentQuestionIdx === questions.length - 1 ? 'Afslut træning' : 'Næste spørgsmål'}
+              {currentQuestionIdx === questions.length - 1 ? 'Finish training' : 'Next question'}
               {currentQuestionIdx < questions.length - 1 && (
                 <ChevronRight className="h-4 w-4" />
               )}
@@ -359,7 +359,7 @@ export default function InterviewSimulation({
           onClick={onExit}
           className="w-full"
         >
-          Afbryd træning
+          Exit training
         </Button>
       )}
     </div>

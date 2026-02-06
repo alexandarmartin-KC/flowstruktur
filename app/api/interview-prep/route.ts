@@ -34,41 +34,41 @@ export async function POST(request: NextRequest) {
 
     if (!jobPosting || !tailoredCv || !application || !dimensionScores) {
       return NextResponse.json(
-        { error: 'Stillingsopslag, tilpasset CV, ansøgning og dimensionsscorer er påkrævet' },
+        { error: 'Job posting, tailored CV, application, and dimension scores are required' },
         { status: 400 }
       );
     }
 
     // Build dimension scores text with levels
     const getLevel = (score: number): string => {
-      if (score >= 3.7) return "Høj";
-      if (score >= 2.5) return "Moderat";
-      return "Lav";
+      if (score >= 3.7) return "High";
+      if (score >= 2.5) return "Moderate";
+      return "Low";
     };
 
-    let dimensionsText = "PERSONPROFIL_DATA (1-5 skala):\n";
+    let dimensionsText = "WORK_STYLE_PROFILE (1-5 scale):\n";
     for (const [dimension, score] of Object.entries(dimensionScores)) {
       const level = getLevel(score);
       dimensionsText += `- ${dimension}: ${score.toFixed(1)} (${level})\n`;
     }
 
-    let userMessage = `Forbered brugeren til jobsamtale:
+    let userMessage = `Prepare the user for a job interview:
 
-STILLINGSOPSLAG_TEXT:
+JOB_POSTING:
 ${jobPosting}
 
-TILPASSET_CV:
+TAILORED_CV:
 ${tailoredCv}
 
-ANSØGNING:
+APPLICATION:
 ${application}
 
 ${dimensionsText}
 
-Generér samtaleforberedelse der følger outputstrukturen præcist.`;
+Generate interview preparation following the output structure exactly.`;
 
     if (feedback) {
-      userMessage += `\n\nBRUGERFEEDBACK:\n${feedback}`;
+      userMessage += `\n\nUSER_FEEDBACK:\n${feedback}`;
     }
 
     const response = await getOpenAI().chat.completions.create({
@@ -89,7 +89,7 @@ Generér samtaleforberedelse der følger outputstrukturen præcist.`;
 
     const textContent = response.choices[0]?.message?.content;
     if (!textContent) {
-      throw new Error('Ingen tekstrespons fra AI');
+      throw new Error('No text response from AI');
     }
 
     return NextResponse.json({
@@ -98,7 +98,7 @@ Generér samtaleforberedelse der følger outputstrukturen præcist.`;
   } catch (err) {
     console.error('Error in interview-prep:', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Kunne ikke generere samtaleforberedelse' },
+      { error: err instanceof Error ? err.message : 'Could not generate interview preparation' },
       { status: 500 }
     );
   }

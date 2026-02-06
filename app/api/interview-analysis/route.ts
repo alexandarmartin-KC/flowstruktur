@@ -51,45 +51,45 @@ export async function POST(request: NextRequest) {
 
     if (!jobPosting || !resolvedCv) {
       return NextResponse.json(
-        { error: 'Stillingsopslag og CV er påkrævet' },
+        { error: 'Job posting and CV are required' },
         { status: 400 }
       );
     }
 
     // Build the user message with all available context
-    let userMessage = `Analysér brugerens profil i forhold til jobopslaget:
+    let userMessage = `Analyze the user's profile against the job posting:
 
-STILLINGSOPSLAG:
+JOB_POSTING:
 ${jobPosting}
 
-BRUGERS CV:
+USER_CV:
 ${resolvedCv}`;
 
     if (tailoredCv) {
-      userMessage += `\n\nTILPASSET CV TIL DETTE JOB:
+      userMessage += `\n\nTAILORED_CV_FOR_THIS_JOB:
 ${tailoredCv}`;
     }
 
     if (application) {
-      userMessage += `\n\nBRUGERS ANSØGNING:
+      userMessage += `\n\nUSER_APPLICATION:
 ${application}`;
     }
 
     if (userProfile && Object.keys(userProfile).length > 0) {
-      userMessage += `\n\nBRUGER PROFIL:
+      userMessage += `\n\nUSER_PROFILE:
 ${Object.entries(userProfile)
   .map(([key, value]) => `- ${key}: ${value}`)
   .join('\n')}`;
     }
 
     if (dimensionScores && Object.keys(dimensionScores).length > 0) {
-      userMessage += `\n\nARBEJDSSTIL PROFIL (1-5 skala):
+      userMessage += `\n\nWORK_STYLE_PROFILE (1-5 scale):
 ${Object.entries(dimensionScores)
   .map(([dim, score]) => `- ${dim}: ${score}`)
   .join('\n')}`;
     }
 
-    userMessage += `\n\nGenerer interview-analyse som JSON med præcis struktur som angivet i prompten.`;
+    userMessage += `\n\nGenerate interview analysis as JSON with the exact structure specified in the prompt.`;
 
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
@@ -109,7 +109,7 @@ ${Object.entries(dimensionScores)
 
     const textContent = response.choices[0]?.message?.content;
     if (!textContent) {
-      throw new Error('Ingen respons fra AI');
+      throw new Error('No response from AI');
     }
 
     // Parse JSON from response
@@ -143,7 +143,7 @@ ${Object.entries(dimensionScores)
   } catch (err) {
     console.error('Error in interview-analysis:', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Kunne ikke analysere interview' },
+      { error: err instanceof Error ? err.message : 'Could not analyze interview' },
       { status: 500 }
     );
   }

@@ -88,7 +88,7 @@ export default function InterviewSimulation({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Kunne ikke få feedback');
+        throw new Error(errorData.error || 'Could not get feedback');
       }
 
       const data = await response.json();

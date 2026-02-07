@@ -97,14 +97,14 @@ export default function InterviewPreparationPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Kunne ikke analysere interviewforberedelse');
+        throw new Error(errorData.error || 'Could not analyze interview preparation');
       }
 
       const data = await response.json();
       setAnalysis(data.analysis);
     } catch (err) {
       console.error('Error analyzing interview:', err);
-      setError(err instanceof Error ? err.message : 'En fejl opstod under analysen');
+      setError(err instanceof Error ? err.message : 'An error occurred during analysis');
     } finally {
       setIsAnalyzing(false);
     }
@@ -115,7 +115,7 @@ export default function InterviewPreparationPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Loader2 className="h-5 w-5 animate-spin text-primary" />
-          <p className="text-muted-foreground">Indlæser CV data...</p>
+          <p className="text-muted-foreground">Loading CV data...</p>
         </div>
       </div>
     );
@@ -125,7 +125,7 @@ export default function InterviewPreparationPage() {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
-        <AlertDescription>Job ikke fundet</AlertDescription>
+        <AlertDescription>Job not found</AlertDescription>
       </Alert>
     );
   }
@@ -149,10 +149,10 @@ export default function InterviewPreparationPage() {
       {/* Header */}
       <div className="space-y-2">
         <h2 className="text-3xl font-bold">
-          Forberedelse til jobsamtale – {job.title}
+          Interview preparation – {job.title}
         </h2>
         <p className="text-muted-foreground">
-          Bliv forberedt på jobsamtalen baseret på dit CV, jobopslaget og din ansøgning
+          Prepare for the interview based on your CV, job posting and application
         </p>
       </div>
 
@@ -168,9 +168,9 @@ export default function InterviewPreparationPage() {
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <div>
-              <p className="font-medium">Analyserer din profil</p>
+              <p className="font-medium">Analyzing your profile</p>
               <p className="text-sm text-muted-foreground">
-                Vi finder kritiske punkter og forventede spørgsmål...
+                Finding critical points and expected questions...
               </p>
             </div>
           </div>
@@ -184,9 +184,9 @@ export default function InterviewPreparationPage() {
                 <div className="flex items-start gap-2">
                   <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <CardTitle>Det skal du være særligt forberedt på</CardTitle>
+                    <CardTitle>What you should be especially prepared for</CardTitle>
                     <CardDescription>
-                      Potentielle områder hvor en interviewer kan stille opfølgende spørgsmål
+                      Potential areas where an interviewer may ask follow-up questions
                     </CardDescription>
                   </div>
                 </div>
@@ -206,8 +206,8 @@ export default function InterviewPreparationPage() {
                               risk.severity === 'medium' ? 'secondary' : 'outline'
                             }
                           >
-                            {risk.severity === 'high' ? 'Vigtig' : 
-                             risk.severity === 'medium' ? 'Moderat' : 'Lav'}
+                            {risk.severity === 'high' ? 'High' : 
+                             risk.severity === 'medium' ? 'Medium' : 'Low'}
                           </Badge>
                           <h4 className="font-semibold">{risk.title}</h4>
                         </div>
@@ -224,7 +224,7 @@ export default function InterviewPreparationPage() {
                     {expandedRisk === idx && (
                       <div className="mt-4 pl-4 pt-4 border-t space-y-2">
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">Eksempel på spørgsmål:</p>
+                          <p className="text-sm font-medium text-muted-foreground">Example question:</p>
                           <p className="text-sm mt-1">"{risk.example}"</p>
                         </div>
                       </div>
@@ -240,10 +240,10 @@ export default function InterviewPreparationPage() {
             <Card className="border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20">
               <CardHeader className="pb-4">
                 <CardTitle className="text-green-900 dark:text-green-100">
-                  ✓ Dine styrker
+                  ✓ Your strengths
                 </CardTitle>
                 <CardDescription className="text-green-800 dark:text-green-200">
-                  Områder hvor du matcher jobbet særligt godt
+                  Areas where you especially match the job
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -263,9 +263,9 @@ export default function InterviewPreparationPage() {
           {analysis.expectedQuestions.length > 0 && (
             <Card>
               <CardHeader className="pb-4">
-                <CardTitle>Sandsynlige interviewspørgsmål</CardTitle>
+                <CardTitle>Likely interview questions</CardTitle>
                 <CardDescription>
-                  Disse spørgsmål er sandsynlige baseret på jobopslaget og dit CV
+                  These questions are likely based on the job posting and your CV
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -273,8 +273,8 @@ export default function InterviewPreparationPage() {
                   <div key={idx} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
                     <h4 className="font-medium mb-2">{q.question}</h4>
                     <div className="space-y-2 text-sm text-muted-foreground">
-                      <p><span className="font-semibold">Kontekst:</span> {q.context}</p>
-                      <p><span className="font-semibold">Tilgang:</span> {q.suggestedApproach}</p>
+                      <p><span className="font-semibold">Context:</span> {q.context}</p>
+                      <p><span className="font-semibold">Approach:</span> {q.suggestedApproach}</p>
                     </div>
                   </div>
                 ))}
@@ -289,10 +289,10 @@ export default function InterviewPreparationPage() {
                 <Sparkles className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div className="flex-1 space-y-3">
                   <div>
-                    <h3 className="font-semibold">Start interviewtræning med AI</h3>
+                    <h3 className="font-semibold">Start AI interview training</h3>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Træn dine svar gennem en simuleret jobsamtale. 
-                      AI stiller spørgsmål og giver feedback på dine svar.
+                      Practice your answers through a simulated job interview. 
+                      AI asks questions and provides feedback on your answers.
                     </p>
                   </div>
                   <Button
@@ -301,7 +301,7 @@ export default function InterviewPreparationPage() {
                     className="gap-2"
                   >
                     <Play className="h-4 w-4" />
-                    Start træning
+                    Start training
                   </Button>
                 </div>
               </div>

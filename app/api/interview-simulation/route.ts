@@ -13,10 +13,11 @@ function getOpenAI() {
 }
 
 interface SimulationFeedback {
-  feedback: string;
-  strengths: string;
-  improvement: string;
-  cvReference: string;
+  whyAsked: string;
+  whatAnswerShows: string;
+  unclearPoints: string[];
+  howToStrengthen: string;
+  whatToAvoid: string[];
   nextQuestion: string | null;
 }
 
@@ -60,26 +61,24 @@ export async function POST(request: NextRequest) {
     // Build user message
     let userMessage = `CURRENT DATE: ${currentDate} (use this when evaluating employment durations - "Present" means today)
 
-You are conducting a job interview.
+Analyze this interview answer:
 
-QUESTION:
+INTERVIEW QUESTION:
 "${question}"
 
-CANDIDATE'S ANSWER:
+USER'S ANSWER:
 "${userAnswer}"
 
-CONTEXT - JOB POSTING:
+JOB DESCRIPTION:
 ${jobPosting}
 
-CANDIDATE'S CV:
+USER'S CV:
 ${resolvedCv}
 
-INTERVIEW STATUS:
+PROGRESS:
 - Question ${questionIndex + 1} of ${totalQuestions}
-${previousFeedback ? `- Previous feedback: ${previousFeedback.feedback}` : ''}
 
-Provide feedback on the answer. Be constructive and helpful.
-Output as JSON with exact structure as specified.`;
+Provide structured feedback following the exact JSON format specified. Be neutral, factual, and helpful. Do NOT praise or criticize - analyze.`;
 
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
@@ -112,10 +111,11 @@ Output as JSON with exact structure as specified.`;
       } else {
         // Fallback structure
         feedback = {
-          feedback: textContent,
-          strengths: 'Your answer had good elements',
-          improvement: 'Try to be more specific with examples from your experience',
-          cvReference: 'See your work experience',
+          whyAsked: 'Unable to parse response. Please try again.',
+          whatAnswerShows: textContent,
+          unclearPoints: [],
+          howToStrengthen: 'Consider providing more specific details from your experience.',
+          whatToAvoid: [],
           nextQuestion: null,
         };
       }
@@ -123,10 +123,11 @@ Output as JSON with exact structure as specified.`;
       console.error('Error parsing JSON response:', parseError);
       // Return basic structure if parsing fails
       feedback = {
-        feedback: textContent,
-        strengths: 'Your answer had positive elements',
-        improvement: 'Continue with the next question',
-        cvReference: '',
+        whyAsked: 'Unable to parse response.',
+        whatAnswerShows: textContent,
+        unclearPoints: [],
+        howToStrengthen: 'Please try submitting your answer again.',
+        whatToAvoid: [],
         nextQuestion: null,
       };
     }

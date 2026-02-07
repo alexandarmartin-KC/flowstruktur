@@ -29,10 +29,11 @@ interface InterviewAnalysis {
 }
 
 interface SimulationFeedback {
-  feedback: string;
-  strengths: string;
-  improvement: string;
-  cvReference: string;
+  whyAsked: string;
+  whatAnswerShows: string;
+  unclearPoints: string[];
+  howToStrengthen: string;
+  whatToAvoid: string[];
   nextQuestion: string | null;
 }
 
@@ -160,9 +161,9 @@ export default function InterviewSimulation({
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {Math.round((answers.filter(a => a.feedback.strengths).length / answers.length) * 100)}%
+                  {answers.filter(a => a.feedback.unclearPoints && a.feedback.unclearPoints.length > 0).length}
                 </div>
-                <div className="text-sm text-muted-foreground">Strengths identified</div>
+                <div className="text-sm text-muted-foreground">Areas to clarify</div>
               </div>
             </div>
 
@@ -170,12 +171,12 @@ export default function InterviewSimulation({
               <h4 className="font-semibold">Key takeaways:</h4>
               <ul className="space-y-2 text-sm">
                 {answers
-                  .filter((a) => a.feedback.improvement)
+                  .filter((a) => a.feedback.howToStrengthen)
                   .slice(0, 3)
                   .map((a, idx) => (
                     <li key={idx} className="flex gap-2">
                       <span className="text-green-600 dark:text-green-400 font-bold">•</span>
-                      <span>{a.feedback.improvement}</span>
+                      <span>{a.feedback.howToStrengthen}</span>
                     </li>
                   ))}
               </ul>
@@ -291,39 +292,60 @@ export default function InterviewSimulation({
       {/* Feedback section */}
       {feedback && (
         <div className="space-y-4">
-          <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
+          <Card className="border-slate-200 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-950/20">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base text-blue-900 dark:text-blue-100">
+              <CardTitle className="text-base">
                 Feedback on your answer
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm">
+            <CardContent className="space-y-4 text-sm">
+              {/* Why this question is asked */}
               <div>
-                <p className="font-semibold text-blue-900 dark:text-blue-100">What worked well:</p>
-                <p className="text-blue-800 dark:text-blue-200 mt-1">{feedback.strengths}</p>
+                <p className="font-semibold text-slate-900 dark:text-slate-100">Why this question is asked:</p>
+                <p className="text-slate-700 dark:text-slate-300 mt-1">{feedback.whyAsked}</p>
               </div>
 
+              {/* What your answer shows */}
               <div>
-                <p className="font-semibold text-blue-900 dark:text-blue-100">
-                  Areas for improvement:
-                </p>
-                <p className="text-blue-800 dark:text-blue-200 mt-1">{feedback.improvement}</p>
+                <p className="font-semibold text-slate-900 dark:text-slate-100">What your answer currently shows:</p>
+                <p className="text-slate-700 dark:text-slate-300 mt-1">{feedback.whatAnswerShows}</p>
               </div>
 
-              {feedback.cvReference && (
+              {/* Unclear points */}
+              {feedback.unclearPoints && feedback.unclearPoints.length > 0 && (
                 <div>
-                  <p className="font-semibold text-blue-900 dark:text-blue-100">
-                    From your CV:
-                  </p>
-                  <p className="text-blue-800 dark:text-blue-200 mt-1">
-                    {feedback.cvReference}
-                  </p>
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">What may still be unclear:</p>
+                  <ul className="mt-1 space-y-1">
+                    {feedback.unclearPoints.map((point, idx) => (
+                      <li key={idx} className="text-slate-700 dark:text-slate-300 flex gap-2">
+                        <span className="text-slate-500">•</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
-              <p className="text-blue-700 dark:text-blue-300 italic pt-2">
-                "{feedback.feedback}"
-              </p>
+              {/* How to strengthen */}
+              <div>
+                <p className="font-semibold text-slate-900 dark:text-slate-100">How to strengthen your answer:</p>
+                <p className="text-slate-700 dark:text-slate-300 mt-1">{feedback.howToStrengthen}</p>
+              </div>
+
+              {/* What to avoid */}
+              {feedback.whatToAvoid && feedback.whatToAvoid.length > 0 && (
+                <div>
+                  <p className="font-semibold text-slate-900 dark:text-slate-100">What to avoid:</p>
+                  <ul className="mt-1 space-y-1">
+                    {feedback.whatToAvoid.map((point, idx) => (
+                      <li key={idx} className="text-slate-700 dark:text-slate-300 flex gap-2">
+                        <span className="text-slate-500">•</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </CardContent>
           </Card>
 

@@ -52,7 +52,16 @@ export async function POST(request: NextRequest) {
       dimensionsText += `- ${dimension}: ${score.toFixed(1)} (${level})\n`;
     }
 
-    let userMessage = `Prepare the user for a job interview:
+    // Include current date for accurate duration calculations
+    const currentDate = new Date().toLocaleDateString('da-DK', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+
+    let userMessage = `CURRENT DATE: ${currentDate} (use this when evaluating employment durations - "Present" means today)
+
+Prepare the user for a job interview:
 
 JOB_POSTING:
 ${jobPosting}

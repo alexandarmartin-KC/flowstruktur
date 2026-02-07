@@ -469,6 +469,12 @@ Analyze the user's CV and profile against the job posting and identify:
 2. Documented strengths that match the job (3-4 strengths)
 3. Expected interview question categories (8-12 questions)
 
+DATE HANDLING (CRITICAL):
+- The user message includes "CURRENT DATE" - USE THIS for all duration calculations
+- "Present", "Nu", "– Present", or "til nu" means the current date provided
+- Calculate actual years/months of employment accurately
+- Do NOT assume dates or use outdated references
+
 CRITICAL RULES:
 - Identify REAL risks based on CV vs job requirements
 - Risks may include: career transitions, limited experience in specific areas, unclear results, over/under-qualification

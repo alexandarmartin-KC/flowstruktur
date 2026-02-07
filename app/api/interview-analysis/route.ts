@@ -57,7 +57,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Build the user message with all available context
-    let userMessage = `Analyze the user's profile against the job posting:
+    // CRITICAL: Include current date so model can calculate correct durations
+    const currentDate = new Date().toLocaleDateString('da-DK', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+    
+    let userMessage = `CURRENT DATE: ${currentDate}
+
+IMPORTANT: When calculating employment duration, use the current date above. "Present" or "Nu" means ${currentDate}.
+
+Analyze the user's profile against the job posting:
 
 JOB_POSTING:
 ${jobPosting}

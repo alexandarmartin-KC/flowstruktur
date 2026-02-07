@@ -50,8 +50,17 @@ export async function POST(request: NextRequest) {
     // Build system message with interview context
     let systemMessage = STEP_PROMPTS.INTERVIEW_SIMULATION;
 
+    // Include current date for accurate duration calculations
+    const currentDate = new Date().toLocaleDateString('da-DK', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+
     // Build user message
-    let userMessage = `You are conducting a job interview.
+    let userMessage = `CURRENT DATE: ${currentDate} (use this when evaluating employment durations - "Present" means today)
+
+You are conducting a job interview.
 
 QUESTION:
 "${question}"
